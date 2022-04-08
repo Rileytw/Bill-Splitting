@@ -13,9 +13,11 @@
 		350A334B2800450000201E40 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A33492800450000201E40 /* Main.storyboard */; };
 		350A334D2800450100201E40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 350A334C2800450100201E40 /* Assets.xcassets */; };
 		350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A334E2800450100201E40 /* LaunchScreen.storyboard */; };
+		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0619BB2CF09025753646E789 /* Pods-Bill-Splitting.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.debug.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.debug.xcconfig"; sourceTree = "<group>"; };
 		350A33402800450000201E40 /* Bill-Splitting.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bill-Splitting.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		350A33432800450000201E40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		350A33452800450000201E40 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -24,6 +26,8 @@
 		350A334C2800450100201E40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		350A334F2800450100201E40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		350A33512800450100201E40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
+		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,17 +35,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0FF1AB64931DEEA61F5ACA60 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		247F1CC3EB2FEA18213B19E1 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0619BB2CF09025753646E789 /* Pods-Bill-Splitting.debug.xcconfig */,
+				55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		350A33372800450000201E40 = {
 			isa = PBXGroup;
 			children = (
 				350A33422800450000201E40 /* Bill-Splitting */,
 				350A33412800450000201E40 /* Products */,
+				247F1CC3EB2FEA18213B19E1 /* Pods */,
+				0FF1AB64931DEEA61F5ACA60 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,6 +99,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 350A33542800450100201E40 /* Build configuration list for PBXNativeTarget "Bill-Splitting" */;
 			buildPhases = (
+				FC61F7906505F907B0C475D7 /* [CP] Check Pods Manifest.lock */,
 				350A333C2800450000201E40 /* Sources */,
 				350A333D2800450000201E40 /* Frameworks */,
 				350A333E2800450000201E40 /* Resources */,
@@ -132,6 +158,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FC61F7906505F907B0C475D7 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Bill-Splitting-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		350A333C2800450000201E40 /* Sources */ = {
@@ -284,6 +335,7 @@
 		};
 		350A33552800450100201E40 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0619BB2CF09025753646E789 /* Pods-Bill-Splitting.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -311,6 +363,7 @@
 		};
 		350A33562800450100201E40 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
