@@ -19,6 +19,7 @@ class AddGroupsViewController: UIViewController {
     var pickerViewData = ["個人預付", "多人支付"]
     
     var friendList = ["Joseph", "Amber"]
+    var selectedIndexs = [Int]()
 //    var filterDataList: [String] = [String]()
 //    var searchedDataSource: [String] = ["Amber", "Joseph", "Cherry", "Coconut", "Durian", "Grape", "Grapefruit", "Guava", "Lemon"] // 被搜尋的資料集合
 //    var isShowSearchResult: Bool = false // 是否顯示搜尋的結果
@@ -88,8 +89,6 @@ class AddGroupsViewController: UIViewController {
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-        
-        
         tableView.register(UINib(nibName: String(describing: AddGroupTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddGroupTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
@@ -153,7 +152,26 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  
 //                   addGroupsCell.friendNameLabel.text = friendList[indexPath.row]
 //               }
         addGroupsCell.friendNameLabel.text = friendList[indexPath.row]
+        if selectedIndexs.contains(indexPath.row) {
+            cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+        }
+        
         return addGroupsCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //判断该行原先是否选中
+        if let index = selectedIndexs.index(of: indexPath.row) {
+            selectedIndexs.remove(at: index) //原来选中的取消选中
+            print(selectedIndexs)
+        } else {
+            selectedIndexs.append(indexPath.row) //原来没选中的就选中
+            print(selectedIndexs)
+        }
+        
+        self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func updateSearchResults(for searchController: UISearchController) {
