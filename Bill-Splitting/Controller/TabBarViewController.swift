@@ -61,6 +61,4 @@ class TabBarViewController: UITabBarController {
         viewControllers = tabs.map({ $0.viewController() })
     }
     
-
-
 }

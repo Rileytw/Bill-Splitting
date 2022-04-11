@@ -18,6 +18,7 @@
 		350A33602803DF3C00201E40 /* AddGroups.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A335F2803DF3C00201E40 /* AddGroups.storyboard */; };
 		350A33622803DF4300201E40 /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A33612803DF4300201E40 /* Profile.storyboard */; };
 		350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33632803EF5000201E40 /* Storyboard+Extension.swift */; };
+		350A33682803F65800201E40 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 350A33672803F65800201E40 /* GoogleService-Info.plist */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 		350A335F2803DF3C00201E40 /* AddGroups.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddGroups.storyboard; sourceTree = "<group>"; };
 		350A33612803DF4300201E40 /* Profile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
 		350A33632803EF5000201E40 /* Storyboard+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storyboard+Extension.swift"; sourceTree = "<group>"; };
+		350A33672803F65800201E40 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -101,6 +103,7 @@
 				350A334C2800450100201E40 /* Assets.xcassets */,
 				350A334E2800450100201E40 /* LaunchScreen.storyboard */,
 				350A33512800450100201E40 /* Info.plist */,
+				350A33672803F65800201E40 /* GoogleService-Info.plist */,
 			);
 			path = "Bill-Splitting";
 			sourceTree = "<group>";
@@ -133,6 +136,7 @@
 				350A333C2800450000201E40 /* Sources */,
 				350A333D2800450000201E40 /* Frameworks */,
 				350A333E2800450000201E40 /* Resources */,
+				66BEBF9FF832E64018139F2F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -187,12 +191,30 @@
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
+				350A33682803F65800201E40 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		66BEBF9FF832E64018139F2F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		FC61F7906505F907B0C475D7 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

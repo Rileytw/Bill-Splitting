@@ -7,5 +7,7 @@ target 'Bill-Splitting' do
 
   # Pods for Bill-Splitting
 pod 'SwiftLint'
+pod 'Firebase/Firestore'
+pod 'FirebaseFirestoreSwift'
 
 end

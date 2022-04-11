@@ -71,4 +71,7 @@ DerivedData/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 
+### GoogleService-Info ###
+/Bill-Splitting/GoogleService-Info.plist
+
 # End of https://www.gitignore.io/api/xcode,macos,cocoapods
