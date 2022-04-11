@@ -19,6 +19,9 @@
 		350A33622803DF4300201E40 /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A33612803DF4300201E40 /* Profile.storyboard */; };
 		350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33632803EF5000201E40 /* Storyboard+Extension.swift */; };
 		350A33682803F65800201E40 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 350A33672803F65800201E40 /* GoogleService-Info.plist */; };
+		350A336A2804192C00201E40 /* TexFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33692804192C00201E40 /* TexFieldView.swift */; };
+		350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */; };
+		350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +41,9 @@
 		350A33612803DF4300201E40 /* Profile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
 		350A33632803EF5000201E40 /* Storyboard+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storyboard+Extension.swift"; sourceTree = "<group>"; };
 		350A33672803F65800201E40 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		350A33692804192C00201E40 /* TexFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TexFieldView.swift; sourceTree = "<group>"; };
+		350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroupTableViewCell.swift; sourceTree = "<group>"; };
+		350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddGroupTableViewCell.xib; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -96,6 +102,7 @@
 				350A33452800450000201E40 /* SceneDelegate.swift */,
 				350A33662803F45100201E40 /* Extension */,
 				350A33652803F42C00201E40 /* Controller */,
+				350A336B2804193300201E40 /* View */,
 				350A33492800450000201E40 /* Main.storyboard */,
 				350A335D2803DF2500201E40 /* Groups.storyboard */,
 				350A335F2803DF3C00201E40 /* AddGroups.storyboard */,
@@ -125,6 +132,16 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
+		350A336B2804193300201E40 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				350A33692804192C00201E40 /* TexFieldView.swift */,
+				350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */,
+				350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -137,6 +154,7 @@
 				350A333D2800450000201E40 /* Frameworks */,
 				350A333E2800450000201E40 /* Resources */,
 				66BEBF9FF832E64018139F2F /* [CP] Embed Pods Frameworks */,
+				350A336C280433D900201E40 /* SwitLint */,
 			);
 			buildRules = (
 			);
@@ -188,6 +206,7 @@
 				350A33622803DF4300201E40 /* Profile.storyboard in Resources */,
 				350A33602803DF3C00201E40 /* AddGroups.storyboard in Resources */,
 				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
+				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
@@ -198,6 +217,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		350A336C280433D900201E40 /* SwitLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwitLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
+		};
 		66BEBF9FF832E64018139F2F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -244,11 +281,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
 				350A33482800450000201E40 /* AddGroupsViewController.swift in Sources */,
 				350A33442800450000201E40 /* AppDelegate.swift in Sources */,
 				350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */,
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
+				350A336A2804192C00201E40 /* TexFieldView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

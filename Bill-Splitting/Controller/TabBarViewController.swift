@@ -47,8 +47,6 @@ private enum Tab {
     }
 }
 
-
-
 class TabBarViewController: UITabBarController {
     
     private let tabs:[Tab] = [.groups, .addGroups, .profile]
