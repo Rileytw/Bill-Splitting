@@ -17,12 +17,12 @@ struct GroupData: Codable {
     var creator: String
     var type: Int
     var status: Int
-    var member: [Member]
+    var member: [String]
 }
 
-struct Member: Codable {
-    var userId: String
-}
+//struct Member: Codable {
+//    var userId: String
+//}
 
 
 

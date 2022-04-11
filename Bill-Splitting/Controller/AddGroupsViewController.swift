@@ -13,12 +13,11 @@ class AddGroupsViewController: UIViewController {
     let descriptionTextView = UITextView()
     
     let fullScreenSize = UIScreen.main.bounds.size
-    var myTextField = UITextField()
+    var typeTextField = UITextField()
     
     var pickerView: UIPickerView!
     var pickerViewData = ["個人預付", "多人支付"]
     
-    //    var friendList = ["Joseph", "Amber"]
     var friendList: [Friend]? {
         didSet {
             tableView.reloadData()
@@ -35,6 +34,19 @@ class AddGroupsViewController: UIViewController {
     let inviteFriendButton = UIButton()
     let addGroupButton = UIButton()
     
+    let userId = "07MPW5R5bYtYQWuDdUXb"
+    var type: Int? {
+        didSet {
+            if typeTextField.text == "個人預付" {
+                type = 0
+            } else {
+                type = 1
+            }
+        }
+    }
+    
+    var member: [String]?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -49,7 +61,7 @@ class AddGroupsViewController: UIViewController {
         //        setSearchBar()
         
         
-        UserManager.shared.fetchFriendData(userId: "07MPW5R5bYtYQWuDdUXb") { result in
+        UserManager.shared.fetchFriendData(userId: self.userId) { result in
             switch result {
             case .success(let friend):
                 self.friendList = friend
@@ -115,22 +127,22 @@ class AddGroupsViewController: UIViewController {
     }
     
     func setTextFieldOfPickerView() {
-        myTextField = UITextField(frame: CGRect(x: 0, y: 0, width: fullScreenSize.width, height: 60))
-        myTextField.inputView = pickerView
-        myTextField.text = pickerViewData[0]
-        myTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
-        myTextField.textAlignment = .center
-        self.view.addSubview(myTextField)
-        myTextField.translatesAutoresizingMaskIntoConstraints = false
-        myTextField.widthAnchor.constraint(equalToConstant: fullScreenSize.width).isActive = true
-        myTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        myTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
+        typeTextField = UITextField(frame: CGRect(x: 0, y: 0, width: fullScreenSize.width, height: 60))
+        typeTextField.inputView = pickerView
+        typeTextField.text = pickerViewData[0]
+        typeTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
+        typeTextField.textAlignment = .center
+        self.view.addSubview(typeTextField)
+        typeTextField.translatesAutoresizingMaskIntoConstraints = false
+        typeTextField.widthAnchor.constraint(equalToConstant: fullScreenSize.width).isActive = true
+        typeTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        typeTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
     }
     
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: myTextField.bottomAnchor, constant: 20).isActive = true
+        tableView.topAnchor.constraint(equalTo: typeTextField.bottomAnchor, constant: 20).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: inviteFriendButton.topAnchor, constant: 0).isActive = true
@@ -170,6 +182,18 @@ class AddGroupsViewController: UIViewController {
         addGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60).isActive = true
         addGroupButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
         
+        addGroupButton.addTarget(self, action: #selector(pressAddGroupButton), for: .touchUpInside)
+    }
+    
+    @objc func pressAddGroupButton() {
+        GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: self.userId, type: self.type ?? 0, status: 0, member: self.member ?? [""])
+        
+        self.nameTextField.text? = ""
+        self.descriptionTextView.text = ""
+        self.typeTextField.text = "個人預付"
+        self.selectedIndexs.removeAll()
+        self.tableView.reloadData()
+        self.member?.removeAll()
     }
 }
 
@@ -187,7 +211,7 @@ extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource 
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        myTextField.text = pickerViewData[row]
+        typeTextField.text = pickerViewData[row]
     }
 }
 
@@ -236,8 +260,10 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  
         if let index = selectedIndexs.index(of: indexPath.row) {
             selectedIndexs.remove(at: index)
 //            print(selectedIndexs)
+            member?.remove(at: index)
         } else {
             selectedIndexs.append(indexPath.row)
+            member?.append(friendList?[indexPath.row].userId ?? "")
 //            print(selectedIndexs)
         }
         

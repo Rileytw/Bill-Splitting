@@ -18,7 +18,7 @@ class GroupManager {
     static var shared = GroupManager()
     let db = Firestore.firestore()
     
-    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [Member]) {
+    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String]) {
         let ref = db.collection("group").document()
         
         let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, goupDescription: description, creator: creator, type: type, status: status, member: member)
