@@ -9,10 +9,15 @@
 /* Begin PBXBuildFile section */
 		350A33442800450000201E40 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33432800450000201E40 /* AppDelegate.swift */; };
 		350A33462800450000201E40 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33452800450000201E40 /* SceneDelegate.swift */; };
-		350A33482800450000201E40 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33472800450000201E40 /* ViewController.swift */; };
+		350A33482800450000201E40 /* AddGroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33472800450000201E40 /* AddGroupsViewController.swift */; };
 		350A334B2800450000201E40 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A33492800450000201E40 /* Main.storyboard */; };
 		350A334D2800450100201E40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 350A334C2800450100201E40 /* Assets.xcassets */; };
 		350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A334E2800450100201E40 /* LaunchScreen.storyboard */; };
+		350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A335B2803DD0100201E40 /* TabBarViewController.swift */; };
+		350A335E2803DF2500201E40 /* Groups.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A335D2803DF2500201E40 /* Groups.storyboard */; };
+		350A33602803DF3C00201E40 /* AddGroups.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A335F2803DF3C00201E40 /* AddGroups.storyboard */; };
+		350A33622803DF4300201E40 /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A33612803DF4300201E40 /* Profile.storyboard */; };
+		350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33632803EF5000201E40 /* Storyboard+Extension.swift */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -21,11 +26,16 @@
 		350A33402800450000201E40 /* Bill-Splitting.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bill-Splitting.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		350A33432800450000201E40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		350A33452800450000201E40 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		350A33472800450000201E40 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		350A33472800450000201E40 /* AddGroupsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroupsViewController.swift; sourceTree = "<group>"; };
 		350A334A2800450000201E40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		350A334C2800450100201E40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		350A334F2800450100201E40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		350A33512800450100201E40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		350A335B2803DD0100201E40 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
+		350A335D2803DF2500201E40 /* Groups.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Groups.storyboard; sourceTree = "<group>"; };
+		350A335F2803DF3C00201E40 /* AddGroups.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddGroups.storyboard; sourceTree = "<group>"; };
+		350A33612803DF4300201E40 /* Profile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
+		350A33632803EF5000201E40 /* Storyboard+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storyboard+Extension.swift"; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -56,7 +66,6 @@
 				0619BB2CF09025753646E789 /* Pods-Bill-Splitting.debug.xcconfig */,
 				55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -83,13 +92,34 @@
 			children = (
 				350A33432800450000201E40 /* AppDelegate.swift */,
 				350A33452800450000201E40 /* SceneDelegate.swift */,
-				350A33472800450000201E40 /* ViewController.swift */,
+				350A33662803F45100201E40 /* Extension */,
+				350A33652803F42C00201E40 /* Controller */,
 				350A33492800450000201E40 /* Main.storyboard */,
+				350A335D2803DF2500201E40 /* Groups.storyboard */,
+				350A335F2803DF3C00201E40 /* AddGroups.storyboard */,
+				350A33612803DF4300201E40 /* Profile.storyboard */,
 				350A334C2800450100201E40 /* Assets.xcassets */,
 				350A334E2800450100201E40 /* LaunchScreen.storyboard */,
 				350A33512800450100201E40 /* Info.plist */,
 			);
 			path = "Bill-Splitting";
+			sourceTree = "<group>";
+		};
+		350A33652803F42C00201E40 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				350A335B2803DD0100201E40 /* TabBarViewController.swift */,
+				350A33472800450000201E40 /* AddGroupsViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		350A33662803F45100201E40 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				350A33632803EF5000201E40 /* Storyboard+Extension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,6 +181,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				350A33622803DF4300201E40 /* Profile.storyboard in Resources */,
+				350A33602803DF3C00201E40 /* AddGroups.storyboard in Resources */,
+				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
@@ -189,8 +222,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				350A33482800450000201E40 /* ViewController.swift in Sources */,
+				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
+				350A33482800450000201E40 /* AddGroupsViewController.swift in Sources */,
 				350A33442800450000201E40 /* AppDelegate.swift in Sources */,
+				350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */,
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
