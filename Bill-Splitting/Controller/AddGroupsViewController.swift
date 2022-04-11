@@ -18,14 +18,22 @@ class AddGroupsViewController: UIViewController {
     var pickerView: UIPickerView!
     var pickerViewData = ["個人預付", "多人支付"]
     
-    var friendList = ["Joseph", "Amber"]
+    //    var friendList = ["Joseph", "Amber"]
+    var friendList: [Friend]? {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     var selectedIndexs = [Int]()
-//    var filterDataList: [String] = [String]()
-//    var searchedDataSource: [String] = ["Amber", "Joseph", "Cherry", "Coconut", "Durian", "Grape", "Grapefruit", "Guava", "Lemon"] // 被搜尋的資料集合
-//    var isShowSearchResult: Bool = false // 是否顯示搜尋的結果
+    //    var filterDataList: [String] = [String]()
+    //    var searchedDataSource: [String] = ["Amber", "Joseph", "Cherry", "Coconut", "Durian", "Grape", "Grapefruit", "Guava", "Lemon"] // 被搜尋的資料集合
+    //    var isShowSearchResult: Bool = false // 是否顯示搜尋的結果
     
     let tableView = UITableView()
     var searchController: UISearchController!
+    
+    let inviteFriendButton = UIButton()
+    let addGroupButton = UIButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,8 +43,23 @@ class AddGroupsViewController: UIViewController {
         setUpPickerView(data: pickerViewData)
         
         setTextFieldOfPickerView()
+        setAddGroupButton()
+        setInviteButton()
         setTableView()
-//        setSearchBar()
+        //        setSearchBar()
+        
+        
+        UserManager.shared.fetchFriendData(userId: "07MPW5R5bYtYQWuDdUXb") { result in
+            switch result {
+            case .success(let friend):
+                self.friendList = friend
+                print("userData: \(self.friendList)")
+            case .failure(let error):
+                
+                print("Error decoding userData: \(error)")
+            }
+
+        }
     }
     
     func setTextField() {
@@ -49,17 +72,36 @@ class AddGroupsViewController: UIViewController {
         NSLayoutConstraint(item: nameTextField, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
+        
+        let nameLabel = UILabel()
+        nameLabel.text = "群組名稱"
+        view.addSubview(nameLabel)
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 100).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
     }
     
     func setTextView() {
         descriptionTextView.layer.borderWidth = 1
         self.view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 100).isActive = true
+        NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 50).isActive = true
         NSLayoutConstraint(item: descriptionTextView,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
         
         NSLayoutConstraint(item: descriptionTextView, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
+        
+        let descriptionLabel = UILabel()
+        descriptionLabel.text = "群組簡介"
+        view.addSubview(descriptionLabel)
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 50).isActive = true
+        NSLayoutConstraint(item: descriptionLabel,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
+        
+        NSLayoutConstraint(item: descriptionLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
+        NSLayoutConstraint(item: descriptionLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
     }
     
     func setUpPickerView(data:[String]) {
@@ -78,8 +120,11 @@ class AddGroupsViewController: UIViewController {
         myTextField.text = pickerViewData[0]
         myTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         myTextField.textAlignment = .center
-        myTextField.center = CGPoint(x: fullScreenSize.width * 0.5, y: fullScreenSize.height * 0.5)
         self.view.addSubview(myTextField)
+        myTextField.translatesAutoresizingMaskIntoConstraints = false
+        myTextField.widthAnchor.constraint(equalToConstant: fullScreenSize.width).isActive = true
+        myTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        myTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
     }
     
     func setTableView() {
@@ -88,21 +133,44 @@ class AddGroupsViewController: UIViewController {
         tableView.topAnchor.constraint(equalTo: myTextField.bottomAnchor, constant: 20).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: inviteFriendButton.topAnchor, constant: 0).isActive = true
         tableView.register(UINib(nibName: String(describing: AddGroupTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddGroupTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
     }
     
-//    func setSearchBar() {
-//        self.searchController = UISearchController(searchResultsController: nil)
-//        self.searchController.searchBar.placeholder = "請輸入朋友名稱"
-//        self.searchController.searchBar.sizeToFit()
-//        self.searchController.searchResultsUpdater = self
-//        self.searchController.searchBar.delegate = self
-//        self.searchController.dimsBackgroundDuringPresentation = false
-//        self.tableView.tableHeaderView = self.searchController.searchBar
-//    }
+    //    func setSearchBar() {
+    //        self.searchController = UISearchController(searchResultsController: nil)
+    //        self.searchController.searchBar.placeholder = "請輸入朋友名稱"
+    //        self.searchController.searchBar.sizeToFit()
+    //        self.searchController.searchResultsUpdater = self
+    //        self.searchController.searchBar.delegate = self
+    //        self.searchController.dimsBackgroundDuringPresentation = false
+    //        self.tableView.tableHeaderView = self.searchController.searchBar
+    //    }
+    
+    func setInviteButton() {
+        inviteFriendButton.setTitle("邀請好友", for: .normal)
+        inviteFriendButton.backgroundColor = .systemGray
+        view.addSubview(inviteFriendButton)
+        inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
+        inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60).isActive = true
+        inviteFriendButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60).isActive = true
+        inviteFriendButton.bottomAnchor.constraint(equalTo: addGroupButton.topAnchor, constant: -20).isActive = true
+    }
+    
+    func setAddGroupButton() {
+        addGroupButton.setTitle("建立群組", for: .normal)
+        addGroupButton.backgroundColor = .systemGray
+        view.addSubview(addGroupButton)
+        addGroupButton.translatesAutoresizingMaskIntoConstraints = false
+        addGroupButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        addGroupButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60).isActive = true
+        addGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60).isActive = true
+        addGroupButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
+        
+    }
 }
 
 extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
@@ -126,14 +194,14 @@ extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource 
 extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  UISearchResultsUpdating, UISearchBarDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//
-//        if self.isShowSearchResult {
-//                    // 若是有查詢結果則顯示查詢結果集合裡的資料
-//                    return self.filterDataList.count
-//                } else {
-//                    return friendList.count
-//                }
-        return friendList.count
+        //
+        //        if self.isShowSearchResult {
+        //                    // 若是有查詢結果則顯示查詢結果集合裡的資料
+        //                    return self.filterDataList.count
+        //                } else {
+        //                    return friendList.count
+        //                }
+        return friendList?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -145,57 +213,59 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  
         
         guard let addGroupsCell = cell as? AddGroupTableViewCell else { return cell }
         
-//        MARK: Add searchBar
-//        if self.isShowSearchResult {
-//                   addGroupsCell.textLabel?.text = String(filterDataList[indexPath.row])
-//               } else {
-//                   addGroupsCell.friendNameLabel.text = friendList[indexPath.row]
-//               }
-        addGroupsCell.friendNameLabel.text = friendList[indexPath.row]
+        //        MARK: Add searchBar
+        //        if self.isShowSearchResult {
+        //                   addGroupsCell.textLabel?.text = String(filterDataList[indexPath.row])
+        //               } else {
+        //                   addGroupsCell.friendNameLabel.text = friendList[indexPath.row]
+        //               }
+        addGroupsCell.friendNameLabel.text = friendList?[indexPath.row].userName
         if selectedIndexs.contains(indexPath.row) {
             cell.accessoryType = .checkmark
+            addGroupsCell.selectedButton.isSelected = true
         } else {
             cell.accessoryType = .none
+            addGroupsCell.selectedButton.isSelected = false
         }
         
         return addGroupsCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //判断该行原先是否选中
+
         if let index = selectedIndexs.index(of: indexPath.row) {
-            selectedIndexs.remove(at: index) //原来选中的取消选中
-            print(selectedIndexs)
+            selectedIndexs.remove(at: index)
+//            print(selectedIndexs)
         } else {
-            selectedIndexs.append(indexPath.row) //原来没选中的就选中
-            print(selectedIndexs)
+            selectedIndexs.append(indexPath.row)
+//            print(selectedIndexs)
         }
         
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func updateSearchResults(for searchController: UISearchController) {
-//        if self.searchController.searchBar.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 0 {
-//            return
-//        }
-//
-//        self.filterDataSource()
+        //        if self.searchController.searchBar.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 0 {
+        //            return
+        //        }
+        //
+        //        self.filterDataSource()
     }
     
-//    func filterDataSource() {
-//        // 使用高階函數來過濾掉陣列裡的資料
-//        self.filterDataList = searchedDataSource.filter({ (fruit) -> Bool in
-//            return fruit.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil
-//        })
-//
-//        if self.filterDataList.count > 0 {
-//            self.isShowSearchResult = true
-//            self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.init(rawValue: 1)!
-//        } else {
-//            self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none //
-//        }
-//
-//        self.tableView.reloadData()
-//    }
+    //    func filterDataSource() {
+    //        // 使用高階函數來過濾掉陣列裡的資料
+    //        self.filterDataList = searchedDataSource.filter({ (fruit) -> Bool in
+    //            return fruit.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil
+    //        })
+    //
+    //        if self.filterDataList.count > 0 {
+    //            self.isShowSearchResult = true
+    //            self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.init(rawValue: 1)!
+    //        } else {
+    //            self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none //
+    //        }
+    //
+    //        self.tableView.reloadData()
+    //    }
     
 }

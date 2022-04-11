@@ -10,7 +10,13 @@ import UIKit
 class AddGroupTableViewCell: UITableViewCell {
     
     @IBOutlet var friendNameLabel: UILabel!
-    @IBOutlet var selectedButton: UIButton!
+    @IBOutlet var selectedButton: UIButton! {
+        didSet {
+            selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
+            selectedButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        }
+    }
+
     
     override func awakeFromNib() {
         super.awakeFromNib()

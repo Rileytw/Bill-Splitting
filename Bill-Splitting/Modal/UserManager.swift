@@ -4,17 +4,34 @@ import FirebaseFirestore
 
 class UserManager {
     static var shared = UserManager()
-    let db = Firestore.firestore()
+    lazy var db = Firestore.firestore()
     
-    func fetchFriendData(userId: String, completion: @escaping (_ data: [Friend]) -> Void) {
-        db.collection("User").document(userId).collection("friend").getDocuments() { snapshot, error in
+    func fetchFriendData(userId: String, completion: @escaping (Result<[Friend], Error>) -> Void) {
+        db.collection("user").document(userId).collection("friend").getDocuments() { (querySnapshot, error) in
             
-            guard let snapshot = snapshot else { return }
-            
-            let friendData = snapshot.documents.compactMap { snapshot in
-                try? snapshot.data(as: Friend.self)
+            if let error = error {
+                
+                completion(.failure(error))
+            } else {
+                
+                var friends = [Friend]()
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let friend = try document.data(as: Friend.self, decoder: Firestore.Decoder()) {
+                            friends.append(friend)
+                        }
+                        completion(.success(friends))
+
+                    } catch {
+                        
+                        completion(.failure(error))
+                        //                            completion(.failure(FirebaseError.documentError))
+                    }
+                }
+//                completion(.success(friends))
             }
-            completion(friendData)
         }
     }
 }
