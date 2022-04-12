@@ -62,6 +62,10 @@ class AddGroupsViewController: UIViewController {
         nameTextField.delegate = self
 //        disableAddGroupButton()
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         UserManager.shared.fetchFriendData(userId: userId) { result in
             switch result {
             case .success(let friend):
@@ -71,10 +75,6 @@ class AddGroupsViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         disableAddGroupButton()
     }
     

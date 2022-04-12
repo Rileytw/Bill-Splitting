@@ -12,11 +12,8 @@ class FriendInvitationViewController: UIViewController {
     let tableView = UITableView()
     
     var senderId: [String] = []
-    var invitationUsers = [UserData]() {
-        didSet {
-            self.tableView.reloadData()
-        }
-    }
+    var invitationUsers = [UserData]()
+    var invitationId: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +31,7 @@ class FriendInvitationViewController: UIViewController {
             switch result {
             case .success(let invitation):
                 let senderId = invitation.map { $0.senderId }
+                self.invitationId = invitation.map { $0.documentId }
                 completion(senderId)
                 print("senderId: \(senderId)")
             case .failure(let error):
@@ -54,6 +52,7 @@ class FriendInvitationViewController: UIViewController {
                     switch result {
                     case .success(let userData):
                         self.invitationUsers.append(userData)
+                        self.tableView.reloadData()
                         print("userData:\(userData)")
                         print("invitationData: \(self.invitationUsers)")
                     case .failure(let error):
@@ -62,7 +61,6 @@ class FriendInvitationViewController: UIViewController {
                 }
             }
         }
-        
     }
     
     func setTableView() {
@@ -93,8 +91,36 @@ extension FriendInvitationViewController: UITableViewDataSource, UITableViewDele
         
         guard let invitationCell = cell as? InvitationTableViewCell else { return cell }
         
+        invitationCell.delegate = self
+        
         invitationCell.nameLabel.text = invitationUsers[indexPath.row].userName
         
         return invitationCell
+    }
+}
+
+extension FriendInvitationViewController: TableViewCellDelegate {
+    func agreeInvitation(sender: InvitationTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: sender) else { return }
+        FriendManager.shared.deleteFriendInvitation(documentId: invitationId[indexPath.row])
+        
+        FriendManager.shared.senderToFriends(userId: userId, senderId: senderId[indexPath.row],
+                                             senderName: invitationUsers[indexPath.row].userName,
+                                             senderEmail: invitationUsers[indexPath.row].userEmail)
+        
+        FriendManager.shared.receiverToFriends(userId: userId, senderId: senderId[indexPath.row], userName: userName, userEmail: userEmail)
+        
+        self.invitationUsers.remove(at: indexPath.row)
+        self.tableView.deleteRows(at: [IndexPath(row: indexPath.row, section: indexPath.section)], with: .fade)
+    }
+    
+    func disAgreeInvitation(sender: InvitationTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: sender) else { return }
+        
+        FriendManager.shared.deleteFriendInvitation(documentId: invitationId[indexPath.row])
+        
+        self.invitationUsers.remove(at: indexPath.row)
+        self.tableView.deleteRows(at: [IndexPath(row: indexPath.row, section: indexPath.section)], with: .fade)
+
     }
 }

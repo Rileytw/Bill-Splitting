@@ -3,7 +3,9 @@ import FirebaseFirestoreSwift
 import FirebaseFirestore
 
 // MARK: Fake data for testing
-let userId = "jl9QrNzpBf4uPGtZ3lw6"
+let userId = "07MPW5R5bYtYQWuDdUXb"
+let userEmail = "riley@gmail.com"
+let userName = "Riley"
 
 class UserManager {
     static var shared = UserManager()

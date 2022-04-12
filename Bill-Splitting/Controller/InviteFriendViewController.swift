@@ -102,19 +102,16 @@ class InviteFriendViewController: UIViewController {
                 self.detectInvitation()
                 self.detectFriendList()
                 
-                if self.friendData == nil {
-                    self.friendNameLabel.text = "無符合對象"
-                    self.friendNameLabel.isHidden = false
-                    self.sendButton.isHidden = true
-                }
-                
-                //        clean userData
-                self.friendData = nil
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
         }
         
+        if self.friendData == nil {
+            self.friendNameLabel.text = "無符合對象"
+            self.friendNameLabel.isHidden = false
+            self.sendButton.isHidden = true
+        }
     }
     
     func detectFriendList() {
@@ -131,6 +128,7 @@ class InviteFriendViewController: UIViewController {
                 } else {
                     self.friendNameLabel.isHidden = false
                     self.sendButton.isHidden = false
+//                    self.detectInvitation()
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
@@ -161,15 +159,21 @@ class InviteFriendViewController: UIViewController {
     
     @objc func pressSendButton() {
         FriendManager.shared.updateFriendInvitation(senderId: userId, receiverId: self.friendData?.userId ?? "")
+        self.friendData = nil
     }
 }
 
 extension InviteFriendViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if self.friendData == nil {
-            self.friendNameLabel.text = "無符合對象"
-            self.friendNameLabel.isHidden = false
-            self.sendButton.isHidden = true
-        }
+//    func textFieldDidEndEditing(_ textField: UITextField) {
+//        if self.friendData == nil {
+//            self.friendNameLabel.text = "無符合對象"
+//            self.friendNameLabel.isHidden = false
+//            self.sendButton.isHidden = true
+//        }
+//    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.friendData = nil
+        friendNameLabel.text = ""
     }
 }

@@ -159,20 +159,22 @@ class FriendManager {
         }
     }
     
-    func senderToFriends(userId: String, senderId: String) {
-        let ref = db.collection("user").document(userId).collection("friend").document(senderId)
+    func senderToFriends(userId: String, senderId: String, senderName: String, senderEmail: String) {
+        let senderData = Friend(userId: senderId, userName: senderName, userEmail: senderEmail)
         
-        //        ref.updateData([
-        //            "friends": FieldValue.arrayUnion([myId])
-        //        ])
+        do {
+            try db.collection("user").document(userId).collection("friend").document(senderId).setData(from: senderData)
+        } catch {
+            print(error)
+        }
     }
     
-    func receiverToFriends(userId: String, senderId: String) {
-        let ref = db.collection("user").document(senderId).collection("friend").document(userId)
-        
-        //        ref.updateData([
-        //            "friends": FieldValue.arrayUnion([senderId ?? ""])
-        //        ])
-        
+    func receiverToFriends(userId: String, senderId: String, userName: String, userEmail: String) {
+        let receiverData = Friend(userId: userId, userName: userName, userEmail: userEmail)
+        do {
+            try db.collection("user").document(senderId).collection("friend").document(userId).setData(from: receiverData)
+        } catch {
+            print(error)
+        }
     }
 }
