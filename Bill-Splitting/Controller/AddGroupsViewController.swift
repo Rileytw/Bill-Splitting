@@ -34,7 +34,6 @@ class AddGroupsViewController: UIViewController {
     let inviteFriendButton = UIButton()
     let addGroupButton = UIButton()
     
-//    let userId = "07MPW5R5bYtYQWuDdUXb"
     var type: Int? {
         didSet {
             if typeTextField.text == "個人預付" {
@@ -45,7 +44,7 @@ class AddGroupsViewController: UIViewController {
         }
     }
     
-    var member: [String]?
+    var member: [String] = [userId]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -193,6 +192,7 @@ class AddGroupsViewController: UIViewController {
     }
     
     @objc func pressAddGroupButton() {
+        print("member:\(self.member)")
         GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: userId, type: self.type ?? 0, status: 0, member: self.member ?? [""])
         
         self.nameTextField.text? = ""
@@ -200,7 +200,7 @@ class AddGroupsViewController: UIViewController {
         self.typeTextField.text = "個人預付"
         self.selectedIndexs.removeAll()
         self.tableView.reloadData()
-        self.member?.removeAll()
+        self.member.removeAll()
     }
     
     @objc func pressInviteFriendButton() {
@@ -289,13 +289,12 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  
         if let index = selectedIndexs.index(of: indexPath.row) {
             selectedIndexs.remove(at: index)
 //            print(selectedIndexs)
-            member?.remove(at: index)
+            member.remove(at: index)
         } else {
             selectedIndexs.append(indexPath.row)
-            member?.append(friendList?[indexPath.row].userId ?? "")
+            member.append(friendList?[indexPath.row].userId ?? "")
 //            print(selectedIndexs)
         }
-        
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
