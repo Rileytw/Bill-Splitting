@@ -149,6 +149,7 @@ class AddGroupsViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: AddGroupTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddGroupTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        
     }
     
     //    func setSearchBar() {
@@ -170,6 +171,8 @@ class AddGroupsViewController: UIViewController {
         inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60).isActive = true
         inviteFriendButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60).isActive = true
         inviteFriendButton.bottomAnchor.constraint(equalTo: addGroupButton.topAnchor, constant: -20).isActive = true
+        
+        inviteFriendButton.addTarget(self, action: #selector(pressInviteFriendButton), for: .touchUpInside)
     }
     
     func setAddGroupButton() {
@@ -194,6 +197,12 @@ class AddGroupsViewController: UIViewController {
         self.selectedIndexs.removeAll()
         self.tableView.reloadData()
         self.member?.removeAll()
+    }
+    
+    @objc func pressInviteFriendButton() {
+        let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+        let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
+        self.present(inviteFriendViewController, animated: true, completion: nil)
     }
 }
 
@@ -226,6 +235,12 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  
         //                    return friendList.count
         //                }
         return friendList?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        tableView.estimatedRowHeight = 30
+        tableView.rowHeight = UITableView.automaticDimension
+        return tableView.rowHeight
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

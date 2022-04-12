@@ -26,6 +26,8 @@
 		350A3375280464E500201E40 /* GroupObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3374280464E500201E40 /* GroupObject.swift */; };
 		350A3377280468D000201E40 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3376280468D000201E40 /* UserManager.swift */; };
 		350A3379280469BB00201E40 /* UserObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3378280469BB00201E40 /* UserObject.swift */; };
+		350A337B2805060B00201E40 /* FriendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A337A2805060B00201E40 /* FriendManager.swift */; };
+		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +54,8 @@
 		350A3374280464E500201E40 /* GroupObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupObject.swift; sourceTree = "<group>"; };
 		350A3376280468D000201E40 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		350A3378280469BB00201E40 /* UserObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserObject.swift; sourceTree = "<group>"; };
+		350A337A2805060B00201E40 /* FriendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendManager.swift; sourceTree = "<group>"; };
+		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -129,6 +133,7 @@
 			children = (
 				350A335B2803DD0100201E40 /* TabBarViewController.swift */,
 				350A33472800450000201E40 /* AddGroupsViewController.swift */,
+				35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -158,6 +163,7 @@
 				350A3374280464E500201E40 /* GroupObject.swift */,
 				350A3376280468D000201E40 /* UserManager.swift */,
 				350A3378280469BB00201E40 /* UserObject.swift */,
+				350A337A2805060B00201E40 /* FriendManager.swift */,
 			);
 			path = Modal;
 			sourceTree = "<group>";
@@ -302,6 +308,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */,
+				350A337B2805060B00201E40 /* FriendManager.swift in Sources */,
 				350A3379280469BB00201E40 /* UserObject.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
@@ -311,6 +318,7 @@
 				350A33732804638A00201E40 /* GroupManager.swift in Sources */,
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
 				350A3377280468D000201E40 /* UserManager.swift in Sources */,
+				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
 				350A336A2804192C00201E40 /* TexFieldView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

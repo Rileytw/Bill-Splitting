@@ -27,10 +27,8 @@ class UserManager {
                     } catch {
                         
                         completion(.failure(error))
-                        //                            completion(.failure(FirebaseError.documentError))
                     }
                 }
-//                completion(.success(friends))
             }
         }
     }

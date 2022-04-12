@@ -25,6 +25,21 @@
             </objects>
             <point key="canvasLocation" x="939.13043478260875" y="65.625"/>
         </scene>
+        <!--Invite Friend View Controller-->
+        <scene sceneID="SEU-Oi-Afn">
+            <objects>
+                <viewController storyboardIdentifier="InviteFriendViewController" id="AgC-U8-bH5" customClass="InviteFriendViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1x4-7m-c2u">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="XeX-jL-mEn"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Hhl-rC-tV3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1806" y="66"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="Uak-8k-qeB">
             <objects>
