@@ -13,11 +13,7 @@ struct UserData: Codable {
     var userId: String
     var userName: String
     var userEmail: String
-    var group: [GroupOfUser]?
-}
-
-struct GroupOfUser: Codable {
-    var group: String
+    var group: [String]?
 }
 
 struct Friend: Codable {

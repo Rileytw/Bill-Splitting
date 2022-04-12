@@ -34,7 +34,7 @@ class AddGroupsViewController: UIViewController {
     let inviteFriendButton = UIButton()
     let addGroupButton = UIButton()
     
-    let userId = "07MPW5R5bYtYQWuDdUXb"
+//    let userId = "07MPW5R5bYtYQWuDdUXb"
     var type: Int? {
         didSet {
             if typeTextField.text == "個人預付" {
@@ -61,16 +61,14 @@ class AddGroupsViewController: UIViewController {
         //        setSearchBar()
         
         
-        UserManager.shared.fetchFriendData(userId: self.userId) { result in
+        UserManager.shared.fetchFriendData(userId: userId) { result in
             switch result {
             case .success(let friend):
                 self.friendList = friend
-                print("userData: \(self.friendList)")
+//                print("userData: \(self.friendList)")
             case .failure(let error):
-                
                 print("Error decoding userData: \(error)")
             }
-
         }
     }
     
@@ -189,7 +187,7 @@ class AddGroupsViewController: UIViewController {
     }
     
     @objc func pressAddGroupButton() {
-        GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: self.userId, type: self.type ?? 0, status: 0, member: self.member ?? [""])
+        GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: userId, type: self.type ?? 0, status: 0, member: self.member ?? [""])
         
         self.nameTextField.text? = ""
         self.descriptionTextView.text = ""

@@ -2,6 +2,9 @@ import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
+// MARK: Fake data for testing
+let userId = "07MPW5R5bYtYQWuDdUXb"
+
 class UserManager {
     static var shared = UserManager()
     lazy var db = Firestore.firestore()
