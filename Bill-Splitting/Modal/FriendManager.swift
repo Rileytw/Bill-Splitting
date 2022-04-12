@@ -42,14 +42,74 @@ class FriendManager {
         }
     }
     
-    func updateFriendInvitationDocument(senderId: String, receiverId: String) {
+    func fetchSenderInvitation(userId: String, friendId: String, completion: @escaping (Result<Invitation, Error>) -> Void) {
+        
+        db.collection("friendInvitation").whereField("senderId", isEqualTo: userId).whereField("receiverId", isEqualTo: friendId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                
+                completion(.failure(error))
+            } else {
+                
+                var invitationData: Invitation?
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
+                            invitationData = invitation
+                        }
+                        guard let invitationData = invitationData else { return }
+
+                        completion(.success(invitationData))
+                        
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+            }
+        }
+    }
+    
+    func fetchReceiverInvitation(userId: String, friendId: String, completion: @escaping (Result<Invitation, Error>) -> Void) {
+        
+        db.collection("friendInvitation").whereField("senderId", isEqualTo: friendId).whereField("receiverId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                
+                completion(.failure(error))
+            } else {
+                
+                var invitationData: Invitation?
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
+                            invitationData = invitation
+                        }
+                        guard let invitationData = invitationData else { return }
+
+                        completion(.success(invitationData))
+                        
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+            }
+        }
+    }
+    
+    func updateFriendInvitation(senderId: String, receiverId: String) {
         let ref = db.collection("friendInvitation").document()
         ref.setData(["senderId": senderId,
                      "receiverId": receiverId,
-                     "document_id": "\(ref.documentID)"])
+                     "documentId": "\(ref.documentID)"])
     }
     
-    func deleteFriendInvitationDocument(documentId: String) {
+    func deleteFriendInvitation(documentId: String) {
         db.collection("friendInvitation").document(documentId).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")

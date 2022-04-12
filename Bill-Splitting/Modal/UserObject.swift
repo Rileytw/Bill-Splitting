@@ -21,3 +21,9 @@ struct Friend: Codable {
     var userName: String
     var userEmail: String
 }
+
+struct Invitation: Codable {
+    var documentId: String
+    var receiverId: String
+    var senderId: String
+}
