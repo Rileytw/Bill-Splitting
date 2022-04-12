@@ -28,6 +28,10 @@
 		350A3379280469BB00201E40 /* UserObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3378280469BB00201E40 /* UserObject.swift */; };
 		350A337B2805060B00201E40 /* FriendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A337A2805060B00201E40 /* FriendManager.swift */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
+		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
+		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
+		35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63D128055BA000508EAF /* ProfileTableViewCell.xib */; };
+		35FF63D528055F6500508EAF /* FriendListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D428055F6500508EAF /* FriendListViewController.swift */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +60,10 @@
 		350A3378280469BB00201E40 /* UserObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserObject.swift; sourceTree = "<group>"; };
 		350A337A2805060B00201E40 /* FriendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendManager.swift; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
+		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
+		35FF63D128055BA000508EAF /* ProfileTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileTableViewCell.xib; sourceTree = "<group>"; };
+		35FF63D428055F6500508EAF /* FriendListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListViewController.swift; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -134,6 +142,8 @@
 				350A335B2803DD0100201E40 /* TabBarViewController.swift */,
 				350A33472800450000201E40 /* AddGroupsViewController.swift */,
 				35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */,
+				35FF63CE28055B1500508EAF /* ProfileViewController.swift */,
+				35FF63D428055F6500508EAF /* FriendListViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -152,6 +162,8 @@
 				350A33692804192C00201E40 /* TexFieldView.swift */,
 				350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */,
 				350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */,
+				35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */,
+				35FF63D128055BA000508EAF /* ProfileTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -234,6 +246,7 @@
 				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
+				35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
 				350A33682803F65800201E40 /* GoogleService-Info.plist in Resources */,
@@ -310,13 +323,16 @@
 				350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */,
 				350A337B2805060B00201E40 /* FriendManager.swift in Sources */,
 				350A3379280469BB00201E40 /* UserObject.swift in Sources */,
+				35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,
+				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
 				350A33482800450000201E40 /* AddGroupsViewController.swift in Sources */,
 				350A33442800450000201E40 /* AppDelegate.swift in Sources */,
 				350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */,
 				350A33732804638A00201E40 /* GroupManager.swift in Sources */,
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
+				35FF63D528055F6500508EAF /* FriendListViewController.swift in Sources */,
 				350A3377280468D000201E40 /* UserManager.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
 				350A336A2804192C00201E40 /* TexFieldView.swift in Sources */,
