@@ -32,6 +32,9 @@
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
 		35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63D128055BA000508EAF /* ProfileTableViewCell.xib */; };
 		35FF63D528055F6500508EAF /* FriendListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D428055F6500508EAF /* FriendListViewController.swift */; };
+		35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D62805626800508EAF /* FriendInvitationViewController.swift */; };
+		35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */; };
+		35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +67,9 @@
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		35FF63D128055BA000508EAF /* ProfileTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileTableViewCell.xib; sourceTree = "<group>"; };
 		35FF63D428055F6500508EAF /* FriendListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListViewController.swift; sourceTree = "<group>"; };
+		35FF63D62805626800508EAF /* FriendInvitationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendInvitationViewController.swift; sourceTree = "<group>"; };
+		35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationTableViewCell.swift; sourceTree = "<group>"; };
+		35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InvitationTableViewCell.xib; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -144,6 +150,7 @@
 				35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */,
 				35FF63CE28055B1500508EAF /* ProfileViewController.swift */,
 				35FF63D428055F6500508EAF /* FriendListViewController.swift */,
+				35FF63D62805626800508EAF /* FriendInvitationViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -164,6 +171,8 @@
 				350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */,
 				35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */,
 				35FF63D128055BA000508EAF /* ProfileTableViewCell.xib */,
+				35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */,
+				35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -249,6 +258,7 @@
 				35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
+				35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */,
 				350A33682803F65800201E40 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -333,8 +343,10 @@
 				350A33732804638A00201E40 /* GroupManager.swift in Sources */,
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
 				35FF63D528055F6500508EAF /* FriendListViewController.swift in Sources */,
+				35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */,
 				350A3377280468D000201E40 /* UserManager.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
+				35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */,
 				350A336A2804192C00201E40 /* TexFieldView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

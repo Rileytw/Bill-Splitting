@@ -50,6 +50,8 @@ class InviteFriendViewController: UIViewController {
         NSLayoutConstraint(item: friendTextField, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: friendTextField, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: 0).isActive = true
         NSLayoutConstraint(item: friendTextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
+        
+        friendTextField.delegate = self
     }
     
     func setSearchButton() {
@@ -77,7 +79,7 @@ class InviteFriendViewController: UIViewController {
         sendButton.topAnchor.constraint(equalTo: searchButton.bottomAnchor, constant: 100).isActive = true
         
         sendButton.addTarget(self, action: #selector(pressSendButton), for: .touchUpInside)
-
+        
         friendNameLabel.text = friendData?.userName
         view.addSubview(friendNameLabel)
         friendNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -89,37 +91,38 @@ class InviteFriendViewController: UIViewController {
     }
     
     @objc func pressSearchButton() {
-        FriendManager.shared.fetchUserData(userEmail: friendTextField.text ?? "") { result in
+        FriendManager.shared.fetchFriendUserData(userEmail: friendTextField.text ?? "") { result in
             switch result {
             case .success(let user):
                 self.friendData = user
-//                print("userData: \(self.userData)")
+                //                print("userData: \(self.userData)")
                 self.friendNameLabel.isHidden = true
                 self.friendNameLabel.text = self.friendData?.userName
-                self.detectFriendList()
+                //                self.detectFriendList()
                 self.detectInvitation()
+                self.detectFriendList()
                 
+                if self.friendData == nil {
+                    self.friendNameLabel.text = "無符合對象"
+                    self.friendNameLabel.isHidden = false
+                    self.sendButton.isHidden = true
+                }
+                
+                //        clean userData
+                self.friendData = nil
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
         }
         
-        if self.friendData == nil {
-            self.friendNameLabel.text = "無符合對象"
-            self.friendNameLabel.isHidden = false
-            self.sendButton.isHidden = true
-        }
-        
-//        clean userData
-        self.friendData = nil
     }
     
     func detectFriendList() {
         UserManager.shared.fetchFriendData(userId: userId) { result in
             switch result {
             case .success(let friend):
-//                self.friendList = friend
-//                self.detectInvitation()
+                //                self.friendList = friend
+                //                self.detectInvitation()
                 let friendId = friend.map { $0.userId }
                 if friendId.contains(self.friendData?.userId ?? "") {
                     self.friendNameLabel.text = "你們已是好友"
@@ -158,5 +161,15 @@ class InviteFriendViewController: UIViewController {
     
     @objc func pressSendButton() {
         FriendManager.shared.updateFriendInvitation(senderId: userId, receiverId: self.friendData?.userId ?? "")
+    }
+}
+
+extension InviteFriendViewController: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if self.friendData == nil {
+            self.friendNameLabel.text = "無符合對象"
+            self.friendNameLabel.isHidden = false
+            self.sendButton.isHidden = true
+        }
     }
 }

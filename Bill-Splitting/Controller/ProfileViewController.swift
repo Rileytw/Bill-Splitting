@@ -64,6 +64,10 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
             let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
             self.present(friendListViewController, animated: true, completion: nil)
+        } else if indexPath.row == 1 {
+            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+            let friendInvitationViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self))
+            self.present(friendInvitationViewController, animated: true, completion: nil)
         }
     }
 }

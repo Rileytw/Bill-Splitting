@@ -13,7 +13,7 @@ class FriendManager {
     static var shared = FriendManager()
     lazy var db = Firestore.firestore()
     
-    func fetchUserData(userEmail: String, completion: @escaping (Result<UserData, Error>) -> Void) {
+    func fetchFriendUserData(userEmail: String, completion: @escaping (Result<UserData, Error>) -> Void) {
         db.collection("user").whereField("userEmail", isEqualTo: userEmail).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
@@ -29,15 +29,18 @@ class FriendManager {
                         if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
                             userData = user
                         }
-                        guard let userData = userData else { return }
-
-                        completion(.success(userData))
+//                        guard let userData = userData else { return }
+//
+//                        completion(.success(userData))
                         
                     } catch {
                         
                         completion(.failure(error))
                     }
                 }
+                guard let userData = userData else { return }
+                
+                completion(.success(userData))
             }
         }
     }
@@ -59,15 +62,18 @@ class FriendManager {
                         if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
                             invitationData = invitation
                         }
-                        guard let invitationData = invitationData else { return }
-
-                        completion(.success(invitationData))
+//                        guard let invitationData = invitationData else { return }
+//
+//                        completion(.success(invitationData))
                         
                     } catch {
                         
                         completion(.failure(error))
                     }
                 }
+                guard let invitationData = invitationData else { return }
+                
+                completion(.success(invitationData))
             }
         }
     }
@@ -89,15 +95,18 @@ class FriendManager {
                         if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
                             invitationData = invitation
                         }
-                        guard let invitationData = invitationData else { return }
-
-                        completion(.success(invitationData))
+//                        guard let invitationData = invitationData else { return }
+//
+//                        completion(.success(invitationData))
                         
                     } catch {
                         
                         completion(.failure(error))
                     }
                 }
+                guard let invitationData = invitationData else { return }
+                
+                completion(.success(invitationData))
             }
         }
     }
@@ -107,6 +116,37 @@ class FriendManager {
         ref.setData(["senderId": senderId,
                      "receiverId": receiverId,
                      "documentId": "\(ref.documentID)"])
+    }
+    
+    func fetchFriendInvitation(userId: String, completion: @escaping (Result<[Invitation], Error>) -> Void) {
+        
+        db.collection("friendInvitation").whereField("receiverId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                
+                completion(.failure(error))
+            } else {
+                
+                var invitationData: [Invitation] = []
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
+                            invitationData.append(invitation)
+                        }
+//                        guard let invitationData = invitationData else { return }
+                        
+//                        completion(.success(invitationData))
+                        
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(invitationData))
+            }
+        }
     }
     
     func deleteFriendInvitation(documentId: String) {

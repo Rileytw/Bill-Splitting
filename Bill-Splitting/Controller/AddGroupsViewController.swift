@@ -60,7 +60,7 @@ class AddGroupsViewController: UIViewController {
         setTableView()
         //        setSearchBar()
         nameTextField.delegate = self
-        disableAddGroupButton()
+//        disableAddGroupButton()
         
         UserManager.shared.fetchFriendData(userId: userId) { result in
             switch result {
@@ -71,6 +71,11 @@ class AddGroupsViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        disableAddGroupButton()
     }
     
     func setTextField() {
