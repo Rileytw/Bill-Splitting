@@ -9,7 +9,7 @@ import UIKit
 
 class AddGroupsViewController: UIViewController {
     
-    let nameTextField = UITextField()
+    var nameTextField = UITextField()
     let descriptionTextView = UITextView()
     
     let fullScreenSize = UIScreen.main.bounds.size
@@ -59,7 +59,8 @@ class AddGroupsViewController: UIViewController {
         setInviteButton()
         setTableView()
         //        setSearchBar()
-        
+        nameTextField.delegate = self
+        disableAddGroupButton()
         
         UserManager.shared.fetchFriendData(userId: userId) { result in
             switch result {
@@ -202,6 +203,16 @@ class AddGroupsViewController: UIViewController {
         let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
         self.present(inviteFriendViewController, animated: true, completion: nil)
     }
+    
+    func disableAddGroupButton() {
+        if nameTextField.text?.isEmpty == true {
+            addGroupButton.isEnabled = false
+            addGroupButton.backgroundColor = .systemGray2
+        } else {
+            addGroupButton.isEnabled = true
+            addGroupButton.backgroundColor = .systemGray
+        }
+    }
 }
 
 extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
@@ -306,5 +317,11 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  
     //
     //        self.tableView.reloadData()
     //    }
-    
+ 
+}
+
+extension AddGroupsViewController: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        disableAddGroupButton()
+    }
 }
