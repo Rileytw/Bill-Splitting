@@ -160,6 +160,8 @@ class InviteFriendViewController: UIViewController {
     @objc func pressSendButton() {
         FriendManager.shared.updateFriendInvitation(senderId: userId, receiverId: self.friendData?.userId ?? "")
         self.friendData = nil
+        sendButton.isHidden = true
+        friendNameLabel.isHidden = true
     }
 }
 

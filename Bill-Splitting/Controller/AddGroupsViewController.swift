@@ -24,9 +24,6 @@ class AddGroupsViewController: UIViewController {
         }
     }
     var selectedIndexs = [Int]()
-    //    var filterDataList: [String] = [String]()
-    //    var searchedDataSource: [String] = ["Amber", "Joseph", "Cherry", "Coconut", "Durian", "Grape", "Grapefruit", "Guava", "Lemon"] // 被搜尋的資料集合
-    //    var isShowSearchResult: Bool = false // 是否顯示搜尋的結果
     
     let tableView = UITableView()
     var searchController: UISearchController!
@@ -124,9 +121,6 @@ class AddGroupsViewController: UIViewController {
         pickerView = UIPickerView()
         pickerView.dataSource = self
         pickerView.delegate = self
-        //      pickerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height / 3)
-        //      pickerView.center = view.center
-        //      view.addSubview(pickerView)
     }
     
     func setTextFieldOfPickerView() {
@@ -154,16 +148,6 @@ class AddGroupsViewController: UIViewController {
         tableView.delegate = self
         
     }
-    
-    //    func setSearchBar() {
-    //        self.searchController = UISearchController(searchResultsController: nil)
-    //        self.searchController.searchBar.placeholder = "請輸入朋友名稱"
-    //        self.searchController.searchBar.sizeToFit()
-    //        self.searchController.searchResultsUpdater = self
-    //        self.searchController.searchBar.delegate = self
-    //        self.searchController.dimsBackgroundDuringPresentation = false
-    //        self.tableView.tableHeaderView = self.searchController.searchBar
-    //    }
     
     func setInviteButton() {
         inviteFriendButton.setTitle("邀請好友", for: .normal)
@@ -238,16 +222,9 @@ extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource 
     }
 }
 
-extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  UISearchResultsUpdating, UISearchBarDelegate {
+extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //
-        //        if self.isShowSearchResult {
-        //                    // 若是有查詢結果則顯示查詢結果集合裡的資料
-        //                    return self.filterDataList.count
-        //                } else {
-        //                    return friendList.count
-        //                }
         return friendList?.count ?? 0
     }
     
@@ -266,12 +243,6 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  
         
         guard let addGroupsCell = cell as? AddGroupTableViewCell else { return cell }
         
-        //        MARK: Add searchBar
-        //        if self.isShowSearchResult {
-        //                   addGroupsCell.textLabel?.text = String(filterDataList[indexPath.row])
-        //               } else {
-        //                   addGroupsCell.friendNameLabel.text = friendList[indexPath.row]
-        //               }
         addGroupsCell.friendNameLabel.text = friendList?[indexPath.row].userName
         if selectedIndexs.contains(indexPath.row) {
             cell.accessoryType = .checkmark
@@ -297,31 +268,6 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate,  
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        //        if self.searchController.searchBar.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 0 {
-        //            return
-        //        }
-        //
-        //        self.filterDataSource()
-    }
-    
-    //    func filterDataSource() {
-    //        // 使用高階函數來過濾掉陣列裡的資料
-    //        self.filterDataList = searchedDataSource.filter({ (fruit) -> Bool in
-    //            return fruit.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil
-    //        })
-    //
-    //        if self.filterDataList.count > 0 {
-    //            self.isShowSearchResult = true
-    //            self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.init(rawValue: 1)!
-    //        } else {
-    //            self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none //
-    //        }
-    //
-    //        self.tableView.reloadData()
-    //    }
- 
 }
 
 extension AddGroupsViewController: UITextFieldDelegate {
