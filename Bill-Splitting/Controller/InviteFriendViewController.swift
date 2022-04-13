@@ -91,16 +91,16 @@ class InviteFriendViewController: UIViewController {
     }
     
     @objc func pressSearchButton() {
-        FriendManager.shared.fetchFriendUserData(userEmail: friendTextField.text ?? "") { result in
+        FriendManager.shared.fetchFriendUserData(userEmail: friendTextField.text ?? "") { [weak self] result in
             switch result {
             case .success(let user):
-                self.friendData = user
+                self?.friendData = user
                 //                print("userData: \(self.userData)")
-                self.friendNameLabel.isHidden = true
-                self.friendNameLabel.text = self.friendData?.userName
+                self?.friendNameLabel.isHidden = true
+                self?.friendNameLabel.text = self?.friendData?.userName
                 //                self.detectFriendList()
-                self.detectInvitation()
-                self.detectFriendList()
+                self?.detectInvitation()
+                self?.detectFriendList()
                 
             case .failure(let error):
                 print("Error decoding userData: \(error)")
@@ -115,19 +115,19 @@ class InviteFriendViewController: UIViewController {
     }
     
     func detectFriendList() {
-        UserManager.shared.fetchFriendData(userId: userId) { result in
+        UserManager.shared.fetchFriendData(userId: userId) { [weak self] result in
             switch result {
             case .success(let friend):
                 //                self.friendList = friend
                 //                self.detectInvitation()
                 let friendId = friend.map { $0.userId }
-                if friendId.contains(self.friendData?.userId ?? "") {
-                    self.friendNameLabel.text = "你們已是好友"
-                    self.friendNameLabel.isHidden = false
-                    self.sendButton.isHidden = true
+                if friendId.contains(self?.friendData?.userId ?? "") {
+                    self?.friendNameLabel.text = "你們已是好友"
+                    self?.friendNameLabel.isHidden = false
+                    self?.sendButton.isHidden = true
                 } else {
-                    self.friendNameLabel.isHidden = false
-                    self.sendButton.isHidden = false
+                    self?.friendNameLabel.isHidden = false
+                    self?.sendButton.isHidden = false
 //                    self.detectInvitation()
                 }
             case .failure(let error):
@@ -137,20 +137,20 @@ class InviteFriendViewController: UIViewController {
     }
     
     func detectInvitation() {
-        FriendManager.shared.fetchReceiverInvitation(userId: userId, friendId: self.friendData?.userId ?? "") { result in
+        FriendManager.shared.fetchReceiverInvitation(userId: userId, friendId: self.friendData?.userId ?? "") { [weak self] result in
             switch result {
             case .success:
-                self.friendNameLabel.text = "對方已寄送好友邀請"
-                self.sendButton.isHidden = true
+                self?.friendNameLabel.text = "對方已寄送好友邀請"
+                self?.sendButton.isHidden = true
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
         }
-        FriendManager.shared.fetchSenderInvitation(userId: userId, friendId: self.friendData?.userId ?? "") { result in
+        FriendManager.shared.fetchSenderInvitation(userId: userId, friendId: self.friendData?.userId ?? "") { [weak self] result in
             switch result {
             case .success:
-                self.friendNameLabel.text = "已寄送好友邀請"
-                self.sendButton.isHidden = true
+                self?.friendNameLabel.text = "已寄送好友邀請"
+                self?.sendButton.isHidden = true
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
