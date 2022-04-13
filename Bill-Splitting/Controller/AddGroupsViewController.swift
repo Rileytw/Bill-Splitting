@@ -13,15 +13,7 @@ class AddGroupsViewController: UIViewController {
     let descriptionTextView = UITextView()
     
     let fullScreenSize = UIScreen.main.bounds.size
-    var typeTextField = UITextField() {
-        didSet {
-            if typeTextField.text == "個人預付" {
-                type = 0
-            } else {
-                type = 1
-            }
-        }
-    }
+    var typeTextField = UITextField()
     
     var pickerView: UIPickerView!
     var pickerViewData = ["個人預付", "多人支付"]
@@ -41,7 +33,7 @@ class AddGroupsViewController: UIViewController {
     
     var type: Int?
     
-    var member: [String] = [userId]
+    var member: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -177,6 +169,14 @@ class AddGroupsViewController: UIViewController {
     
     @objc func pressAddGroupButton() {
         print("member:\(self.member)")
+        member.append(userId)
+        
+        if typeTextField.text == "個人預付" {
+            type = 0
+        } else {
+            type = 1
+        }
+        
         GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: userId, type: self.type ?? 0, status: 0, member: self.member ?? [""])
         
         self.nameTextField.text? = ""

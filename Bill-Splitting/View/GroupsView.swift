@@ -8,45 +8,28 @@
 import UIKit
 
 class GroupsView: UIView {
-    
-    @IBOutlet weak var searchGroupTextField: UITextField!
-    
-    @IBOutlet weak var searchButton: UIButton!
-    
-    @IBOutlet weak var allGroupsButton: UIButton!
-    
-    @IBOutlet weak var multipleUsersTypeButton: UIButton!
-    
-    @IBOutlet weak var personalUserTypeButton: UIButton!
-    
-    @IBOutlet weak var closedGroupsButton: UIButton!
-    
+        
     override init(frame: CGRect) {
         super.init(frame: frame)
-        loadXib()
+    
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        loadXib()
+        
+    }
+ 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        setButton()
     }
     
-    func loadXib() {
-        let bundle = Bundle(for: type(of: self))
-        let nib = UINib(nibName: String(describing: GroupsView.self), bundle: bundle)
-
-        guard let xibView = nib.instantiate(withOwner: self, options: nil)[0] as? UIView else { return }
-
-        addSubview(xibView)
-
-        xibView.translatesAutoresizingMaskIntoConstraints = false
-        xibView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        xibView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        xibView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-        xibView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-//        if let loadingView = Bundle(for: GroupsView.self).loadNibNamed("\(GroupsView.self)", owner: nil, options: nil)?.first as? UIView {
-//              addSubview(loadingView)
-//              loadingView.frame = bounds
-//           }
+    func setButton() {
+        let allGroupsButton = UIButton()
+        allGroupsButton.frame = CGRect(x: 20, y: 20, width: 100, height: 40)
+        allGroupsButton.setTitle("所有群組", for: .normal)
+        allGroupsButton.backgroundColor = .systemGray
+        
+        addSubview(allGroupsButton)
     }
 }

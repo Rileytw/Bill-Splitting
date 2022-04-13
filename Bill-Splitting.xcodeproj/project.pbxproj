@@ -38,8 +38,9 @@
 		35FF63DD2806560F00508EAF /* ItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63DC2806560F00508EAF /* ItemManager.swift */; };
 		35FF63DF2806563500508EAF /* ItemObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63DE2806563500508EAF /* ItemObject.swift */; };
 		35FF63E128066F8800508EAF /* GroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E028066F8800508EAF /* GroupsView.swift */; };
-		35FF63E328066FA200508EAF /* GroupsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63E228066FA200508EAF /* GroupsView.xib */; };
 		35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E42806749D00508EAF /* GroupsViewController.swift */; };
+		35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */; };
+		35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -78,8 +79,9 @@
 		35FF63DC2806560F00508EAF /* ItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemManager.swift; sourceTree = "<group>"; };
 		35FF63DE2806563500508EAF /* ItemObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemObject.swift; sourceTree = "<group>"; };
 		35FF63E028066F8800508EAF /* GroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsView.swift; sourceTree = "<group>"; };
-		35FF63E228066FA200508EAF /* GroupsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupsView.xib; sourceTree = "<group>"; };
 		35FF63E42806749D00508EAF /* GroupsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsViewController.swift; sourceTree = "<group>"; };
+		35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsTableViewCell.swift; sourceTree = "<group>"; };
+		35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupsTableViewCell.xib; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -185,7 +187,8 @@
 				35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */,
 				35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */,
 				35FF63E028066F8800508EAF /* GroupsView.swift */,
-				35FF63E228066FA200508EAF /* GroupsView.xib */,
+				35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */,
+				35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -269,9 +272,9 @@
 				350A33602803DF3C00201E40 /* AddGroups.storyboard in Resources */,
 				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
-				35FF63E328066FA200508EAF /* GroupsView.xib in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
 				35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */,
+				35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
 				35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */,
@@ -360,6 +363,7 @@
 				350A33732804638A00201E40 /* GroupManager.swift in Sources */,
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
 				35FF63D528055F6500508EAF /* FriendListViewController.swift in Sources */,
+				35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */,
 				35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */,
 				350A3377280468D000201E40 /* UserManager.swift in Sources */,
 				35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */,
