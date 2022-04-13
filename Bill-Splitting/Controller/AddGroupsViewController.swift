@@ -13,7 +13,15 @@ class AddGroupsViewController: UIViewController {
     let descriptionTextView = UITextView()
     
     let fullScreenSize = UIScreen.main.bounds.size
-    var typeTextField = UITextField()
+    var typeTextField = UITextField() {
+        didSet {
+            if typeTextField.text == "個人預付" {
+                type = 0
+            } else {
+                type = 1
+            }
+        }
+    }
     
     var pickerView: UIPickerView!
     var pickerViewData = ["個人預付", "多人支付"]
@@ -31,15 +39,7 @@ class AddGroupsViewController: UIViewController {
     let inviteFriendButton = UIButton()
     let addGroupButton = UIButton()
     
-    var type: Int? {
-        didSet {
-            if typeTextField.text == "個人預付" {
-                type = 0
-            } else {
-                type = 1
-            }
-        }
-    }
+    var type: Int?
     
     var member: [String] = [userId]
     

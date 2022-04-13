@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 class BaseTextField: UIView {
     let textField = UITextField()
     let pickerView = UIPickerView()
@@ -37,4 +36,3 @@ class BaseTextField: UIView {
         addSubview(textField)
     }
 }
-

@@ -29,4 +29,29 @@ class GroupManager {
             print(error)
         }
     }
+    
+    func fetchGroups(userId: String, completion: @escaping (Result<[GroupData], Error>) -> Void) {
+        db.collection("group").whereField("member", arrayContains: userId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var groups = [GroupData]()
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let group = try document.data(as: GroupData.self, decoder: Firestore.Decoder()) {
+                            groups.append(group)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(groups))
+            }
+        }
+    }
 }
