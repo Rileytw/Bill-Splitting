@@ -14,6 +14,8 @@ class MultipleUsersGrouplViewController: UIViewController {
     var groupData: GroupData?
     var paidItem: [[ExpenseInfo]] = []
     var involvedItem: [[ExpenseInfo]] = []
+    var itemId: String? = "rjzUwVdigPGUnpy4yvIf"
+    var expense: Double?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,12 +34,15 @@ class MultipleUsersGrouplViewController: UIViewController {
     }
     
     @objc func pressAddItem() {
+//        ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "", itemName: "飲料", itemDescription: "", createdTime: Double(NSDate().timeIntervalSince1970)) {
+//            itemId in
+//            self.itemId = itemId
+//            self.countPersonalExpense()
+//        }
         countPersonalExpense()
-        //        ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "", itemName: "飲料", itemDescription: "", createdTime: Double(NSDate().timeIntervalSince1970))
         //        ItemManager.shared.addPaidInfo(paidUserId: userId, price: 100)
         
     }
-    
     
     //    func setItemTableView() {
     //
@@ -47,13 +52,11 @@ class MultipleUsersGrouplViewController: UIViewController {
         let group = DispatchGroup()
         
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        //        group.enter()
-        //        firstQueue.async(group: group) {
         self.groupData?.member.forEach {
             member in
             group.enter()
             firstQueue.async(group: group) {
-                GroupManager.shared.fetchPaidItemsExpense(groupId: self.groupData?.groupId ?? "", userId: member) {
+                GroupManager.shared.fetchPaidItemsExpense(itemId: self.itemId ?? "", userId: member) {
                     [weak self] result in
                     switch result {
                     case .success(let paidItems):
@@ -69,13 +72,11 @@ class MultipleUsersGrouplViewController: UIViewController {
         }
         
         let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        //        group.enter()
-        //        secondQueue.async(group: group) {
         self.groupData?.member.forEach {
             member in
             group.enter()
             secondQueue.async(group: group) {
-                GroupManager.shared.fetchInvolvedItemsExpense(groupId: self.groupData?.groupId ?? "", userId: member) {
+                GroupManager.shared.fetchInvolvedItemsExpense(itemId: self.itemId ?? "", userId: member) {
                     [weak self] result in
                     switch result {
                     case .success(let involvedItems):
@@ -99,6 +100,17 @@ class MultipleUsersGrouplViewController: UIViewController {
                 (item) -> [ExpenseInfo] in
                     return item
             }
+            
+            paidItem.forEach {
+                item in
+                GroupManager.shared.updateMemberExpense(userId: item.userId, newExpense: item.price)
+            }
+            
+            involvedItem.forEach {
+                item in
+                GroupManager.shared.updateMemberExpense(userId: item.userId, newExpense: 0 - item.price)
+            }
+            
             print("===========paid:\(paidItem)")
             print("===========involved:\(involvedItem)")
             

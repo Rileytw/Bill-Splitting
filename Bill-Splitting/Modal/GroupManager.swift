@@ -14,17 +14,20 @@ enum Grouptype: Int {
     case group = 1
 }
 
+typealias ExpenseInfoResponse = (Result<[ExpenseInfo], Error>) -> Void
+
 class GroupManager {
     static var shared = GroupManager()
     lazy var db = Firestore.firestore()
     
-    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String]) {
+    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String], completion: @escaping (String) -> Void) {
         let ref = db.collection("group").document()
         
         let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, goupDescription: description, creator: creator, type: type, status: status, member: member)
         
         do {
             try db.collection("group").document("\(ref.documentID)").setData(from: groupData)
+            completion("\(ref.documentID)")
         } catch {
             print(error)
         }
@@ -55,34 +58,16 @@ class GroupManager {
         }
     }
     
-    func fetchPaidItemsExpense(groupId: String, userId: String, completion: @escaping (Result<[ExpenseInfo], Error>) -> Void) {
-        db.collection("item").document("pPPogrv25nTG3YYs7zVp").collection("paidInfo").whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
-            
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                
-                var paidItems: [ExpenseInfo] = []
-                
-                for document in querySnapshot!.documents {
-                    
-                    do {
-                        if let item = try document.data(as: ExpenseInfo.self, decoder: Firestore.Decoder()) {
-                            paidItems.append(item)
-                        }
-                    } catch {
-                        
-                        completion(.failure(error))
-                    }
-                }
-                
-                completion(.success(paidItems))
-            }
-        }
+    func fetchPaidItemsExpense(itemId: String, userId: String, completion: @escaping ExpenseInfoResponse) {
+        fetchItemsExpense(itemId: itemId, userId: userId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
     }
 
-    func fetchInvolvedItemsExpense(groupId: String, userId: String, completion: @escaping (Result<[ExpenseInfo], Error>) -> Void) {
-        db.collection("item").document("pPPogrv25nTG3YYs7zVp").collection("involvedInfo").whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+    func fetchInvolvedItemsExpense(itemId: String, userId: String, completion: @escaping ExpenseInfoResponse) {
+        fetchItemsExpense(itemId: itemId, userId: userId, collection: ItemExpenseType.involvedInfo.rawValue, completion: completion)
+    }
+    
+    private func fetchItemsExpense(itemId: String, userId: String, collection: String, completion: @escaping ExpenseInfoResponse) {
+        db.collection("item").document(itemId).collection(collection).whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -97,7 +82,6 @@ class GroupManager {
                             involvedItems.append(item)
                         }
                     } catch {
-                        
                         completion(.failure(error))
                     }
                 }
@@ -105,5 +89,23 @@ class GroupManager {
             }
         }
     }
-
+    
+    func addMemberExpenseData(userId: String, allExpense: Double, groupId: String) {
+        let expenseData = MemberExpense(userId: userId, allExpense: allExpense)
+        
+        do {
+            try db.collection("group").document(groupId).collection("memberExpense").document(userId).setData(from: expenseData)
+        } catch {
+            print(error)
+        }
+    }
+    
+    func updateMemberExpense(userId: String, newExpense: Double) {
+        let ref = db.collection("group").document()
+        let memberExpenseRef = db.collection("group").document("\(ref.documentID)").collection("memberExpense").document(userId)
+        
+        memberExpenseRef.updateData([
+            "allExpense": FieldValue.increment(newExpense)
+        ])
+    }
 }

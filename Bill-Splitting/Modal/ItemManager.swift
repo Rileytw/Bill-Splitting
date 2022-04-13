@@ -9,23 +9,31 @@ import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
+enum ItemExpenseType: String {
+    case paidInfo
+    case involvedInfo
+}
+
+typealias ItemDataResponse = (Result<[ItemData], Error>) -> Void
+
 class ItemManager {
     static var shared = ItemManager()
     lazy var db = Firestore.firestore()
     
-    func addItemData(groupId: String, itemName: String, itemDescription: String?, createdTime: Double) {
+    func addItemData(groupId: String, itemName: String, itemDescription: String?, createdTime: Double, completion: @escaping (String) -> Void) {
         let ref = db.collection("item").document()
         
         let itemData = ItemData(groupId: groupId, itermName: itemName, itermId: "\(ref.documentID)", itermDescription: itemDescription, createdTime: createdTime)
         
         do {
             try db.collection("item").document("\(ref.documentID)").setData(from: itemData)
+            completion("\(ref.documentID)")
         } catch {
             print(error)
         }
     }
     
-    func fetchGroupItemData(groupId: String, completion: @escaping (Result<[ItemData], Error>) -> Void) {
+    func fetchGroupItemData(groupId: String, completion: @escaping ItemDataResponse) {
         db.collection("item").whereField("group", isEqualTo: groupId).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
@@ -51,22 +59,18 @@ class ItemManager {
     }
     
     func addPaidInfo(paidUserId: String, price: Double) {
-        
-        let paidInfo = ExpenseInfo(userId: paidUserId, price: price)
-        
-        do {
-            try db.collection("item").document().collection("paidIfo").document().setData(from: paidInfo)
-        } catch {
-            print(error)
-        }
+        addItemExpenseInfo(typeUserId: paidUserId, collection: ItemExpenseType.paidInfo, price: price)
     }
     
     func addInvolvedInfo(involvedUserId: String, price: Double) {
+        addItemExpenseInfo(typeUserId: involvedUserId, collection: ItemExpenseType.involvedInfo, price: price)
+    }
     
-        let involvedInfo = ExpenseInfo(userId: involvedUserId, price: price)
+    private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double) {
+        let involvedInfo = ExpenseInfo(userId: typeUserId, price: price)
         
         do {
-            try db.collection("item").document().collection("involvedIngo").document().setData(from: involvedInfo)
+            try db.collection("item").document().collection(collection.rawValue).document().setData(from: involvedInfo)
         } catch {
             print(error)
         }

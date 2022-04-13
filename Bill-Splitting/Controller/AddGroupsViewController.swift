@@ -177,7 +177,14 @@ class AddGroupsViewController: UIViewController {
             type = 1
         }
         
-        GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: userId, type: self.type ?? 0, status: 0, member: self.member ?? [""])
+        
+        GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: userId, type: self.type ?? 0, status: 0, member: self.member ?? [""]) {
+            groupId in
+            self.member.forEach {
+                member in
+                GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+            }
+        }
         
         self.nameTextField.text? = ""
         self.descriptionTextView.text = ""
