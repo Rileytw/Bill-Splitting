@@ -19,7 +19,3 @@ struct GroupData: Codable {
     var status: Int
     var member: [String]
 }
-
-
-
-

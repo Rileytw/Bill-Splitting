@@ -54,4 +54,56 @@ class GroupManager {
             }
         }
     }
+    
+    func fetchPaidItemsExpense(groupId: String, userId: String, completion: @escaping (Result<[ExpenseInfo], Error>) -> Void) {
+        db.collection("item").document("pPPogrv25nTG3YYs7zVp").collection("paidInfo").whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var paidItems: [ExpenseInfo] = []
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let item = try document.data(as: ExpenseInfo.self, decoder: Firestore.Decoder()) {
+                            paidItems.append(item)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                
+                completion(.success(paidItems))
+            }
+        }
+    }
+
+    func fetchInvolvedItemsExpense(groupId: String, userId: String, completion: @escaping (Result<[ExpenseInfo], Error>) -> Void) {
+        db.collection("item").document("pPPogrv25nTG3YYs7zVp").collection("involvedInfo").whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var involvedItems: [ExpenseInfo] = []
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let item = try document.data(as: ExpenseInfo.self, decoder: Firestore.Decoder()) {
+                            involvedItems.append(item)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(involvedItems))
+            }
+        }
+    }
+
 }
