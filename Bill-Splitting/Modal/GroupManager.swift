@@ -24,7 +24,7 @@ class GroupManager {
         let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, goupDescription: description, creator: creator, type: type, status: status, member: member)
         
         do {
-            try db.collection("group").document().setData(from: groupData)
+            try db.collection("group").document("\(ref.documentID)").setData(from: groupData)
         } catch {
             print(error)
         }

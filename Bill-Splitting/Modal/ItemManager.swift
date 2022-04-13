@@ -19,7 +19,7 @@ class ItemManager {
         let itemData = ItemData(groupId: groupId, itermName: itemName, itermId: "\(ref.documentID)", itermDescription: itemDescription, createdTime: createdTime)
         
         do {
-            try db.collection("item").document().setData(from: itemData)
+            try db.collection("item").document("\(ref.documentID)").setData(from: itemData)
         } catch {
             print(error)
         }
