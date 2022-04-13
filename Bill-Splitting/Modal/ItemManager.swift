@@ -13,10 +13,10 @@ class ItemManager {
     static var shared = ItemManager()
     lazy var db = Firestore.firestore()
     
-    func addItemData(groupId: String, itemId: String, itemName: String, itemDescription: String?, createdTime: Double) {
+    func addItemData(groupId: String, itemName: String, itemDescription: String?, createdTime: Double) {
         let ref = db.collection("item").document()
         
-        let itemData = ItemData(groupId: groupId, itermName: itemName, itermId:  "\(ref.documentID)", itermDescription: itemDescription, createdTime: createdTime)
+        let itemData = ItemData(groupId: groupId, itermName: itemName, itermId: "\(ref.documentID)", itermDescription: itemDescription, createdTime: createdTime)
         
         do {
             try db.collection("item").document().setData(from: itemData)
@@ -47,6 +47,28 @@ class ItemManager {
                 }
                 completion(.success(items))
             }
+        }
+    }
+    
+    func addPaidInfo(paidUserId: String, price: Double) {
+        
+        let paidInfo = ExpenseInfo(userId: paidUserId, price: price)
+        
+        do {
+            try db.collection("item").document().collection("paidIfo").document().setData(from: paidInfo)
+        } catch {
+            print(error)
+        }
+    }
+    
+    func addInvolvedInfo(involvedUserId: String, price: Double) {
+    
+        let involvedInfo = ExpenseInfo(userId: involvedUserId, price: price)
+        
+        do {
+            try db.collection("item").document().collection("involvedIngo").document().setData(from: involvedInfo)
+        } catch {
+            print(error)
         }
     }
 }

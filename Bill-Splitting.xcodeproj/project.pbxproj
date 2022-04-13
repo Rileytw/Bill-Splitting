@@ -41,6 +41,8 @@
 		35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E42806749D00508EAF /* GroupsViewController.swift */; };
 		35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */; };
 		35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */; };
+		35FF63ED2806AAD000508EAF /* MultipleUsersGrouplViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63EC2806AAD000508EAF /* MultipleUsersGrouplViewController.swift */; };
+		35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63EE2806B24D00508EAF /* GroupDetailView.swift */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -82,6 +84,8 @@
 		35FF63E42806749D00508EAF /* GroupsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsViewController.swift; sourceTree = "<group>"; };
 		35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsTableViewCell.swift; sourceTree = "<group>"; };
 		35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupsTableViewCell.xib; sourceTree = "<group>"; };
+		35FF63EC2806AAD000508EAF /* MultipleUsersGrouplViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleUsersGrouplViewController.swift; sourceTree = "<group>"; };
+		35FF63EE2806B24D00508EAF /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -164,6 +168,7 @@
 				35FF63D428055F6500508EAF /* FriendListViewController.swift */,
 				35FF63D62805626800508EAF /* FriendInvitationViewController.swift */,
 				35FF63E42806749D00508EAF /* GroupsViewController.swift */,
+				35FF63EC2806AAD000508EAF /* MultipleUsersGrouplViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -189,6 +194,7 @@
 				35FF63E028066F8800508EAF /* GroupsView.swift */,
 				35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */,
 				35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */,
+				35FF63EE2806B24D00508EAF /* GroupDetailView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -356,7 +362,9 @@
 				35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
+				35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
+				35FF63ED2806AAD000508EAF /* MultipleUsersGrouplViewController.swift in Sources */,
 				350A33482800450000201E40 /* AddGroupsViewController.swift in Sources */,
 				350A33442800450000201E40 /* AppDelegate.swift in Sources */,
 				350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */,

@@ -20,9 +20,6 @@ struct GroupData: Codable {
     var member: [String]
 }
 
-//struct Member: Codable {
-//    var userId: String
-//}
 
 
 

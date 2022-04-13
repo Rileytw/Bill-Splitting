@@ -79,4 +79,12 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         
         return groupsCell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let multipleUsersGroupViewController =
+                storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
+        multipleUsersGroupViewController.groupData = groups[indexPath.row]
+        self.show(multipleUsersGroupViewController, sender: nil)
+    }
 }
