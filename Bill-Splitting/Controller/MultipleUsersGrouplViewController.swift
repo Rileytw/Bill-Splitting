@@ -11,7 +11,9 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     let groupDetailView = GroupDetailView(frame: CGRect(x: 0, y: 150, width: UIScreen.main.bounds.width, height: 200))
     //    let itemTableView = UITableView()
-    var groupData: GroupData?
+    var groupData: GroupData?    
+    var memberName: [String]? = []
+    
     var paidItem: [[ExpenseInfo]] = []
     var involvedItem: [[ExpenseInfo]] = []
     var itemId: String? = "rjzUwVdigPGUnpy4yvIf"
@@ -20,6 +22,22 @@ class MultipleUsersGrouplViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setGroupDetailView()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        groupData?.member.forEach {
+            member in
+            UserManager.shared.fetchUserData(friendId: member) {
+                [weak self] result in
+                switch result {
+                case .success(let userData):
+                    self?.memberName?.append(userData.userName)
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                }
+            }
+        }
     }
     
     func setGroupDetailView() {
@@ -39,9 +57,16 @@ class MultipleUsersGrouplViewController: UIViewController {
 //            self.itemId = itemId
 //            self.countPersonalExpense()
 //        }
+        
         countPersonalExpense()
         //        ItemManager.shared.addPaidInfo(paidUserId: userId, price: 100)
         
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
+        addItemViewController.memberId = groupData?.member
+        addItemViewController.memberName = memberName
+        addItemViewController.groupData = groupData
+        self.present(addItemViewController, animated: true, completion: nil)
     }
     
     //    func setItemTableView() {

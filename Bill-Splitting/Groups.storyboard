@@ -40,6 +40,21 @@
             </objects>
             <point key="canvasLocation" x="1968.1159420289857" y="65.625"/>
         </scene>
+        <!--Add Item View Controller-->
+        <scene sceneID="JbW-zg-xvc">
+            <objects>
+                <viewController storyboardIdentifier="AddItemViewController" id="UhO-1S-Pi8" customClass="AddItemViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="5g6-Ah-md1">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="KxE-nv-czp"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="l0A-y3-cZg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2996" y="66"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="zpc-KT-PRR">
             <objects>
