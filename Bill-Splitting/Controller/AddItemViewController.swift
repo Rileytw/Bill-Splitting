@@ -120,9 +120,14 @@ class AddItemViewController: UIViewController {
             self.itemId = itemId
             
             ItemManager.shared.addPaidInfo(paidUserId: self.paidId ?? "", price: self.paidPrice ?? 0, itemId: itemId)
-//
-//            ItemManager.shared.addInvolvedInfo(involvedUserId: <#T##String#>, price: <#T##Double#>, itemId: itemId)
+
+            for user in 0..<self.involvedExpenseData.count {
+                ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
+                                                   price: self.involvedExpenseData[user].price,
+                                                   itemId: itemId)
+            }
         }
+        self.dismiss(animated: false, completion: nil)
     }
 }
 
