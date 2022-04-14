@@ -126,8 +126,18 @@ class AddItemViewController: UIViewController {
                                                    price: self.involvedExpenseData[user].price,
                                                    itemId: itemId)
             }
+            self.countPersonalExpense()
         }
         self.dismiss(animated: false, completion: nil)
+    }
+    
+    func countPersonalExpense() {
+        
+        GroupManager.shared.updateMemberExpense(userId: self.paidId ?? "", newExpense: self.paidPrice ?? 0, groupId: groupData?.groupId ?? "")
+        
+        for user in 0..<self.involvedExpenseData.count {
+            GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId, newExpense: 0 - self.involvedExpenseData[user].price, groupId: groupData?.groupId ?? "")
+        }
     }
 }
 
@@ -199,15 +209,15 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             selectedIndexs.remove(at: index)
             involvedMemberName.remove(at: index)
             involvedExpenseData.remove(at: index)
-            print("remove: \(involvedExpenseData)")
+//            print("remove: \(involvedExpenseData)")
         } else {
             selectedIndexs.append(indexPath.row)
             involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
-//            involvedExpenseData.append([memberData?[indexPath.row].userId: ])
+            
             var involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
             involvedExpenseData.append(involedExpense)
-            print("price: \(involvedPrice)")
-            print("involvedData: \(involvedExpenseData)")
+//            print("price: \(involvedPrice)")
+//            print("involvedData: \(involvedExpenseData)")
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
@@ -226,10 +236,10 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
             
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
-                print("involvedPrice:\(involvedPrice)")
+//                print("involvedPrice:\(involvedPrice)")
             }
             
         }
-        print("involvedData = \(involvedExpenseData)")
+//        print("involvedData = \(involvedExpenseData)")
     }
 }

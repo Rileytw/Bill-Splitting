@@ -23,6 +23,11 @@ class MultipleUsersGrouplViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setGroupDetailView()
+        
+//        GroupManager.shared.listenForItems(groupId: groupData?.groupId ?? "") {
+//            self.countPersonalExpense()
+//            print("Listen~~~~~~~~~~~~~~~~~~~")
+//        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -60,7 +65,7 @@ class MultipleUsersGrouplViewController: UIViewController {
 //            self.countPersonalExpense()
 //        }
         
-        countPersonalExpense()
+//        countPersonalExpense()
         //        ItemManager.shared.addPaidInfo(paidUserId: userId, price: 100)
         
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
@@ -77,73 +82,78 @@ class MultipleUsersGrouplViewController: UIViewController {
     //    }
     
 //    Listen itemCollection, if changed, call function
-    func countPersonalExpense() {
-        let group = DispatchGroup()
-        
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        self.groupData?.member.forEach {
-            member in
-            group.enter()
-            firstQueue.async(group: group) {
-                GroupManager.shared.fetchPaidItemsExpense(itemId: self.itemId ?? "", userId: member) {
-                    [weak self] result in
-                    switch result {
-                    case .success(let paidItems):
-                        self?.paidItem.append(paidItems)
-                        group.leave()
-                    case .failure(let error):
-                        print("Error decoding userData: \(error)")
-                        group.leave()
-                    }
-                }
-                //                group.leave()
-            }
-        }
-        
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        self.groupData?.member.forEach {
-            member in
-            group.enter()
-            secondQueue.async(group: group) {
-                GroupManager.shared.fetchInvolvedItemsExpense(itemId: self.itemId ?? "", userId: member) {
-                    [weak self] result in
-                    switch result {
-                    case .success(let involvedItems):
-                        self?.involvedItem.append(involvedItems)
-                        group.leave()
-                    case .failure(let error):
-                        print("Error decoding userData: \(error)")
-                        group.leave()
-                    }
-                }
-                //                group.leave()
-            }
-        }
-        
-        group.notify(queue: DispatchQueue.main) {
-            
-            let paidItem = self.paidItem.flatMap { (item) -> [ExpenseInfo] in
-                return item
-            }
-            let involvedItem = self.involvedItem.flatMap {
-                (item) -> [ExpenseInfo] in
-                    return item
-            }
-            
-            paidItem.forEach {
-                item in
-                GroupManager.shared.updateMemberExpense(userId: item.userId, newExpense: item.price)
-            }
-            
-            involvedItem.forEach {
-                item in
-                GroupManager.shared.updateMemberExpense(userId: item.userId, newExpense: 0 - item.price)
-            }
-            
-            print("===========paid:\(paidItem)")
-            print("===========involved:\(involvedItem)")
-            
-        }
-    }
+//    func countPersonalExpense() {
+//        let group = DispatchGroup()
+//
+//        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+//        self.groupData?.member.forEach {
+//            member in
+//            group.enter()
+//            firstQueue.async(group: group) {
+//                GroupManager.shared.fetchPaidItemsExpense(itemId: self.itemId ?? "", userId: member) {
+//                    [weak self] result in
+//                    switch result {
+//                    case .success(let paidItems):
+//                        self?.paidItem.append(paidItems)
+//                        group.leave()
+//                    case .failure(let error):
+//                        print("Error decoding userData: \(error)")
+//                        group.leave()
+//                    }
+//                }
+//                //                group.leave()
+//            }
+//        }
+//
+//        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+//        self.groupData?.member.forEach {
+//            member in
+//            group.enter()
+//            secondQueue.async(group: group) {
+//                GroupManager.shared.fetchInvolvedItemsExpense(itemId: self.itemId ?? "", userId: member) {
+//                    [weak self] result in
+//                    switch result {
+//                    case .success(let involvedItems):
+//                        self?.involvedItem.append(involvedItems)
+//                        group.leave()
+//                    case .failure(let error):
+//                        print("Error decoding userData: \(error)")
+//                        group.leave()
+//                    }
+//                }
+//                //                group.leave()
+//            }
+//        }
+//
+//        group.notify(queue: DispatchQueue.main) {
+//            guard let groupData = self.groupData else { return }
+//
+//            let paidItem = self.paidItem.flatMap { (item) -> [ExpenseInfo] in
+//                return item
+//            }
+//            let involvedItem = self.involvedItem.flatMap {
+//                (item) -> [ExpenseInfo] in
+//                    return item
+//            }
+//
+//            paidItem.forEach {
+//                item in
+//                GroupManager.shared.updateMemberExpense(userId: item.userId, newExpense: item.price, groupId: groupData.groupId)
+//                print("itemprice: \(item.price)")
+//                print("userId:\(item.userId)")
+//            }
+//
+//            involvedItem.forEach {
+//                item in
+//                GroupManager.shared.updateMemberExpense(userId: item.userId, newExpense: 0 - item.price, groupId: groupData.groupId)
+//                print("itemprice: \(0 - item.price)")
+//                print("userId:\(item.userId)")
+//            }
+////
+////            print("===========paid:\(paidItem)")
+////            print("===========involved:\(involvedItem)")
+////
+//        }
+//    }
     
 }

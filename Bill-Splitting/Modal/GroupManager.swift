@@ -100,12 +100,24 @@ class GroupManager {
         }
     }
     
-    func updateMemberExpense(userId: String, newExpense: Double) {
+    func updateMemberExpense(userId: String, newExpense: Double, groupId: String) {
         let ref = db.collection("group").document()
-        let memberExpenseRef = db.collection("group").document("\(ref.documentID)").collection("memberExpense").document(userId)
+        let memberExpenseRef = db.collection("group").document(groupId).collection("memberExpense").document(userId)
         
         memberExpenseRef.updateData([
             "allExpense": FieldValue.increment(newExpense)
         ])
     }
+    
+    func listenForItems(groupId: String, completion: @escaping () -> Void) {
+            db.collection("item")
+                .whereField("groupId", isEqualTo: groupId)
+                .addSnapshotListener { querySnapshot, error in
+                    guard let snapshot = querySnapshot else {
+                        print("Error retreiving snapshots \(error!)")
+                        return
+                    }
+                    completion()
+                }
+        }
 }
