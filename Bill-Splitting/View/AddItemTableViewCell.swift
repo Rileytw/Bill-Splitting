@@ -9,15 +9,36 @@ import UIKit
 
 class AddItemTableViewCell: UITableViewCell {
 
+    @IBOutlet var memberName: UILabel!
+    @IBOutlet var selectedButton: UIButton!
+    @IBOutlet var priceTextField: UITextField! {
+        didSet {
+            priceTextField.delegate = self
+        }
+    }
+        
+    weak var delegate: AddItemTableViewCellDelegate?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
+        selectedButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        priceTextField.isHidden = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
     
+}
+//
+extension AddItemTableViewCell: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        delegate?.endEditing(self)
+    }
+}
+
+protocol AddItemTableViewCellDelegate: AnyObject {
+    func endEditing(_ cell: AddItemTableViewCell)
 }

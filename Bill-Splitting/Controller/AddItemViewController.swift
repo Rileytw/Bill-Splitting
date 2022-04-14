@@ -14,10 +14,27 @@ class AddItemViewController: UIViewController {
     var typePickerViewData = ["平分", "按比例", "自訂"]
     var memberPickerView = BasePickerViewInTextField(frame: .zero)
     let addButton = UIButton()
+    let tableView = UITableView()
     
     var groupData: GroupData? 
     var memberId: [String]?
-    var memberName: [String]? = []
+//    var memberName: [String]? = [] {
+//        didSet {
+//            tableView.reloadData()
+//        }
+//    }
+    var memberData: [UserData]? = []
+    
+    var itemId: String?
+    var paidItem: [[ExpenseInfo]] = []
+    var involvedItem: [[ExpenseInfo]] = []
+    var paidId: String?
+    var paidPrice: Double?
+    var involvedExpenseData: [ExpenseInfo] = []
+    var involvedPrice: Double?
+    
+    var selectedIndexs = [Int]()
+    var involvedMemberName: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +43,7 @@ class AddItemViewController: UIViewController {
         setTypePickerView()
         setmemberPickerView()
         setAddButton()
+        setTableView()
     }
 
     func setAddItemView() {
@@ -47,7 +65,7 @@ class AddItemViewController: UIViewController {
 
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
-        typePickerView.pickerViewData = self.typePickerViewData
+        typePickerView.textField.placeholder = "請選擇分帳方式"
         
         typePickerView.pickerView.tag = 0
     }
@@ -62,7 +80,7 @@ class AddItemViewController: UIViewController {
 
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
-        memberPickerView.pickerViewData = self.memberName ?? [""]
+        memberPickerView.textField.placeholder = "請選擇付款人"
         
         memberPickerView.pickerView.tag = 1
     }
@@ -76,6 +94,35 @@ class AddItemViewController: UIViewController {
         addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
         addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         addButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        
+        addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
+    }
+    
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: memberPickerView.bottomAnchor, constant: 20).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: 10).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        tableView.register(UINib(nibName: String(describing: AddItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddItemTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+    }
+    
+    @objc func pressAddButton() {
+        ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
+                                       itemName: addItemView.itemNameTextField.text ?? "",
+                                       itemDescription: "",
+                                       createdTime: Double(NSDate().timeIntervalSince1970)) {
+            itemId in
+            self.itemId = itemId
+            
+            ItemManager.shared.addPaidInfo(paidUserId: self.paidId ?? "", price: self.paidPrice ?? 0, itemId: itemId)
+//
+//            ItemManager.shared.addInvolvedInfo(involvedUserId: <#T##String#>, price: <#T##Double#>, itemId: itemId)
+        }
     }
 }
 
@@ -84,7 +131,7 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         if pickerView.tag == 0 {
             return typePickerViewData.count
         } else {
-            return memberName?.count ?? 1
+            return memberData?.count ?? 1
         }
     }
     
@@ -96,7 +143,7 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         if pickerView.tag == 0 {
             return typePickerViewData[row]
         } else {
-            return memberName?[row]
+            return memberData?[row].userName
         }
     }
     
@@ -104,7 +151,80 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         if pickerView.tag == 0 {
             return typePickerView.textField.text = typePickerViewData[row]
         } else {
-            return memberPickerView.textField.text = memberName?[row]
+            paidId = memberData?[row].userId
+            paidPrice = Double(addItemView.priceTextField.text ?? "0")
+//            print("paidId: \(paidId), paidPrice: \(paidPrice)")
+            return memberPickerView.textField.text = memberData?[row].userName
         }
+    }
+}
+
+extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return memberData?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: AddItemTableViewCell.self),
+            for: indexPath
+        )
+        
+        guard let memberCell = cell as? AddItemTableViewCell else { return cell }
+        
+        memberCell.memberName.text = memberData?[indexPath.row].userName
+        
+        if selectedIndexs.contains(indexPath.row) {
+            memberCell.selectedButton.isSelected = true
+            memberCell.priceTextField.isHidden = false
+        } else {
+            cell.accessoryType = .none
+            memberCell.selectedButton.isSelected = false
+            memberCell.priceTextField.isHidden = true
+        }
+        
+        memberCell.delegate = self
+        
+        return memberCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if let index = selectedIndexs.index(of: indexPath.row) {
+            selectedIndexs.remove(at: index)
+            involvedMemberName.remove(at: index)
+            involvedExpenseData.remove(at: index)
+            print("remove: \(involvedExpenseData)")
+        } else {
+            selectedIndexs.append(indexPath.row)
+            involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
+//            involvedExpenseData.append([memberData?[indexPath.row].userId: ])
+            var involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
+            involvedExpenseData.append(involedExpense)
+            print("price: \(involvedPrice)")
+            print("involvedData: \(involvedExpenseData)")
+        }
+        self.tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+}
+
+extension AddItemViewController: AddItemTableViewCellDelegate {
+    func endEditing(_ cell: AddItemTableViewCell) {
+        
+        involvedPrice = Double(cell.priceTextField.text ?? "0")
+        
+        let name = cell.memberName.text
+        var selectedUser = memberData?.filter { $0.userName == name }
+        guard let id = selectedUser?[0].userId else { return }
+                
+        for index in 0..<involvedExpenseData.count {
+            
+            if involvedExpenseData[index].userId == id {
+                involvedExpenseData[index].price = involvedPrice ?? 0
+                print("involvedPrice:\(involvedPrice)")
+            }
+            
+        }
+        print("involvedData = \(involvedExpenseData)")
     }
 }

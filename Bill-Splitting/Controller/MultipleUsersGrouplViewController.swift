@@ -13,6 +13,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     //    let itemTableView = UITableView()
     var groupData: GroupData?    
     var memberName: [String]? = []
+    var userData: [UserData]? = []
     
     var paidItem: [[ExpenseInfo]] = []
     var involvedItem: [[ExpenseInfo]] = []
@@ -33,6 +34,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 switch result {
                 case .success(let userData):
                     self?.memberName?.append(userData.userName)
+                    self?.userData?.append(userData)
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -64,7 +66,8 @@ class MultipleUsersGrouplViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
         addItemViewController.memberId = groupData?.member
-        addItemViewController.memberName = memberName
+//        addItemViewController.memberName = memberName
+        addItemViewController.memberData = userData
         addItemViewController.groupData = groupData
         self.present(addItemViewController, animated: true, completion: nil)
     }
@@ -73,6 +76,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     //
     //    }
     
+//    Listen itemCollection, if changed, call function
     func countPersonalExpense() {
         let group = DispatchGroup()
         

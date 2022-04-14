@@ -58,19 +58,19 @@ class ItemManager {
         }
     }
     
-    func addPaidInfo(paidUserId: String, price: Double) {
-        addItemExpenseInfo(typeUserId: paidUserId, collection: ItemExpenseType.paidInfo, price: price)
+    func addPaidInfo(paidUserId: String, price: Double, itemId: String) {
+        addItemExpenseInfo(typeUserId: paidUserId, collection: ItemExpenseType.paidInfo, price: price, itemId: itemId)
     }
     
-    func addInvolvedInfo(involvedUserId: String, price: Double) {
-        addItemExpenseInfo(typeUserId: involvedUserId, collection: ItemExpenseType.involvedInfo, price: price)
+    func addInvolvedInfo(involvedUserId: String, price: Double, itemId: String) {
+        addItemExpenseInfo(typeUserId: involvedUserId, collection: ItemExpenseType.involvedInfo, price: price, itemId: itemId)
     }
     
-    private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double) {
+    private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double, itemId: String) {
         let involvedInfo = ExpenseInfo(userId: typeUserId, price: price)
         
         do {
-            try db.collection("item").document().collection(collection.rawValue).document().setData(from: involvedInfo)
+            try db.collection("item").document(itemId).collection(collection.rawValue).document().setData(from: involvedInfo)
         } catch {
             print(error)
         }
