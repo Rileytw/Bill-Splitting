@@ -45,7 +45,17 @@ class AddItemViewController: UIViewController {
         setAddButton()
         setTableView()
     }
-
+    
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        tabBarController?.tabBar.isHidden = true
+//        navigationController?.setNavigationBarHidden(true, animated: animated)
+//    }
+//
+//    override func viewWillDisappear(_ animated: Bool) {
+//        navigationController?.setNavigationBarHidden(false, animated: animated)
+//    }
+    
     func setAddItemView() {
         view.addSubview(addItemView)
         addItemView.translatesAutoresizingMaskIntoConstraints = false
@@ -129,6 +139,7 @@ class AddItemViewController: UIViewController {
             self.countPersonalExpense()
         }
         self.dismiss(animated: false, completion: nil)
+//        navigationController?.popViewController(animated: true)
     }
     
     func countPersonalExpense() {

@@ -40,7 +40,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         setItemTableView()
         
 //        GroupManager.shared.listenForItems(groupId: groupData?.groupId ?? "") {
-//            self.countPersonalExpense()
+//            self.getItemData()
 //            print("Listen~~~~~~~~~~~~~~~~~~~")
 //        }
     }
@@ -81,6 +81,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         addItemViewController.memberData = userData
         addItemViewController.groupData = groupData
         self.present(addItemViewController, animated: true, completion: nil)
+//        self.show(addItemViewController, sender: nil)
     }
     
     func setItemTableView() {
@@ -116,34 +117,62 @@ class MultipleUsersGrouplViewController: UIViewController {
     }
     
     func getItemDetail(itemId: String) {
-        
-        ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) {
-            [weak self] result in
-            switch result {
-            case .success(let items):
-                self?.paidItem.append(items)
-                print("=====[pai\(self?.paidItem)")
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+        let semaphore = DispatchSemaphore(value: 0)
+        let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
+
+        queue.async {
+            ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) {
+                [weak self] result in
+                switch result {
+                case .success(let items):
+                    self?.paidItem.append(items)
+                    semaphore.signal()
+                    print("=====[pai\(self?.paidItem)")
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                }
+            }
+
+            semaphore.wait()
+
+            ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) {
+                [weak self] result in
+                switch result {
+                case .success(let items):
+                    self?.involvedItem.append(items)
+                    print("=====inv\(self?.involvedItem)")
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                }
             }
         }
         
-        ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) {
-            [weak self] result in
-            switch result {
-            case .success(let items):
-                self?.involvedItem.append(items)
-                print("=====inv\(self?.involvedItem)")
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-            }
-        }
+//        ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) {
+//            [weak self] result in
+//            switch result {
+//            case .success(let items):
+//                self?.paidItem.append(items)
+//                print("=====[pai\(self?.paidItem)")
+//            case .failure(let error):
+//                print("Error decoding userData: \(error)")
+//            }
+//        }
+//        ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) {
+//            [weak self] result in
+//            switch result {
+//            case .success(let items):
+//                self?.involvedItem.append(items)
+//                print("=====inv\(self?.involvedItem)")
+//            case .failure(let error):
+//                print("Error decoding userData: \(error)")
+//            }
+//        }
     }
 }
 
 extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return paidItem.count ?? 0
+        return involvedItem.count ?? 0
 //        return 1
     }
     
