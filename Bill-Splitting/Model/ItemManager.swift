@@ -1,5 +1,5 @@
 //
-//  ItermManager.swift
+//  ItemManager.swift
 //  Bill-Splitting
 //
 //  Created by 雷翎 on 2022/4/13.
@@ -23,7 +23,7 @@ class ItemManager {
     func addItemData(groupId: String, itemName: String, itemDescription: String?, createdTime: Double, completion: @escaping (String) -> Void) {
         let ref = db.collection("item").document()
         
-        let itemData = ItemData(groupId: groupId, itermName: itemName, itermId: "\(ref.documentID)", itermDescription: itemDescription, createdTime: createdTime)
+        let itemData = ItemData(groupId: groupId, itemName: itemName, itemId: "\(ref.documentID)", itemDescription: itemDescription, createdTime: createdTime)
         
         do {
             try db.collection("item").document("\(ref.documentID)").setData(from: itemData)
@@ -34,7 +34,7 @@ class ItemManager {
     }
     
     func fetchGroupItemData(groupId: String, completion: @escaping ItemDataResponse) {
-        db.collection("item").whereField("group", isEqualTo: groupId).getDocuments() { (querySnapshot, error) in
+        db.collection("item").whereField("groupId", isEqualTo: groupId).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -54,6 +54,38 @@ class ItemManager {
                     }
                 }
                 completion(.success(items))
+            }
+        }
+    }
+    
+    func fetchPaidItemsExpense(itemId: String, completion: @escaping ExpenseInfoResponse) {
+        fetchItemsExpense(itemId: itemId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
+    }
+
+    func fetchInvolvedItemsExpense(itemId: String, completion: @escaping ExpenseInfoResponse) {
+        fetchItemsExpense(itemId: itemId, collection: ItemExpenseType.involvedInfo.rawValue, completion: completion)
+    }
+    
+    private func fetchItemsExpense(itemId: String, collection: String, completion: @escaping ExpenseInfoResponse) {
+        db.collection("item").document(itemId).collection(collection).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var involvedItems: [ExpenseInfo] = []
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let item = try document.data(as: ExpenseInfo.self, decoder: Firestore.Decoder()) {
+                            involvedItems.append(item)
+                        }
+                    } catch {
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(involvedItems))
             }
         }
     }

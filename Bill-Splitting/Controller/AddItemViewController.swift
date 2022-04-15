@@ -133,10 +133,14 @@ class AddItemViewController: UIViewController {
     
     func countPersonalExpense() {
         
-        GroupManager.shared.updateMemberExpense(userId: self.paidId ?? "", newExpense: self.paidPrice ?? 0, groupId: groupData?.groupId ?? "")
+        GroupManager.shared.updateMemberExpense(userId: self.paidId ?? "",
+                                                newExpense: self.paidPrice ?? 0,
+                                                groupId: groupData?.groupId ?? "")
         
         for user in 0..<self.involvedExpenseData.count {
-            GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId, newExpense: 0 - self.involvedExpenseData[user].price, groupId: groupData?.groupId ?? "")
+            GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
+                                                    newExpense: 0 - self.involvedExpenseData[user].price,
+                                                    groupId: groupData?.groupId ?? "")
         }
     }
 }

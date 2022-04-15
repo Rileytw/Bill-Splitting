@@ -10,19 +10,33 @@ import UIKit
 class MultipleUsersGrouplViewController: UIViewController {
     
     let groupDetailView = GroupDetailView(frame: CGRect(x: 0, y: 150, width: UIScreen.main.bounds.width, height: 200))
-    //    let itemTableView = UITableView()
-    var groupData: GroupData?    
-    var memberName: [String]? = []
-    var userData: [UserData]? = []
+    let itemTableView = UITableView()
+    var groupData: GroupData? {
+        didSet {
+            getItemData()
+        }
+    }
+    var memberName: [String] = []
+    var userData: [UserData] = []
+    var itemData: [ItemData] = []
     
-    var paidItem: [[ExpenseInfo]] = []
-    var involvedItem: [[ExpenseInfo]] = []
-    var itemId: String? = "rjzUwVdigPGUnpy4yvIf"
+    var paidItem: [[ExpenseInfo]] = []  {
+        didSet {
+            itemTableView.reloadData()
+        }
+    }
+    var involvedItem: [[ExpenseInfo]] = []  {
+        didSet {
+            itemTableView.reloadData()
+        }
+    }
+    
     var expense: Double?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setGroupDetailView()
+        setItemTableView()
         
 //        GroupManager.shared.listenForItems(groupId: groupData?.groupId ?? "") {
 //            self.countPersonalExpense()
@@ -38,8 +52,8 @@ class MultipleUsersGrouplViewController: UIViewController {
                 [weak self] result in
                 switch result {
                 case .success(let userData):
-                    self?.memberName?.append(userData.userName)
-                    self?.userData?.append(userData)
+                    self?.memberName.append(userData.userName)
+                    self?.userData.append(userData)
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -59,15 +73,6 @@ class MultipleUsersGrouplViewController: UIViewController {
     }
     
     @objc func pressAddItem() {
-//        ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "", itemName: "飲料", itemDescription: "", createdTime: Double(NSDate().timeIntervalSince1970)) {
-//            itemId in
-//            self.itemId = itemId
-//            self.countPersonalExpense()
-//        }
-        
-//        countPersonalExpense()
-        //        ItemManager.shared.addPaidInfo(paidUserId: userId, price: 100)
-        
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
         addItemViewController.memberId = groupData?.member
@@ -77,83 +82,99 @@ class MultipleUsersGrouplViewController: UIViewController {
         self.present(addItemViewController, animated: true, completion: nil)
     }
     
-    //    func setItemTableView() {
-    //
-    //    }
+        func setItemTableView() {
+            self.view.addSubview(itemTableView)
+            itemTableView.translatesAutoresizingMaskIntoConstraints = false
+            itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 20).isActive = true
+            itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: tabBarController?.tabBar.frame.size.height ?? 20).isActive = true
+            itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+            
+            itemTableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
+            itemTableView.dataSource = self
+            itemTableView.delegate = self
+        }
     
-//    Listen itemCollection, if changed, call function
-//    func countPersonalExpense() {
-//        let group = DispatchGroup()
-//
-//        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-//        self.groupData?.member.forEach {
-//            member in
-//            group.enter()
-//            firstQueue.async(group: group) {
-//                GroupManager.shared.fetchPaidItemsExpense(itemId: self.itemId ?? "", userId: member) {
-//                    [weak self] result in
-//                    switch result {
-//                    case .success(let paidItems):
-//                        self?.paidItem.append(paidItems)
-//                        group.leave()
-//                    case .failure(let error):
-//                        print("Error decoding userData: \(error)")
-//                        group.leave()
-//                    }
-//                }
-//                //                group.leave()
-//            }
-//        }
-//
-//        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-//        self.groupData?.member.forEach {
-//            member in
-//            group.enter()
-//            secondQueue.async(group: group) {
-//                GroupManager.shared.fetchInvolvedItemsExpense(itemId: self.itemId ?? "", userId: member) {
-//                    [weak self] result in
-//                    switch result {
-//                    case .success(let involvedItems):
-//                        self?.involvedItem.append(involvedItems)
-//                        group.leave()
-//                    case .failure(let error):
-//                        print("Error decoding userData: \(error)")
-//                        group.leave()
-//                    }
-//                }
-//                //                group.leave()
-//            }
-//        }
-//
-//        group.notify(queue: DispatchQueue.main) {
-//            guard let groupData = self.groupData else { return }
-//
-//            let paidItem = self.paidItem.flatMap { (item) -> [ExpenseInfo] in
-//                return item
-//            }
-//            let involvedItem = self.involvedItem.flatMap {
-//                (item) -> [ExpenseInfo] in
-//                    return item
-//            }
-//
-//            paidItem.forEach {
-//                item in
-//                GroupManager.shared.updateMemberExpense(userId: item.userId, newExpense: item.price, groupId: groupData.groupId)
-//                print("itemprice: \(item.price)")
-//                print("userId:\(item.userId)")
-//            }
-//
-//            involvedItem.forEach {
-//                item in
-//                GroupManager.shared.updateMemberExpense(userId: item.userId, newExpense: 0 - item.price, groupId: groupData.groupId)
-//                print("itemprice: \(0 - item.price)")
-//                print("userId:\(item.userId)")
-//            }
-////
-////            print("===========paid:\(paidItem)")
-////            print("===========involved:\(involvedItem)")
-////
-//        }
-//    }
+    func getItemData() {
+        ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") {
+            [weak self] result in
+            switch result {
+            case .success(let items):
+                self?.itemData = items
+                items.forEach {
+                    item in
+                    self?.getItemDetail(itemId: item.itemId)
+                }
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
+        
+    }
     
+    func getItemDetail(itemId: String) {
+        
+        ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) {
+            [weak self] result in
+            switch result {
+            case .success(let items):
+                self?.paidItem.append(items)
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
+        
+        ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) {
+            [weak self] result in
+            switch result {
+            case .success(let items):
+                self?.involvedItem.append(items)
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
+
+    }
+}
+
+extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return paidItem.count ?? 0
+//        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: ItemTableViewCell.self),
+            for: indexPath
+        )
+        
+        guard let itemsCell = cell as? ItemTableViewCell else { return cell }
+
+        var item = itemData[indexPath.row]
+        var paid = paidItem[indexPath.row]
+        
+        let timeStamp = item.createdTime ?? 0
+        let timeInterval = TimeInterval(timeStamp)
+        let date = Date(timeIntervalSince1970: timeInterval)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
+        let time = dateFormatter.string(from: date)
+        
+//        print("priceeeee:\(paid.price)")
+        
+        itemsCell.createItemCell(time: time,
+                                 name: item.itemName ?? "",
+                                 description: PaidDescription.paid,
+                                 price: "110")
+        
+        
+//        itemsCell.createItemCell(time: "time",
+//                                 name: "itemName",
+//                                 description: PaidDescription.paid,
+//                                 price: "220")
+//        String(paidItem[indexPath.row].price)
+        
+        return itemsCell
+    }
 }

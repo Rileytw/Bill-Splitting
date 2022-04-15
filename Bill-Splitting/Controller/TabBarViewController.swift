@@ -27,8 +27,7 @@ private enum Tab {
         }
         
         viewController.tabBarItem = tabBarItem()
-//        viewController.tabBarItem
-        
+
         return viewController
     }
     

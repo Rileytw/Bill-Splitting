@@ -33,8 +33,8 @@ class AddItemView: UIView {
     
     func setLabel() {
         createdTimeLabel.frame = CGRect(x: 20, y: 10, width: UIScreen.main.bounds.width/4, height: 60)
-        createdTimeLabel.text = "新增時間"
-        addSubview(createdTimeLabel)
+//        createdTimeLabel.text = "新增時間"
+//        addSubview(createdTimeLabel)
         
         itemName.frame = CGRect(x: 20, y: 30, width: UIScreen.main.bounds.width/3, height: 60)
         itemName.text = "項目名稱"
