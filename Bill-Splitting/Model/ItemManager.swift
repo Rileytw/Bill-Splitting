@@ -34,7 +34,7 @@ class ItemManager {
     }
     
     func fetchGroupItemData(groupId: String, completion: @escaping ItemDataResponse) {
-        db.collection("item").whereField("groupId", isEqualTo: groupId).getDocuments() { (querySnapshot, error) in
+        db.collection("item").whereField("groupId", isEqualTo: groupId).order(by: "createdTime", descending: true).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))

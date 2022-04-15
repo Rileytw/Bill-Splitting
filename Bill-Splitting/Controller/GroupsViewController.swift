@@ -32,7 +32,7 @@ class GroupsViewController: UIViewController {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: groupsView.bottomAnchor, constant: 20).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: tabBarController?.tabBar.frame.size.height ?? 20).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         

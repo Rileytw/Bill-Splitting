@@ -11,6 +11,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     let groupDetailView = GroupDetailView(frame: CGRect(x: 0, y: 150, width: UIScreen.main.bounds.width, height: 200))
     let itemTableView = UITableView()
+    
     var groupData: GroupData? {
         didSet {
             getItemData()
@@ -82,18 +83,19 @@ class MultipleUsersGrouplViewController: UIViewController {
         self.present(addItemViewController, animated: true, completion: nil)
     }
     
-        func setItemTableView() {
-            self.view.addSubview(itemTableView)
-            itemTableView.translatesAutoresizingMaskIntoConstraints = false
-            itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 20).isActive = true
-            itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: tabBarController?.tabBar.frame.size.height ?? 20).isActive = true
-            itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-            itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-            
-            itemTableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
-            itemTableView.dataSource = self
-            itemTableView.delegate = self
-        }
+    func setItemTableView() {
+        self.view.addSubview(itemTableView)
+        itemTableView.translatesAutoresizingMaskIntoConstraints = false
+        itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 100).isActive = true
+        itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
+
+        itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        itemTableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
+        itemTableView.dataSource = self
+        itemTableView.delegate = self
+    }
     
     func getItemData() {
         ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") {
@@ -109,7 +111,8 @@ class MultipleUsersGrouplViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
-        
+//        print("=====\(self.paidItem.count)")
+//        print("=====\(self.involvedItem.count)")
     }
     
     func getItemDetail(itemId: String) {
@@ -119,6 +122,7 @@ class MultipleUsersGrouplViewController: UIViewController {
             switch result {
             case .success(let items):
                 self?.paidItem.append(items)
+                print("=====[pai\(self?.paidItem)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -129,11 +133,11 @@ class MultipleUsersGrouplViewController: UIViewController {
             switch result {
             case .success(let items):
                 self?.involvedItem.append(items)
+                print("=====inv\(self?.involvedItem)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
         }
-
     }
 }
 
@@ -152,7 +156,8 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
 
         var item = itemData[indexPath.row]
-        var paid = paidItem[indexPath.row]
+        var paid = paidItem[indexPath.row][0]
+        var involves = involvedItem[indexPath.row]
         
         let timeStamp = item.createdTime ?? 0
         let timeInterval = TimeInterval(timeStamp)
@@ -162,18 +167,32 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         let time = dateFormatter.string(from: date)
         
 //        print("priceeeee:\(paid.price)")
-        
-        itemsCell.createItemCell(time: time,
-                                 name: item.itemName ?? "",
-                                 description: PaidDescription.paid,
-                                 price: "110")
-        
+        if paid.userId == userId {
+            itemsCell.createItemCell(time: time,
+                                     name: item.itemName ?? "",
+                                     description: PaidDescription.paid,
+                                     price: "\(paid.price)")
+        } else {
+            for involve in involves {
+                if involve.userId == userId {
+                    itemsCell.createItemCell(time: time,
+                                             name: item.itemName ?? "",
+                                             description: PaidDescription.involved,
+                                             price: "\(involve.price)")
+                } else {
+                    itemsCell.createItemCell(time: time,
+                                             name: item.itemName ?? "",
+                                             description: PaidDescription.notInvolved,
+                                             price: "")
+                }
+            }
+        }
         
 //        itemsCell.createItemCell(time: "time",
 //                                 name: "itemName",
 //                                 description: PaidDescription.paid,
 //                                 price: "220")
-//        String(paidItem[indexPath.row].price)
+//
         
         return itemsCell
     }
