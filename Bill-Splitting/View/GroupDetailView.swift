@@ -29,13 +29,14 @@ class GroupDetailView: UIView {
     }
     
     func setLabel() {
-        personalFinalPaidLabel.frame = CGRect(x: 10, y: 10, width: UIScreen.main.bounds.width, height: 20)
-        personalFinalPaidLabel.text = "你的總支出為"
+        personalFinalPaidLabel.frame = CGRect(x: 10, y: 10, width: UIScreen.main.bounds.width, height: 40)
+//        personalFinalPaidLabel.text = "你的總支出為"
+        personalFinalPaidLabel.font = personalFinalPaidLabel.font.withSize(24)
         addSubview(personalFinalPaidLabel)
     }
     
     func setAddExpenseButton() {
-        addExpenseButton.frame = CGRect(x: 10, y: 50, width: 100, height: 60)
+        addExpenseButton.frame = CGRect(x: 10, y: 60, width: 100, height: 60)
         addExpenseButton.setTitle("新增支出", for: .normal)
         addExpenseButton.backgroundColor = .systemGray
         addSubview(addExpenseButton)

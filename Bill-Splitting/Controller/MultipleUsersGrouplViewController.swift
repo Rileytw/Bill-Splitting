@@ -9,7 +9,7 @@ import UIKit
 
 class MultipleUsersGrouplViewController: UIViewController {
     
-    let groupDetailView = GroupDetailView(frame: CGRect(x: 0, y: 150, width: UIScreen.main.bounds.width, height: 200))
+    let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
     
     var groupData: GroupData? {
@@ -32,13 +32,21 @@ class MultipleUsersGrouplViewController: UIViewController {
         }
     }
     
-    var expense: Double?
+    var expense: Double? {
+        didSet {
+            if expense ?? 0 >= 0 {
+                groupDetailView.personalFinalPaidLabel.text = "你的總支出為：\(expense ?? 0) 元"
+            } else {
+                groupDetailView.personalFinalPaidLabel.text = "你的總欠款為：\(abs(expense ?? 0)) 元"
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setGroupDetailView()
         setItemTableView()
-        
+        getMemberExpense()
 //        GroupManager.shared.listenForItems(groupId: groupData?.groupId ?? "") {
 //            self.getItemData()
 //            print("Listen~~~~~~~~~~~~~~~~~~~")
@@ -68,9 +76,12 @@ class MultipleUsersGrouplViewController: UIViewController {
         groupDetailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         groupDetailView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         groupDetailView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        groupDetailView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        groupDetailView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         groupDetailView.addExpenseButton.addTarget(self, action: #selector(pressAddItem), for: .touchUpInside)
+        
+        groupDetailView.personalFinalPaidLabel.text = "你的總支出為："
+        
     }
     
     @objc func pressAddItem() {
@@ -87,7 +98,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     func setItemTableView() {
         self.view.addSubview(itemTableView)
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
-        itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 100).isActive = true
+        itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 40).isActive = true
         itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
 
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -127,7 +138,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 case .success(let items):
                     self?.paidItem.append(items)
                     semaphore.signal()
-                    print("=====[pai\(self?.paidItem)")
+//                    print("=====[pai\(self?.paidItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -140,7 +151,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 switch result {
                 case .success(let items):
                     self?.involvedItem.append(items)
-                    print("=====inv\(self?.involvedItem)")
+//                    print("=====inv\(self?.involvedItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -167,6 +178,18 @@ class MultipleUsersGrouplViewController: UIViewController {
 //                print("Error decoding userData: \(error)")
 //            }
 //        }
+    }
+    
+    func getMemberExpense() {
+        GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", userId: userId) { [weak self] result in
+            switch result {
+            case .success(let expense):
+                self?.expense = expense.allExpense
+                print("=====expense:\(self?.expense)")
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
     }
 }
 

@@ -109,6 +109,33 @@ class GroupManager {
         ])
     }
     
+    func fetchMemberExpense(groupId: String, userId: String, completion: @escaping (Result<MemberExpense, Error>) -> Void) {
+        db.collection("group").document(groupId).collection("memberExpense").whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var memberExpense: MemberExpense?
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let expense = try document.data(as: MemberExpense.self, decoder: Firestore.Decoder()) {
+                            memberExpense = expense
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                guard let memberExpense = memberExpense else { return }
+
+                completion(.success(memberExpense))
+            }
+        }
+    }
+    
     func listenForItems(groupId: String, completion: @escaping () -> Void) {
             db.collection("item")
                 .whereField("groupId", isEqualTo: groupId)
