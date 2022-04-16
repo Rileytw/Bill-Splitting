@@ -20,9 +20,7 @@ struct GroupData: Codable {
     var member: [String]
 }
 
-//struct Member: Codable {
-//    var userId: String
-//}
-
-
-
+struct MemberExpense: Codable {
+    var userId: String
+    var allExpense: Double
+}

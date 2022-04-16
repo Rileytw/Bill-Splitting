@@ -27,8 +27,7 @@ private enum Tab {
         }
         
         viewController.tabBarItem = tabBarItem()
-//        viewController.tabBarItem
-        
+
         return viewController
     }
     
@@ -55,7 +54,7 @@ class TabBarViewController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+                
         viewControllers = tabs.map({ $0.viewController() })
     }
     

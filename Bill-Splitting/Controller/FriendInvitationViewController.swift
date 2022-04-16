@@ -27,11 +27,11 @@ class FriendInvitationViewController: UIViewController {
     }
     
     func getSenderData(completion: @escaping ([String]) -> Void) {
-        FriendManager.shared.fetchFriendInvitation(userId: userId) { result in
+        FriendManager.shared.fetchFriendInvitation(userId: userId) { [weak self] result in
             switch result {
             case .success(let invitation):
                 let senderId = invitation.map { $0.senderId }
-                self.invitationId = invitation.map { $0.documentId }
+                self?.invitationId = invitation.map { $0.documentId }
                 completion(senderId)
                 print("senderId: \(senderId)")
             case .failure(let error):
@@ -41,20 +41,20 @@ class FriendInvitationViewController: UIViewController {
     }
     
     func getUserInfo() {
-        getSenderData() { senderIdList in
+        getSenderData() { [weak self] senderIdList in
             print("senderList:\(senderIdList.count)")
-            self.senderId = senderIdList
+            self?.senderId = senderIdList
             
-            self.senderId.forEach {
+            self?.senderId.forEach {
                 sender in
                 UserManager.shared.fetchUserData(friendId: sender) {
-                    result in
+                    [weak self] result in
                     switch result {
                     case .success(let userData):
-                        self.invitationUsers.append(userData)
-                        self.tableView.reloadData()
+                        self?.invitationUsers.append(userData)
+                        self?.tableView.reloadData()
                         print("userData:\(userData)")
-                        print("invitationData: \(self.invitationUsers)")
+                        print("invitationData: \(self?.invitationUsers)")
                     case .failure(let error):
                         print("Error decoding userData: \(error)")
                     }

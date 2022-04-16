@@ -26,10 +26,10 @@ class FriendListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        UserManager.shared.fetchFriendData(userId: userId) { result in
+        UserManager.shared.fetchFriendData(userId: userId) { [weak self] result in
             switch result {
             case .success(let friend):
-                self.friends = friend
+                self?.friends = friend
 //                print("userData: \(self.friends)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")

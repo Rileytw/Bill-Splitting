@@ -7,11 +7,11 @@
 
 import UIKit
 
-
-class BaseTextField: UIView {
-    let textField = UITextField()
+class BasePickerViewInTextField: UIView {
+    var textField = UITextField()
     let pickerView = UIPickerView()
     let width = UIScreen.main.bounds.width
+//    var pickerViewData: [String] = [""]
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,18 +23,19 @@ class BaseTextField: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        setTextFieldOfPickerView()
         
     }
     
-    func setTextField() {
-        textField.borderStyle = UITextField.BorderStyle.roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.frame = CGRect(x: 0, y: 0, width: width, height: 60)
+//    func setUpPickerView(data:[String]) {
+//        pickerViewData = data
+//    }
+    
+    func setTextFieldOfPickerView() {
+        textField = UITextField(frame: CGRect(x: 0, y: 0, width: width, height: 60))
         textField.inputView = pickerView
         textField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         textField.textAlignment = .center
-        
         addSubview(textField)
     }
 }
-

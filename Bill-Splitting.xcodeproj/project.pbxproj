@@ -19,7 +19,7 @@
 		350A33622803DF4300201E40 /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A33612803DF4300201E40 /* Profile.storyboard */; };
 		350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33632803EF5000201E40 /* Storyboard+Extension.swift */; };
 		350A33682803F65800201E40 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 350A33672803F65800201E40 /* GoogleService-Info.plist */; };
-		350A336A2804192C00201E40 /* TexFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33692804192C00201E40 /* TexFieldView.swift */; };
+		350A336A2804192C00201E40 /* BaseTexFieldView + PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33692804192C00201E40 /* BaseTexFieldView + PickerView.swift */; };
 		350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */; };
 		350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */; };
 		350A33732804638A00201E40 /* GroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33722804638A00201E40 /* GroupManager.swift */; };
@@ -35,6 +35,23 @@
 		35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D62805626800508EAF /* FriendInvitationViewController.swift */; };
 		35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */; };
 		35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */; };
+		35FF63DD2806560F00508EAF /* ItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63DC2806560F00508EAF /* ItemManager.swift */; };
+		35FF63DF2806563500508EAF /* ItemObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63DE2806563500508EAF /* ItemObject.swift */; };
+		35FF63E128066F8800508EAF /* GroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E028066F8800508EAF /* GroupsView.swift */; };
+		35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E42806749D00508EAF /* GroupsViewController.swift */; };
+		35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */; };
+		35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */; };
+		35FF63ED2806AAD000508EAF /* MultipleUsersGrouplViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63EC2806AAD000508EAF /* MultipleUsersGrouplViewController.swift */; };
+		35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63EE2806B24D00508EAF /* GroupDetailView.swift */; };
+		35FF63F12807B22400508EAF /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63F02807B22400508EAF /* AddItemViewController.swift */; };
+		35FF63F32807B2DB00508EAF /* AddItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63F22807B2DB00508EAF /* AddItemView.swift */; };
+		35FF63F628080A8A00508EAF /* AddItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63F428080A8A00508EAF /* AddItemTableViewCell.swift */; };
+		35FF63F728080A8A00508EAF /* AddItemTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63F528080A8A00508EAF /* AddItemTableViewCell.xib */; };
+		35FF63FA2809672100508EAF /* ItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63F82809672100508EAF /* ItemTableViewCell.swift */; };
+		35FF63FB2809672100508EAF /* ItemTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63F92809672100508EAF /* ItemTableViewCell.xib */; };
+		35FF63FD280A5B3300508EAF /* SettleUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */; };
+		35FF6400280A619E00508EAF /* SettleUpTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63FE280A619E00508EAF /* SettleUpTableViewCell.swift */; };
+		35FF6401280A619E00508EAF /* SettleUpTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
@@ -54,7 +71,7 @@
 		350A33612803DF4300201E40 /* Profile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
 		350A33632803EF5000201E40 /* Storyboard+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storyboard+Extension.swift"; sourceTree = "<group>"; };
 		350A33672803F65800201E40 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		350A33692804192C00201E40 /* TexFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TexFieldView.swift; sourceTree = "<group>"; };
+		350A33692804192C00201E40 /* BaseTexFieldView + PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseTexFieldView + PickerView.swift"; sourceTree = "<group>"; };
 		350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroupTableViewCell.swift; sourceTree = "<group>"; };
 		350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddGroupTableViewCell.xib; sourceTree = "<group>"; };
 		350A33722804638A00201E40 /* GroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupManager.swift; sourceTree = "<group>"; };
@@ -70,6 +87,23 @@
 		35FF63D62805626800508EAF /* FriendInvitationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendInvitationViewController.swift; sourceTree = "<group>"; };
 		35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationTableViewCell.swift; sourceTree = "<group>"; };
 		35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InvitationTableViewCell.xib; sourceTree = "<group>"; };
+		35FF63DC2806560F00508EAF /* ItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemManager.swift; sourceTree = "<group>"; };
+		35FF63DE2806563500508EAF /* ItemObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemObject.swift; sourceTree = "<group>"; };
+		35FF63E028066F8800508EAF /* GroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsView.swift; sourceTree = "<group>"; };
+		35FF63E42806749D00508EAF /* GroupsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsViewController.swift; sourceTree = "<group>"; };
+		35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsTableViewCell.swift; sourceTree = "<group>"; };
+		35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupsTableViewCell.xib; sourceTree = "<group>"; };
+		35FF63EC2806AAD000508EAF /* MultipleUsersGrouplViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleUsersGrouplViewController.swift; sourceTree = "<group>"; };
+		35FF63EE2806B24D00508EAF /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
+		35FF63F02807B22400508EAF /* AddItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
+		35FF63F22807B2DB00508EAF /* AddItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemView.swift; sourceTree = "<group>"; };
+		35FF63F428080A8A00508EAF /* AddItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemTableViewCell.swift; sourceTree = "<group>"; };
+		35FF63F528080A8A00508EAF /* AddItemTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddItemTableViewCell.xib; sourceTree = "<group>"; };
+		35FF63F82809672100508EAF /* ItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTableViewCell.swift; sourceTree = "<group>"; };
+		35FF63F92809672100508EAF /* ItemTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ItemTableViewCell.xib; sourceTree = "<group>"; };
+		35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettleUpViewController.swift; sourceTree = "<group>"; };
+		35FF63FE280A619E00508EAF /* SettleUpTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettleUpTableViewCell.swift; sourceTree = "<group>"; };
+		35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettleUpTableViewCell.xib; sourceTree = "<group>"; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -127,7 +161,7 @@
 				350A33432800450000201E40 /* AppDelegate.swift */,
 				350A33452800450000201E40 /* SceneDelegate.swift */,
 				350A33662803F45100201E40 /* Extension */,
-				350A33712804636400201E40 /* Modal */,
+				350A33712804636400201E40 /* Model */,
 				350A33652803F42C00201E40 /* Controller */,
 				350A336B2804193300201E40 /* View */,
 				350A33492800450000201E40 /* Main.storyboard */,
@@ -151,6 +185,10 @@
 				35FF63CE28055B1500508EAF /* ProfileViewController.swift */,
 				35FF63D428055F6500508EAF /* FriendListViewController.swift */,
 				35FF63D62805626800508EAF /* FriendInvitationViewController.swift */,
+				35FF63E42806749D00508EAF /* GroupsViewController.swift */,
+				35FF63EC2806AAD000508EAF /* MultipleUsersGrouplViewController.swift */,
+				35FF63F02807B22400508EAF /* AddItemViewController.swift */,
+				35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -166,27 +204,40 @@
 		350A336B2804193300201E40 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				350A33692804192C00201E40 /* TexFieldView.swift */,
+				350A33692804192C00201E40 /* BaseTexFieldView + PickerView.swift */,
 				350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */,
 				350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */,
 				35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */,
 				35FF63D128055BA000508EAF /* ProfileTableViewCell.xib */,
 				35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */,
 				35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */,
+				35FF63E028066F8800508EAF /* GroupsView.swift */,
+				35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */,
+				35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */,
+				35FF63EE2806B24D00508EAF /* GroupDetailView.swift */,
+				35FF63F82809672100508EAF /* ItemTableViewCell.swift */,
+				35FF63F92809672100508EAF /* ItemTableViewCell.xib */,
+				35FF63F22807B2DB00508EAF /* AddItemView.swift */,
+				35FF63F428080A8A00508EAF /* AddItemTableViewCell.swift */,
+				35FF63F528080A8A00508EAF /* AddItemTableViewCell.xib */,
+				35FF63FE280A619E00508EAF /* SettleUpTableViewCell.swift */,
+				35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
 		};
-		350A33712804636400201E40 /* Modal */ = {
+		350A33712804636400201E40 /* Model */ = {
 			isa = PBXGroup;
 			children = (
 				350A33722804638A00201E40 /* GroupManager.swift */,
 				350A3374280464E500201E40 /* GroupObject.swift */,
+				35FF63DC2806560F00508EAF /* ItemManager.swift */,
+				35FF63DE2806563500508EAF /* ItemObject.swift */,
 				350A3376280468D000201E40 /* UserManager.swift */,
 				350A3378280469BB00201E40 /* UserObject.swift */,
 				350A337A2805060B00201E40 /* FriendManager.swift */,
 			);
-			path = Modal;
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -250,12 +301,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35FF63F728080A8A00508EAF /* AddItemTableViewCell.xib in Resources */,
 				350A33622803DF4300201E40 /* Profile.storyboard in Resources */,
 				350A33602803DF3C00201E40 /* AddGroups.storyboard in Resources */,
+				35FF63FB2809672100508EAF /* ItemTableViewCell.xib in Resources */,
 				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
+				35FF6401280A619E00508EAF /* SettleUpTableViewCell.xib in Resources */,
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
 				35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */,
+				35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
 				35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */,
@@ -333,21 +388,34 @@
 				350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */,
 				350A337B2805060B00201E40 /* FriendManager.swift in Sources */,
 				350A3379280469BB00201E40 /* UserObject.swift in Sources */,
+				35FF63DD2806560F00508EAF /* ItemManager.swift in Sources */,
 				35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */,
+				35FF63F12807B22400508EAF /* AddItemViewController.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
+				35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
+				35FF63F32807B2DB00508EAF /* AddItemView.swift in Sources */,
+				35FF63ED2806AAD000508EAF /* MultipleUsersGrouplViewController.swift in Sources */,
+				35FF63FD280A5B3300508EAF /* SettleUpViewController.swift in Sources */,
 				350A33482800450000201E40 /* AddGroupsViewController.swift in Sources */,
 				350A33442800450000201E40 /* AppDelegate.swift in Sources */,
 				350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */,
 				350A33732804638A00201E40 /* GroupManager.swift in Sources */,
+				35FF63F628080A8A00508EAF /* AddItemTableViewCell.swift in Sources */,
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
 				35FF63D528055F6500508EAF /* FriendListViewController.swift in Sources */,
+				35FF6400280A619E00508EAF /* SettleUpTableViewCell.swift in Sources */,
+				35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */,
 				35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */,
 				350A3377280468D000201E40 /* UserManager.swift in Sources */,
+				35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */,
+				35FF63DF2806563500508EAF /* ItemObject.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
 				35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */,
-				350A336A2804192C00201E40 /* TexFieldView.swift in Sources */,
+				350A336A2804192C00201E40 /* BaseTexFieldView + PickerView.swift in Sources */,
+				35FF63E128066F8800508EAF /* GroupsView.swift in Sources */,
+				35FF63FA2809672100508EAF /* ItemTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

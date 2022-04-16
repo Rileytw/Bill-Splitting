@@ -31,17 +31,9 @@ class AddGroupsViewController: UIViewController {
     let inviteFriendButton = UIButton()
     let addGroupButton = UIButton()
     
-    var type: Int? {
-        didSet {
-            if typeTextField.text == "個人預付" {
-                type = 0
-            } else {
-                type = 1
-            }
-        }
-    }
+    var type: Int?
     
-    var member: [String] = [userId]
+    var member: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,10 +54,10 @@ class AddGroupsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        UserManager.shared.fetchFriendData(userId: userId) { result in
+        UserManager.shared.fetchFriendData(userId: userId) { [weak self] result in
             switch result {
             case .success(let friend):
-                self.friendList = friend
+                self?.friendList = friend
 //                print("userData: \(self.friendList)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
@@ -177,7 +169,21 @@ class AddGroupsViewController: UIViewController {
     
     @objc func pressAddGroupButton() {
         print("member:\(self.member)")
-        GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: userId, type: self.type ?? 0, status: 0, member: self.member ?? [""])
+        member.append(userId)
+        
+        if typeTextField.text == "個人預付" {
+            type = 0
+        } else {
+            type = 1
+        }
+        
+        GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: userId, type: self.type ?? 0, status: 0, member: self.member ?? [""]) {
+            groupId in
+            self.member.forEach {
+                member in
+                GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+            }
+        }
         
         self.nameTextField.text? = ""
         self.descriptionTextView.text = ""
