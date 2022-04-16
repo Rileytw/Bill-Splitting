@@ -42,6 +42,8 @@ class MultipleUsersGrouplViewController: UIViewController {
         }
     }
     
+    var memberExpense: MemberExpense?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setGroupDetailView()
@@ -79,6 +81,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         groupDetailView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         groupDetailView.addExpenseButton.addTarget(self, action: #selector(pressAddItem), for: .touchUpInside)
+        groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
         
         groupDetailView.personalFinalPaidLabel.text = "你的總支出為："
         
@@ -93,6 +96,13 @@ class MultipleUsersGrouplViewController: UIViewController {
         addItemViewController.groupData = groupData
         self.present(addItemViewController, animated: true, completion: nil)
 //        self.show(addItemViewController, sender: nil)
+    }
+    
+    @objc func pressSettleUp() {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let settleUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SettleUpViewController.self)) as? SettleUpViewController else { return }
+        
+        self.show(settleUpViewController, sender: nil)
     }
     
     func setItemTableView() {

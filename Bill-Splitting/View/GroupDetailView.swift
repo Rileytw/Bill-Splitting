@@ -11,6 +11,8 @@ class GroupDetailView: UIView {
 
     let personalFinalPaidLabel = UILabel()
     let addExpenseButton = UIButton()
+    let settleUpButton = UIButton()
+    let width = UIScreen.main.bounds.width
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,19 +28,27 @@ class GroupDetailView: UIView {
         super.layoutSubviews()
         setLabel()
         setAddExpenseButton()
+        setSettleUpButton()
     }
     
     func setLabel() {
-        personalFinalPaidLabel.frame = CGRect(x: 10, y: 10, width: UIScreen.main.bounds.width, height: 40)
+        personalFinalPaidLabel.frame = CGRect(x: 10, y: 10, width: width, height: 40)
 //        personalFinalPaidLabel.text = "你的總支出為"
         personalFinalPaidLabel.font = personalFinalPaidLabel.font.withSize(24)
         addSubview(personalFinalPaidLabel)
     }
     
     func setAddExpenseButton() {
-        addExpenseButton.frame = CGRect(x: 10, y: 60, width: 100, height: 60)
+        addExpenseButton.frame = CGRect(x: 10, y: 60, width: width/2 - 40, height: 60)
         addExpenseButton.setTitle("新增支出", for: .normal)
-        addExpenseButton.backgroundColor = .systemGray
+        addExpenseButton.backgroundColor = .systemTeal
         addSubview(addExpenseButton)
+    }
+    
+    func setSettleUpButton() {
+        settleUpButton.frame = CGRect(x: 10 + width/2, y: 60, width: width/2 - 40, height: 60)
+        settleUpButton.setTitle("前往結算", for: .normal)
+        settleUpButton.backgroundColor = .systemOrange
+        addSubview(settleUpButton)
     }
 }
