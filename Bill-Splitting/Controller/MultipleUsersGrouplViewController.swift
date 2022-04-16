@@ -12,11 +12,12 @@ class MultipleUsersGrouplViewController: UIViewController {
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
     
-    var groupData: GroupData? {
-        didSet {
-            getItemData()
-        }
-    }
+    var groupData: GroupData?
+//    {
+//        didSet {
+//            getItemData()
+//        }
+//    }
     var memberName: [String] = []
     var userData: [UserData] = []
     var itemData: [ItemData] = []
@@ -46,6 +47,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        getItemData()
         setGroupDetailView()
         setItemTableView()
         getMemberExpense()

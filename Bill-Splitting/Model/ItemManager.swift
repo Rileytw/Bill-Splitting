@@ -93,7 +93,8 @@ class ItemManager {
     func addPaidInfo(paidUserId: String, price: Double, itemId: String, createdTime: Double) {
         addItemExpenseInfo(typeUserId: paidUserId,
                            collection: ItemExpenseType.paidInfo,
-                           price: price, itemId: itemId,
+                           price: price,
+                           itemId: itemId,
                            createdTime: createdTime)
     }
     
@@ -106,7 +107,7 @@ class ItemManager {
     }
     
     private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double, itemId: String, createdTime: Double) {
-        let involvedInfo = ExpenseInfo(userId: typeUserId, price: price, createdTime: createdTime)
+        let involvedInfo = ExpenseInfo(userId: typeUserId, price: price, createdTime: createdTime, itemId: itemId)
         
         do {
             try db.collection("item").document(itemId).collection(collection.rawValue).document().setData(from: involvedInfo)
