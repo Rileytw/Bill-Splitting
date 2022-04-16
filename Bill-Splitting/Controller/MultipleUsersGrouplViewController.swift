@@ -13,11 +13,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     let itemTableView = UITableView()
     
     var groupData: GroupData?
-//    {
-//        didSet {
-//            getItemData()
-//        }
-//    }
+
     var memberName: [String] = []
     var userData: [UserData] = []
     var itemData: [ItemData] = []
@@ -60,19 +56,32 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        groupData?.member.forEach {
-            member in
-            UserManager.shared.fetchUserData(friendId: member) {
-                [weak self] result in
-                switch result {
-                case .success(let userData):
-                    self?.memberName.append(userData.userName)
-                    self?.userData.append(userData)
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
+        getUserData()
+    }
+    
+    func getUserData() {
+        let semaphore = DispatchSemaphore(value: 0)
+        let queue = DispatchQueue(label: "Queue", qos: .default, attributes: .concurrent)
+        
+        queue.async {
+            self.groupData?.member.forEach {
+                member in
+                UserManager.shared.fetchUserData(friendId: member) {
+                    [weak self] result in
+                    switch result {
+                    case .success(let userData):
+                        self?.memberName.append(userData.userName)
+                        self?.userData.append(userData)
+                        semaphore.signal()
+                    case .failure(let error):
+                        print("Error decoding userData: \(error)")
+                        semaphore.signal()
+                    }
                 }
+                semaphore.wait()
             }
         }
+
     }
     
     func setGroupDetailView() {
@@ -168,33 +177,12 @@ class MultipleUsersGrouplViewController: UIViewController {
                 switch result {
                 case .success(let items):
                     self?.involvedItem.append(items)
-                    print("=====inv\(self?.involvedItem)")
+//                    print("=====inv\(self?.involvedItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
             }
         }
-        
-//        ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) {
-//            [weak self] result in
-//            switch result {
-//            case .success(let items):
-//                self?.paidItem.append(items)
-//                print("=====[pai\(self?.paidItem)")
-//            case .failure(let error):
-//                print("Error decoding userData: \(error)")
-//            }
-//        }
-//        ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) {
-//            [weak self] result in
-//            switch result {
-//            case .success(let items):
-//                self?.involvedItem.append(items)
-//                print("=====inv\(self?.involvedItem)")
-//            case .failure(let error):
-//                print("Error decoding userData: \(error)")
-//            }
-//        }
     }
     
     func getMemberExpense() {
@@ -204,7 +192,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 self?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == userId }
                 self?.expense = personalExpense[0].allExpense
-                print("=====expense:\(self?.memberExpense)")
+//                print("=====expense:\(self?.memberExpense)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -226,11 +214,13 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
 
-        var item = itemData[indexPath.row]
-        var paid = paidItem[indexPath.row][0]
-        var involves = involvedItem[indexPath.row]
+        let item = itemData[indexPath.row]
+//        paidItem.sort { $0[0].createdTime ?? 0 > $1[0].createdTime ?? 0}
+        let paid = paidItem[indexPath.row][0]
+//        involvedItem.sort { $0[0].createdTime ?? 0 > $1[0].createdTime ?? 0}
+        let involves = involvedItem[indexPath.row]
         
-        let timeStamp = item.createdTime ?? 0
+        let timeStamp = item.createdTime
         let timeInterval = TimeInterval(timeStamp)
         let date = Date(timeIntervalSince1970: timeInterval)
         let dateFormatter = DateFormatter()
@@ -244,27 +234,22 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
                                      description: PaidDescription.paid,
                                      price: "\(paid.price)")
         } else {
-            for involve in involves {
-                if involve.userId == userId {
-                    itemsCell.createItemCell(time: time,
-                                             name: item.itemName ?? "",
-                                             description: PaidDescription.involved,
-                                             price: "\(involve.price)")
-                } else {
-                    itemsCell.createItemCell(time: time,
-                                             name: item.itemName ?? "",
-                                             description: PaidDescription.notInvolved,
-                                             price: "")
-                }
+            let user = involves.map { $0.userId }
+            let trrr = involves.filter { $0.userId == userId }
+            let price = trrr.map { $0.price }
+//            let price = involves.map { $0.price }
+            if user[0] == userId {
+                itemsCell.createItemCell(time: time,
+                                         name: item.itemName ?? "",
+                                         description: PaidDescription.involved,
+                                         price: "\(price[0])")
+            } else {
+                itemsCell.createItemCell(time: time,
+                                         name: item.itemName ?? "",
+                                         description: PaidDescription.notInvolved,
+                                         price: "")
             }
         }
-        
-//        itemsCell.createItemCell(time: "time",
-//                                 name: "itemName",
-//                                 description: PaidDescription.paid,
-//                                 price: "220")
-//
-        
         return itemsCell
     }
 }
