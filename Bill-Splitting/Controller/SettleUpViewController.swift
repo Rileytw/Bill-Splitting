@@ -10,23 +10,85 @@ import UIKit
 class SettleUpViewController: UIViewController {
     
     var groupData: GroupData?
-    var memberExpense: MemberExpense?
+    var memberExpense: [MemberExpense] = []
+    var userData: [UserData] = []
+    var expense: Double?
+    
+    let tableView = UITableView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        navigationItem.title = "結算群組帳務"
+        setTableView()
+        print("member: \(userData)")
+        removeCreatorData()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        tableView.register(UINib(nibName: String(describing: SettleUpTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: SettleUpTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
     }
-    */
+    
+    func removeCreatorData() {
+        if groupData?.creator == userId {
+            memberExpense = memberExpense.filter { $0.userId != userId }
+        }
+    }
+}
 
+extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if groupData?.creator == userId {
+            return memberExpense.count
+        } else {
+            return 1
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: SettleUpTableViewCell.self),
+            for: indexPath
+        )
+        
+        guard let settleUpCell = cell as? SettleUpTableViewCell,
+              let expense = expense
+        else { return cell }
+        let memberExpense = memberExpense[indexPath.row]
+        let memberData = userData.filter { $0.userId == memberExpense.userId }
+        
+        if groupData?.creator == userId {
+            if memberExpense.allExpense > 0 {
+                settleUpCell.price.text = " $ \(memberExpense.allExpense)"
+                settleUpCell.creditorName.text = "\(userName)"
+                settleUpCell.payerName.text = "\(memberData[0].userName)"
+                
+            } else {
+                settleUpCell.price.text = " $ \(abs(memberExpense.allExpense))"
+                settleUpCell.payerName.text = "\(userName)"
+                settleUpCell.creditorName.text = "\(memberData[0].userName)"
+            }
+        } else {
+            if memberExpense.allExpense > 0 {
+                settleUpCell.creditorName.text = "\(userName)"
+                settleUpCell.payerName.text = "\(memberData[0].userName)"
+                settleUpCell.price.text = " $ \(expense)"
+            } else {
+                settleUpCell.price.text = " $ \(abs(expense))"
+                settleUpCell.payerName.text = "\(userName)"
+                settleUpCell.creditorName.text = "\(memberData[0].userName)"
+            }
+        }
+        
+        return settleUpCell
+    }
 }

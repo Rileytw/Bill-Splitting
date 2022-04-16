@@ -42,7 +42,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         }
     }
     
-    var memberExpense: MemberExpense?
+    var memberExpense: [MemberExpense] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,6 +53,7 @@ class MultipleUsersGrouplViewController: UIViewController {
 //            self.getItemData()
 //            print("Listen~~~~~~~~~~~~~~~~~~~")
 //        }
+        navigationItem.title = "群組"
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -102,6 +103,10 @@ class MultipleUsersGrouplViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let settleUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SettleUpViewController.self)) as? SettleUpViewController else { return }
         
+        settleUpViewController.groupData = groupData
+        settleUpViewController.memberExpense = memberExpense
+        settleUpViewController.userData = userData
+        settleUpViewController.expense = expense
         self.show(settleUpViewController, sender: nil)
     }
     
@@ -194,8 +199,10 @@ class MultipleUsersGrouplViewController: UIViewController {
         GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", userId: userId) { [weak self] result in
             switch result {
             case .success(let expense):
-                self?.expense = expense.allExpense
-                print("=====expense:\(self?.expense)")
+                self?.memberExpense = expense
+                let personalExpense = expense.filter { $0.userId == userId }
+                self?.expense = personalExpense[0].allExpense
+                print("=====expense:\(self?.memberExpense)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }

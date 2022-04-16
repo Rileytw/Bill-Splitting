@@ -92,7 +92,7 @@ class GroupManager {
     
     func addMemberExpenseData(userId: String, allExpense: Double, groupId: String) {
         let expenseData = MemberExpense(userId: userId, allExpense: allExpense)
-        
+
         do {
             try db.collection("group").document(groupId).collection("memberExpense").document(userId).setData(from: expenseData)
         } catch {
@@ -109,28 +109,27 @@ class GroupManager {
         ])
     }
     
-    func fetchMemberExpense(groupId: String, userId: String, completion: @escaping (Result<MemberExpense, Error>) -> Void) {
-        db.collection("group").document(groupId).collection("memberExpense").whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+    func fetchMemberExpense(groupId: String, userId: String, completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
+        db.collection("group").document(groupId).collection("memberExpense").getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
             } else {
                 
-                var memberExpense: MemberExpense?
+                var memberExpense: [MemberExpense] = []
                 
                 for document in querySnapshot!.documents {
                     
                     do {
                         if let expense = try document.data(as: MemberExpense.self, decoder: Firestore.Decoder()) {
-                            memberExpense = expense
+                            memberExpense.append(expense)
                         }
                     } catch {
                         
                         completion(.failure(error))
                     }
                 }
-                guard let memberExpense = memberExpense else { return }
-
+                
                 completion(.success(memberExpense))
             }
         }
