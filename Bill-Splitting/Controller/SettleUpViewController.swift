@@ -69,13 +69,13 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         if groupData?.creator == userId {
             if memberExpense.allExpense > 0 {
                 settleUpCell.price.text = " $ \(memberExpense.allExpense)"
-                settleUpCell.creditorName.text = "\(userName)"
-                settleUpCell.payerName.text = "\(memberData[0].userName)"
+                settleUpCell.payerName.text = "\(userName)"
+                settleUpCell.creditorName.text = "\(memberData[0].userName)"
                 
             } else {
                 settleUpCell.price.text = " $ \(abs(memberExpense.allExpense))"
-                settleUpCell.payerName.text = "\(userName)"
-                settleUpCell.creditorName.text = "\(memberData[0].userName)"
+                settleUpCell.creditorName.text = "\(userName)"
+                settleUpCell.payerName.text = "\(memberData[0].userName)"
             }
         } else {
             if memberExpense.allExpense > 0 {

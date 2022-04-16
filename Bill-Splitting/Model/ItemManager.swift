@@ -67,7 +67,7 @@ class ItemManager {
     }
     
     private func fetchItemsExpense(itemId: String, collection: String, completion: @escaping ExpenseInfoResponse) {
-        db.collection("item").document(itemId).collection(collection).getDocuments() { (querySnapshot, error) in
+        db.collection("item").document(itemId).collection(collection).order(by: "createdTime", descending: true).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -90,16 +90,23 @@ class ItemManager {
         }
     }
     
-    func addPaidInfo(paidUserId: String, price: Double, itemId: String) {
-        addItemExpenseInfo(typeUserId: paidUserId, collection: ItemExpenseType.paidInfo, price: price, itemId: itemId)
+    func addPaidInfo(paidUserId: String, price: Double, itemId: String, createdTime: Double) {
+        addItemExpenseInfo(typeUserId: paidUserId,
+                           collection: ItemExpenseType.paidInfo,
+                           price: price, itemId: itemId,
+                           createdTime: createdTime)
     }
     
-    func addInvolvedInfo(involvedUserId: String, price: Double, itemId: String) {
-        addItemExpenseInfo(typeUserId: involvedUserId, collection: ItemExpenseType.involvedInfo, price: price, itemId: itemId)
+    func addInvolvedInfo(involvedUserId: String, price: Double, itemId: String, createdTime: Double) {
+        addItemExpenseInfo(typeUserId: involvedUserId,
+                           collection: ItemExpenseType.involvedInfo,
+                           price: price,
+                           itemId: itemId,
+                           createdTime: createdTime)
     }
     
-    private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double, itemId: String) {
-        let involvedInfo = ExpenseInfo(userId: typeUserId, price: price)
+    private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double, itemId: String, createdTime: Double) {
+        let involvedInfo = ExpenseInfo(userId: typeUserId, price: price, createdTime: createdTime)
         
         do {
             try db.collection("item").document(itemId).collection(collection.rawValue).document().setData(from: involvedInfo)

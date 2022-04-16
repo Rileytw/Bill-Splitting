@@ -18,4 +18,5 @@ struct ItemData: Codable {
 struct ExpenseInfo: Codable {
     var userId: String
     var price: Double
+    var createdTime: Double?
 }

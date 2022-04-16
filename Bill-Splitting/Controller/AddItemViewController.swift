@@ -129,12 +129,16 @@ class AddItemViewController: UIViewController {
             itemId in
             self.itemId = itemId
             
-            ItemManager.shared.addPaidInfo(paidUserId: self.paidId ?? "", price: self.paidPrice ?? 0, itemId: itemId)
+            ItemManager.shared.addPaidInfo(paidUserId: self.paidId ?? "",
+                                           price: self.paidPrice ?? 0,
+                                           itemId: itemId,
+                                           createdTime: Double(NSDate().timeIntervalSince1970))
 
             for user in 0..<self.involvedExpenseData.count {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
                                                    price: self.involvedExpenseData[user].price,
-                                                   itemId: itemId)
+                                                   itemId: itemId,
+                                                   createdTime: Double(NSDate().timeIntervalSince1970))
             }
             self.countPersonalExpense()
         }

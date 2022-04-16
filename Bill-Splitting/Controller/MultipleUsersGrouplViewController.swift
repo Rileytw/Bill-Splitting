@@ -166,7 +166,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 switch result {
                 case .success(let items):
                     self?.involvedItem.append(items)
-//                    print("=====inv\(self?.involvedItem)")
+                    print("=====inv\(self?.involvedItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -212,7 +212,7 @@ class MultipleUsersGrouplViewController: UIViewController {
 
 extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return involvedItem.count ?? 0
+        return involvedItem.count
 //        return 1
     }
     
