@@ -179,9 +179,9 @@ class MultipleUsersGrouplViewController: UIViewController {
         subscribeButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         subscribeButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         
-//        if groupData?.type == 1 {
-//            subscribeButton.isHidden = true
-//        }
+        if groupData?.type == 1 {
+            subscribeButton.isHidden = true
+        }
         
         subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
         subscribeButton.tintColor = .systemGray
