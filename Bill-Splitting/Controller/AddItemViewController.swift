@@ -18,7 +18,11 @@ class AddItemViewController: UIViewController {
     
     var groupData: GroupData? 
     var memberId: [String]?
-    var memberData: [UserData]? = []
+    var memberData: [UserData]? = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     var itemId: String?
     var paidItem: [[ExpenseInfo]] = []

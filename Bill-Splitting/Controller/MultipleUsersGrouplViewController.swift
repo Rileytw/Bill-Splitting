@@ -54,6 +54,8 @@ class MultipleUsersGrouplViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
+        getItemData()
+        getMemberExpense()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -220,7 +222,8 @@ class MultipleUsersGrouplViewController: UIViewController {
 
 extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return involvedItem.count
+//        return involvedItem.count
+        return itemData.count
         //        return 1
     }
     

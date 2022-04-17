@@ -19,6 +19,9 @@ class SpecificSettleIUpViewController: UIViewController {
     var account = UILabel()
     var settleButton = UIButton()
     
+    typealias AddItemColsure = (String) -> Void
+    var addItemColsure: AddItemColsure?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         //        print("userData:\(userData)")
@@ -103,6 +106,7 @@ class SpecificSettleIUpViewController: UIViewController {
         if let groupViewController = self.navigationController?.viewControllers[1] {
             self.navigationController?.popToViewController(groupViewController, animated: true)
         }
+        addItemColsure?("id")
     }
     
     func addItem() {
@@ -129,12 +133,12 @@ class SpecificSettleIUpViewController: UIViewController {
             }
             
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                           price: expense,
+                                           price: abs(expense),
                                            itemId: itemId,
                                            createdTime: Double(NSDate().timeIntervalSince1970))
             
             ItemManager.shared.addInvolvedInfo(involvedUserId: creditorId ?? "",
-                                               price: expense,
+                                               price: abs(expense),
                                                itemId: itemId,
                                                createdTime: Double(NSDate().timeIntervalSince1970))
             
@@ -153,17 +157,28 @@ class SpecificSettleIUpViewController: UIViewController {
         if expense <= 0 {
             paidUserId = userId
             creditorId = memberId
+            GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
+                                                    newExpense: expense,
+                                                    groupId: groupId ?? "")
+            
+            GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
+                                                    newExpense: 0 - expense,
+                                                    groupId: groupId ?? "")
         } else {
             paidUserId = memberId
             creditorId = userId
+            GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
+                                                    newExpense: 0 - expense,
+                                                    groupId: groupId ?? "")
+            
+            GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
+                                                    newExpense: expense,
+                                                    groupId: groupId ?? "")
         }
         
-        GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
-                                                newExpense: expense,
-                                                groupId: groupId ?? "")
-        
-        GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
-                                                newExpense: 0 - expense,
-                                                groupId: groupId ?? "")
+    }
+    
+    func addItem(closure: @escaping AddItemColsure) {
+        addItemColsure = closure
     }
 }

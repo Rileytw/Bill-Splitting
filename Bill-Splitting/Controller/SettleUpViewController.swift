@@ -112,6 +112,5 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         specificSettleUpViewController.memberExpense = memberExpense[indexPath.row]
         specificSettleUpViewController.groupId = groupData?.groupId
         self.show(specificSettleUpViewController, sender: nil)
-
     }
 }
