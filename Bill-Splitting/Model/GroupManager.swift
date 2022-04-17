@@ -61,7 +61,7 @@ class GroupManager {
     func fetchPaidItemsExpense(itemId: String, userId: String, completion: @escaping ExpenseInfoResponse) {
         fetchItemsExpense(itemId: itemId, userId: userId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
     }
-
+    
     func fetchInvolvedItemsExpense(itemId: String, userId: String, completion: @escaping ExpenseInfoResponse) {
         fetchItemsExpense(itemId: itemId, userId: userId, collection: ItemExpenseType.involvedInfo.rawValue, completion: completion)
     }
@@ -92,7 +92,7 @@ class GroupManager {
     
     func addMemberExpenseData(userId: String, allExpense: Double, groupId: String) {
         let expenseData = MemberExpense(userId: userId, allExpense: allExpense)
-
+        
         do {
             try db.collection("group").document(groupId).collection("memberExpense").document(userId).setData(from: expenseData)
         } catch {
@@ -136,14 +136,27 @@ class GroupManager {
     }
     
     func listenForItems(groupId: String, completion: @escaping () -> Void) {
-            db.collection("item")
-                .whereField("groupId", isEqualTo: groupId)
-                .addSnapshotListener { querySnapshot, error in
-                    guard let snapshot = querySnapshot else {
-                        print("Error retreiving snapshots \(error!)")
-                        return
-                    }
-                    completion()
+        db.collection("item")
+            .whereField("groupId", isEqualTo: groupId)
+            .addSnapshotListener { querySnapshot, error in
+                guard let snapshot = querySnapshot else {
+                    print("Error retreiving snapshots \(error!)")
+                    return
                 }
-        }
+                snapshot.documentChanges.forEach { diff in
+                    if (diff.type == .added) {
+                        print("New: \(diff.document.data())")
+                        completion()
+                        
+                    }
+                    if (diff.type == .modified) {
+                        print("Modified: \(diff.document.data())")
+                    }
+                    if (diff.type == .removed) {
+                        print("Removed: \(diff.document.data())")
+                    }
+                }
+                
+            }
+    }
 }

@@ -18,12 +18,12 @@ class MultipleUsersGrouplViewController: UIViewController {
     var userData: [UserData] = []
     var itemData: [ItemData] = []
     
-    var paidItem: [[ExpenseInfo]] = []  {
+    var paidItem: [[ExpenseInfo]] = [] {
         didSet {
             itemTableView.reloadData()
         }
     }
-    var involvedItem: [[ExpenseInfo]] = []  {
+    var involvedItem: [[ExpenseInfo]] = [] {
         didSet {
             itemTableView.reloadData()
         }
@@ -47,10 +47,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         setGroupDetailView()
         setItemTableView()
         getMemberExpense()
-        //        GroupManager.shared.listenForItems(groupId: groupData?.groupId ?? "") {
-        //            self.getItemData()
-        //            print("Listen~~~~~~~~~~~~~~~~~~~")
-        //        }
+        
         navigationItem.title = "群組"
     }
     
@@ -113,11 +110,15 @@ class MultipleUsersGrouplViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
         addItemViewController.memberId = groupData?.member
-        //        addItemViewController.memberName = memberName
         addItemViewController.memberData = userData
         addItemViewController.groupData = groupData
         self.present(addItemViewController, animated: true, completion: nil)
         //        self.show(addItemViewController, sender: nil)
+        
+        addItemViewController.addItem { [weak self] _ in
+            self?.getItemData()
+            self?.getMemberExpense()
+        }
     }
     
     @objc func pressSettleUp() {
@@ -187,7 +188,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 switch result {
                 case .success(let items):
                     self?.involvedItem.append(items)
-                    print("=====inv\(self?.involvedItem)")
+//                    print("=====inv\(self?.involvedItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -256,18 +257,21 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
             itemsCell.createItemCell(time: time,
                                      name: item.itemName,
                                      description: PaidDescription.paid,
-                                     price: "\(paid?.price ?? 0)")
+                                     price: "$\(paid?.price ?? 0)")
+            itemsCell.paidDescription.textColor = .systemGreen
         } else {
             if involved?.userId == userId {
             itemsCell.createItemCell(time: time,
                                      name: item.itemName,
                                      description: PaidDescription.involved,
-                                     price: "\(involved?.price ?? 0)")
+                                     price: "$\(involved?.price ?? 0)")
+                itemsCell.paidDescription.textColor = .systemRed
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.notInvolved,
                                          price: "")
+                itemsCell.paidDescription.textColor = .systemGray
             }
         }
         return itemsCell

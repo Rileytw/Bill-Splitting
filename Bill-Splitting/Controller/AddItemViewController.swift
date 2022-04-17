@@ -31,6 +31,9 @@ class AddItemViewController: UIViewController {
     var selectedIndexs = [Int]()
     var involvedMemberName: [String] = []
     
+    typealias AddItemColsure = (String) -> Void
+    var addItemColsure: AddItemColsure?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -153,6 +156,8 @@ class AddItemViewController: UIViewController {
         }
         self.dismiss(animated: false, completion: nil)
 //        navigationController?.popViewController(animated: true)
+        addItemColsure?("id")
+        
     }
     
     func countPersonalExpense() {
@@ -173,6 +178,10 @@ class AddItemViewController: UIViewController {
                                                     newExpense: 0 - self.involvedExpenseData[user].price,
                                                     groupId: groupData?.groupId ?? "")
         }
+    }
+    
+    func addItem(closure: @escaping AddItemColsure) {
+        addItemColsure = closure
     }
 }
 

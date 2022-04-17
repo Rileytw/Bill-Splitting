@@ -10,7 +10,7 @@ import UIKit
 enum PaidDescription: String {
     case paid = "你已支付"
     case involved = "你應支付"
-    case notInvolved = ""
+    case notInvolved = "你未參與"
 }
 
 class ItemTableViewCell: UITableViewCell {
