@@ -34,7 +34,7 @@ class GroupManager {
     }
     
     func fetchGroups(userId: String, completion: @escaping (Result<[GroupData], Error>) -> Void) {
-        db.collection("group").whereField("member", arrayContains: userId).getDocuments() { (querySnapshot, error) in
+        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: 0).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -158,5 +158,19 @@ class GroupManager {
                 }
                 
             }
+    }
+    
+    func updateGroupStatus(groupId: String) {
+        let groupRef = db.collection("group").document(groupId)
+        
+        groupRef.updateData([
+            "status": 1
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+            }
+        }
     }
 }

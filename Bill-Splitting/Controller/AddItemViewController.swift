@@ -216,7 +216,6 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         } else {
             paidId = memberData?[row].userId
             paidPrice = Double(addItemView.priceTextField.text ?? "0")
-//            print("paidId: \(paidId), paidPrice: \(paidPrice)")
             return memberPickerView.textField.text = memberData?[row].userName
         }
     }
@@ -257,15 +256,12 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             selectedIndexs.remove(at: index)
             involvedMemberName.remove(at: index)
             involvedExpenseData.remove(at: index)
-//            print("remove: \(involvedExpenseData)")
         } else {
             selectedIndexs.append(indexPath.row)
             involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
             
             var involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
             involvedExpenseData.append(involedExpense)
-//            print("price: \(involvedPrice)")
-//            print("involvedData: \(involvedExpenseData)")
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
@@ -284,10 +280,8 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
             
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
-//                print("involvedPrice:\(involvedPrice)")
             }
             
         }
-//        print("involvedData = \(involvedExpenseData)")
     }
 }

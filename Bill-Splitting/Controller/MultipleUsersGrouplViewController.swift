@@ -11,6 +11,9 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
+    let closedGroupButton = UIButton()
+    let subscribeButton = UIButton()
+    let width = UIScreen.main.bounds.width
     
     var groupData: GroupData?
     
@@ -43,10 +46,10 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        getItemData()
         setGroupDetailView()
         setItemTableView()
-//        getMemberExpense()
+//        setSubscribeButton()
+        setClosedGroupButton()
         
         navigationItem.title = "群組"
     }
@@ -150,6 +153,40 @@ class MultipleUsersGrouplViewController: UIViewController {
         itemTableView.delegate = self
     }
     
+    func setClosedGroupButton() {
+        view.addSubview(closedGroupButton)
+        closedGroupButton.translatesAutoresizingMaskIntoConstraints = false
+        closedGroupButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
+        closedGroupButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
+        closedGroupButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        closedGroupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+                
+        closedGroupButton.setTitle("封存群組", for: .normal)
+        closedGroupButton.backgroundColor = .systemGray
+        closedGroupButton.addTarget(self, action: #selector(pressClosedGroup), for: .touchUpInside)
+    }
+    
+    @objc func pressClosedGroup() {
+        GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "")
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+    
+    func setSubscribeButton() {
+        view.addSubview(subscribeButton)
+        subscribeButton.translatesAutoresizingMaskIntoConstraints = false
+        subscribeButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
+        subscribeButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
+        subscribeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        subscribeButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 20).isActive = true
+        
+        if groupData?.type == 1 {
+            closedGroupButton.isHidden = true
+        }
+        
+        closedGroupButton.setTitle("訂閱", for: .normal)
+        closedGroupButton.backgroundColor = .systemGray
+    }
+    
     func getItemData() {
         ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") {
             [weak self] result in
@@ -164,8 +201,6 @@ class MultipleUsersGrouplViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
-        //        print("=====\(self.paidItem.count)")
-        //        print("=====\(self.involvedItem.count)")
     }
     
     func getItemDetail(itemId: String) {
@@ -179,7 +214,6 @@ class MultipleUsersGrouplViewController: UIViewController {
                 case .success(let items):
                     self?.paidItem.append(items)
                     semaphore.signal()
-                    //                    print("=====[pai\(self?.paidItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -192,7 +226,6 @@ class MultipleUsersGrouplViewController: UIViewController {
                 switch result {
                 case .success(let items):
                     self?.involvedItem.append(items)
-//                    print("=====inv\(self?.involvedItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -207,7 +240,6 @@ class MultipleUsersGrouplViewController: UIViewController {
                 self?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == userId }
                 self?.expense = personalExpense[0].allExpense
-                //                print("=====expense:\(self?.memberExpense)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -279,12 +311,6 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
                                          price: "$\(paid?.price ?? 0)")
                 itemsCell.paidDescription.textColor = .systemGreen
             }
-//            itemsCell.createItemCell(time: time,
-//                                     name: item.itemName,
-//                                     description: PaidDescription.paid,
-//                                     price: "$\(paid?.price ?? 0)")
-//            itemsCell.paidDescription.textColor = .systemGreen
-//
         } else {
             if involved?.userId == userId {
                 if item.itemName == "結帳" {
@@ -300,11 +326,6 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
                                              price: "$\(involved?.price ?? 0)")
                         itemsCell.paidDescription.textColor = .systemRed
                 }
-//            itemsCell.createItemCell(time: time,
-//                                     name: item.itemName,
-//                                     description: PaidDescription.involved,
-//                                     price: "$\(involved?.price ?? 0)")
-//                itemsCell.paidDescription.textColor = .systemRed
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,

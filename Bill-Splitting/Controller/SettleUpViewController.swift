@@ -21,7 +21,6 @@ class SettleUpViewController: UIViewController {
 
         navigationItem.title = "結算群組帳務"
         setTableView()
-        print("member: \(userData)")
         removeCreatorData()
     }
     
