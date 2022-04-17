@@ -55,6 +55,21 @@
             </objects>
             <point key="canvasLocation" x="2996" y="66"/>
         </scene>
+        <!--Subscribe View Controller-->
+        <scene sceneID="x72-17-zVh">
+            <objects>
+                <viewController storyboardIdentifier="SubscribeViewController" id="mBu-QX-hpc" customClass="SubscribeViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qEn-RC-rpQ">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Rn7-eN-dTU"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="udX-0d-EMg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1968" y="944"/>
+        </scene>
         <!--Settle Up View Controller-->
         <scene sceneID="CMP-Nd-ClA">
             <objects>

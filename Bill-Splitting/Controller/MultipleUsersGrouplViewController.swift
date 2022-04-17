@@ -48,7 +48,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         super.viewDidLoad()
         setGroupDetailView()
         setItemTableView()
-//        setSubscribeButton()
+        setSubscribeButton()
         setClosedGroupButton()
         
         navigationItem.title = "群組"
@@ -174,17 +174,25 @@ class MultipleUsersGrouplViewController: UIViewController {
     func setSubscribeButton() {
         view.addSubview(subscribeButton)
         subscribeButton.translatesAutoresizingMaskIntoConstraints = false
-        subscribeButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
-        subscribeButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
-        subscribeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        subscribeButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 20).isActive = true
+        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        subscribeButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        subscribeButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        subscribeButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         
-        if groupData?.type == 1 {
-            closedGroupButton.isHidden = true
-        }
+//        if groupData?.type == 1 {
+//            subscribeButton.isHidden = true
+//        }
         
-        closedGroupButton.setTitle("訂閱", for: .normal)
-        closedGroupButton.backgroundColor = .systemGray
+        subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
+        subscribeButton.tintColor = .systemGray
+        subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
+    }
+    
+    @objc func pressSubscribe() {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let subscribeViewController =
+                storyBoard.instantiateViewController(withIdentifier: String(describing: SubscribeViewController.self)) as? SubscribeViewController else { return }
+        self.present(subscribeViewController, animated: true, completion: nil)
     }
     
     func getItemData() {
