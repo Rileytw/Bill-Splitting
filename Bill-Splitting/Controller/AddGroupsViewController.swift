@@ -49,6 +49,7 @@ class AddGroupsViewController: UIViewController {
         //        setSearchBar()
         nameTextField.delegate = self
 //        disableAddGroupButton()
+        navigationItem.title = "新增群組"
         
     }
     

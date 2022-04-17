@@ -9,7 +9,7 @@ import UIKit
 
 class GroupsViewController: UIViewController {
 
-    let groupsView = GroupsView(frame: CGRect(x: 0, y: 200, width: UIScreen.main.bounds.width, height: 100))
+    let groupsView = GroupsView(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 80))
     let tableView = UITableView()
     var groups: [GroupData] = [] {
         didSet {
@@ -21,6 +21,7 @@ class GroupsViewController: UIViewController {
         super.viewDidLoad()
         view.addSubview(groupsView)
         setTableView()
+        navigationItem.title = "我的群組"
     }
     
     override func viewWillAppear(_ animated: Bool) {

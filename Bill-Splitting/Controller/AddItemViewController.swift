@@ -40,7 +40,6 @@ class AddItemViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setAddItemView()
         setTypePickerView()
         setmemberPickerView()

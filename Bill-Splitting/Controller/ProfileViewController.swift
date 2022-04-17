@@ -16,6 +16,7 @@ class ProfileViewController: UIViewController {
         
         setTableView()
         
+        navigationItem.title = "個人頁面"
     }
     
     func setTableView() {
