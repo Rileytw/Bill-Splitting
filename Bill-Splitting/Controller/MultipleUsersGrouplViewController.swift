@@ -13,7 +13,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     let itemTableView = UITableView()
     
     var groupData: GroupData?
-
+    
     var memberName: [String] = []
     var userData: [UserData] = []
     var itemData: [ItemData] = []
@@ -47,16 +47,26 @@ class MultipleUsersGrouplViewController: UIViewController {
         setGroupDetailView()
         setItemTableView()
         getMemberExpense()
-//        GroupManager.shared.listenForItems(groupId: groupData?.groupId ?? "") {
-//            self.getItemData()
-//            print("Listen~~~~~~~~~~~~~~~~~~~")
-//        }
+        //        GroupManager.shared.listenForItems(groupId: groupData?.groupId ?? "") {
+        //            self.getItemData()
+        //            print("Listen~~~~~~~~~~~~~~~~~~~")
+        //        }
         navigationItem.title = "群組"
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         getUserData()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
     
     func getUserData() {
@@ -81,7 +91,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 semaphore.wait()
             }
         }
-
+        
     }
     
     func setGroupDetailView() {
@@ -103,11 +113,11 @@ class MultipleUsersGrouplViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
         addItemViewController.memberId = groupData?.member
-//        addItemViewController.memberName = memberName
+        //        addItemViewController.memberName = memberName
         addItemViewController.memberData = userData
         addItemViewController.groupData = groupData
         self.present(addItemViewController, animated: true, completion: nil)
-//        self.show(addItemViewController, sender: nil)
+        //        self.show(addItemViewController, sender: nil)
     }
     
     @objc func pressSettleUp() {
@@ -126,7 +136,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
         itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 40).isActive = true
         itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
-
+        
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
@@ -149,14 +159,14 @@ class MultipleUsersGrouplViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
-//        print("=====\(self.paidItem.count)")
-//        print("=====\(self.involvedItem.count)")
+        //        print("=====\(self.paidItem.count)")
+        //        print("=====\(self.involvedItem.count)")
     }
     
     func getItemDetail(itemId: String) {
         let semaphore = DispatchSemaphore(value: 0)
         let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
-
+        
         queue.async {
             ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) {
                 [weak self] result in
@@ -164,20 +174,20 @@ class MultipleUsersGrouplViewController: UIViewController {
                 case .success(let items):
                     self?.paidItem.append(items)
                     semaphore.signal()
-//                    print("=====[pai\(self?.paidItem)")
+                    //                    print("=====[pai\(self?.paidItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
             }
-
+            
             semaphore.wait()
-
+            
             ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) {
                 [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.involvedItem.append(items)
-//                    print("=====inv\(self?.involvedItem)")
+                    print("=====inv\(self?.involvedItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -192,7 +202,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 self?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == userId }
                 self?.expense = personalExpense[0].allExpense
-//                print("=====expense:\(self?.memberExpense)")
+                //                print("=====expense:\(self?.memberExpense)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -203,7 +213,7 @@ class MultipleUsersGrouplViewController: UIViewController {
 extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return involvedItem.count
-//        return 1
+        //        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -213,12 +223,27 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         )
         
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
-
+        
         let item = itemData[indexPath.row]
-//        paidItem.sort { $0[0].createdTime ?? 0 > $1[0].createdTime ?? 0}
-        let paid = paidItem[indexPath.row][0]
-//        involvedItem.sort { $0[0].createdTime ?? 0 > $1[0].createdTime ?? 0}
-        let involves = involvedItem[indexPath.row]
+        var paid: ExpenseInfo?
+        for index in 0..<paidItem.count {
+            if paidItem[index][0].itemId == item.itemId {
+                paid = paidItem[index][0]
+                break
+            }
+        }
+        var involves = [ExpenseInfo]()
+        var involved: ExpenseInfo?
+        for index in 0..<involvedItem.count {
+            involves = involvedItem[index]
+            for involve in  0..<involves.count {
+                if involves[involve].itemId == item.itemId {
+                    involved = involves[involve]
+                    break
+                }
+            }
+        }
+        let user = involves.map { $0.userId }
         
         let timeStamp = item.createdTime
         let timeInterval = TimeInterval(timeStamp)
@@ -227,25 +252,20 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
         let time = dateFormatter.string(from: date)
         
-//        print("priceeeee:\(paid.price)")
-        if paid.userId == userId {
+        if paid?.userId == userId {
             itemsCell.createItemCell(time: time,
-                                     name: item.itemName ?? "",
+                                     name: item.itemName,
                                      description: PaidDescription.paid,
-                                     price: "\(paid.price)")
+                                     price: "\(paid?.price ?? 0)")
         } else {
-            let user = involves.map { $0.userId }
-            let trrr = involves.filter { $0.userId == userId }
-            let price = trrr.map { $0.price }
-//            let price = involves.map { $0.price }
-            if user[0] == userId {
-                itemsCell.createItemCell(time: time,
-                                         name: item.itemName ?? "",
-                                         description: PaidDescription.involved,
-                                         price: "\(price[0])")
+            if involved?.userId == userId {
+            itemsCell.createItemCell(time: time,
+                                     name: item.itemName,
+                                     description: PaidDescription.involved,
+                                     price: "\(involved?.price ?? 0)")
             } else {
                 itemsCell.createItemCell(time: time,
-                                         name: item.itemName ?? "",
+                                         name: item.itemName,
                                          description: PaidDescription.notInvolved,
                                          price: "")
             }

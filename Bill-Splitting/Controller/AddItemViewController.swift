@@ -88,6 +88,11 @@ class AddItemViewController: UIViewController {
         memberPickerView.textField.placeholder = "請選擇付款人"
         
         memberPickerView.pickerView.tag = 1
+        
+        if groupData?.type == 0 {
+            memberPickerView.isHidden = true
+            memberPickerView.heightAnchor.constraint(equalToConstant: 0).isActive = true
+        }
     }
     
     func setAddButton() {
@@ -124,7 +129,16 @@ class AddItemViewController: UIViewController {
             itemId in
             self.itemId = itemId
             
-            ItemManager.shared.addPaidInfo(paidUserId: self.paidId ?? "",
+            var paidUserId: String?
+            if self.groupData?.type == 1 {
+                paidUserId = self.paidId
+            } else {
+                paidUserId = userId
+            }
+            
+            self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
+            
+            ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
                                            price: self.paidPrice ?? 0,
                                            itemId: itemId,
                                            createdTime: Double(NSDate().timeIntervalSince1970))
@@ -143,7 +157,14 @@ class AddItemViewController: UIViewController {
     
     func countPersonalExpense() {
         
-        GroupManager.shared.updateMemberExpense(userId: self.paidId ?? "",
+        var paidUserId: String?
+        if self.groupData?.type == 1 {
+            paidUserId = self.paidId
+        } else {
+            paidUserId = userId
+        }
+        
+        GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                 newExpense: self.paidPrice ?? 0,
                                                 groupId: groupData?.groupId ?? "")
         
