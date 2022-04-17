@@ -245,13 +245,13 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         for index in 0..<involvedItem.count {
             involves = involvedItem[index]
             for involve in  0..<involves.count {
-                if involves[involve].itemId == item.itemId {
+                if involves[involve].itemId == item.itemId && involves[involve].userId == userId {
                     involved = involves[involve]
+                    print("===involved:\(involved)")
                     break
                 }
             }
         }
-        let user = involves.map { $0.userId }
         
         let timeStamp = item.createdTime
         let timeInterval = TimeInterval(timeStamp)
