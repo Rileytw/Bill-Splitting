@@ -36,6 +36,7 @@ class SettleUpViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: SettleUpTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: SettleUpTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.rowHeight = 60
     }
     
     func removeCreatorData() {
@@ -90,5 +91,16 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         return settleUpCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let specificSettleUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SpecificSettleIUpViewController.self))
+                as? SpecificSettleIUpViewController else { return }
+        
+        specificSettleUpViewController.userData = userData[indexPath.row]
+        specificSettleUpViewController.memberExpense = memberExpense[indexPath.row]
+        self.show(specificSettleUpViewController, sender: nil)
+
     }
 }

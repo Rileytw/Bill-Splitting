@@ -70,6 +70,21 @@
             </objects>
             <point key="canvasLocation" x="3983" y="66"/>
         </scene>
+        <!--Specific SettleI Up View Controller-->
+        <scene sceneID="17F-TI-E23">
+            <objects>
+                <viewController storyboardIdentifier="SpecificSettleIUpViewController" id="iWf-96-fQY" customClass="SpecificSettleIUpViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="79W-DD-n1S">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="8DB-lw-kWM"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9tV-XD-TVx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5116" y="78"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="zpc-KT-PRR">
             <objects>

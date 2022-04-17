@@ -247,7 +247,6 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
             for involve in  0..<involves.count {
                 if involves[involve].itemId == item.itemId && involves[involve].userId == userId {
                     involved = involves[involve]
-                    print("===involved:\(involved)")
                     break
                 }
             }
