@@ -164,6 +164,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         closedGroupButton.setTitle("封存群組", for: .normal)
         closedGroupButton.backgroundColor = .systemGray
         closedGroupButton.addTarget(self, action: #selector(pressClosedGroup), for: .touchUpInside)
+
     }
     
     @objc func pressClosedGroup() {
@@ -258,6 +259,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         if groupData?.type == 0 && userId != groupData?.creator {
             groupDetailView.addExpenseButton.isEnabled = false
             groupDetailView.addExpenseButton.isHidden = true
+            closedGroupButton.isHidden = true
         }
     }
 }

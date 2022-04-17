@@ -11,6 +11,7 @@ class SpecificSettleIUpViewController: UIViewController {
     
     var userData: UserData?
     var groupId: String?
+    var groupData: GroupData?
     var memberExpense: MemberExpense?
     var itemId: String?
     

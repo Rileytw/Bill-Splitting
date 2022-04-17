@@ -107,9 +107,12 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         guard let specificSettleUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SpecificSettleIUpViewController.self))
                 as? SpecificSettleIUpViewController else { return }
         
-        specificSettleUpViewController.userData = userData[indexPath.row]
-        specificSettleUpViewController.memberExpense = memberExpense[indexPath.row]
+        let memberExpense = memberExpense[indexPath.row]
+        let memberData = userData.filter { $0.userId == memberExpense.userId }
+        specificSettleUpViewController.userData = memberData[0]
+        specificSettleUpViewController.memberExpense = memberExpense
         specificSettleUpViewController.groupId = groupData?.groupId
+        specificSettleUpViewController.groupData = groupData
         self.show(specificSettleUpViewController, sender: nil)
     }
 }
