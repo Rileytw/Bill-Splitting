@@ -52,7 +52,7 @@ class SpecificSettleIUpViewController: UIViewController {
         nameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 40).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
-            nameLabel.text = "匯款對象：\(userData.userName)"
+            nameLabel.text = "付款對象：\(userData.userName)"
             nameLabel.textColor = .systemPink
         } else {
             nameLabel.text = "收款對象：\(userData.userName)"
@@ -68,7 +68,7 @@ class SpecificSettleIUpViewController: UIViewController {
         price.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 40).isActive = true
         price.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
-            price.text = "匯款金額：\(abs(memberExpense.allExpense)) 元"
+            price.text = "付款金額：\(abs(memberExpense.allExpense)) 元"
             price.textColor = .systemPink
         } else {
             price.text = "收款金額：\(abs(memberExpense.allExpense)) 元"

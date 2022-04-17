@@ -11,6 +11,8 @@ enum PaidDescription: String {
     case paid = "你已支付"
     case involved = "你應支付"
     case notInvolved = "你未參與"
+    case settleUpPaid = "已付款"
+    case settleUpInvolved = "已收款"
 }
 
 class ItemTableViewCell: UITableViewCell {

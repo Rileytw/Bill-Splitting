@@ -43,10 +43,10 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getItemData()
+//        getItemData()
         setGroupDetailView()
         setItemTableView()
-        getMemberExpense()
+//        getMemberExpense()
         
         navigationItem.title = "群組"
     }
@@ -54,6 +54,8 @@ class MultipleUsersGrouplViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
+        userData.removeAll()
+        
         getItemData()
         getMemberExpense()
     }
@@ -67,7 +69,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
     }
-    
+        
     func getUserData() {
         let semaphore = DispatchSemaphore(value: 0)
         let queue = DispatchQueue(label: "Queue", qos: .default, attributes: .concurrent)
@@ -263,18 +265,46 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         let time = dateFormatter.string(from: date)
         
         if paid?.userId == userId {
-            itemsCell.createItemCell(time: time,
-                                     name: item.itemName,
-                                     description: PaidDescription.paid,
-                                     price: "$\(paid?.price ?? 0)")
-            itemsCell.paidDescription.textColor = .systemGreen
+            
+            if item.itemName == "結帳" {
+                itemsCell.createItemCell(time: time,
+                                         name: item.itemName,
+                                         description: PaidDescription.settleUpInvolved,
+                                         price: "$\(paid?.price ?? 0)")
+                itemsCell.paidDescription.textColor = .systemGreen
+            } else {
+                itemsCell.createItemCell(time: time,
+                                         name: item.itemName,
+                                         description: PaidDescription.paid,
+                                         price: "$\(paid?.price ?? 0)")
+                itemsCell.paidDescription.textColor = .systemGreen
+            }
+//            itemsCell.createItemCell(time: time,
+//                                     name: item.itemName,
+//                                     description: PaidDescription.paid,
+//                                     price: "$\(paid?.price ?? 0)")
+//            itemsCell.paidDescription.textColor = .systemGreen
+//
         } else {
             if involved?.userId == userId {
-            itemsCell.createItemCell(time: time,
-                                     name: item.itemName,
-                                     description: PaidDescription.involved,
-                                     price: "$\(involved?.price ?? 0)")
-                itemsCell.paidDescription.textColor = .systemRed
+                if item.itemName == "結帳" {
+                    itemsCell.createItemCell(time: time,
+                                             name: item.itemName,
+                                             description: PaidDescription.settleUpPaid,
+                                             price: "$\(involved?.price ?? 0)")
+                        itemsCell.paidDescription.textColor = .systemRed
+                } else {
+                    itemsCell.createItemCell(time: time,
+                                             name: item.itemName,
+                                             description: PaidDescription.involved,
+                                             price: "$\(involved?.price ?? 0)")
+                        itemsCell.paidDescription.textColor = .systemRed
+                }
+//            itemsCell.createItemCell(time: time,
+//                                     name: item.itemName,
+//                                     description: PaidDescription.involved,
+//                                     price: "$\(involved?.price ?? 0)")
+//                itemsCell.paidDescription.textColor = .systemRed
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
