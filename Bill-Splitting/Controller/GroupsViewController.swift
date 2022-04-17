@@ -85,6 +85,16 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         guard let multipleUsersGroupViewController =
                 storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
         multipleUsersGroupViewController.groupData = groups[indexPath.row]
+        
+//        guard let personalParticipantGroupViewController =
+//                storyBoard.instantiateViewController(withIdentifier: String(describing: PersonalParticipantViewController.self)) as? PersonalParticipantViewController else { return }
+//
+//        let groupMember = groups[indexPath.row]
+//        if groupMember.type == 0 && userId != groupMember.creator {
+//            self.show(personalParticipantGroupViewController, sender: nil)
+//        } else {
+//            self.show(multipleUsersGroupViewController, sender: nil)
+//        }
         self.show(multipleUsersGroupViewController, sender: nil)
     }
 }

@@ -78,7 +78,7 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
                 settleUpCell.payerName.text = "\(memberData[0].userName)"
             }
         } else {
-            if memberExpense.allExpense > 0 {
+            if memberExpense.allExpense < 0 {
                 settleUpCell.creditorName.text = "\(userName)"
                 settleUpCell.payerName.text = "\(memberData[0].userName)"
                 settleUpCell.price.text = " $ \(expense)"

@@ -103,7 +103,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
         
         groupDetailView.personalFinalPaidLabel.text = "你的總支出為："
-        
+        detectParticipantUser()
     }
     
     @objc func pressAddItem() {
@@ -207,6 +207,13 @@ class MultipleUsersGrouplViewController: UIViewController {
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
+        }
+    }
+    
+    func detectParticipantUser() {
+        if groupData?.type == 0 && userId != groupData?.creator {
+            groupDetailView.addExpenseButton.isEnabled = false
+            groupDetailView.addExpenseButton.isHidden = true
         }
     }
 }
