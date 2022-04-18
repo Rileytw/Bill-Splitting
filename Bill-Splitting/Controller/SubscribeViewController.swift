@@ -12,6 +12,11 @@ class SubscribeViewController: UIViewController {
     var startTimeDatePicker = UIDatePicker()
     var endTimeDatePicker = UIDatePicker()
     
+    var startDate: Date?
+    var endDate: Date?
+    var month: Int?
+    var createdTimeTimeStamps = [Double]()
+    
     var startTimeLabel = UILabel()
     var endTimeLabel = UILabel()
     var cycleLabel = UILabel()
@@ -90,7 +95,8 @@ class SubscribeViewController: UIViewController {
         
         startTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
         startTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
-        
+        startTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
+
         view.addSubview(endTimeDatePicker)
         endTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
         endTimeDatePicker.topAnchor.constraint(equalTo: startTimeLabel.bottomAnchor, constant: 20).isActive = true
@@ -98,8 +104,8 @@ class SubscribeViewController: UIViewController {
         endTimeDatePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -20).isActive = true
         endTimeDatePicker.widthAnchor.constraint(equalToConstant: 180).isActive = true
         endTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
-        
         endTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
+        endTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
     }
     
     func setCyclePicker() {
@@ -151,6 +157,38 @@ class SubscribeViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: AddItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddItemTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    @objc func datePickerChanged(sender: UIDatePicker) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        if sender == startTimeDatePicker {
+            startDate = startTimeDatePicker.date
+            print("startDate: \(startDate)")
+        } else if sender == endTimeDatePicker {
+            endDate = endTimeDatePicker.date
+            print("endDate: \(endDate)")
+        }
+        let components = Calendar.current.dateComponents([.month], from: startDate ?? Date(), to: endDate ?? Date())
+        month = components.month
+        print("Number of months: \(month)")
+        countSubscriptiontime()
+    }
+    
+    func countSubscriptiontime() {
+        var monthOfsubscription = 0
+        var dateArray = [Date]()
+        while monthOfsubscription <= month ?? 0 {
+            var dateComponent = DateComponents()
+            dateComponent.month = monthOfsubscription
+            let adjustedDate = Calendar.current.date(byAdding: dateComponent, to: startDate ?? Date())
+            dateArray.append(adjustedDate ?? Date())
+            createdTimeTimeStamps = dateArray.map { $0.timeIntervalSince1970 }
+            
+            monthOfsubscription += 1
+        }
+        print("dateArray: \(dateArray)")
+        print("timeStamp: \(createdTimeTimeStamps)")
     }
 }
 
@@ -211,7 +249,7 @@ extension SubscribeViewController: UITableViewDataSource, UITableViewDelegate {
             selectedIndexs.append(indexPath.row)
             involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
             
-            var involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
+            let involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
             involvedExpenseData.append(involedExpense)
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -224,7 +262,7 @@ extension SubscribeViewController: AddItemTableViewCellDelegate {
         involvedPrice = Double(cell.priceTextField.text ?? "0")
         
         let name = cell.memberName.text
-        var selectedUser = memberData?.filter { $0.userName == name }
+        let selectedUser = memberData?.filter { $0.userName == name }
         guard let id = selectedUser?[0].userId else { return }
                 
         for index in 0..<involvedExpenseData.count {
@@ -235,4 +273,3 @@ extension SubscribeViewController: AddItemTableViewCellDelegate {
         }
     }
 }
-
