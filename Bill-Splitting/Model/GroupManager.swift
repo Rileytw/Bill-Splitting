@@ -20,10 +20,10 @@ class GroupManager {
     static var shared = GroupManager()
     lazy var db = Firestore.firestore()
     
-    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String], completion: @escaping (String) -> Void) {
+    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String], createdTime: Double, completion: @escaping (String) -> Void) {
         let ref = db.collection("group").document()
         
-        let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, goupDescription: description, creator: creator, type: type, status: status, member: member)
+        let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, goupDescription: description, creator: creator, type: type, status: status, member: member, createdTime: createdTime)
         
         do {
             try db.collection("group").document("\(ref.documentID)").setData(from: groupData)
@@ -34,7 +34,7 @@ class GroupManager {
     }
     
     func fetchGroups(userId: String, completion: @escaping (Result<[GroupData], Error>) -> Void) {
-        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: 0).getDocuments() { (querySnapshot, error) in
+        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: 0).order(by:"createdTime", descending: true).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))

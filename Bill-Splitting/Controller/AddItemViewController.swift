@@ -31,6 +31,7 @@ class AddItemViewController: UIViewController {
     var paidPrice: Double?
     var involvedExpenseData: [ExpenseInfo] = []
     var involvedPrice: Double?
+    var choosePaidMember = UILabel()
     
     var selectedIndexs = [Int]()
     var involvedMemberName: [String] = []
@@ -73,10 +74,10 @@ class AddItemViewController: UIViewController {
         typePickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         typePickerView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-
+        typePickerView.pickerViewData = typePickerViewData
+        
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
-        typePickerView.textField.placeholder = "請選擇分帳方式"
         
         typePickerView.pickerView.tag = 0
     }
@@ -91,7 +92,7 @@ class AddItemViewController: UIViewController {
 
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
-        memberPickerView.textField.placeholder = "請選擇付款人"
+//        memberPickerView.textField.text = "請選擇付款人"
         
         memberPickerView.pickerView.tag = 1
         
@@ -99,6 +100,14 @@ class AddItemViewController: UIViewController {
             memberPickerView.isHidden = true
             memberPickerView.heightAnchor.constraint(equalToConstant: 0).isActive = true
         }
+        
+        view.addSubview(choosePaidMember)
+        choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
+        choosePaidMember.bottomAnchor.constraint(equalTo: memberPickerView.topAnchor, constant: -10).isActive = true
+        choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        choosePaidMember.text = "選擇付款人"
     }
     
     func setAddButton() {
