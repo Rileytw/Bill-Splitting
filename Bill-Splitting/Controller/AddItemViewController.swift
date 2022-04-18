@@ -48,16 +48,6 @@ class AddItemViewController: UIViewController {
         setTableView()
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        tabBarController?.tabBar.isHidden = true
-//        navigationController?.setNavigationBarHidden(true, animated: animated)
-//    }
-//
-//    override func viewWillDisappear(_ animated: Bool) {
-//        navigationController?.setNavigationBarHidden(false, animated: animated)
-//    }
-    
     func setAddItemView() {
         view.addSubview(addItemView)
         addItemView.translatesAutoresizingMaskIntoConstraints = false

@@ -194,7 +194,10 @@ class MultipleUsersGrouplViewController: UIViewController {
     @objc func pressSubscribe() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let subscribeViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: SubscribeViewController.self)) as? SubscribeViewController else { return }
+                storyBoard.instantiateViewController(withIdentifier: String(describing: SubscribeViewController.self)) as? SubscribeViewController as? SubscribeViewController else { return }
+        subscribeViewController.memberId = groupData?.member
+        subscribeViewController.memberData = userData
+        subscribeViewController.groupData = groupData
         self.present(subscribeViewController, animated: true, completion: nil)
     }
     
