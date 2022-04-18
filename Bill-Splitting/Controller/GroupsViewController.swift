@@ -53,6 +53,11 @@ class GroupsViewController: UIViewController {
             }
         }
     }
+    
+//    func setGroupButton() {
+//        view.addSubview(groupsView)
+//        
+//    }
 }
 
 extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {

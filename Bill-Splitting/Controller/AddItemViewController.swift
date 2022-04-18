@@ -108,6 +108,9 @@ class AddItemViewController: UIViewController {
         choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
         choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
         choosePaidMember.text = "選擇付款人"
+        if groupData?.type == 0 {
+            choosePaidMember.isHidden = true
+        }
     }
     
     func setAddButton() {

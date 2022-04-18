@@ -182,6 +182,8 @@ class MultipleUsersGrouplViewController: UIViewController {
         
         if groupData?.type == 1 {
             subscribeButton.isHidden = true
+        } else if groupData?.type == 0 && groupData?.creator != userId {
+            subscribeButton.isHidden = true
         }
         
         subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
