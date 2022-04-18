@@ -27,6 +27,9 @@
 		350A3377280468D000201E40 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3376280468D000201E40 /* UserManager.swift */; };
 		350A3379280469BB00201E40 /* UserObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3378280469BB00201E40 /* UserObject.swift */; };
 		350A337B2805060B00201E40 /* FriendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A337A2805060B00201E40 /* FriendManager.swift */; };
+		355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DA280DA0E10007C0CE /* SubscriptionObject.swift */; };
+		355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DC280DA19F0007C0CE /* SubscriptionManager.swift */; };
+		355090DF280DA5900007C0CE /* FireBaseCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DE280DA5900007C0CE /* FireBaseCollection.swift */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -82,6 +85,9 @@
 		350A3376280468D000201E40 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		350A3378280469BB00201E40 /* UserObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserObject.swift; sourceTree = "<group>"; };
 		350A337A2805060B00201E40 /* FriendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendManager.swift; sourceTree = "<group>"; };
+		355090DA280DA0E10007C0CE /* SubscriptionObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionObject.swift; sourceTree = "<group>"; };
+		355090DC280DA19F0007C0CE /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		355090DE280DA5900007C0CE /* FireBaseCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireBaseCollection.swift; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -245,6 +251,9 @@
 				350A3376280468D000201E40 /* UserManager.swift */,
 				350A3378280469BB00201E40 /* UserObject.swift */,
 				350A337A2805060B00201E40 /* FriendManager.swift */,
+				355090DA280DA0E10007C0CE /* SubscriptionObject.swift */,
+				355090DC280DA19F0007C0CE /* SubscriptionManager.swift */,
+				355090DE280DA5900007C0CE /* FireBaseCollection.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -403,6 +412,7 @@
 				35FF63F12807B22400508EAF /* AddItemViewController.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
+				355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */,
 				35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
 				35FF6409280C66BB00508EAF /* SubscirbeView.swift in Sources */,
@@ -425,8 +435,10 @@
 				35FF63DF2806563500508EAF /* ItemObject.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
 				35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */,
+				355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */,
 				350A336A2804192C00201E40 /* BaseTexFieldView + PickerView.swift in Sources */,
 				35FF63E128066F8800508EAF /* GroupsView.swift in Sources */,
+				355090DF280DA5900007C0CE /* FireBaseCollection.swift in Sources */,
 				35FF63FA2809672100508EAF /* ItemTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
