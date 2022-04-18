@@ -49,6 +49,7 @@ class AddGroupsViewController: UIViewController {
         //        setSearchBar()
         nameTextField.delegate = self
 //        disableAddGroupButton()
+        navigationItem.title = "新增群組"
         
     }
     
@@ -177,7 +178,13 @@ class AddGroupsViewController: UIViewController {
             type = 1
         }
         
-        GroupManager.shared.addGroupData(name: nameTextField.text ?? "", description: descriptionTextView.text, creator: userId, type: self.type ?? 0, status: 0, member: self.member ?? [""]) {
+        GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
+                                         description: descriptionTextView.text,
+                                         creator: userId,
+                                         type: self.type ?? 0,
+                                         status: 0,
+                                         member: self.member ?? [""],
+                                         createdTime: Double(NSDate().timeIntervalSince1970)) {
             groupId in
             self.member.forEach {
                 member in

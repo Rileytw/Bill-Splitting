@@ -21,8 +21,17 @@ class SettleUpViewController: UIViewController {
 
         navigationItem.title = "結算群組帳務"
         setTableView()
-        print("member: \(userData)")
         removeCreatorData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
     
     func setTableView() {
@@ -36,6 +45,7 @@ class SettleUpViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: SettleUpTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: SettleUpTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.rowHeight = 60
     }
     
     func removeCreatorData() {
@@ -78,7 +88,7 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
                 settleUpCell.payerName.text = "\(memberData[0].userName)"
             }
         } else {
-            if memberExpense.allExpense > 0 {
+            if memberExpense.allExpense < 0 {
                 settleUpCell.creditorName.text = "\(userName)"
                 settleUpCell.payerName.text = "\(memberData[0].userName)"
                 settleUpCell.price.text = " $ \(expense)"
@@ -90,5 +100,21 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         return settleUpCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let specificSettleUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SpecificSettleIUpViewController.self))
+                as? SpecificSettleIUpViewController else { return }
+        
+        let memberExpense = memberExpense[indexPath.row]
+        let memberData = userData.filter { $0.userId == memberExpense.userId }
+        let userExpense = self.memberExpense.filter { $0.userId == userId}
+        specificSettleUpViewController.userData = memberData[0]
+        specificSettleUpViewController.memberExpense = memberExpense
+        specificSettleUpViewController.groupId = groupData?.groupId
+        specificSettleUpViewController.groupData = groupData
+        specificSettleUpViewController.userExpense = userExpense
+        self.show(specificSettleUpViewController, sender: nil)
     }
 }

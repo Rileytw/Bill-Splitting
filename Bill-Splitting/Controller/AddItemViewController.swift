@@ -18,7 +18,11 @@ class AddItemViewController: UIViewController {
     
     var groupData: GroupData? 
     var memberId: [String]?
-    var memberData: [UserData]? = []
+    var memberData: [UserData]? = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     var itemId: String?
     var paidItem: [[ExpenseInfo]] = []
@@ -27,13 +31,16 @@ class AddItemViewController: UIViewController {
     var paidPrice: Double?
     var involvedExpenseData: [ExpenseInfo] = []
     var involvedPrice: Double?
+    var choosePaidMember = UILabel()
     
     var selectedIndexs = [Int]()
     var involvedMemberName: [String] = []
     
+    typealias AddItemColsure = (String) -> Void
+    var addItemColsure: AddItemColsure?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setAddItemView()
         setTypePickerView()
         setmemberPickerView()
@@ -67,10 +74,10 @@ class AddItemViewController: UIViewController {
         typePickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         typePickerView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-
+        typePickerView.pickerViewData = typePickerViewData
+        
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
-        typePickerView.textField.placeholder = "請選擇分帳方式"
         
         typePickerView.pickerView.tag = 0
     }
@@ -85,9 +92,25 @@ class AddItemViewController: UIViewController {
 
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
-        memberPickerView.textField.placeholder = "請選擇付款人"
+//        memberPickerView.textField.text = "請選擇付款人"
         
         memberPickerView.pickerView.tag = 1
+        
+        if groupData?.type == 0 {
+            memberPickerView.isHidden = true
+            memberPickerView.heightAnchor.constraint(equalToConstant: 0).isActive = true
+        }
+        
+        view.addSubview(choosePaidMember)
+        choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
+        choosePaidMember.bottomAnchor.constraint(equalTo: memberPickerView.topAnchor, constant: -10).isActive = true
+        choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        choosePaidMember.text = "選擇付款人"
+        if groupData?.type == 0 {
+            choosePaidMember.isHidden = true
+        }
     }
     
     func setAddButton() {
@@ -124,7 +147,16 @@ class AddItemViewController: UIViewController {
             itemId in
             self.itemId = itemId
             
-            ItemManager.shared.addPaidInfo(paidUserId: self.paidId ?? "",
+            var paidUserId: String?
+            if self.groupData?.type == 1 {
+                paidUserId = self.paidId
+            } else {
+                paidUserId = userId
+            }
+            
+            self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
+            
+            ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
                                            price: self.paidPrice ?? 0,
                                            itemId: itemId,
                                            createdTime: Double(NSDate().timeIntervalSince1970))
@@ -139,11 +171,20 @@ class AddItemViewController: UIViewController {
         }
         self.dismiss(animated: false, completion: nil)
 //        navigationController?.popViewController(animated: true)
+        addItemColsure?("id")
+        
     }
     
     func countPersonalExpense() {
         
-        GroupManager.shared.updateMemberExpense(userId: self.paidId ?? "",
+        var paidUserId: String?
+        if self.groupData?.type == 1 {
+            paidUserId = self.paidId
+        } else {
+            paidUserId = userId
+        }
+        
+        GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                 newExpense: self.paidPrice ?? 0,
                                                 groupId: groupData?.groupId ?? "")
         
@@ -152,6 +193,10 @@ class AddItemViewController: UIViewController {
                                                     newExpense: 0 - self.involvedExpenseData[user].price,
                                                     groupId: groupData?.groupId ?? "")
         }
+    }
+    
+    func addItem(closure: @escaping AddItemColsure) {
+        addItemColsure = closure
     }
 }
 
@@ -182,7 +227,6 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         } else {
             paidId = memberData?[row].userId
             paidPrice = Double(addItemView.priceTextField.text ?? "0")
-//            print("paidId: \(paidId), paidPrice: \(paidPrice)")
             return memberPickerView.textField.text = memberData?[row].userName
         }
     }
@@ -223,15 +267,12 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             selectedIndexs.remove(at: index)
             involvedMemberName.remove(at: index)
             involvedExpenseData.remove(at: index)
-//            print("remove: \(involvedExpenseData)")
         } else {
             selectedIndexs.append(indexPath.row)
             involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
             
             var involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
             involvedExpenseData.append(involedExpense)
-//            print("price: \(involvedPrice)")
-//            print("involvedData: \(involvedExpenseData)")
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
@@ -250,10 +291,8 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
             
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
-//                print("involvedPrice:\(involvedPrice)")
             }
             
         }
-//        print("involvedData = \(involvedExpenseData)")
     }
 }

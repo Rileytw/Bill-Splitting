@@ -11,19 +11,22 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
+    let closedGroupButton = UIButton()
+    let subscribeButton = UIButton()
+    let width = UIScreen.main.bounds.width
     
     var groupData: GroupData?
-
+    
     var memberName: [String] = []
     var userData: [UserData] = []
     var itemData: [ItemData] = []
     
-    var paidItem: [[ExpenseInfo]] = []  {
+    var paidItem: [[ExpenseInfo]] = [] {
         didSet {
             itemTableView.reloadData()
         }
     }
-    var involvedItem: [[ExpenseInfo]] = []  {
+    var involvedItem: [[ExpenseInfo]] = [] {
         didSet {
             itemTableView.reloadData()
         }
@@ -43,15 +46,21 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getItemData()
         setGroupDetailView()
         setItemTableView()
-        getMemberExpense()
-//        GroupManager.shared.listenForItems(groupId: groupData?.groupId ?? "") {
-//            self.getItemData()
-//            print("Listen~~~~~~~~~~~~~~~~~~~")
-//        }
+        setSubscribeButton()
+        setClosedGroupButton()
+        
         navigationItem.title = "群組"
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+        userData.removeAll()
+        
+        getItemData()
+        getMemberExpense()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -59,6 +68,11 @@ class MultipleUsersGrouplViewController: UIViewController {
         getUserData()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
+    }
+        
     func getUserData() {
         let semaphore = DispatchSemaphore(value: 0)
         let queue = DispatchQueue(label: "Queue", qos: .default, attributes: .concurrent)
@@ -81,7 +95,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 semaphore.wait()
             }
         }
-
+        
     }
     
     func setGroupDetailView() {
@@ -96,18 +110,22 @@ class MultipleUsersGrouplViewController: UIViewController {
         groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
         
         groupDetailView.personalFinalPaidLabel.text = "你的總支出為："
-        
+        detectParticipantUser()
     }
     
     @objc func pressAddItem() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
         addItemViewController.memberId = groupData?.member
-//        addItemViewController.memberName = memberName
         addItemViewController.memberData = userData
         addItemViewController.groupData = groupData
         self.present(addItemViewController, animated: true, completion: nil)
-//        self.show(addItemViewController, sender: nil)
+        //        self.show(addItemViewController, sender: nil)
+        
+        addItemViewController.addItem { [weak self] _ in
+            self?.getItemData()
+            self?.getMemberExpense()
+        }
     }
     
     @objc func pressSettleUp() {
@@ -126,13 +144,58 @@ class MultipleUsersGrouplViewController: UIViewController {
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
         itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 40).isActive = true
         itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
-
+        
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
         itemTableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         itemTableView.dataSource = self
         itemTableView.delegate = self
+    }
+    
+    func setClosedGroupButton() {
+        view.addSubview(closedGroupButton)
+        closedGroupButton.translatesAutoresizingMaskIntoConstraints = false
+        closedGroupButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
+        closedGroupButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
+        closedGroupButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        closedGroupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+                
+        closedGroupButton.setTitle("封存群組", for: .normal)
+        closedGroupButton.backgroundColor = .systemGray
+        closedGroupButton.addTarget(self, action: #selector(pressClosedGroup), for: .touchUpInside)
+
+    }
+    
+    @objc func pressClosedGroup() {
+        GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "")
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+    
+    func setSubscribeButton() {
+        view.addSubview(subscribeButton)
+        subscribeButton.translatesAutoresizingMaskIntoConstraints = false
+        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        subscribeButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        subscribeButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        subscribeButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        
+        if groupData?.type == 1 {
+            subscribeButton.isHidden = true
+        } else if groupData?.type == 0 && groupData?.creator != userId {
+            subscribeButton.isHidden = true
+        }
+        
+        subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
+        subscribeButton.tintColor = .systemGray
+        subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
+    }
+    
+    @objc func pressSubscribe() {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let subscribeViewController =
+                storyBoard.instantiateViewController(withIdentifier: String(describing: SubscribeViewController.self)) as? SubscribeViewController else { return }
+        self.present(subscribeViewController, animated: true, completion: nil)
     }
     
     func getItemData() {
@@ -149,14 +212,12 @@ class MultipleUsersGrouplViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
-//        print("=====\(self.paidItem.count)")
-//        print("=====\(self.involvedItem.count)")
     }
     
     func getItemDetail(itemId: String) {
         let semaphore = DispatchSemaphore(value: 0)
         let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
-
+        
         queue.async {
             ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) {
                 [weak self] result in
@@ -164,20 +225,18 @@ class MultipleUsersGrouplViewController: UIViewController {
                 case .success(let items):
                     self?.paidItem.append(items)
                     semaphore.signal()
-//                    print("=====[pai\(self?.paidItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
             }
-
+            
             semaphore.wait()
-
+            
             ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) {
                 [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.involvedItem.append(items)
-//                    print("=====inv\(self?.involvedItem)")
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -192,18 +251,26 @@ class MultipleUsersGrouplViewController: UIViewController {
                 self?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == userId }
                 self?.expense = personalExpense[0].allExpense
-//                print("=====expense:\(self?.memberExpense)")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
+        }
+    }
+    
+    func detectParticipantUser() {
+        if groupData?.type == 0 && userId != groupData?.creator {
+            groupDetailView.addExpenseButton.isEnabled = false
+            groupDetailView.addExpenseButton.isHidden = true
+            closedGroupButton.isHidden = true
         }
     }
 }
 
 extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return involvedItem.count
-//        return 1
+//        return involvedItem.count
+        return itemData.count
+        //        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -213,12 +280,26 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         )
         
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
-
+        
         let item = itemData[indexPath.row]
-//        paidItem.sort { $0[0].createdTime ?? 0 > $1[0].createdTime ?? 0}
-        let paid = paidItem[indexPath.row][0]
-//        involvedItem.sort { $0[0].createdTime ?? 0 > $1[0].createdTime ?? 0}
-        let involves = involvedItem[indexPath.row]
+        var paid: ExpenseInfo?
+        for index in 0..<paidItem.count {
+            if paidItem[index][0].itemId == item.itemId {
+                paid = paidItem[index][0]
+                break
+            }
+        }
+        var involves = [ExpenseInfo]()
+        var involved: ExpenseInfo?
+        for index in 0..<involvedItem.count {
+            involves = involvedItem[index]
+            for involve in  0..<involves.count {
+                if involves[involve].itemId == item.itemId && involves[involve].userId == userId {
+                    involved = involves[involve]
+                    break
+                }
+            }
+        }
         
         let timeStamp = item.createdTime
         let timeInterval = TimeInterval(timeStamp)
@@ -227,27 +308,42 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
         let time = dateFormatter.string(from: date)
         
-//        print("priceeeee:\(paid.price)")
-        if paid.userId == userId {
-            itemsCell.createItemCell(time: time,
-                                     name: item.itemName ?? "",
-                                     description: PaidDescription.paid,
-                                     price: "\(paid.price)")
-        } else {
-            let user = involves.map { $0.userId }
-            let trrr = involves.filter { $0.userId == userId }
-            let price = trrr.map { $0.price }
-//            let price = involves.map { $0.price }
-            if user[0] == userId {
+        if paid?.userId == userId {
+            
+            if item.itemName == "結帳" {
                 itemsCell.createItemCell(time: time,
-                                         name: item.itemName ?? "",
-                                         description: PaidDescription.involved,
-                                         price: "\(price[0])")
+                                         name: item.itemName,
+                                         description: PaidDescription.settleUpInvolved,
+                                         price: "$\(paid?.price ?? 0)")
+                itemsCell.paidDescription.textColor = .systemGreen
             } else {
                 itemsCell.createItemCell(time: time,
-                                         name: item.itemName ?? "",
+                                         name: item.itemName,
+                                         description: PaidDescription.paid,
+                                         price: "$\(paid?.price ?? 0)")
+                itemsCell.paidDescription.textColor = .systemGreen
+            }
+        } else {
+            if involved?.userId == userId {
+                if item.itemName == "結帳" {
+                    itemsCell.createItemCell(time: time,
+                                             name: item.itemName,
+                                             description: PaidDescription.settleUpPaid,
+                                             price: "$\(involved?.price ?? 0)")
+                        itemsCell.paidDescription.textColor = .systemRed
+                } else {
+                    itemsCell.createItemCell(time: time,
+                                             name: item.itemName,
+                                             description: PaidDescription.involved,
+                                             price: "$\(involved?.price ?? 0)")
+                        itemsCell.paidDescription.textColor = .systemRed
+                }
+            } else {
+                itemsCell.createItemCell(time: time,
+                                         name: item.itemName,
                                          description: PaidDescription.notInvolved,
                                          price: "")
+                itemsCell.paidDescription.textColor = .systemGray
             }
         }
         return itemsCell
