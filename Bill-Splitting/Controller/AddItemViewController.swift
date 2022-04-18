@@ -133,8 +133,7 @@ class AddItemViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
                                        itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970)) {
-            itemId in
+                                       createdTime: Double(NSDate().timeIntervalSince1970)) { itemId in
             self.itemId = itemId
             
             var paidUserId: String?

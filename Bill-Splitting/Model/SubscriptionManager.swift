@@ -25,7 +25,7 @@ class SubscriptionManager {
         }
     }
     
-    func addSubscriptionInvolvedExpense(typeUserId: String, collection: String, price: Double, documentId: String, createdTime: Double) {
+    func addSubscriptionInvolvedExpense(typeUserId: String, price: Double, documentId: String, createdTime: Double) {
         let involvedInfo = ExpenseInfo(userId: typeUserId, price: price, createdTime: createdTime, itemId: documentId)
         
         do {

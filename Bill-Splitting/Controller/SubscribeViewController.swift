@@ -28,7 +28,7 @@ class SubscribeViewController: UIViewController {
     let addItemView = AddItemView(frame: .zero)
     let tableView = UITableView()
     var selectedIndexs = [Int]()
-    var itemId: String?
+    var documentId: String?
     var paidItem: [[ExpenseInfo]] = []
     var involvedItem: [[ExpenseInfo]] = []
     var paidId: String?
@@ -134,6 +134,8 @@ class SubscribeViewController: UIViewController {
     }
     
     @objc func pressCompleteButton() {
+        countSubscriptiontime()
+        updateSubscriptionData()
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -189,6 +191,29 @@ class SubscribeViewController: UIViewController {
         }
         print("dateArray: \(dateArray)")
         print("timeStamp: \(createdTimeTimeStamps)")
+    }
+    
+    func updateSubscriptionData() {
+        guard let month = month else { return }
+        
+        paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
+        for index in 0..<month {
+            SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
+                                                           itemName: addItemView.itemNameTextField.text ?? "",
+                                                           paidUser: userId,
+                                                           paidPrice: paidPrice ?? 0,
+                                                           createdTime: createdTimeTimeStamps[index]) { documentId in
+                self.documentId = documentId
+                print(documentId)
+                for user in 0..<self.involvedExpenseData.count {
+                    SubscriptionManager.shared.addSubscriptionInvolvedExpense(
+                        typeUserId:self.involvedExpenseData[user].userId,
+                        price: self.involvedExpenseData[user].price,
+                        documentId: documentId,
+                        createdTime: self.createdTimeTimeStamps[index])
+                }
+            }
+        }
     }
 }
 
