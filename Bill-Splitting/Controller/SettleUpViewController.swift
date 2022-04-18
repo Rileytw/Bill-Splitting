@@ -109,10 +109,12 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         
         let memberExpense = memberExpense[indexPath.row]
         let memberData = userData.filter { $0.userId == memberExpense.userId }
+        let userExpense = self.memberExpense.filter { $0.userId == userId}
         specificSettleUpViewController.userData = memberData[0]
         specificSettleUpViewController.memberExpense = memberExpense
         specificSettleUpViewController.groupId = groupData?.groupId
         specificSettleUpViewController.groupData = groupData
+        specificSettleUpViewController.userExpense = userExpense
         self.show(specificSettleUpViewController, sender: nil)
     }
 }
