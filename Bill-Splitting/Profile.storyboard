@@ -40,6 +40,21 @@
             </objects>
             <point key="canvasLocation" x="2074" y="-725"/>
         </scene>
+        <!--Add Payment View Controller-->
+        <scene sceneID="FnX-Gc-w8k">
+            <objects>
+                <viewController storyboardIdentifier="AddPaymentViewController" id="m7h-3t-7Qu" customClass="AddPaymentViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="NAt-2V-tDQ">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="1uW-3g-PY6"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qOk-21-hI9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3335" y="-725"/>
+        </scene>
         <!--Friend List View Controller-->
         <scene sceneID="ZdY-4n-5kD">
             <objects>
