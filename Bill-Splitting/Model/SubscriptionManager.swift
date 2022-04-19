@@ -41,5 +41,44 @@ class SubscriptionManager {
             print(error)
         }
     }
-
+    
+    func fetchSubscriptionData(groupId: String, completion: @escaping (Result<[Subscription], Error>) -> Void) {
+        db.collection(FireBaseCollection.subscription.rawValue).whereField("groupId", isEqualTo: groupId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var subscriptions = [Subscription]()
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let subscription = try document.data(as: Subscription.self, decoder: Firestore.Decoder()) {
+                            subscriptions.append(subscription)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(subscriptions))
+            }
+        }
+    }
+    
+    func updateSubscriptionData(documentId: String, newStartTime: Double) {
+        let subscriptionTimeRef = db.collection(FireBaseCollection.subscription.rawValue).document(documentId)
+        subscriptionTimeRef.updateData(["startTime": newStartTime])
+    }
+    
+    func deleteSubscriptionDocument(documentId: String) {
+        db.collection(FireBaseCollection.subscription.rawValue).document(documentId).delete() { err in
+                if let err = err {
+                    print("Error removing document: \(err)")
+                } else {
+                    print("Document successfully removed!")
+                }
+            }
+        }
 }

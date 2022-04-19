@@ -44,6 +44,8 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     var memberExpense: [MemberExpense] = []
     
+    var subsriptions: [Subscription] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setGroupDetailView()
@@ -52,6 +54,8 @@ class MultipleUsersGrouplViewController: UIViewController {
         setClosedGroupButton()
         
         navigationItem.title = "群組"
+        
+        detectSubscription()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -72,16 +76,14 @@ class MultipleUsersGrouplViewController: UIViewController {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
     }
-        
+    
     func getUserData() {
         let semaphore = DispatchSemaphore(value: 0)
         let queue = DispatchQueue(label: "Queue", qos: .default, attributes: .concurrent)
         
         queue.async {
-            self.groupData?.member.forEach {
-                member in
-                UserManager.shared.fetchUserData(friendId: member) {
-                    [weak self] result in
+            self.groupData?.member.forEach { member in
+                UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
                     switch result {
                     case .success(let userData):
                         self?.memberName.append(userData.userName)
@@ -144,7 +146,6 @@ class MultipleUsersGrouplViewController: UIViewController {
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
         itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 40).isActive = true
         itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
-        
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
@@ -160,11 +161,11 @@ class MultipleUsersGrouplViewController: UIViewController {
         closedGroupButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
         closedGroupButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
         closedGroupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-                
+        
         closedGroupButton.setTitle("封存群組", for: .normal)
         closedGroupButton.backgroundColor = .systemGray
         closedGroupButton.addTarget(self, action: #selector(pressClosedGroup), for: .touchUpInside)
-
+        
     }
     
     @objc func pressClosedGroup() {
@@ -202,8 +203,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     }
     
     func getItemData() {
-        ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") {
-            [weak self] result in
+        ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") { [weak self] result in
             switch result {
             case .success(let items):
                 self?.itemData = items
@@ -222,8 +222,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
         
         queue.async {
-            ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) {
-                [weak self] result in
+            ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) { [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.paidItem.append(items)
@@ -235,8 +234,7 @@ class MultipleUsersGrouplViewController: UIViewController {
             
             semaphore.wait()
             
-            ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) {
-                [weak self] result in
+            ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) { [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.involvedItem.append(items)
@@ -267,13 +265,52 @@ class MultipleUsersGrouplViewController: UIViewController {
             closedGroupButton.isHidden = true
         }
     }
+    
+    func detectSubscription() {
+        let nowTime = Date().timeIntervalSince1970
+        if groupData?.type == 0 {
+            SubscriptionManager.shared.fetchSubscriptionData(groupId: groupData?.groupId ?? "") { [weak self] result  in
+                switch result {
+                case .success(let subscription):
+                    self?.subsriptions = subscription
+                    if (self?.subsriptions.count != 0) && subscription[0].startTime <= nowTime {
+                        self?.countSubscriptiontime()
+                        SubscriptionManager.shared.updateSubscriptionData(documentId: subscription[0].doucmentId,
+                                                                          newStartTime: self?.subsriptions[0].startTime ?? 0)
+                    }
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                }
+            }
+        }
+    }
+    
+    func countSubscriptiontime() {
+        let startTime = subsriptions[0].startTime
+        let endTime = subsriptions[0].endTime
+        let startTimeInterval = TimeInterval(startTime)
+        let endTimeInterval = TimeInterval(endTime)
+        var startDate = Date(timeIntervalSince1970: startTimeInterval)
+        let endDate = Date(timeIntervalSince1970: endTimeInterval)
+        let components = Calendar.current.dateComponents([.month], from: startDate ?? Date(), to: endDate ?? Date())
+        let month = components.month
+        print("Number of months: \(month)")
+        if month ?? 0 > 1 {
+            var dateComponent = DateComponents()
+            dateComponent.month = 1
+            startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
+            subsriptions[0].startTime = startDate.timeIntervalSince1970
+        } else {
+            SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[0].doucmentId)
+        }
+        
+    }
+    
 }
 
 extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return involvedItem.count
         return itemData.count
-        //        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -333,13 +370,13 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
                                              name: item.itemName,
                                              description: PaidDescription.settleUpPaid,
                                              price: "$\(involved?.price ?? 0)")
-                        itemsCell.paidDescription.textColor = .systemRed
+                    itemsCell.paidDescription.textColor = .systemRed
                 } else {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,
                                              description: PaidDescription.involved,
                                              price: "$\(involved?.price ?? 0)")
-                        itemsCell.paidDescription.textColor = .systemRed
+                    itemsCell.paidDescription.textColor = .systemRed
                 }
             } else {
                 itemsCell.createItemCell(time: time,

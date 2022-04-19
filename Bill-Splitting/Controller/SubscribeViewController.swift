@@ -218,18 +218,19 @@ class SubscribeViewController: UIViewController {
         let endTimeStamp = endDate?.timeIntervalSince1970
         let nowTimeStamp = Date().timeIntervalSince1970
         
-//        MARK: cycle is fake data(0: Month, 1: Year)
+// MARK: cycle is fake data(0: Month, 1: Year)
         SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
                                                        itemName: addItemView.itemNameTextField.text ?? "",
                                                        paidUser: userId,
                                                        paidPrice: paidPrice ?? 0,
                                                        startedTime: startTimeStamp ?? nowTimeStamp,
                                                        endedTime: endTimeStamp ?? nowTimeStamp,
-                                                       cycle: 0) { documentId in
-            for user in 0..<self.involvedExpenseData.count {
+                                                       cycle: 0) { [weak self] documentId in
+            let involvedPerson = self?.involvedExpenseData.count ?? 0
+            for user in 0..<involvedPerson {
                 SubscriptionManager.shared.addSubscriptionInvolvedExpense(
-                    involvedUserId: self.involvedExpenseData[user].userId,
-                    price: self.involvedExpenseData[user].price,
+                    involvedUserId: self?.involvedExpenseData[user].userId ?? "",
+                    price: self?.involvedExpenseData[user].price ?? 0,
                     documentId: documentId)
             }
         }
