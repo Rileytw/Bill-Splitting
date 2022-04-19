@@ -58,7 +58,7 @@ class AddItemViewController: UIViewController {
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         addItemView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        addItemView.itemName.text = "新增時間"
+        addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
     }
 

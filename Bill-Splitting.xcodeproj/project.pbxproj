@@ -32,6 +32,8 @@
 		355090DF280DA5900007C0CE /* FireBaseCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DE280DA5900007C0CE /* FireBaseCollection.swift */; };
 		355090E1280EB9360007C0CE /* PaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090E0280EB9360007C0CE /* PaymentViewController.swift */; };
 		355090E3280EBC190007C0CE /* AddPaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090E2280EBC190007C0CE /* AddPaymentViewController.swift */; };
+		355090E6280EDE020007C0CE /* PaymentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090E4280EDE020007C0CE /* PaymentTableViewCell.swift */; };
+		355090E7280EDE020007C0CE /* PaymentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -92,6 +94,8 @@
 		355090DE280DA5900007C0CE /* FireBaseCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireBaseCollection.swift; sourceTree = "<group>"; };
 		355090E0280EB9360007C0CE /* PaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViewController.swift; sourceTree = "<group>"; };
 		355090E2280EBC190007C0CE /* AddPaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPaymentViewController.swift; sourceTree = "<group>"; };
+		355090E4280EDE020007C0CE /* PaymentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentTableViewCell.swift; sourceTree = "<group>"; };
+		355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PaymentTableViewCell.xib; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -243,6 +247,8 @@
 				35FF63FE280A619E00508EAF /* SettleUpTableViewCell.swift */,
 				35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */,
 				35FF6408280C66BB00508EAF /* SubscirbeView.swift */,
+				355090E4280EDE020007C0CE /* PaymentTableViewCell.swift */,
+				355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -334,6 +340,7 @@
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
 				35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */,
+				355090E7280EDE020007C0CE /* PaymentTableViewCell.xib in Resources */,
 				35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
@@ -439,6 +446,7 @@
 				35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */,
 				35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */,
 				350A3377280468D000201E40 /* UserManager.swift in Sources */,
+				355090E6280EDE020007C0CE /* PaymentTableViewCell.swift in Sources */,
 				35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */,
 				35FF63DF2806563500508EAF /* ItemObject.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,

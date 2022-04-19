@@ -10,15 +10,21 @@ import UIKit
 class PaymentViewController: UIViewController {
 
     let addPaymentButton = UIButton()
+    let tableView = UITableView()
+    var userData: UserData?
+    var userPayment: [Payment] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setTableView()
         setAddButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
+        getUserPayment()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -50,5 +56,65 @@ class PaymentViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
         let addPaymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddPaymentViewController.self))
         self.present(addPaymentViewController, animated: true, completion: nil)
+    }
+    
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+    }
+    
+    func getUserPayment() {
+        UserManager.shared.fetchUserData(friendId: userId) { [weak self] result in
+            switch result {
+            case .success(let userData):
+                guard let userPayment = userData.payment else { return }
+                self?.userData = userData
+                self?.userPayment = userPayment
+                print("userData:\(userData)")
+                print("userPayment:\(self?.userPayment)")
+                self?.tableView.reloadData()
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
+    }
+}
+
+extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return userPayment.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: PaymentTableViewCell.self),
+            for: indexPath
+        )
+        
+        guard let paymentCell = cell as? PaymentTableViewCell else { return cell }
+        paymentCell.createPaymentCell(payment: userPayment[indexPath.row].paymentName ?? "",
+                                      accountName: userPayment[indexPath.row].paymentAccount ?? "")
+        
+        let plainAttributedString = NSMutableAttributedString(string: userPayment[indexPath.row].paymentLink ?? "", attributes: nil)
+        let string =  userPayment[indexPath.row].paymentLink
+        
+        let attributedLinkString = NSMutableAttributedString(string: string ?? "", attributes:[NSAttributedString.Key.link: URL(string: userPayment[indexPath.row].paymentLink ?? "")])
+        let fullAttributedString = NSMutableAttributedString()
+
+        fullAttributedString.append(attributedLinkString)
+
+        paymentCell.linkTextView.isUserInteractionEnabled = true
+        paymentCell.linkTextView.isEditable = false
+        paymentCell.linkTextView.attributedText = fullAttributedString
+        
+        return paymentCell
     }
 }

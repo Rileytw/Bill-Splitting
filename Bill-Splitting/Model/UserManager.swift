@@ -40,7 +40,7 @@ class UserManager {
     
     //    Use friendId to get user's name in user collection (Using in friendInvitation)
     func fetchUserData(friendId: String, completion: @escaping (Result<UserData, Error>) -> Void) {
-        db.collection(FireBaseCollection.user.rawValue).whereField("userId", isEqualTo: friendId).getDocuments() { (querySnapshot, error) in
+        db.collection(FireBaseCollection.user.rawValue).whereField("userId", isEqualTo: friendId).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 
@@ -70,7 +70,7 @@ class UserManager {
     
     func addPaymentData(paymentName: String?, account: String?, link: String?) {
         let ref = db.collection(FireBaseCollection.user.rawValue).document(userId)
-        let replyDictionary = ["paymentName": paymentName, "account": account, "link": link ]
+        let replyDictionary = ["paymentName": paymentName, "paymentAccount": account, "paymentLink": link ]
         
         ref.updateData(["payment": FieldValue.arrayUnion([replyDictionary])]) { (error) in
             
