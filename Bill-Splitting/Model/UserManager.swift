@@ -12,7 +12,7 @@ class UserManager {
     lazy var db = Firestore.firestore()
     
     func fetchFriendData(userId: String, completion: @escaping (Result<[Friend], Error>) -> Void) {
-        db.collection("user").document(userId).collection("friend").getDocuments() { (querySnapshot, error) in
+        db.collection(FireBaseCollection.user.rawValue).document(userId).collection("friend").getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 
@@ -27,8 +27,7 @@ class UserManager {
                         if let friend = try document.data(as: Friend.self, decoder: Firestore.Decoder()) {
                             friends.append(friend)
                         }
-//                        completion(.success(friends))
-
+                        
                     } catch {
                         
                         completion(.failure(error))
@@ -39,9 +38,9 @@ class UserManager {
         }
     }
     
-//    Use friendId to get user's name in user collection (Using in friendInvitation)
+    //    Use friendId to get user's name in user collection (Using in friendInvitation)
     func fetchUserData(friendId: String, completion: @escaping (Result<UserData, Error>) -> Void) {
-        db.collection("user").whereField("userId", isEqualTo: friendId).getDocuments() { (querySnapshot, error) in
+        db.collection(FireBaseCollection.user.rawValue).whereField("userId", isEqualTo: friendId).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 
@@ -56,10 +55,6 @@ class UserManager {
                         if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
                             userData = user
                         }
-//                        guard let userData = userData else { return }
-//
-//                        completion(.success(userData))
-//
                     } catch {
                         
                         completion(.failure(error))
@@ -69,6 +64,18 @@ class UserManager {
                 
                 completion(.success(userData))
                 
+            }
+        }
+    }
+    
+    func addPaymentData(paymentName: String?, account: String?, link: String?) {
+        let ref = db.collection(FireBaseCollection.user.rawValue).document(userId)
+        let replyDictionary = ["paymentName": paymentName, "account": account, "link": link ]
+        
+        ref.updateData(["payment": FieldValue.arrayUnion([replyDictionary])]) { (error) in
+            
+            if let error = error {
+                print(error.localizedDescription)
             }
         }
     }

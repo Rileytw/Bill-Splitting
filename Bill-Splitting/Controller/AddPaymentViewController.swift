@@ -77,5 +77,8 @@ class AddPaymentViewController: UIViewController {
         paymentName = addItemView.itemNameTextField.text
         account = addItemView.priceTextField.text
         link = linkTextView.text
+        
+        UserManager.shared.addPaymentData(paymentName: paymentName, account: account, link: link)
+        dismiss(animated: true, completion: nil)
     }
 }
