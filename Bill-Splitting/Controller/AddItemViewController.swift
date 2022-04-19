@@ -33,7 +33,13 @@ class AddItemViewController: UIViewController {
     var involvedPrice: Double?
     var choosePaidMember = UILabel()
     
-    var selectedIndexs = [Int]()
+    var selectedIndexs = [Int]() {
+        didSet {
+            if typePickerView.textField.text == SplitType.equal.lable {
+                tableView.reloadData()
+            }
+        }
+    }
     var involvedMemberName: [String] = []
     
     typealias AddItemColsure = (String) -> Void
@@ -211,6 +217,7 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView.tag == 0 {
+            tableView.reloadData()
             return typePickerView.textField.text = typePickerViewData[row]
         } else {
             paidId = memberData?[row].userId
@@ -235,21 +242,12 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
         
         memberCell.memberName.text = memberData?[indexPath.row].userName
         
-//        if selectedIndexs.contains(indexPath.row) {
-//            memberCell.selectedButton.isSelected = true
-//            memberCell.priceTextField.isHidden = false
-//        } else {
-//            cell.accessoryType = .none
-//            memberCell.selectedButton.isSelected = false
-//            memberCell.priceTextField.isHidden = true
-//        }
-        
-//        Add new function
         if typePickerView.textField.text == SplitType.equal.lable {
             if selectedIndexs.contains(indexPath.row) {
                 memberCell.selectedButton.isSelected = true
                 memberCell.equalLabel.isHidden = false
                 memberCell.percentLabel.isHidden = false
+                memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
             } else {
                 cell.accessoryType = .none
                 memberCell.selectedButton.isSelected = false
