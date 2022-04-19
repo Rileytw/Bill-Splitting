@@ -65,7 +65,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
         userData.removeAll()
-        
+
         getItemData()
         getMemberExpense()
     }
@@ -127,10 +127,10 @@ class MultipleUsersGrouplViewController: UIViewController {
         self.present(addItemViewController, animated: true, completion: nil)
         //        self.show(addItemViewController, sender: nil)
         
-        addItemViewController.addItem { [weak self] _ in
-            self?.getItemData()
-            self?.getMemberExpense()
-        }
+//        addItemViewController.addItem { [weak self] _ in
+//            self?.getItemData()
+//            self?.getMemberExpense()
+//        }
     }
     
     @objc func pressSettleUp() {
@@ -388,6 +388,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
         
+
         let item = itemData[indexPath.row]
         var paid: ExpenseInfo?
         for index in 0..<paidItem.count {

@@ -11,7 +11,7 @@ class AddItemViewController: UIViewController {
 
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
-    var typePickerViewData = ["平分", "按比例", "自訂"]
+    var typePickerViewData = [SplitType.equal.lable, SplitType.percent.lable, SplitType.customize.lable]
     var memberPickerView = BasePickerViewInTextField(frame: .zero)
     let addButton = UIButton()
     let tableView = UITableView()
@@ -33,11 +33,14 @@ class AddItemViewController: UIViewController {
     var involvedPrice: Double?
     var choosePaidMember = UILabel()
     
-    var selectedIndexs = [Int]()
+    var selectedIndexs = [Int]() {
+        didSet {
+            if typePickerView.textField.text == SplitType.equal.lable {
+                tableView.reloadData()
+            }
+        }
+    }
     var involvedMemberName: [String] = []
-    
-    typealias AddItemColsure = (String) -> Void
-    var addItemColsure: AddItemColsure?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,8 +85,6 @@ class AddItemViewController: UIViewController {
 
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
-//        memberPickerView.textField.text = "請選擇付款人"
-        
         memberPickerView.pickerView.tag = 1
         
         if groupData?.type == 0 {
@@ -144,23 +145,30 @@ class AddItemViewController: UIViewController {
             }
             
             self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
+            let paidPrice = self.paidPrice
             
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                           price: self.paidPrice ?? 0,
+                                           price: paidPrice ?? 0,
                                            itemId: itemId,
                                            createdTime: Double(NSDate().timeIntervalSince1970))
 
             for user in 0..<self.involvedExpenseData.count {
+                var involvedPrice: Double?
+                if self.typePickerView.textField.text == SplitType.equal.lable {
+                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+                } else if self.typePickerView.textField.text == SplitType.percent.lable {
+                    involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+                } else {
+                    involvedPrice = self.involvedExpenseData[user].price
+                }
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
-                                                   price: self.involvedExpenseData[user].price,
+                                                   price: involvedPrice ?? 0,
                                                    itemId: itemId,
                                                    createdTime: Double(NSDate().timeIntervalSince1970))
             }
             self.countPersonalExpense()
         }
         self.dismiss(animated: false, completion: nil)
-        addItemColsure?("id")
-        
     }
     
     func countPersonalExpense() {
@@ -172,19 +180,26 @@ class AddItemViewController: UIViewController {
             paidUserId = userId
         }
         
+        let paidPrice = self.paidPrice
+        
         GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                 newExpense: self.paidPrice ?? 0,
                                                 groupId: groupData?.groupId ?? "")
         
         for user in 0..<self.involvedExpenseData.count {
+            var involvedPrice: Double?
+            if self.typePickerView.textField.text == SplitType.equal.lable {
+                involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+            } else if self.typePickerView.textField.text == SplitType.percent.lable {
+                involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+            } else {
+                involvedPrice = self.involvedExpenseData[user].price
+            }
+            guard let involvedPrice = involvedPrice else { return }
             GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
-                                                    newExpense: 0 - self.involvedExpenseData[user].price,
+                                                    newExpense: 0 - involvedPrice,
                                                     groupId: groupData?.groupId ?? "")
         }
-    }
-    
-    func addItem(closure: @escaping AddItemColsure) {
-        addItemColsure = closure
     }
 }
 
@@ -211,6 +226,7 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView.tag == 0 {
+            tableView.reloadData()
             return typePickerView.textField.text = typePickerViewData[row]
         } else {
             paidId = memberData?[row].userId
@@ -235,13 +251,42 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
         
         memberCell.memberName.text = memberData?[indexPath.row].userName
         
-        if selectedIndexs.contains(indexPath.row) {
-            memberCell.selectedButton.isSelected = true
-            memberCell.priceTextField.isHidden = false
-        } else {
-            cell.accessoryType = .none
-            memberCell.selectedButton.isSelected = false
+        if typePickerView.textField.text == SplitType.equal.lable {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.equalLabel.isHidden = false
+                memberCell.percentLabel.isHidden = false
+                memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.equalLabel.isHidden = true
+                memberCell.percentLabel.isHidden = true
+            }
             memberCell.priceTextField.isHidden = true
+        } else if typePickerView.textField.text == SplitType.percent.lable {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.priceTextField.isHidden = false
+                memberCell.percentLabel.isHidden = false
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.priceTextField.isHidden = true
+                memberCell.percentLabel.isHidden = true
+            }
+            memberCell.equalLabel.isHidden = true
+        } else if typePickerView.textField.text == SplitType.customize.lable {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.priceTextField.isHidden = false
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.priceTextField.isHidden = true
+            }
+            memberCell.equalLabel.isHidden = true
+            memberCell.percentLabel.isHidden = true
         }
         
         memberCell.delegate = self
