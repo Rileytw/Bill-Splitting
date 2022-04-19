@@ -32,6 +32,8 @@ class MultipleUsersGrouplViewController: UIViewController {
         }
     }
     
+    var subscriptInvolvedItem: [SubscriptionMember] = []
+    
     var expense: Double? {
         didSet {
             if expense ?? 0 >= 0 {
@@ -207,8 +209,7 @@ class MultipleUsersGrouplViewController: UIViewController {
             switch result {
             case .success(let items):
                 self?.itemData = items
-                items.forEach {
-                    item in
+                items.forEach { item in
                     self?.getItemDetail(itemId: item.itemId)
                 }
             case .failure(let error):
@@ -277,6 +278,17 @@ class MultipleUsersGrouplViewController: UIViewController {
                         self?.countSubscriptiontime()
                         SubscriptionManager.shared.updateSubscriptionData(documentId: subscription[0].doucmentId,
                                                                           newStartTime: self?.subsriptions[0].startTime ?? 0)
+                        SubscriptionManager.shared.fetchSubscriptionInvolvedData(documentId: subscription[0].doucmentId) {
+                            [weak self] result in
+                            switch result {
+                            case .success(let subscriptionMember):
+                                self?.subscriptInvolvedItem = subscriptionMember
+                                self?.addSubscriptionItem()
+                            case .failure(let error):
+                                print("Error decoding userData: \(error)")
+                            }
+                            
+                        }
                     }
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
@@ -303,9 +315,44 @@ class MultipleUsersGrouplViewController: UIViewController {
         } else {
             SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[0].doucmentId)
         }
-        
     }
     
+    func addSubscriptionItem() {
+        ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
+                                       itemName: subsriptions[0].itemName ?? "",
+                                       itemDescription: "",
+                                       createdTime: Double(NSDate().timeIntervalSince1970)) { itemId in
+            var paidUserId: String?
+            paidUserId = self.subsriptions[0].paidUser
+            
+            ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
+                                           price: self.subsriptions[0].paidPrice ?? 0,
+                                           itemId: itemId,
+                                           createdTime: Double(NSDate().timeIntervalSince1970))
+
+            for user in 0..<self.subscriptInvolvedItem.count {
+                ItemManager.shared.addInvolvedInfo(involvedUserId: self.subscriptInvolvedItem[user].involvedUser,
+                                                   price: self.subscriptInvolvedItem[user].involvedPrice,
+                                                   itemId: itemId,
+                                                   createdTime: Double(NSDate().timeIntervalSince1970))
+            }
+            self.countPersonalExpense()
+        }
+    }
+    
+    func countPersonalExpense() {
+        var paidUserId: String?
+        paidUserId = subsriptions[0].paidUser
+        GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
+                                                newExpense: self.subsriptions[0].paidPrice,
+                                                groupId: groupData?.groupId ?? "")
+        
+        for user in 0..<self.subscriptInvolvedItem.count {
+            GroupManager.shared.updateMemberExpense(userId: self.subscriptInvolvedItem[user].involvedUser,
+                                                    newExpense: 0 - self.subscriptInvolvedItem[user].involvedPrice,
+                                                    groupId: groupData?.groupId ?? "")
+        }
+    }
 }
 
 extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {

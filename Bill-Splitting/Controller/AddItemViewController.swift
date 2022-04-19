@@ -159,7 +159,6 @@ class AddItemViewController: UIViewController {
             self.countPersonalExpense()
         }
         self.dismiss(animated: false, completion: nil)
-//        navigationController?.popViewController(animated: true)
         addItemColsure?("id")
         
     }

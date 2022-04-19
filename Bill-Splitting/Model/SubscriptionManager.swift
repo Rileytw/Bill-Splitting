@@ -81,4 +81,28 @@ class SubscriptionManager {
                 }
             }
         }
+    
+    func fetchSubscriptionInvolvedData(documentId: String, completion: @escaping (Result<[SubscriptionMember], Error>) -> Void) {
+        db.collection(FireBaseCollection.subscription.rawValue).document(documentId).collection("involvedInfo").getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var involvedItems: [SubscriptionMember] = []
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let item = try document.data(as: SubscriptionMember.self, decoder: Firestore.Decoder()) {
+                            involvedItems.append(item)
+                        }
+                    } catch {
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(involvedItems))
+            }
+        }
+    }
 }
