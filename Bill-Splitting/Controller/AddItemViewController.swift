@@ -149,16 +149,28 @@ class AddItemViewController: UIViewController {
                 paidUserId = userId
             }
             
+            guard let paidPrice = self.paidPrice else {
+                return
+            }
+            
             self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
             
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                           price: self.paidPrice ?? 0,
+                                           price: paidPrice,
                                            itemId: itemId,
                                            createdTime: Double(NSDate().timeIntervalSince1970))
 
             for user in 0..<self.involvedExpenseData.count {
+                var involvedPrice: Double?
+                if self.typePickerView.textField.text == SplitType.equal.lable {
+                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * paidPrice
+                } else if self.typePickerView.textField.text == SplitType.percent.lable {
+                    involvedPrice = ((self.involvedExpenseData[user].price)/100) * paidPrice
+                } else {
+                    involvedPrice = self.involvedExpenseData[user].price
+                }
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
-                                                   price: self.involvedExpenseData[user].price,
+                                                   price: involvedPrice ?? 0,
                                                    itemId: itemId,
                                                    createdTime: Double(NSDate().timeIntervalSince1970))
             }

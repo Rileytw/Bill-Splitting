@@ -65,7 +65,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
         userData.removeAll()
-        
+
         getItemData()
         getMemberExpense()
     }
@@ -387,6 +387,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         )
         
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
+        
         
         let item = itemData[indexPath.row]
         var paid: ExpenseInfo?
