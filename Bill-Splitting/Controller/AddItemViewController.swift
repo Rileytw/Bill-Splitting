@@ -42,9 +42,6 @@ class AddItemViewController: UIViewController {
     }
     var involvedMemberName: [String] = []
     
-    typealias AddItemColsure = (String) -> Void
-    var addItemColsure: AddItemColsure?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setAddItemView()
@@ -88,8 +85,6 @@ class AddItemViewController: UIViewController {
 
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
-//        memberPickerView.textField.text = "請選擇付款人"
-        
         memberPickerView.pickerView.tag = 1
         
         if groupData?.type == 0 {
@@ -174,8 +169,6 @@ class AddItemViewController: UIViewController {
             self.countPersonalExpense()
         }
         self.dismiss(animated: false, completion: nil)
-        addItemColsure?("id")
-        
     }
     
     func countPersonalExpense() {
@@ -207,10 +200,6 @@ class AddItemViewController: UIViewController {
                                                     newExpense: 0 - involvedPrice,
                                                     groupId: groupData?.groupId ?? "")
         }
-    }
-    
-    func addItem(closure: @escaping AddItemColsure) {
-        addItemColsure = closure
     }
 }
 
