@@ -10,8 +10,16 @@ import Foundation
 struct Subscription: Codable {
     var doucmentId: String
     var groupId: String
-    var createdTime: Double
+    var startTime: Double
+    var endTime: Double
     var itemName: String
     var paidUser: String
     var paidPrice: Double
+    var cycle: Int
+}
+
+struct SubscriptionMember: Codable {
+    var documentId: String
+    var involvedUser: String
+    var involvedPrice: Double
 }

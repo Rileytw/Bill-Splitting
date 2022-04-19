@@ -194,24 +194,43 @@ class SubscribeViewController: UIViewController {
     }
     
     func updateSubscriptionData() {
-        guard let month = month else { return }
+//        guard let month = month else { return }
         
         paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
-        for index in 0..<month {
-            SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
-                                                           itemName: addItemView.itemNameTextField.text ?? "",
-                                                           paidUser: userId,
-                                                           paidPrice: paidPrice ?? 0,
-                                                           createdTime: createdTimeTimeStamps[index]) { documentId in
-                self.documentId = documentId
-                print(documentId)
-                for user in 0..<self.involvedExpenseData.count {
-                    SubscriptionManager.shared.addSubscriptionInvolvedExpense(
-                        typeUserId:self.involvedExpenseData[user].userId,
-                        price: self.involvedExpenseData[user].price,
-                        documentId: documentId,
-                        createdTime: self.createdTimeTimeStamps[index])
-                }
+//        for index in 0..<month {
+//            SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
+//                                                           itemName: addItemView.itemNameTextField.text ?? "",
+//                                                           paidUser: userId,
+//                                                           paidPrice: paidPrice ?? 0,
+//                                                           createdTime: createdTimeTimeStamps[index]) { documentId in
+//                self.documentId = documentId
+//                print(documentId)
+//                for user in 0..<self.involvedExpenseData.count {
+//                    SubscriptionManager.shared.addSubscriptionInvolvedExpense(
+//                        typeUserId:self.involvedExpenseData[user].userId,
+//                        price: self.involvedExpenseData[user].price,
+//                        documentId: documentId,
+//                        createdTime: self.createdTimeTimeStamps[index])
+//                }
+//            }
+//        }
+        let startTimeStamp = startDate?.timeIntervalSince1970
+        let endTimeStamp = endDate?.timeIntervalSince1970
+        let nowTimeStamp = Date().timeIntervalSince1970
+        
+//        MARK: cycle is fake data(0: Month, 1: Year)
+        SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
+                                                       itemName: addItemView.itemNameTextField.text ?? "",
+                                                       paidUser: userId,
+                                                       paidPrice: paidPrice ?? 0,
+                                                       startedTime: startTimeStamp ?? nowTimeStamp,
+                                                       endedTime: endTimeStamp ?? nowTimeStamp,
+                                                       cycle: 0) { documentId in
+            for user in 0..<self.involvedExpenseData.count {
+                SubscriptionManager.shared.addSubscriptionInvolvedExpense(
+                    involvedUserId: self.involvedExpenseData[user].userId,
+                    price: self.involvedExpenseData[user].price,
+                    documentId: documentId)
             }
         }
     }

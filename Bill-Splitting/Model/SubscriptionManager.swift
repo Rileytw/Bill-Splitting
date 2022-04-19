@@ -13,10 +13,17 @@ class SubscriptionManager {
     static var shared = SubscriptionManager()
     lazy var db = Firestore.firestore()
     
-    func addSubscriptionData(groupId: String, itemName: String, paidUser: String, paidPrice: Double, createdTime: Double, completion: @escaping (String) -> Void) {
+    func addSubscriptionData(groupId: String, itemName: String, paidUser: String, paidPrice: Double, startedTime: Double, endedTime: Double, cycle: Int, completion: @escaping (String) -> Void) {
         let ref = db.collection(FireBaseCollection.subscription.rawValue).document()
         
-        let subscriptionData = Subscription(doucmentId: "\(ref.documentID)", groupId: groupId, createdTime: createdTime, itemName: itemName, paidUser: paidUser, paidPrice: paidPrice)
+        let subscriptionData = Subscription(doucmentId: "\(ref.documentID)",
+                                            groupId: groupId,
+                                            startTime: startedTime,
+                                            endTime: endedTime,
+                                            itemName: itemName,
+                                            paidUser: paidUser,
+                                            paidPrice: paidPrice,
+                                            cycle: cycle)
         do {
             try db.collection(FireBaseCollection.subscription.rawValue).document("\(ref.documentID)").setData(from: subscriptionData)
             completion("\(ref.documentID)")
@@ -25,8 +32,8 @@ class SubscriptionManager {
         }
     }
     
-    func addSubscriptionInvolvedExpense(typeUserId: String, price: Double, documentId: String, createdTime: Double) {
-        let involvedInfo = ExpenseInfo(userId: typeUserId, price: price, createdTime: createdTime, itemId: documentId)
+    func addSubscriptionInvolvedExpense(involvedUserId: String, price: Double, documentId: String) {
+        let involvedInfo = SubscriptionMember(documentId: documentId, involvedUser: involvedUserId, involvedPrice: price)
         
         do {
             try db.collection(FireBaseCollection.subscription.rawValue).document(documentId).collection("involvedInfo").document().setData(from: involvedInfo)
