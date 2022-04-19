@@ -11,7 +11,7 @@ class AddItemViewController: UIViewController {
 
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
-    var typePickerViewData = ["平分", "按比例", "自訂"]
+    var typePickerViewData = [SplitType.equal.lable, SplitType.percent.lable, SplitType.customize.lable]
     var memberPickerView = BasePickerViewInTextField(frame: .zero)
     let addButton = UIButton()
     let tableView = UITableView()
@@ -235,13 +235,51 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
         
         memberCell.memberName.text = memberData?[indexPath.row].userName
         
-        if selectedIndexs.contains(indexPath.row) {
-            memberCell.selectedButton.isSelected = true
-            memberCell.priceTextField.isHidden = false
-        } else {
-            cell.accessoryType = .none
-            memberCell.selectedButton.isSelected = false
+//        if selectedIndexs.contains(indexPath.row) {
+//            memberCell.selectedButton.isSelected = true
+//            memberCell.priceTextField.isHidden = false
+//        } else {
+//            cell.accessoryType = .none
+//            memberCell.selectedButton.isSelected = false
+//            memberCell.priceTextField.isHidden = true
+//        }
+        
+//        Add new function
+        if typePickerView.textField.text == SplitType.equal.lable {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.equalLabel.isHidden = false
+                memberCell.percentLabel.isHidden = false
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.equalLabel.isHidden = true
+                memberCell.percentLabel.isHidden = true
+            }
             memberCell.priceTextField.isHidden = true
+        } else if typePickerView.textField.text == SplitType.percent.lable {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.priceTextField.isHidden = false
+                memberCell.percentLabel.isHidden = false
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.priceTextField.isHidden = true
+                memberCell.percentLabel.isHidden = true
+            }
+            memberCell.equalLabel.isHidden = true
+        } else if typePickerView.textField.text == SplitType.customize.lable {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.priceTextField.isHidden = false
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.priceTextField.isHidden = true
+            }
+            memberCell.equalLabel.isHidden = true
+            memberCell.percentLabel.isHidden = true
         }
         
         memberCell.delegate = self

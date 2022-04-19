@@ -21,3 +21,21 @@ struct ExpenseInfo: Codable {
     var createdTime: Double?
     var itemId: String?
 }
+
+enum SplitType {
+    case equal
+    case percent
+    case customize
+    
+    var lable: String {
+        switch self {
+        case .equal:
+            return "平分"
+        case .percent:
+            return "按比例"
+        case .customize:
+            return "自訂"
+        }
+    }
+    
+}
