@@ -149,23 +149,20 @@ class AddItemViewController: UIViewController {
                 paidUserId = userId
             }
             
-            guard let paidPrice = self.paidPrice else {
-                return
-            }
-            
             self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
+            let paidPrice = self.paidPrice
             
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                           price: paidPrice,
+                                           price: paidPrice ?? 0,
                                            itemId: itemId,
                                            createdTime: Double(NSDate().timeIntervalSince1970))
 
             for user in 0..<self.involvedExpenseData.count {
                 var involvedPrice: Double?
                 if self.typePickerView.textField.text == SplitType.equal.lable {
-                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * paidPrice
+                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
                 } else if self.typePickerView.textField.text == SplitType.percent.lable {
-                    involvedPrice = ((self.involvedExpenseData[user].price)/100) * paidPrice
+                    involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
                 } else {
                     involvedPrice = self.involvedExpenseData[user].price
                 }
@@ -190,13 +187,24 @@ class AddItemViewController: UIViewController {
             paidUserId = userId
         }
         
+        let paidPrice = self.paidPrice
+        
         GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                 newExpense: self.paidPrice ?? 0,
                                                 groupId: groupData?.groupId ?? "")
         
         for user in 0..<self.involvedExpenseData.count {
+            var involvedPrice: Double?
+            if self.typePickerView.textField.text == SplitType.equal.lable {
+                involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+            } else if self.typePickerView.textField.text == SplitType.percent.lable {
+                involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+            } else {
+                involvedPrice = self.involvedExpenseData[user].price
+            }
+            guard let involvedPrice = involvedPrice else { return }
             GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
-                                                    newExpense: 0 - self.involvedExpenseData[user].price,
+                                                    newExpense: 0 - involvedPrice,
                                                     groupId: groupData?.groupId ?? "")
         }
     }
