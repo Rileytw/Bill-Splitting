@@ -194,38 +194,26 @@ class SubscribeViewController: UIViewController {
     }
     
     func updateSubscriptionData() {
-//        guard let month = month else { return }
-        
         paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
-//        for index in 0..<month {
-//            SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
-//                                                           itemName: addItemView.itemNameTextField.text ?? "",
-//                                                           paidUser: userId,
-//                                                           paidPrice: paidPrice ?? 0,
-//                                                           createdTime: createdTimeTimeStamps[index]) { documentId in
-//                self.documentId = documentId
-//                print(documentId)
-//                for user in 0..<self.involvedExpenseData.count {
-//                    SubscriptionManager.shared.addSubscriptionInvolvedExpense(
-//                        typeUserId:self.involvedExpenseData[user].userId,
-//                        price: self.involvedExpenseData[user].price,
-//                        documentId: documentId,
-//                        createdTime: self.createdTimeTimeStamps[index])
-//                }
-//            }
-//        }
         let startTimeStamp = startDate?.timeIntervalSince1970
         let endTimeStamp = endDate?.timeIntervalSince1970
         let nowTimeStamp = Date().timeIntervalSince1970
         
 // MARK: cycle is fake data(0: Month, 1: Year)
+        var cycleNumber: Int?
+        if cyclePicker.textField.text == Cycle.month.rawValue {
+            cycleNumber = 0
+        } else if cyclePicker.textField.text == Cycle.year.rawValue {
+            cycleNumber = 1
+        }
+        guard let cycleNumber = cycleNumber else { return }
         SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
                                                        itemName: addItemView.itemNameTextField.text ?? "",
                                                        paidUser: userId,
                                                        paidPrice: paidPrice ?? 0,
                                                        startedTime: startTimeStamp ?? nowTimeStamp,
                                                        endedTime: endTimeStamp ?? nowTimeStamp,
-                                                       cycle: 0) { [weak self] documentId in
+                                                       cycle: cycleNumber) { [weak self] documentId in
             let involvedPerson = self?.involvedExpenseData.count ?? 0
             for user in 0..<involvedPerson {
                 SubscriptionManager.shared.addSubscriptionInvolvedExpense(

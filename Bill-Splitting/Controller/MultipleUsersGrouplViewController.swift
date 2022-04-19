@@ -47,6 +47,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     var memberExpense: [MemberExpense] = []
     
     var subsriptions: [Subscription] = []
+    var subscriptionCreatedTime: Double?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -276,6 +277,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                     self?.subsriptions = subscription
                     if (self?.subsriptions.count != 0) && subscription[0].startTime <= nowTime {
                         self?.countSubscriptiontime()
+                        self?.subscriptionCreatedTime = subscription[0].startTime
                         SubscriptionManager.shared.updateSubscriptionData(documentId: subscription[0].doucmentId,
                                                                           newStartTime: self?.subsriptions[0].startTime ?? 0)
                         SubscriptionManager.shared.fetchSubscriptionInvolvedData(documentId: subscription[0].doucmentId) {
@@ -304,16 +306,34 @@ class MultipleUsersGrouplViewController: UIViewController {
         let endTimeInterval = TimeInterval(endTime)
         var startDate = Date(timeIntervalSince1970: startTimeInterval)
         let endDate = Date(timeIntervalSince1970: endTimeInterval)
-        let components = Calendar.current.dateComponents([.month], from: startDate ?? Date(), to: endDate ?? Date())
-        let month = components.month
-        print("Number of months: \(month)")
-        if month ?? 0 > 1 {
-            var dateComponent = DateComponents()
-            dateComponent.month = 1
-            startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
-            subsriptions[0].startTime = startDate.timeIntervalSince1970
-        } else {
-            SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[0].doucmentId)
+        
+        switch subsriptions[0].cycle {
+        case 0 :
+            let components = Calendar.current.dateComponents([.month], from: startDate, to: endDate)
+            let month = components.month
+    //        print("Number of months: \(month)")
+            if month ?? 0 > 1 {
+                var dateComponent = DateComponents()
+                dateComponent.month = 1
+                startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
+                subsriptions[0].startTime = startDate.timeIntervalSince1970
+            } else {
+                SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[0].doucmentId)
+            }
+        case 1 :
+            let components = Calendar.current.dateComponents([.year], from: startDate, to: endDate)
+            let year = components.year
+    //        print("Number of years: \(year)")
+            if year ?? 0 > 1 {
+                var dateComponent = DateComponents()
+                dateComponent.year = 1
+                startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
+                subsriptions[0].startTime = startDate.timeIntervalSince1970
+            } else {
+                SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[0].doucmentId)
+            }
+        default:
+            return
         }
     }
     
@@ -321,20 +341,20 @@ class MultipleUsersGrouplViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: subsriptions[0].itemName ?? "",
                                        itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970)) { itemId in
+                                       createdTime: self.subscriptionCreatedTime ?? 0) { itemId in
             var paidUserId: String?
             paidUserId = self.subsriptions[0].paidUser
             
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
                                            price: self.subsriptions[0].paidPrice ?? 0,
                                            itemId: itemId,
-                                           createdTime: Double(NSDate().timeIntervalSince1970))
+                                           createdTime: self.subscriptionCreatedTime ?? 0)
 
             for user in 0..<self.subscriptInvolvedItem.count {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.subscriptInvolvedItem[user].involvedUser,
                                                    price: self.subscriptInvolvedItem[user].involvedPrice,
                                                    itemId: itemId,
-                                                   createdTime: Double(NSDate().timeIntervalSince1970))
+                                                   createdTime: self.subscriptionCreatedTime ?? 0)
             }
             self.countPersonalExpense()
         }
