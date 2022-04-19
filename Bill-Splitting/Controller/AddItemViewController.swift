@@ -48,16 +48,6 @@ class AddItemViewController: UIViewController {
         setTableView()
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        tabBarController?.tabBar.isHidden = true
-//        navigationController?.setNavigationBarHidden(true, animated: animated)
-//    }
-//
-//    override func viewWillDisappear(_ animated: Bool) {
-//        navigationController?.setNavigationBarHidden(false, animated: animated)
-//    }
-    
     func setAddItemView() {
         view.addSubview(addItemView)
         addItemView.translatesAutoresizingMaskIntoConstraints = false
@@ -143,8 +133,7 @@ class AddItemViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
                                        itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970)) {
-            itemId in
+                                       createdTime: Double(NSDate().timeIntervalSince1970)) { itemId in
             self.itemId = itemId
             
             var paidUserId: String?
@@ -170,7 +159,6 @@ class AddItemViewController: UIViewController {
             self.countPersonalExpense()
         }
         self.dismiss(animated: false, completion: nil)
-//        navigationController?.popViewController(animated: true)
         addItemColsure?("id")
         
     }

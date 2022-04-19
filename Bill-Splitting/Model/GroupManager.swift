@@ -110,7 +110,7 @@ class GroupManager {
     }
     
     func fetchMemberExpense(groupId: String, userId: String, completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
-        db.collection("group").document(groupId).collection("memberExpense").getDocuments() { (querySnapshot, error) in
+        db.collection("group").document(groupId).collection("memberExpense").addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
