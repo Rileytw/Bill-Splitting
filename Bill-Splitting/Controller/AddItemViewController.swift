@@ -58,6 +58,8 @@ class AddItemViewController: UIViewController {
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         addItemView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        addItemView.itemName.text = "項目名稱"
+        addItemView.priceLabel.text = "支出金額"
     }
 
     func setTypePickerView() {
@@ -325,7 +327,6 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
             }
-            
         }
     }
 }

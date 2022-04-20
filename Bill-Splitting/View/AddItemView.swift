@@ -34,26 +34,29 @@ class AddItemView: UIView {
     func setLabel() {
         createdTimeLabel.frame = CGRect(x: 20, y: 10, width: UIScreen.main.bounds.width/4, height: 60)
 //        createdTimeLabel.text = "新增時間"
-//        addSubview(createdTimeLabel)
+        addSubview(createdTimeLabel)
         
         itemName.frame = CGRect(x: 20, y: 30, width: UIScreen.main.bounds.width/3, height: 60)
-        itemName.text = "項目名稱"
+//        itemName.text = "項目名稱"
         addSubview(itemName)
         
         priceLabel.frame = CGRect(x: 20, y: 100, width: UIScreen.main.bounds.width/3, height: 60)
-        priceLabel.text = "支出金額"
+//        priceLabel.text = "支出金額"
         addSubview(priceLabel)
+        
+        itemName.lineBreakMode = NSLineBreakMode.byWordWrapping
+        itemName.numberOfLines = 0
     }
     
     func setTextField() {
         itemNameTextField.translatesAutoresizingMaskIntoConstraints = false
         itemNameTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        itemNameTextField.frame = CGRect(x: 20 + UIScreen.main.bounds.width/3, y: 30, width: UIScreen.main.bounds.width/2, height: 60)
+        itemNameTextField.frame = CGRect(x: UIScreen.main.bounds.width/3, y: 30, width: UIScreen.main.bounds.width/2 + 20, height: 60)
         addSubview(itemNameTextField)
         
         priceTextField.translatesAutoresizingMaskIntoConstraints = false
         priceTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        priceTextField.frame = CGRect(x: 20 + UIScreen.main.bounds.width/3, y: 100, width: UIScreen.main.bounds.width/2, height: 60)
+        priceTextField.frame = CGRect(x: UIScreen.main.bounds.width/3, y: 100, width: UIScreen.main.bounds.width/2 + 20, height: 60)
         addSubview(priceTextField)
     }
 }

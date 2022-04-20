@@ -14,6 +14,13 @@ struct UserData: Codable {
     var userName: String
     var userEmail: String
     var group: [String]?
+    var payment: [Payment]?
+}
+
+struct Payment: Codable {
+    var paymentName: String?
+    var paymentAccount: String?
+    var paymentLink: String?
 }
 
 struct Friend: Codable {
