@@ -13,8 +13,8 @@ import FirebaseStorage
 class ImageManager {
     static var shared = ImageManager()
     
-    func uploadImageToStorage(image: UIImage, completion: @escaping (String) -> Void) {
-        let storageRef = Storage.storage().reference().child("UserImages").child("\(userId).png")
+    func uploadImageToStorage(image: UIImage, fileName: String, completion: @escaping (String) -> Void) {
+        let storageRef = Storage.storage().reference().child("ItemImages").child("\(fileName).png")
         
         if let uploadData = image.pngData() {
             storageRef.putData(uploadData, metadata: nil) { (data, error) in
@@ -25,8 +25,9 @@ class ImageManager {
                 
                 storageRef.downloadURL { (url, error) in
                     if let url = url {
-                        print("url \(url)")
                         completion(url.absoluteString)
+                    } else {
+                        print("Error: \(String(describing: error))")
                     }
                 }
             }

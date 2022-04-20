@@ -14,6 +14,8 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     var completeButton = UIButton()
     let imagePickerController = UIImagePickerController()
     var selectedImage: UIImage?
+    let width = UIScreen.main.bounds.width
+    let height = UIScreen.main.bounds.height
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,11 +77,11 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         view.addSubview(photoImageView)
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
         photoImageView.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 40).isActive = true
-        photoImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        photoImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        photoImageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        photoImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        photoImageView.widthAnchor.constraint(equalToConstant: width - 40).isActive = true
+        photoImageView.heightAnchor.constraint(equalToConstant: height/3).isActive = true
         
-        //        photoImageView.image = UIImage(systemName: "person.3")
+        photoImageView.contentMode = .scaleAspectFit
     }
     
     func setCompleteButton() {
@@ -98,9 +100,11 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     @objc func pressComplete() {
         guard let selectedImage = selectedImage else { return }
 
-        ImageManager.shared.uploadImageToStorage(image: selectedImage) { urlString in
+        let fileName = "\(userId)" + "\(Date())"
+        ImageManager.shared.uploadImageToStorage(image: selectedImage, fileName: fileName) { urlString in
             print("======\(urlString)")
         }
-        
+     
+        self.dismiss(animated: true, completion: nil)
     }
 }
