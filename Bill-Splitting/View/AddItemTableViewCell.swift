@@ -36,7 +36,6 @@ class AddItemTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
     }
-    
 }
 
 extension AddItemTableViewCell: UITextFieldDelegate {

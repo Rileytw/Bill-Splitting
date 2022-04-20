@@ -32,6 +32,7 @@ class AddItemViewController: UIViewController {
     var involvedExpenseData: [ExpenseInfo] = []
     var involvedPrice: Double?
     var choosePaidMember = UILabel()
+    var addMoreButton = UIButton()
     
     var selectedIndexs = [Int]() {
         didSet {
@@ -49,6 +50,13 @@ class AddItemViewController: UIViewController {
         setmemberPickerView()
         setAddButton()
         setTableView()
+        setAddMoreButton()
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
+        addMoreButton.clipsToBounds = true
     }
     
     func setAddItemView() {
@@ -117,6 +125,26 @@ class AddItemViewController: UIViewController {
         addButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
         
         addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
+    }
+    
+    func setAddMoreButton() {
+        view.addSubview(addMoreButton)
+        addMoreButton.translatesAutoresizingMaskIntoConstraints = false
+        addMoreButton.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -5).isActive = true
+        addMoreButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        addMoreButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        addMoreButton.backgroundColor = .systemTeal
+        addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
+        addMoreButton.tintColor = .white
+        addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
+    }
+    
+    @objc func pressAddMore() {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        let addmoreInfoViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddMoreInfoViewController.self))
+        self.present(addmoreInfoViewController, animated: true, completion: nil)
     }
     
     func setTableView() {
