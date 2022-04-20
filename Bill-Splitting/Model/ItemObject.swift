@@ -13,6 +13,7 @@ struct ItemData: Codable {
     var itemId: String
     var itemDescription: String?
     var createdTime: Double
+    var itemImage: String?
 }
 
 struct ExpenseInfo: Codable {
@@ -27,7 +28,7 @@ enum SplitType {
     case percent
     case customize
     
-    var lable: String {
+    var label: String {
         switch self {
         case .equal:
             return "平分"

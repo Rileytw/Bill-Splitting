@@ -20,10 +20,10 @@ class ItemManager {
     static var shared = ItemManager()
     lazy var db = Firestore.firestore()
     
-    func addItemData(groupId: String, itemName: String, itemDescription: String?, createdTime: Double, completion: @escaping (String) -> Void) {
+    func addItemData(groupId: String, itemName: String, itemDescription: String?, createdTime: Double, itemImage: String?, completion: @escaping (String) -> Void) {
         let ref = db.collection("item").document()
         
-        let itemData = ItemData(groupId: groupId, itemName: itemName, itemId: "\(ref.documentID)", itemDescription: itemDescription, createdTime: createdTime)
+        let itemData = ItemData(groupId: groupId, itemName: itemName, itemId: "\(ref.documentID)", itemDescription: itemDescription, createdTime: createdTime, itemImage: itemImage)
         
         do {
             try db.collection("item").document("\(ref.documentID)").setData(from: itemData)
