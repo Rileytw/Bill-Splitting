@@ -19,19 +19,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4zR-Mp-veV">
-                        <rect key="frame" x="20" y="10" width="374" height="20.5"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ARW-3O-Z8I">
-                        <rect key="frame" x="20" y="50.5" width="374" height="29.5"/>
+                        <rect key="frame" x="20" y="10" width="374" height="50"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="qqqq" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="yFU-S7-9B5">
-                        <rect key="frame" x="20" y="100" width="374" height="60"/>
+                        <rect key="frame" x="20" y="80" width="374" height="60"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="60" id="tIk-Ss-Qe6"/>
@@ -42,22 +36,18 @@
                     </textView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="yFU-S7-9B5" firstAttribute="top" secondItem="ARW-3O-Z8I" secondAttribute="bottom" constant="20" id="04O-5k-vGi"/>
                     <constraint firstAttribute="trailing" secondItem="yFU-S7-9B5" secondAttribute="trailing" constant="20" id="1I9-Ev-Jx7"/>
-                    <constraint firstItem="ARW-3O-Z8I" firstAttribute="top" secondItem="4zR-Mp-veV" secondAttribute="bottom" constant="20" id="CAT-Ad-WDN"/>
                     <constraint firstItem="yFU-S7-9B5" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="HCg-wM-rAj"/>
-                    <constraint firstAttribute="bottom" secondItem="yFU-S7-9B5" secondAttribute="bottom" id="Km8-LA-hx4"/>
-                    <constraint firstItem="ARW-3O-Z8I" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="g0c-xP-FRH"/>
+                    <constraint firstAttribute="bottom" secondItem="yFU-S7-9B5" secondAttribute="bottom" constant="20" id="Km8-LA-hx4"/>
                     <constraint firstAttribute="trailing" secondItem="4zR-Mp-veV" secondAttribute="trailing" constant="20" id="oe3-ip-UiR"/>
                     <constraint firstItem="4zR-Mp-veV" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="p4a-EQ-C7E"/>
-                    <constraint firstAttribute="trailing" secondItem="ARW-3O-Z8I" secondAttribute="trailing" constant="20" id="pAa-xD-3fO"/>
                     <constraint firstItem="4zR-Mp-veV" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="uoL-0w-axu"/>
+                    <constraint firstItem="yFU-S7-9B5" firstAttribute="top" secondItem="4zR-Mp-veV" secondAttribute="bottom" constant="20" id="wb1-J9-bVE"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="account" destination="ARW-3O-Z8I" id="OKe-mn-Q5q"/>
-                <outlet property="linkTextView" destination="yFU-S7-9B5" id="Qt4-Xe-Lpc"/>
+                <outlet property="accountTextView" destination="yFU-S7-9B5" id="Qt4-Xe-Lpc"/>
                 <outlet property="paymentName" destination="4zR-Mp-veV" id="phW-vJ-pxu"/>
             </connections>
             <point key="canvasLocation" x="131.8840579710145" y="110.49107142857143"/>

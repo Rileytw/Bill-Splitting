@@ -327,7 +327,6 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
             }
-            
         }
     }
 }

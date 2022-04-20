@@ -10,22 +10,32 @@ import UIKit
 class PaymentTableViewCell: UITableViewCell, UITextViewDelegate {
 
     @IBOutlet var paymentName: UILabel!
-    @IBOutlet var account: UILabel!
-    @IBOutlet var linkTextView: UITextView!
+    @IBOutlet var accountTextView: UITextView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        paymentName.font = paymentName.font.withSize(18)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
     }
-    func createPaymentCell(payment: String, accountName: String) {
+    func createPaymentCell(payment: String, accountName: String, link: String) {
         paymentName.text = payment
-        account.text = accountName
-        let string = NSMutableAttributedString(string: linkTextView.text)
-        let attribute = [ NSMutableAttributedString.Key.font: UIFont(name: "System Font Regular", size: 40)!]
-        linkTextView.attributedText = NSMutableAttributedString(string: string.string, attributes: attribute)
+        let accountString = accountName
+        let linkString = link
+        let account = NSMutableAttributedString(string: accountString)
+        account.addAttribute(NSAttributedString.Key.font,
+                           value: UIFont(name: "System Font Regular", size: 20)!,
+                          range: NSMakeRange(0, accountName.count))
+        if link != "" {
+            account.addAttribute(NSAttributedString.Key.link,
+                                 value: linkString,
+                                 range: NSMakeRange(0, accountName.count))
+        }
+        accountTextView.isUserInteractionEnabled = true
+        accountTextView.isEditable = false
+        accountTextView.attributedText = account
     }
 }

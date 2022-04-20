@@ -78,8 +78,8 @@ class PaymentViewController: UIViewController {
                 guard let userPayment = userData.payment else { return }
                 self?.userData = userData
                 self?.userPayment = userPayment
-                print("userData:\(userData)")
-                print("userPayment:\(self?.userPayment)")
+//                print("userData:\(userData)")
+//                print("userPayment:\(self?.userPayment)")
                 self?.tableView.reloadData()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
@@ -90,7 +90,7 @@ class PaymentViewController: UIViewController {
 
 extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return userPayment.count ?? 0
+        return userPayment.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -100,21 +100,11 @@ extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
         )
         
         guard let paymentCell = cell as? PaymentTableViewCell else { return cell }
+        
         paymentCell.createPaymentCell(payment: userPayment[indexPath.row].paymentName ?? "",
-                                      accountName: userPayment[indexPath.row].paymentAccount ?? "")
-        
-        let plainAttributedString = NSMutableAttributedString(string: userPayment[indexPath.row].paymentLink ?? "", attributes: nil)
-        let string =  userPayment[indexPath.row].paymentLink
-        
-        let attributedLinkString = NSMutableAttributedString(string: string ?? "", attributes:[NSAttributedString.Key.link: URL(string: userPayment[indexPath.row].paymentLink ?? "")])
-        let fullAttributedString = NSMutableAttributedString()
+                                      accountName: userPayment[indexPath.row].paymentAccount ?? "",
+                                      link: userPayment[indexPath.row].paymentLink ?? "")
 
-        fullAttributedString.append(attributedLinkString)
-
-        paymentCell.linkTextView.isUserInteractionEnabled = true
-        paymentCell.linkTextView.isEditable = false
-        paymentCell.linkTextView.attributedText = fullAttributedString
-        
         return paymentCell
     }
 }
