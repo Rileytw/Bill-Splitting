@@ -43,6 +43,8 @@ class AddItemViewController: UIViewController {
     }
     var involvedMemberName: [String] = []
     
+    var itemImageString: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setAddItemView()
@@ -143,8 +145,14 @@ class AddItemViewController: UIViewController {
     
     @objc func pressAddMore() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        let addmoreInfoViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddMoreInfoViewController.self))
-        self.present(addmoreInfoViewController, animated: true, completion: nil)
+        guard let addMoreInfoViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddMoreInfoViewController.self)) as? AddMoreInfoViewController else { return }
+        
+        addMoreInfoViewController.urlData = { [weak self] urlString in
+            self?.itemImageString = urlString
+        }
+      
+        self.present(addMoreInfoViewController, animated: true, completion: nil)
+        
     }
     
     func setTableView() {
@@ -164,7 +172,8 @@ class AddItemViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
                                        itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970)) { itemId in
+                                       createdTime: Double(NSDate().timeIntervalSince1970),
+                                       itemImage: self.itemImageString) { itemId in
             self.itemId = itemId
             
             var paidUserId: String?

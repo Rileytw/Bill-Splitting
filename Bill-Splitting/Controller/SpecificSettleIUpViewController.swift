@@ -141,7 +141,8 @@ class SpecificSettleIUpViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupId ?? "",
                                        itemName: "結帳",
                                        itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970)) { itemId in
+                                       createdTime: Double(NSDate().timeIntervalSince1970),
+                                       itemImage: nil) { itemId in
             self.itemId = itemId
             
             var paidUserId: String?

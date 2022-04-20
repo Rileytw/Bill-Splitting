@@ -198,7 +198,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     @objc func pressSubscribe() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let subscribeViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: SubscribeViewController.self)) as? SubscribeViewController as? SubscribeViewController else { return }
+                storyBoard.instantiateViewController(withIdentifier: String(describing: SubscribeViewController.self)) as? SubscribeViewController else { return }
         subscribeViewController.memberId = groupData?.member
         subscribeViewController.memberData = userData
         subscribeViewController.groupData = groupData
@@ -341,7 +341,8 @@ class MultipleUsersGrouplViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: subsriptions[0].itemName ?? "",
                                        itemDescription: "",
-                                       createdTime: self.subscriptionCreatedTime ?? 0) { itemId in
+                                       createdTime: self.subscriptionCreatedTime ?? 0,
+                                       itemImage: nil) { itemId in
             var paidUserId: String?
             paidUserId = self.subsriptions[0].paidUser
             

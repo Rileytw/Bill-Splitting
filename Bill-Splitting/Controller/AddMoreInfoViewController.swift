@@ -17,6 +17,9 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     
+    typealias UrlData = (String) -> Void
+    var urlData: UrlData?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -103,8 +106,8 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         let fileName = "\(userId)" + "\(Date())"
         ImageManager.shared.uploadImageToStorage(image: selectedImage, fileName: fileName) { urlString in
             print("======\(urlString)")
+            self.urlData?(urlString)
+            self.dismiss(animated: true, completion: nil)
         }
-     
-        self.dismiss(animated: true, completion: nil)
     }
 }

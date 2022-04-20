@@ -13,6 +13,7 @@ struct ItemData: Codable {
     var itemId: String
     var itemDescription: String?
     var createdTime: Double
+    var itemImage: String?
 }
 
 struct ExpenseInfo: Codable {
