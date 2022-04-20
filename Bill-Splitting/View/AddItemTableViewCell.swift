@@ -38,7 +38,7 @@ class AddItemTableViewCell: UITableViewCell {
     }
     
 }
-//
+
 extension AddItemTableViewCell: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         delegate?.endEditing(self)

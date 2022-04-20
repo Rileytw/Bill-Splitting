@@ -24,7 +24,7 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="qqqq" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="yFU-S7-9B5">
+                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="link" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="yFU-S7-9B5">
                         <rect key="frame" x="20" y="80" width="374" height="60"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
