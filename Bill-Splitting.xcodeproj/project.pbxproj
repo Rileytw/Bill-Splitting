@@ -36,6 +36,8 @@
 		355090E7280EDE020007C0CE /* PaymentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */; };
 		355090E9280FAA690007C0CE /* AddMoreInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090E8280FAA690007C0CE /* AddMoreInfoViewController.swift */; };
 		355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090EA280FBBB10007C0CE /* ImageManager.swift */; };
+		355090ED28100E150007C0CE /* Reminders.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 355090EC28100E150007C0CE /* Reminders.storyboard */; };
+		355090EF28100FA80007C0CE /* RemindersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090EE28100FA80007C0CE /* RemindersViewController.swift */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -99,6 +101,8 @@
 		355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PaymentTableViewCell.xib; sourceTree = "<group>"; };
 		355090E8280FAA690007C0CE /* AddMoreInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMoreInfoViewController.swift; sourceTree = "<group>"; };
 		355090EA280FBBB10007C0CE /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
+		355090EC28100E150007C0CE /* Reminders.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Reminders.storyboard; sourceTree = "<group>"; };
+		355090EE28100FA80007C0CE /* RemindersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersViewController.swift; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -190,6 +194,7 @@
 				350A335D2803DF2500201E40 /* Groups.storyboard */,
 				350A335F2803DF3C00201E40 /* AddGroups.storyboard */,
 				350A33612803DF4300201E40 /* Profile.storyboard */,
+				355090EC28100E150007C0CE /* Reminders.storyboard */,
 				350A334C2800450100201E40 /* Assets.xcassets */,
 				350A334E2800450100201E40 /* LaunchScreen.storyboard */,
 				350A33512800450100201E40 /* Info.plist */,
@@ -216,6 +221,7 @@
 				35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */,
 				35FF6404280C2B8500508EAF /* SpecificSettleIUpViewController.swift */,
 				35FF6406280C62C900508EAF /* SubscribeViewController.swift */,
+				355090EE28100FA80007C0CE /* RemindersViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -338,6 +344,7 @@
 				350A33622803DF4300201E40 /* Profile.storyboard in Resources */,
 				350A33602803DF3C00201E40 /* AddGroups.storyboard in Resources */,
 				35FF63FB2809672100508EAF /* ItemTableViewCell.xib in Resources */,
+				355090ED28100E150007C0CE /* Reminders.storyboard in Resources */,
 				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
 				35FF6401280A619E00508EAF /* SettleUpTableViewCell.xib in Resources */,
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
@@ -427,6 +434,7 @@
 				35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */,
 				35FF63F12807B22400508EAF /* AddItemViewController.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,
+				355090EF28100FA80007C0CE /* RemindersViewController.swift in Sources */,
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
 				355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */,
 				355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */,
