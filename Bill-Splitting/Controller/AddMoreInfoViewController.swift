@@ -44,19 +44,23 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     }
     
     @objc func pressUploadPhoto() {
-        let imagePickerAlertController = UIAlertController(title: "上傳照片", message: "拍攝或上傳照片", preferredStyle: .actionSheet)
+        let imagePickerAlertController = UIAlertController(title: "上傳照片",
+                                                           message: "拍攝或上傳照片",
+                                                           preferredStyle: .actionSheet)
         let libraryAction = UIAlertAction(title: "照片", style: .default) { _ in
             if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
                 self.imagePickerController.sourceType = .photoLibrary
                 self.present(self.imagePickerController, animated: true, completion: nil)
             }
         }
+        
         let cameraAction = UIAlertAction(title: "相機", style: .default) { _ in
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
                 self.imagePickerController.sourceType = .camera
                 self.present(self.imagePickerController, animated: true, completion: nil)
             }
         }
+        
         let cancelAction = UIAlertAction(title: "取消", style: .cancel) { _ in
             imagePickerAlertController.dismiss(animated: true, completion: nil)
         }
@@ -105,7 +109,6 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
 
         let fileName = "\(userId)" + "\(Date())"
         ImageManager.shared.uploadImageToStorage(image: selectedImage, fileName: fileName) { urlString in
-            print("======\(urlString)")
             self.urlData?(urlString)
             self.dismiss(animated: true, completion: nil)
         }

@@ -28,7 +28,7 @@ enum SplitType {
     case percent
     case customize
     
-    var lable: String {
+    var label: String {
         switch self {
         case .equal:
             return "平分"

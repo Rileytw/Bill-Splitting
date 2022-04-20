@@ -125,12 +125,6 @@ class MultipleUsersGrouplViewController: UIViewController {
         addItemViewController.memberData = userData
         addItemViewController.groupData = groupData
         self.present(addItemViewController, animated: true, completion: nil)
-        //        self.show(addItemViewController, sender: nil)
-        
-//        addItemViewController.addItem { [weak self] _ in
-//            self?.getItemData()
-//            self?.getMemberExpense()
-//        }
     }
     
     @objc func pressSettleUp() {
@@ -289,7 +283,6 @@ class MultipleUsersGrouplViewController: UIViewController {
                             case .failure(let error):
                                 print("Error decoding userData: \(error)")
                             }
-                            
                         }
                     }
                 case .failure(let error):
@@ -389,7 +382,6 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
         
-
         let item = itemData[indexPath.row]
         var paid: ExpenseInfo?
         for index in 0..<paidItem.count {
