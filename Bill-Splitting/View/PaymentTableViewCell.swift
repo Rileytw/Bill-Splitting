@@ -21,6 +21,7 @@ class PaymentTableViewCell: UITableViewCell, UITextViewDelegate {
         super.setSelected(selected, animated: animated)
 
     }
+    
     func createPaymentCell(payment: String, accountName: String, link: String) {
         paymentName.text = payment
         let accountString = accountName

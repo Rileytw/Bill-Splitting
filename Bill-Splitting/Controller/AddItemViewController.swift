@@ -11,7 +11,7 @@ class AddItemViewController: UIViewController {
 
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
-    var typePickerViewData = [SplitType.equal.lable, SplitType.percent.lable, SplitType.customize.lable]
+    var typePickerViewData = [SplitType.equal.label, SplitType.percent.label, SplitType.customize.label]
     var memberPickerView = BasePickerViewInTextField(frame: .zero)
     let addButton = UIButton()
     let tableView = UITableView()
@@ -32,15 +32,18 @@ class AddItemViewController: UIViewController {
     var involvedExpenseData: [ExpenseInfo] = []
     var involvedPrice: Double?
     var choosePaidMember = UILabel()
+    var addMoreButton = UIButton()
     
     var selectedIndexs = [Int]() {
         didSet {
-            if typePickerView.textField.text == SplitType.equal.lable {
+            if typePickerView.textField.text == SplitType.equal.label {
                 tableView.reloadData()
             }
         }
     }
     var involvedMemberName: [String] = []
+    
+    var itemImageString: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,6 +52,13 @@ class AddItemViewController: UIViewController {
         setmemberPickerView()
         setAddButton()
         setTableView()
+        setAddMoreButton()
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
+        addMoreButton.clipsToBounds = true
     }
     
     func setAddItemView() {
@@ -119,6 +129,30 @@ class AddItemViewController: UIViewController {
         addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
     }
     
+    func setAddMoreButton() {
+        view.addSubview(addMoreButton)
+        addMoreButton.translatesAutoresizingMaskIntoConstraints = false
+        addMoreButton.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -5).isActive = true
+        addMoreButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        addMoreButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        addMoreButton.backgroundColor = .systemTeal
+        addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
+        addMoreButton.tintColor = .white
+        addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
+    }
+    
+    @objc func pressAddMore() {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let addMoreInfoViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddMoreInfoViewController.self)) as? AddMoreInfoViewController else { return }
+        
+        addMoreInfoViewController.urlData = { [weak self] urlString in
+            self?.itemImageString = urlString
+        }
+        self.present(addMoreInfoViewController, animated: true, completion: nil)
+    }
+    
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -136,7 +170,8 @@ class AddItemViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
                                        itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970)) { itemId in
+                                       createdTime: Double(NSDate().timeIntervalSince1970),
+                                       itemImage: self.itemImageString) { itemId in
             self.itemId = itemId
             
             var paidUserId: String?
@@ -156,9 +191,9 @@ class AddItemViewController: UIViewController {
 
             for user in 0..<self.involvedExpenseData.count {
                 var involvedPrice: Double?
-                if self.typePickerView.textField.text == SplitType.equal.lable {
+                if self.typePickerView.textField.text == SplitType.equal.label {
                     involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
-                } else if self.typePickerView.textField.text == SplitType.percent.lable {
+                } else if self.typePickerView.textField.text == SplitType.percent.label {
                     involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
                 } else {
                     involvedPrice = self.involvedExpenseData[user].price
@@ -190,9 +225,9 @@ class AddItemViewController: UIViewController {
         
         for user in 0..<self.involvedExpenseData.count {
             var involvedPrice: Double?
-            if self.typePickerView.textField.text == SplitType.equal.lable {
+            if self.typePickerView.textField.text == SplitType.equal.label {
                 involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
-            } else if self.typePickerView.textField.text == SplitType.percent.lable {
+            } else if self.typePickerView.textField.text == SplitType.percent.label {
                 involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
             } else {
                 involvedPrice = self.involvedExpenseData[user].price
@@ -253,7 +288,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
         
         memberCell.memberName.text = memberData?[indexPath.row].userName
         
-        if typePickerView.textField.text == SplitType.equal.lable {
+        if typePickerView.textField.text == SplitType.equal.label {
             if selectedIndexs.contains(indexPath.row) {
                 memberCell.selectedButton.isSelected = true
                 memberCell.equalLabel.isHidden = false
@@ -266,7 +301,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
                 memberCell.percentLabel.isHidden = true
             }
             memberCell.priceTextField.isHidden = true
-        } else if typePickerView.textField.text == SplitType.percent.lable {
+        } else if typePickerView.textField.text == SplitType.percent.label {
             if selectedIndexs.contains(indexPath.row) {
                 memberCell.selectedButton.isSelected = true
                 memberCell.priceTextField.isHidden = false
@@ -278,7 +313,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
                 memberCell.percentLabel.isHidden = true
             }
             memberCell.equalLabel.isHidden = true
-        } else if typePickerView.textField.text == SplitType.customize.lable {
+        } else if typePickerView.textField.text == SplitType.customize.label {
             if selectedIndexs.contains(indexPath.row) {
                 memberCell.selectedButton.isSelected = true
                 memberCell.priceTextField.isHidden = false
@@ -306,7 +341,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             selectedIndexs.append(indexPath.row)
             involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
             
-            var involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
+            let involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
             involvedExpenseData.append(involedExpense)
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -319,7 +354,7 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
         involvedPrice = Double(cell.priceTextField.text ?? "0")
         
         let name = cell.memberName.text
-        var selectedUser = memberData?.filter { $0.userName == name }
+        let selectedUser = memberData?.filter { $0.userName == name }
         guard let id = selectedUser?[0].userId else { return }
                 
         for index in 0..<involvedExpenseData.count {
