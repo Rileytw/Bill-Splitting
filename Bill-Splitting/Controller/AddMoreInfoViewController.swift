@@ -11,17 +11,19 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     var photoImageView = UIImageView()
     var addPhotoButton = UIButton()
+    var completeButton = UIButton()
     let imagePickerController = UIImagePickerController()
+    var selectedImage: UIImage?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setAddPhotoButton()
         setPhotoImageView()
+        setCompleteButton()
         imagePickerController.delegate = self
         
     }
-    
     
     func setAddPhotoButton() {
         view.addSubview(addPhotoButton)
@@ -61,21 +63,10 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     }
     
     internal func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-//        var selectedImageFromPicker: UIImage?
-        
         if let pickedImage = info[.originalImage] as? UIImage {
-            
-//            selectedImageFromPicker = pickedImage
             self.photoImageView.image = pickedImage
+            selectedImage = pickedImage
         }
-        
-//        let uniqueString = NSUUID().uuidString
-        
-//        if let selectedImage = selectedImageFromPicker {
-//
-//            print("======\(uniqueString), \(selectedImage)")
-//        }
         
         dismiss(animated: true, completion: nil)
     }
@@ -91,4 +82,25 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         //        photoImageView.image = UIImage(systemName: "person.3")
     }
     
+    func setCompleteButton() {
+        view.addSubview(completeButton)
+        completeButton.translatesAutoresizingMaskIntoConstraints = false
+        completeButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
+        completeButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        completeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        completeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        completeButton.setTitle("完成", for: .normal)
+        completeButton.backgroundColor = .systemGray
+        completeButton.addTarget(self, action: #selector(pressComplete), for: .touchUpInside)
+    }
+    
+    @objc func pressComplete() {
+        guard let selectedImage = selectedImage else { return }
+
+        ImageManager.shared.uploadImageToStorage(image: selectedImage) { urlString in
+            print("======\(urlString)")
+        }
+        
+    }
 }
