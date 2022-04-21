@@ -21,10 +21,13 @@ class AddReminderViewController: UIViewController {
     let debtButton = UIButton()
     let creditButton = UIButton()
     var groupPickerData: [String] = []
+    var remindTimeDatePicker = UIDatePicker()
+    var reminderLabel = UILabel()
     
     var groups: [GroupData] = []
     var member: [String] = []
     var userData: [UserData] = []
+    var remindTimeStamp: Double?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +41,8 @@ class AddReminderViewController: UIViewController {
         setUserPicker()
         setType()
         setButtons()
+        setReminderLael()
+        setDatePicker()
         setCompleteButton()
     }
     
@@ -166,6 +171,43 @@ class AddReminderViewController: UIViewController {
         }
         member = memberData.map { $0.userName }
         member = member.filter { $0 != userName }
+    }
+    
+    func setReminderLael() {
+        view.addSubview(reminderLabel)
+        setReminderLabelConstraint()
+        reminderLabel.text = "選擇提醒時間"
+    }
+    
+    func setDatePicker() {
+        view.addSubview(remindTimeDatePicker)
+        setDatePickerConstraint()
+        remindTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
+        remindTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
+        remindTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
+    }
+    
+    @objc func datePickerChanged() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let remindDate = remindTimeDatePicker.date
+        remindTimeStamp = remindDate.timeIntervalSince1970
+    }
+    
+    func setReminderLabelConstraint() {
+        reminderLabel.translatesAutoresizingMaskIntoConstraints = false
+        reminderLabel.topAnchor.constraint(equalTo: typeLabel.bottomAnchor, constant: 20).isActive = true
+        reminderLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        reminderLabel.leadingAnchor.constraint(equalTo: typeLabel.leadingAnchor, constant: 0).isActive = true
+        reminderLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
+    }
+    
+    func setDatePickerConstraint() {
+        remindTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
+        remindTimeDatePicker.topAnchor.constraint(equalTo: creditButton.bottomAnchor, constant: 20).isActive = true
+        remindTimeDatePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        remindTimeDatePicker.leadingAnchor.constraint(equalTo: userPicker.leadingAnchor, constant: 0).isActive = true
+        remindTimeDatePicker.widthAnchor.constraint(equalToConstant: 160).isActive = true
     }
     
     func setGroupLabelConstraint() {

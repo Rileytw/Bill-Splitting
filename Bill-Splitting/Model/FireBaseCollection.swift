@@ -14,4 +14,5 @@ enum FireBaseCollection: String {
     case user
     case friendInvitaion
     case subscription
+    case reminder
 }
