@@ -38,6 +38,7 @@
 		355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090EA280FBBB10007C0CE /* ImageManager.swift */; };
 		355090ED28100E150007C0CE /* Reminders.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 355090EC28100E150007C0CE /* Reminders.storyboard */; };
 		355090EF28100FA80007C0CE /* RemindersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090EE28100FA80007C0CE /* RemindersViewController.swift */; };
+		355090F1281039110007C0CE /* AddReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090F0281039110007C0CE /* AddReminderViewController.swift */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -103,6 +104,7 @@
 		355090EA280FBBB10007C0CE /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 		355090EC28100E150007C0CE /* Reminders.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Reminders.storyboard; sourceTree = "<group>"; };
 		355090EE28100FA80007C0CE /* RemindersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersViewController.swift; sourceTree = "<group>"; };
+		355090F0281039110007C0CE /* AddReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReminderViewController.swift; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 				35FF6404280C2B8500508EAF /* SpecificSettleIUpViewController.swift */,
 				35FF6406280C62C900508EAF /* SubscribeViewController.swift */,
 				355090EE28100FA80007C0CE /* RemindersViewController.swift */,
+				355090F0281039110007C0CE /* AddReminderViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -461,6 +464,7 @@
 				35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */,
 				35FF63DF2806563500508EAF /* ItemObject.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
+				355090F1281039110007C0CE /* AddReminderViewController.swift in Sources */,
 				355090E9280FAA690007C0CE /* AddMoreInfoViewController.swift in Sources */,
 				35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */,
 				355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */,

@@ -9,42 +9,67 @@ import UIKit
 
 class RemindersViewController: UIViewController {
 
-    var testButton = UIButton()
+    var addNotificationButton = UIButton()
+    var notificationTime = 5
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        setTestButton()
-        sendNotification()
+        setAddButton()
+//        sendNotification()
     }
     
-//    func setTestButton() {
-//        view.addSubview(testButton)
-//        testButton.translatesAutoresizingMaskIntoConstraints = false
-//        testButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-//        testButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0).isActive = true
-//        testButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-//        testButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-//        testButton.setTitle("Send", for: .normal)
-//        testButton.backgroundColor = .systemGray
-//        testButton.addTarget(self, action: #selector(sendNotification), for: .touchUpInside)
-//    }
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        addNotificationButton.layer.cornerRadius = 0.5 * addNotificationButton.bounds.size.width
+        addNotificationButton.clipsToBounds = true
+    }
+    
+    func setAddButton() {
+        view.addSubview(addNotificationButton)
+        setAddButtonConstraints()
+        addNotificationButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        addNotificationButton.tintColor = .white
+        addNotificationButton.backgroundColor = .systemGray
+        addNotificationButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
+    }
 
-//    @objc
+    @objc func pressAddButton() {
+        let storyBoard = UIStoryboard(name: "Reminders", bundle: nil)
+        guard let addReminderViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddReminderViewController.self)) as? AddReminderViewController else { return }
+        
+        if #available(iOS 15.0, *) {
+                if let sheet = addReminderViewController.sheetPresentationController {
+                    sheet.detents = [.medium()]
+                    sheet.preferredCornerRadius = 20
+                }
+            }
+        self.present(addReminderViewController, animated: true, completion: nil)
+    }
+    
     func sendNotification() {
         let content = UNMutableNotificationContent()
-                content.title = "title：測試"
-                content.subtitle = "subtitle：2022/04/20"
-                content.body = "body：test test test test test test test test test"
-                content.badge = 1
+        content.title = "title：測試"
+        content.subtitle = "subtitle：2022/04/20"
+        content.body = "body：test test test test test test test test test"
+//        content.badge = 1
         content.sound = UNNotificationSound.default
-                
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-                
-                let request = UNNotificationRequest(identifier: "notification", content: content, trigger: trigger)
-                
-                UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
-                    print("成功建立通知...")
-                })
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(notificationTime), repeats: false)
+        
+        let request = UNNotificationRequest(identifier: "notification", content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
+            print("成功建立通知...")
+        })
     }
+    
+    func setAddButtonConstraints() {
+        addNotificationButton.translatesAutoresizingMaskIntoConstraints = false
+        addNotificationButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        addNotificationButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        addNotificationButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        addNotificationButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    }
+    
 }
