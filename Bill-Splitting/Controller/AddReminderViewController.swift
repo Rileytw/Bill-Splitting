@@ -25,9 +25,10 @@ class AddReminderViewController: UIViewController {
     var reminderLabel = UILabel()
     
     var groups: [GroupData] = []
-    var member: [String] = []
+    var member: [UserData] = []
     var userData: [UserData] = []
     var remindTimeStamp: Double?
+    var reminderData = Reminder(groupId: "", memberId: "", type: 0, remindTime: 0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,7 +70,6 @@ class AddReminderViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
-
     }
     
     func setGroup() {
@@ -112,6 +112,16 @@ class AddReminderViewController: UIViewController {
         setCompleteButtonConstraint()
         completeButton.setTitle("設定", for: .normal)
         completeButton.backgroundColor = .systemGray
+        completeButton.addTarget(self, action: #selector(pressComplete), for: .touchUpInside)
+    }
+    
+    @objc func pressComplete() {
+        addReminder()
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func addReminder() {
+        ReminderManager.shared.addReminderData(reminder: reminderData)
     }
     
     func setButtons() {
@@ -135,6 +145,18 @@ class AddReminderViewController: UIViewController {
             sender.layer.borderColor = UIColor.black.cgColor
             sender.layer.borderWidth = 1
             sender.isSelected = true
+            
+            if sender == creditButton {
+                reminderData.type = RemindType.credit.intData
+            } else {
+                reminderData.type = RemindType.debt.intData
+            }
+//            switch sender {
+//                case .creditButton:
+//                  reminderData.type = RemindType.credit.intData
+//                case .debtButton:
+//                  reminderData.type = RemindType.debt.intData
+////            }
         } else {
             sender.layer.borderWidth = 0
             sender.isSelected = false
@@ -169,8 +191,8 @@ class AddReminderViewController: UIViewController {
 //                }
             }
         }
-        member = memberData.map { $0.userName }
-        member = member.filter { $0 != userName }
+        member = memberData
+        member = member.filter { $0.userId != userId }
     }
     
     func setReminderLael() {
@@ -192,6 +214,7 @@ class AddReminderViewController: UIViewController {
         formatter.dateFormat = "yyyy-MM-dd"
         let remindDate = remindTimeDatePicker.date
         remindTimeStamp = remindDate.timeIntervalSince1970
+        reminderData.remindTime = remindTimeStamp ?? 0
     }
     
     func setReminderLabelConstraint() {
@@ -289,7 +312,7 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
         if pickerView == groupPicker.pickerView {
             return groupPickerData[row]
         } else {
-            return member[row]
+            return member[row].userName
         }
     }
     
@@ -298,13 +321,15 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
         if pickerView == groupPicker.pickerView {
             let groupMember = groups[row].member
             selectedMember(membersId: groupMember)
-            if groups[row].creator == userId {
-            } else {
-                member = [userName]
-            }
+            reminderData.groupId = groups[row].groupId
             return groupPicker.textField.text = groupPickerData[row]
         } else {
-            return userPicker.textField.text = member[row]
+            reminderData.memberId = member[row].userId
+            if groups[row].creator != userId {
+                return userPicker.textField.text = userName
+            } else {
+                return userPicker.textField.text = member[row].userName
+            }
         }
     }
 }

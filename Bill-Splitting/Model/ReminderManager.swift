@@ -13,14 +13,14 @@ class ReminderManager {
     static var shared = ReminderManager()
     lazy var db = Firestore.firestore()
     
-    func addReminderData(groupId: String, memberId: String, type: Int, remindTime: Double, completion: @escaping (Double) -> Void) {
+    func addReminderData(reminder: Reminder) {
         let ref = db.collection(FireBaseCollection.reminder.rawValue).document()
         
-        let reminder = Reminder(groupId: groupId, memberId: memberId, type: type, remindTime: remindTime)
+//        let reminder = Reminder(groupId: groupId, memberId: memberId, type: type, remindTime: remindTime)
         
         do {
             try db.collection(FireBaseCollection.reminder.rawValue).document("\(ref.documentID)").setData(from: reminder)
-            completion(remindTime)
+//            completion(remindTime)
         } catch {
             print(error)
         }
