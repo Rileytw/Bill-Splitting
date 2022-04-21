@@ -199,13 +199,13 @@ class AddReminderViewController: UIViewController {
     func setReminderLael() {
         view.addSubview(reminderLabel)
         setReminderLabelConstraint()
-        reminderLabel.text = "選擇提醒時間"
+        reminderLabel.text = "設定提醒時間"
     }
     
     func setDatePicker() {
         view.addSubview(remindTimeDatePicker)
         setDatePickerConstraint()
-        remindTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
+//        remindTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
         remindTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
         remindTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
     }
@@ -215,7 +215,7 @@ class AddReminderViewController: UIViewController {
         formatter.dateFormat = "yyyy-MM-dd"
         let remindDate = remindTimeDatePicker.date
         remindTimeStamp = remindDate.timeIntervalSince1970
-        reminderData.remindTime = remindTimeStamp ?? 0
+        reminderData.remindTime = remindTimeStamp ?? Date().timeIntervalSince1970
     }
     
     func setReminderLabelConstraint() {
@@ -223,15 +223,15 @@ class AddReminderViewController: UIViewController {
         reminderLabel.topAnchor.constraint(equalTo: typeLabel.bottomAnchor, constant: 20).isActive = true
         reminderLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         reminderLabel.leadingAnchor.constraint(equalTo: typeLabel.leadingAnchor, constant: 0).isActive = true
-        reminderLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        reminderLabel.widthAnchor.constraint(equalToConstant: 120).isActive = true
     }
     
     func setDatePickerConstraint() {
         remindTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
         remindTimeDatePicker.topAnchor.constraint(equalTo: creditButton.bottomAnchor, constant: 20).isActive = true
         remindTimeDatePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        remindTimeDatePicker.leadingAnchor.constraint(equalTo: userPicker.leadingAnchor, constant: 0).isActive = true
-        remindTimeDatePicker.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        remindTimeDatePicker.trailingAnchor.constraint(equalTo: userPicker.trailingAnchor, constant: 0).isActive = true
+        remindTimeDatePicker.widthAnchor.constraint(equalToConstant: 220).isActive = true
     }
     
     func setGroupLabelConstraint() {
