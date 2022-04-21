@@ -10,13 +10,19 @@ import UIKit
 class RemindersViewController: UIViewController {
 
     var addNotificationButton = UIButton()
-    var notificationTime = 5
+    var notificationTime: Double?
+    var reminders = [Reminder]()
+    var group: GroupData?
+    var member: UserData?
+    var reminderTitle: String?
+    var reminderSubtitle: String?
+    var remindBody: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setAddButton()
-//        sendNotification()
+        getReminders()
     }
     
     override func viewWillLayoutSubviews() {
@@ -48,20 +54,91 @@ class RemindersViewController: UIViewController {
     }
     
     func sendNotification() {
+        guard let reminderTitle = reminderTitle,
+              let reminderSubtitle = reminderSubtitle,
+              let reminderBody = remindBody,
+              let notificationTime = notificationTime
+        else { return }
+
         let content = UNMutableNotificationContent()
-        content.title = "title：測試"
-        content.subtitle = "subtitle：2022/04/20"
-        content.body = "body：test test test test test test test test test"
+        content.title = reminderTitle
+        content.subtitle = reminderSubtitle
+        content.body = reminderBody
 //        content.badge = 1
         content.sound = UNNotificationSound.default
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(notificationTime), repeats: false)
-        
         let request = UNNotificationRequest(identifier: "notification", content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
             print("成功建立通知...")
         })
+    }
+    
+    func getReminders() {
+        ReminderManager.shared.fetchReminders { [weak self] result in
+            switch result {
+            case .success(let reminders):
+                self?.reminders = reminders
+                self?.fetchReminderInfo()
+            case .failure(let error):
+                print("Error decoding reminders: \(error)")
+            }
+        }
+    }
+    
+    func fetchReminderInfo() {
+        let group = DispatchGroup()
+        
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        firstQueue.async(group: group) {
+            GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
+                switch result {
+                case .success(let groups):
+                    for group in groups where group.groupId == self?.reminders[0].groupId {
+                        self?.group = group
+                    }
+                case .failure(let error):
+                    print("Error decoding groups: \(error)")
+                }
+                group.leave()
+
+            }
+        }
+        
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        secondQueue.async(group: group) {
+            UserManager.shared.fetchUsersData { [weak self] result in
+                switch result {
+                case .success(let users):
+                    for user in users where user.userId == self?.reminders[0].memberId {
+                        self?.member = user
+                    }
+                case .failure(let error):
+                    print("Error decoding users: \(error)")
+                }
+                
+                group.leave()
+            }
+            
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            guard let member = self.member else { return }
+            self.reminderTitle = self.group?.groupName
+            if self.reminders[0].type == RemindType.credit.intData {
+                self.reminderSubtitle = RemindType.credit.textInfo
+                self.remindBody = "記得向" + member.userName + "請款"
+            } else {
+                self.reminderSubtitle = RemindType.debt.textInfo
+                self.remindBody = "記得付錢給" + member.userName
+            }
+           
+            
+            self.sendNotification()
+        }
     }
     
     func setAddButtonConstraints() {
