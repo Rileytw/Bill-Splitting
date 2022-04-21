@@ -18,6 +18,8 @@ class AddReminderViewController: UIViewController {
     let priceLabel = UILabel()
     let priceTextField = UITextField()
     let completeButton = UIButton()
+    let debtButton = UIButton()
+    let creditButton = UIButton()
 //    var groupPickerData = []
     
     override func viewDidLoad() {
@@ -28,7 +30,8 @@ class AddReminderViewController: UIViewController {
         setUser()
         setUserPicker()
         setType()
-        setTypePicker()
+//        setTypePicker()
+        setButtons()
         setCompleteButton()
     }
     
@@ -73,10 +76,10 @@ class AddReminderViewController: UIViewController {
         typeLabel.text = "選擇類型"
     }
     
-    func setTypePicker() {
-        view.addSubview(typePicker)
-        setTypePickerConstraint()
-    }
+//    func setTypePicker() {
+//        view.addSubview(typePicker)
+//        setTypePickerConstraint()
+//    }
     
     func setCompleteButton() {
         view.addSubview(completeButton)
@@ -84,6 +87,41 @@ class AddReminderViewController: UIViewController {
         setCompleteButtonConstraint()
         completeButton.setTitle("設定", for: .normal)
         completeButton.backgroundColor = .systemGray
+    }
+    
+    func setButtons() {
+        view.addSubview(creditButton)
+        view.addSubview(debtButton)
+        setButtonsConstraint()
+        creditButton.setTitle("收款", for: .normal)
+        creditButton.titleLabel?.font = creditButton.titleLabel?.font.withSize(14)
+        creditButton.backgroundColor = .systemTeal
+        creditButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
+        
+        debtButton.setTitle("付款", for: .normal)
+        debtButton.backgroundColor = .systemOrange
+        debtButton.titleLabel?.font = debtButton.titleLabel?.font.withSize(14)
+        debtButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
+        
+    }
+    
+    @objc func pressTypeButton(_ sender: UIButton) {
+        
+        if sender.isSelected == false {
+            sender.layer.borderColor = UIColor.black.cgColor
+            sender.layer.borderWidth = 1
+            sender.isSelected = true
+        } else {
+            sender.layer.borderWidth = 0
+            sender.isSelected = false
+        }
+        let buttonArray = [creditButton, debtButton]
+        for button in buttonArray {
+            if button.isSelected && button !== sender {
+                button.isSelected = false
+                button.layer.borderWidth = 0
+            }
+        }
     }
     
     func setGroupLabelConstraint() {
@@ -126,16 +164,32 @@ class AddReminderViewController: UIViewController {
         typeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
-    func setTypePickerConstraint() {
-        typePicker.translatesAutoresizingMaskIntoConstraints = false
-        typePicker.centerYAnchor.constraint(equalTo: typeLabel.centerYAnchor, constant: 0).isActive = true
-        typePicker.leadingAnchor.constraint(equalTo: userPicker.leadingAnchor, constant: 0).isActive = true
-        typePicker.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        typePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
+//    func setTypePickerConstraint() {
+//        typePicker.translatesAutoresizingMaskIntoConstraints = false
+//        typePicker.centerYAnchor.constraint(equalTo: typeLabel.centerYAnchor, constant: 0).isActive = true
+//        typePicker.leadingAnchor.constraint(equalTo: userPicker.leadingAnchor, constant: 0).isActive = true
+//        typePicker.widthAnchor.constraint(equalToConstant: 100).isActive = true
+//        typePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
+//    }
+    
+    func setButtonsConstraint() {
+        creditButton.translatesAutoresizingMaskIntoConstraints = false
+//        creditButton.topAnchor.constraint(equalTo: userLabel.bottomAnchor, constant: 20).isActive = true
+        creditButton.centerYAnchor.constraint(equalTo: typeLabel.centerYAnchor, constant: 0).isActive = true
+        creditButton.leadingAnchor.constraint(equalTo: userPicker.leadingAnchor, constant: 0).isActive = true
+        creditButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        creditButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        debtButton.translatesAutoresizingMaskIntoConstraints = false
+//        debtButton.topAnchor.constraint(equalTo: userLabel.bottomAnchor, constant: 20).isActive = true
+        debtButton.centerYAnchor.constraint(equalTo: typeLabel.centerYAnchor, constant: 0).isActive = true
+        debtButton.leadingAnchor.constraint(equalTo: creditButton.trailingAnchor, constant: 10).isActive = true
+        debtButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        debtButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
     func setCompleteButtonConstraint() {
-        completeButton.topAnchor.constraint(equalTo: typePicker.bottomAnchor, constant: 100).isActive = true
+        completeButton.topAnchor.constraint(equalTo: typeLabel.bottomAnchor, constant: 100).isActive = true
         completeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
         completeButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         completeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
