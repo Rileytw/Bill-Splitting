@@ -96,8 +96,10 @@ class RemindersViewController: UIViewController {
             GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
                 switch result {
                 case .success(let groups):
-                    for group in groups where group.groupId == self?.reminders[0].groupId {
-                        self?.group = group
+                    if self?.reminders.isEmpty == false {
+                        for group in groups where group.groupId == self?.reminders[0].groupId {
+                            self?.group = group
+                        }
                     }
                 case .failure(let error):
                     print("Error decoding groups: \(error)")
@@ -113,8 +115,10 @@ class RemindersViewController: UIViewController {
             UserManager.shared.fetchUsersData { [weak self] result in
                 switch result {
                 case .success(let users):
-                    for user in users where user.userId == self?.reminders[0].memberId {
-                        self?.member = user
+                    if self?.reminders.isEmpty == false {
+                        for user in users where user.userId == self?.reminders[0].memberId {
+                            self?.member = user
+                        }
                     }
                 case .failure(let error):
                     print("Error decoding users: \(error)")
@@ -135,7 +139,7 @@ class RemindersViewController: UIViewController {
                 self.reminderSubtitle = RemindType.debt.textInfo
                 self.remindBody = "記得付錢給" + member.userName
             }
-           
+            self.notificationTime = self.reminders[0].remindTime - Date().timeIntervalSince1970
             
             self.sendNotification()
         }

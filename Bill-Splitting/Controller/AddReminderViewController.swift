@@ -211,8 +211,8 @@ class AddReminderViewController: UIViewController {
     }
     
     @objc func datePickerChanged() {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "yyyy-MM-dd"
         let remindDate = remindTimeDatePicker.date
         remindTimeStamp = remindDate.timeIntervalSince1970
         reminderData.remindTime = remindTimeStamp ?? Date().timeIntervalSince1970
