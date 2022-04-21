@@ -68,6 +68,31 @@ class UserManager {
         }
     }
     
+    func fetchUsersData(completion: @escaping (Result<[UserData], Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                
+                completion(.failure(error))
+            } else {
+                
+                var userData: [UserData] = []
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                            userData.append(user)
+                        }
+                    } catch {
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(userData))
+            }
+        }
+    }
+    
     func addPaymentData(paymentName: String?, account: String?, link: String?) {
         let ref = db.collection(FireBaseCollection.user.rawValue).document(userId)
         let replyDictionary = ["paymentName": paymentName, "paymentAccount": account, "paymentLink": link ]
