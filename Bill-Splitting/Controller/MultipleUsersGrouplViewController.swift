@@ -449,4 +449,11 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         }
         return itemsCell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let itemDetailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemDetailViewController.self)) as? ItemDetailViewController else { return }
+        self.show(itemDetailViewController, sender: nil)
+
+    }
 }

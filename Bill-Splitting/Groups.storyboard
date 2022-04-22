@@ -25,6 +25,21 @@
             </objects>
             <point key="canvasLocation" x="939.13043478260875" y="65.625"/>
         </scene>
+        <!--Item Detail View Controller-->
+        <scene sceneID="95X-GJ-mfj">
+            <objects>
+                <viewController storyboardIdentifier="ItemDetailViewController" id="t9r-A3-Gwk" customClass="ItemDetailViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="BCU-FY-dTY">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="if9-9v-mog"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="u81-ES-CVs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1967" y="-856"/>
+        </scene>
         <!--Multiple Users Groupl View Controller-->
         <scene sceneID="a1y-Aa-5S2">
             <objects>

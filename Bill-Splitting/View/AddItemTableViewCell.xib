@@ -51,7 +51,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pUy-Zo-f0c">
-                        <rect key="frame" x="323" y="19" width="42" height="21"/>
+                        <rect key="frame" x="332" y="19" width="42" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -59,7 +59,7 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="pUy-Zo-f0c" firstAttribute="width" secondItem="AyG-7w-gcE" secondAttribute="width" multiplier="0.7" id="CCV-oa-TOf"/>
-                    <constraint firstItem="pUy-Zo-f0c" firstAttribute="centerX" secondItem="AyG-7w-gcE" secondAttribute="centerX" id="CkD-WK-xlT"/>
+                    <constraint firstItem="pUy-Zo-f0c" firstAttribute="trailing" secondItem="AyG-7w-gcE" secondAttribute="trailing" id="CkD-WK-xlT"/>
                     <constraint firstItem="c9p-vM-lgR" firstAttribute="leading" secondItem="t8h-ic-9yC" secondAttribute="trailing" constant="20" id="DzH-Uw-XtV"/>
                     <constraint firstItem="pUy-Zo-f0c" firstAttribute="baseline" secondItem="B5S-YA-eTS" secondAttribute="firstBaseline" id="HXM-LU-1Gp"/>
                     <constraint firstItem="AyG-7w-gcE" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="IIz-la-Seg"/>

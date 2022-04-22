@@ -51,9 +51,9 @@ class BasePickerViewInTextField: UIView {
 //        icon.frame = CGRect(x: width - 80, y: -20, width: 100, height: 100)
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
-        icon.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0).isActive = true
-        icon.widthAnchor.constraint(equalToConstant: 50).isActive = true
-        icon.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        icon.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
+        icon.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        icon.heightAnchor.constraint(equalToConstant: 20).isActive = true
         icon.tintColor = .systemGray
     }
 }

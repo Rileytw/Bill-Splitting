@@ -43,6 +43,7 @@
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
 		3593E129281262AE00F3A31C /* ReminderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */; };
+		3593E12B2812C44200F3A31C /* ItemDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E12A2812C44200F3A31C /* ItemDetailViewController.swift */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -113,6 +114,7 @@
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
 		3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReminderTableViewCell.xib; sourceTree = "<group>"; };
+		3593E12A2812C44200F3A31C /* ItemDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailViewController.swift; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -226,6 +228,7 @@
 				35FF63D62805626800508EAF /* FriendInvitationViewController.swift */,
 				35FF63E42806749D00508EAF /* GroupsViewController.swift */,
 				35FF63EC2806AAD000508EAF /* MultipleUsersGrouplViewController.swift */,
+				3593E12A2812C44200F3A31C /* ItemDetailViewController.swift */,
 				35FF63F02807B22400508EAF /* AddItemViewController.swift */,
 				355090E8280FAA690007C0CE /* AddMoreInfoViewController.swift */,
 				35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */,
@@ -455,6 +458,7 @@
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
 				355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */,
 				355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */,
+				3593E12B2812C44200F3A31C /* ItemDetailViewController.swift in Sources */,
 				35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
 				3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */,
