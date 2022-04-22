@@ -30,6 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         UNUserNotificationCenter.current().delegate = self
         
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
         return true
     }
     
@@ -52,4 +54,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
            completionHandler([.badge, .sound, .alert])
        }
+    
+//    func applicationDidBecomeActive(_ application: UIApplication) {
+//        UIApplication.shared.applicationIconBadgeNumber = 0
+//    }
 }

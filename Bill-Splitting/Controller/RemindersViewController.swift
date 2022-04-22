@@ -73,6 +73,7 @@ class RemindersViewController: UIViewController {
         content.subtitle = reminderSubtitle
         content.body = reminderBody
 //        content.badge = 1
+        content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
         content.sound = UNNotificationSound.default
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(notificationTime), repeats: false)
