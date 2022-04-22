@@ -8,7 +8,7 @@
 import UIKit
 
 class RemindersViewController: UIViewController {
-
+    
     var addNotificationButton = UIButton()
     var notificationTime: Double?
     var reminders = [Reminder]()
@@ -47,17 +47,17 @@ class RemindersViewController: UIViewController {
         addNotificationButton.backgroundColor = .systemGray
         addNotificationButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
     }
-
+    
     @objc func pressAddButton() {
         let storyBoard = UIStoryboard(name: "Reminders", bundle: nil)
         guard let addReminderViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddReminderViewController.self)) as? AddReminderViewController else { return }
         
         if #available(iOS 15.0, *) {
-                if let sheet = addReminderViewController.sheetPresentationController {
-                    sheet.detents = [.medium()]
-                    sheet.preferredCornerRadius = 20
-                }
+            if let sheet = addReminderViewController.sheetPresentationController {
+                sheet.detents = [.medium()]
+                sheet.preferredCornerRadius = 20
             }
+        }
         self.present(addReminderViewController, animated: true, completion: nil)
     }
     
@@ -67,13 +67,13 @@ class RemindersViewController: UIViewController {
               let reminderBody = remindBody,
               let notificationTime = notificationTime
         else { return }
-
+        
         let content = UNMutableNotificationContent()
         content.title = reminderTitle
         content.subtitle = reminderSubtitle
         content.body = reminderBody
-//        content.badge = 1
-        content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
+        //        content.badge = 1
+        //        content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
         content.sound = UNNotificationSound.default
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(notificationTime), repeats: false)
@@ -166,6 +166,7 @@ class RemindersViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: ReminderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ReminderTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        //        tableView.isEditing = true
     }
     
     func setTableViewConstraint() {
@@ -211,5 +212,24 @@ extension RemindersViewController: UITableViewDataSource, UITableViewDelegate {
         reminderCell.createReminderCell(member: memberName ?? "", type: type, groupName: groupName ?? "", time: time)
         
         return reminderCell
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+            -> UISwipeActionsConfiguration? {
+            let deleteAction = UIContextualAction(style: .destructive, title: nil) { (_, _, completionHandler) in
+                // delete the item here
+                ReminderManager.shared.deleteReminder(documentId: self.allReminders[indexPath.row].documentId)
+                self.allReminders.remove(at: indexPath.row)
+                self.tableView.deleteRows(at: [indexPath], with: .fade)
+                completionHandler(true)
+            }
+            deleteAction.image = UIImage(systemName: "trash")
+            deleteAction.backgroundColor = .systemRed
+            let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+            return configuration
     }
 }

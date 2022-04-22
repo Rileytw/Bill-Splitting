@@ -62,4 +62,14 @@ class ReminderManager {
             }
         }
     }
+    
+    func deleteReminder(documentId: String) {
+        db.collection(FireBaseCollection.reminder.rawValue).document(documentId).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+            } else {
+                print("Document successfully removed!")
+            }
+        }
+    }
 }
