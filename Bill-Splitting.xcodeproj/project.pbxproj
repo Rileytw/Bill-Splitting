@@ -36,6 +36,13 @@
 		355090E7280EDE020007C0CE /* PaymentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */; };
 		355090E9280FAA690007C0CE /* AddMoreInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090E8280FAA690007C0CE /* AddMoreInfoViewController.swift */; };
 		355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090EA280FBBB10007C0CE /* ImageManager.swift */; };
+		355090ED28100E150007C0CE /* Reminders.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 355090EC28100E150007C0CE /* Reminders.storyboard */; };
+		355090EF28100FA80007C0CE /* RemindersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090EE28100FA80007C0CE /* RemindersViewController.swift */; };
+		355090F1281039110007C0CE /* AddReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090F0281039110007C0CE /* AddReminderViewController.swift */; };
+		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
+		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
+		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
+		3593E129281262AE00F3A31C /* ReminderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -99,6 +106,13 @@
 		355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PaymentTableViewCell.xib; sourceTree = "<group>"; };
 		355090E8280FAA690007C0CE /* AddMoreInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMoreInfoViewController.swift; sourceTree = "<group>"; };
 		355090EA280FBBB10007C0CE /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
+		355090EC28100E150007C0CE /* Reminders.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Reminders.storyboard; sourceTree = "<group>"; };
+		355090EE28100FA80007C0CE /* RemindersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersViewController.swift; sourceTree = "<group>"; };
+		355090F0281039110007C0CE /* AddReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReminderViewController.swift; sourceTree = "<group>"; };
+		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
+		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
+		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
+		3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReminderTableViewCell.xib; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -190,6 +204,7 @@
 				350A335D2803DF2500201E40 /* Groups.storyboard */,
 				350A335F2803DF3C00201E40 /* AddGroups.storyboard */,
 				350A33612803DF4300201E40 /* Profile.storyboard */,
+				355090EC28100E150007C0CE /* Reminders.storyboard */,
 				350A334C2800450100201E40 /* Assets.xcassets */,
 				350A334E2800450100201E40 /* LaunchScreen.storyboard */,
 				350A33512800450100201E40 /* Info.plist */,
@@ -216,6 +231,8 @@
 				35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */,
 				35FF6404280C2B8500508EAF /* SpecificSettleIUpViewController.swift */,
 				35FF6406280C62C900508EAF /* SubscribeViewController.swift */,
+				355090EE28100FA80007C0CE /* RemindersViewController.swift */,
+				355090F0281039110007C0CE /* AddReminderViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -251,6 +268,8 @@
 				35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */,
 				355090E4280EDE020007C0CE /* PaymentTableViewCell.swift */,
 				355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */,
+				3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */,
+				3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -268,6 +287,8 @@
 				355090DA280DA0E10007C0CE /* SubscriptionObject.swift */,
 				355090DC280DA19F0007C0CE /* SubscriptionManager.swift */,
 				355090EA280FBBB10007C0CE /* ImageManager.swift */,
+				3593E1222811884900F3A31C /* ReminderManager.swift */,
+				3593E124281188D100F3A31C /* ReminderObject.swift */,
 				355090DE280DA5900007C0CE /* FireBaseCollection.swift */,
 			);
 			path = Model;
@@ -336,8 +357,10 @@
 			files = (
 				35FF63F728080A8A00508EAF /* AddItemTableViewCell.xib in Resources */,
 				350A33622803DF4300201E40 /* Profile.storyboard in Resources */,
+				3593E129281262AE00F3A31C /* ReminderTableViewCell.xib in Resources */,
 				350A33602803DF3C00201E40 /* AddGroups.storyboard in Resources */,
 				35FF63FB2809672100508EAF /* ItemTableViewCell.xib in Resources */,
+				355090ED28100E150007C0CE /* Reminders.storyboard in Resources */,
 				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
 				35FF6401280A619E00508EAF /* SettleUpTableViewCell.xib in Resources */,
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
@@ -427,11 +450,14 @@
 				35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */,
 				35FF63F12807B22400508EAF /* AddItemViewController.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,
+				355090EF28100FA80007C0CE /* RemindersViewController.swift in Sources */,
+				3593E1232811884900F3A31C /* ReminderManager.swift in Sources */,
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
 				355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */,
 				355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */,
 				35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
+				3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */,
 				35FF63F32807B2DB00508EAF /* AddItemView.swift in Sources */,
 				35FF63ED2806AAD000508EAF /* MultipleUsersGrouplViewController.swift in Sources */,
 				35FF63FD280A5B3300508EAF /* SettleUpViewController.swift in Sources */,
@@ -453,6 +479,8 @@
 				35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */,
 				35FF63DF2806563500508EAF /* ItemObject.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
+				355090F1281039110007C0CE /* AddReminderViewController.swift in Sources */,
+				3593E125281188D100F3A31C /* ReminderObject.swift in Sources */,
 				355090E9280FAA690007C0CE /* AddMoreInfoViewController.swift in Sources */,
 				35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */,
 				355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */,
@@ -522,6 +550,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;

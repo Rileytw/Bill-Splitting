@@ -33,18 +33,27 @@ class BasePickerViewInTextField: UIView {
     }
     
     func setTextFieldOfPickerView() {
-        textField = UITextField(frame: CGRect(x: 0, y: 0, width: width, height: 60))
+        addSubview(textField)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.topAnchor.constraint(equalTo:self.topAnchor , constant: 0).isActive = true
+        textField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 0).isActive = true
+        textField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0).isActive = true
+        textField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
         textField.inputView = pickerView
         textField.text = pickerViewData[0]
         textField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         textField.textAlignment = .center
-        addSubview(textField)
     }
     
     func setIcon() {
         icon.setImage(UIImage(systemName: "arrowtriangle.down.square"), for: .normal)
         addSubview(icon)
-        icon.frame = CGRect(x: width - 80, y: -20, width: 100, height: 100)
+//        icon.frame = CGRect(x: width - 80, y: -20, width: 100, height: 100)
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        icon.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
+        icon.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0).isActive = true
+        icon.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        icon.heightAnchor.constraint(equalToConstant: 50).isActive = true
         icon.tintColor = .systemGray
     }
 }

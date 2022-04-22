@@ -74,11 +74,12 @@ class AddItemViewController: UIViewController {
 
     func setTypePickerView() {
         view.addSubview(typePickerView)
+//        typePickerView.frame = CGRect(x: 20, y: 200, width: 100, height: 20)
         typePickerView.translatesAutoresizingMaskIntoConstraints = false
         typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
         typePickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        typePickerView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        typePickerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
         typePickerView.pickerViewData = typePickerViewData
         
         typePickerView.pickerView.dataSource = self
@@ -90,10 +91,10 @@ class AddItemViewController: UIViewController {
     func setmemberPickerView() {
         view.addSubview(memberPickerView)
         memberPickerView.translatesAutoresizingMaskIntoConstraints = false
-        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
+        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 60).isActive = true
         memberPickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        memberPickerView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        memberPickerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
 
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
