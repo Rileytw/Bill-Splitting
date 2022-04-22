@@ -44,6 +44,10 @@
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
 		3593E129281262AE00F3A31C /* ReminderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */; };
 		3593E12B2812C44200F3A31C /* ItemDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E12A2812C44200F3A31C /* ItemDetailViewController.swift */; };
+		3593E12E2812C69800F3A31C /* ItemDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E12C2812C69800F3A31C /* ItemDetailTableViewCell.swift */; };
+		3593E12F2812C69800F3A31C /* ItemDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3593E12D2812C69800F3A31C /* ItemDetailTableViewCell.xib */; };
+		3593E1322812E34100F3A31C /* ItemMemberTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1302812E34100F3A31C /* ItemMemberTableViewCell.swift */; };
+		3593E1332812E34100F3A31C /* ItemMemberTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -115,6 +119,10 @@
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
 		3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReminderTableViewCell.xib; sourceTree = "<group>"; };
 		3593E12A2812C44200F3A31C /* ItemDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailViewController.swift; sourceTree = "<group>"; };
+		3593E12C2812C69800F3A31C /* ItemDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailTableViewCell.swift; sourceTree = "<group>"; };
+		3593E12D2812C69800F3A31C /* ItemDetailTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ItemDetailTableViewCell.xib; sourceTree = "<group>"; };
+		3593E1302812E34100F3A31C /* ItemMemberTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemMemberTableViewCell.swift; sourceTree = "<group>"; };
+		3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ItemMemberTableViewCell.xib; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -273,6 +281,10 @@
 				355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */,
 				3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */,
 				3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */,
+				3593E12C2812C69800F3A31C /* ItemDetailTableViewCell.swift */,
+				3593E12D2812C69800F3A31C /* ItemDetailTableViewCell.xib */,
+				3593E1302812E34100F3A31C /* ItemMemberTableViewCell.swift */,
+				3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -365,12 +377,14 @@
 				35FF63FB2809672100508EAF /* ItemTableViewCell.xib in Resources */,
 				355090ED28100E150007C0CE /* Reminders.storyboard in Resources */,
 				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
+				3593E1332812E34100F3A31C /* ItemMemberTableViewCell.xib in Resources */,
 				35FF6401280A619E00508EAF /* SettleUpTableViewCell.xib in Resources */,
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
 				35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */,
 				355090E7280EDE020007C0CE /* PaymentTableViewCell.xib in Resources */,
 				35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */,
+				3593E12F2812C69800F3A31C /* ItemDetailTableViewCell.xib in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
 				35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */,
@@ -458,9 +472,11 @@
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
 				355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */,
 				355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */,
+				3593E12E2812C69800F3A31C /* ItemDetailTableViewCell.swift in Sources */,
 				3593E12B2812C44200F3A31C /* ItemDetailViewController.swift in Sources */,
 				35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
+				3593E1322812E34100F3A31C /* ItemMemberTableViewCell.swift in Sources */,
 				3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */,
 				35FF63F32807B2DB00508EAF /* AddItemView.swift in Sources */,
 				35FF63ED2806AAD000508EAF /* MultipleUsersGrouplViewController.swift in Sources */,
