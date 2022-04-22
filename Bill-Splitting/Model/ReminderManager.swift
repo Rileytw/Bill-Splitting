@@ -15,7 +15,8 @@ class ReminderManager {
     
     func addReminderData(reminder: Reminder) {
         let ref = db.collection(FireBaseCollection.reminder.rawValue).document()
-        
+        var reminder = reminder
+        reminder.documentId = "\(ref.documentID)"
         do {
             try db.collection(FireBaseCollection.reminder.rawValue).document("\(ref.documentID)").setData(from: reminder)
         } catch {
@@ -24,7 +25,10 @@ class ReminderManager {
     }
     
     func fetchReminders(completion: @escaping (Result<[Reminder], Error>) -> Void) {
-        db.collection(FireBaseCollection.reminder.rawValue).whereField("creatorId", isEqualTo: userId).order(by: "remindTime", descending: true).getDocuments() { (querySnapshot, error) in
+        db.collection(FireBaseCollection.reminder.rawValue).whereField("creatorId",
+                                                                       isEqualTo: userId).whereField("status",
+                                                                    isEqualTo: RemindStatus.active.statusInt).order(by: "remindTime",
+                                                                    descending: true).getDocuments() {(querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -43,6 +47,20 @@ class ReminderManager {
                     }
                 }
                 completion(.success(reminders))
+            }
+        }
+    }
+    
+    func updateReminderStatus(documentId: String) {
+        let reminderRef = db.collection(FireBaseCollection.reminder.rawValue).document(documentId)
+        
+        reminderRef.updateData([
+            "status": RemindStatus.inActive.statusInt
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
             }
         }
     }

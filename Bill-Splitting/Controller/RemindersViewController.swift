@@ -20,11 +20,13 @@ class RemindersViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setAddButton()
-        getReminders()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        getReminders()
+    }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         addNotificationButton.layer.cornerRadius = 0.5 * addNotificationButton.bounds.size.width
@@ -89,59 +91,60 @@ class RemindersViewController: UIViewController {
     
     func fetchReminderInfo() {
         let group = DispatchGroup()
+        let remindTimeInterval = self.reminders[0].remindTime - Date().timeIntervalSince1970
         
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        firstQueue.async(group: group) {
-            GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
-                switch result {
-                case .success(let groups):
-                    if self?.reminders.isEmpty == false {
+        if self.reminders.isEmpty == false && remindTimeInterval > 0 {
+            let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+            group.enter()
+            firstQueue.async(group: group) {
+                GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
+                    switch result {
+                    case .success(let groups):
                         for group in groups where group.groupId == self?.reminders[0].groupId {
                             self?.group = group
                         }
+                    case .failure(let error):
+                        print("Error decoding groups: \(error)")
                     }
-                case .failure(let error):
-                    print("Error decoding groups: \(error)")
-                }
-                group.leave()
+                    group.leave()
 
+                }
             }
-        }
-        
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        secondQueue.async(group: group) {
-            UserManager.shared.fetchUsersData { [weak self] result in
-                switch result {
-                case .success(let users):
-                    if self?.reminders.isEmpty == false {
+            
+            let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+            group.enter()
+            secondQueue.async(group: group) {
+                UserManager.shared.fetchUsersData { [weak self] result in
+                    switch result {
+                    case .success(let users):
                         for user in users where user.userId == self?.reminders[0].memberId {
                             self?.member = user
                         }
+                    case .failure(let error):
+                        print("Error decoding users: \(error)")
                     }
-                case .failure(let error):
-                    print("Error decoding users: \(error)")
+        
+                    group.leave()
                 }
                 
-                group.leave()
             }
             
-        }
-        
-        group.notify(queue: DispatchQueue.main) {
-            guard let member = self.member else { return }
-            self.reminderTitle = self.group?.groupName
-            if self.reminders[0].type == RemindType.credit.intData {
-                self.reminderSubtitle = RemindType.credit.textInfo
-                self.remindBody = "記得向" + member.userName + "請款"
-            } else {
-                self.reminderSubtitle = RemindType.debt.textInfo
-                self.remindBody = "記得付錢給" + member.userName
+            group.notify(queue: DispatchQueue.main) {
+                guard let member = self.member else { return }
+                self.reminderTitle = self.group?.groupName
+                if self.reminders[0].type == RemindType.credit.intData {
+                    self.reminderSubtitle = RemindType.credit.textInfo
+                    self.remindBody = "記得向" + member.userName + "請款"
+                } else {
+                    self.reminderSubtitle = RemindType.debt.textInfo
+                    self.remindBody = "記得付錢給" + member.userName
+                }
+                self.notificationTime = self.reminders[0].remindTime - Date().timeIntervalSince1970
+                
+                self.sendNotification()
+                
+                ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
             }
-            self.notificationTime = self.reminders[0].remindTime - Date().timeIntervalSince1970
-            
-            self.sendNotification()
         }
     }
     

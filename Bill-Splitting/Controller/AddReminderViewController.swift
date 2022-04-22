@@ -28,7 +28,7 @@ class AddReminderViewController: UIViewController {
     var member: [UserData] = []
     var userData: [UserData] = []
     var remindTimeStamp: Double?
-    var reminderData = Reminder(groupId: "", memberId: "", creatorId: userId, type: 0, remindTime: 0)
+    var reminderData = Reminder(groupId: "", memberId: "", creatorId: userId, type: 0, remindTime: 0, status: 1, documentId: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()

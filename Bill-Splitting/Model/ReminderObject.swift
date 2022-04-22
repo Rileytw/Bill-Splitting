@@ -13,6 +13,8 @@ struct Reminder: Codable {
     var creatorId: String
     var type: Int
     var remindTime: Double
+    var status: Int
+    var documentId: String
 }
 
 enum RemindType {
@@ -34,6 +36,20 @@ enum RemindType {
             return "請款"
         case .debt:
             return "還款"
+        }
+    }
+}
+
+enum RemindStatus {
+    case active
+    case inActive
+    
+    var statusInt: Int {
+        switch self {
+        case .active:
+            return 1
+        case .inActive:
+            return 0
         }
     }
 }
