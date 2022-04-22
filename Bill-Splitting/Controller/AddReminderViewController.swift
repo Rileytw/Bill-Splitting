@@ -152,12 +152,6 @@ class AddReminderViewController: UIViewController {
             } else {
                 reminderData.type = RemindType.debt.intData
             }
-//            switch sender {
-//                case .creditButton:
-//                  reminderData.type = RemindType.credit.intData
-//                case .debtButton:
-//                  reminderData.type = RemindType.debt.intData
-////            }
         } else {
             sender.layer.borderWidth = 0
             sender.isSelected = false
@@ -185,11 +179,8 @@ class AddReminderViewController: UIViewController {
     func selectedMember(membersId: [String]) {
         var memberData: [UserData] = []
         for memberId in membersId {
-            for indexdata in userData where indexdata.userId == memberId  {
-//                if userData[index].userId == memberId {
-//                    memberData.append(userData[index])
+            for indexdata in userData where indexdata.userId == memberId {
                 memberData.append(indexdata)
-//                }
             }
         }
         member = memberData

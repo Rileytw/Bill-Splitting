@@ -12,14 +12,20 @@ class RemindersViewController: UIViewController {
     var addNotificationButton = UIButton()
     var notificationTime: Double?
     var reminders = [Reminder]()
+    var allReminders = [Reminder]()
     var group: GroupData?
+    var reminderGroups: [GroupData] = []
     var member: UserData?
+    var members: [UserData] = []
     var reminderTitle: String?
     var reminderSubtitle: String?
     var remindBody: String?
     
+    var tableView = UITableView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        setTableView()
         setAddButton()
     }
     
@@ -81,7 +87,8 @@ class RemindersViewController: UIViewController {
         ReminderManager.shared.fetchReminders { [weak self] result in
             switch result {
             case .success(let reminders):
-                self?.reminders = reminders
+                self?.allReminders = reminders
+                self?.reminders = reminders.filter { $0.status == RemindStatus.active.statusInt }
                 self?.fetchReminderInfo()
             case .failure(let error):
                 print("Error decoding reminders: \(error)")
@@ -93,59 +100,79 @@ class RemindersViewController: UIViewController {
         let group = DispatchGroup()
         let remindTimeInterval = self.reminders[0].remindTime - Date().timeIntervalSince1970
         
-        if self.reminders.isEmpty == false && remindTimeInterval > 0 {
-            let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-            group.enter()
-            firstQueue.async(group: group) {
-                GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
-                    switch result {
-                    case .success(let groups):
-                        for group in groups where group.groupId == self?.reminders[0].groupId {
-                            self?.group = group
-                        }
-                    case .failure(let error):
-                        print("Error decoding groups: \(error)")
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        firstQueue.async(group: group) {
+            GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
+                switch result {
+                case .success(let groups):
+                    self?.reminderGroups = groups
+                    for group in groups where group.groupId == self?.reminders[0].groupId {
+                        self?.group = group
                     }
-                    group.leave()
-
+                case .failure(let error):
+                    print("Error decoding groups: \(error)")
                 }
-            }
-            
-            let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-            group.enter()
-            secondQueue.async(group: group) {
-                UserManager.shared.fetchUsersData { [weak self] result in
-                    switch result {
-                    case .success(let users):
-                        for user in users where user.userId == self?.reminders[0].memberId {
-                            self?.member = user
-                        }
-                    case .failure(let error):
-                        print("Error decoding users: \(error)")
-                    }
-        
-                    group.leave()
-                }
+                group.leave()
                 
-            }
-            
-            group.notify(queue: DispatchQueue.main) {
-                guard let member = self.member else { return }
-                self.reminderTitle = self.group?.groupName
-                if self.reminders[0].type == RemindType.credit.intData {
-                    self.reminderSubtitle = RemindType.credit.textInfo
-                    self.remindBody = "記得向" + member.userName + "請款"
-                } else {
-                    self.reminderSubtitle = RemindType.debt.textInfo
-                    self.remindBody = "記得付錢給" + member.userName
-                }
-                self.notificationTime = self.reminders[0].remindTime - Date().timeIntervalSince1970
-                
-                self.sendNotification()
-                
-                ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
             }
         }
+        
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        secondQueue.async(group: group) {
+            UserManager.shared.fetchUsersData { [weak self] result in
+                switch result {
+                case .success(let users):
+                    self?.members = users
+                    for user in users where user.userId == self?.reminders[0].memberId {
+                        self?.member = user
+                    }
+                case .failure(let error):
+                    print("Error decoding users: \(error)")
+                }
+                
+                group.leave()
+            }
+            
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            guard let member = self.member else { return }
+            self.reminderTitle = self.group?.groupName
+            if self.reminders[0].type == RemindType.credit.intData {
+                self.reminderSubtitle = RemindType.credit.textInfo
+                self.remindBody = "記得向" + member.userName + "請款"
+            } else {
+                self.reminderSubtitle = RemindType.debt.textInfo
+                self.remindBody = "記得付錢給" + member.userName
+            }
+            self.notificationTime = self.reminders[0].remindTime - Date().timeIntervalSince1970
+            
+            if self.reminders.isEmpty == false && remindTimeInterval > 0 {
+                self.sendNotification()
+                ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
+            }
+            
+            self.tableView.reloadData()
+        }
+        
+    }
+    
+    func setTableView() {
+        view.addSubview(tableView)
+        setTableViewConstraint()
+        tableView.register(UINib(nibName: String(describing: ReminderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ReminderTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+    }
+    
+    func setTableViewConstraint() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10).isActive = true
     }
     
     func setAddButtonConstraints() {
@@ -155,5 +182,33 @@ class RemindersViewController: UIViewController {
         addNotificationButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
         addNotificationButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
+}
+
+extension RemindersViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return allReminders.count
+    }
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: ReminderTableViewCell.self),
+            for: indexPath
+        )
+        guard let reminderCell = cell as? ReminderTableViewCell else { return cell }
+        
+        var memberName: String?
+        var groupName: String?
+        for group in reminderGroups where group.groupId == allReminders[indexPath.row].groupId {
+            groupName = group.groupName
+        }
+        for member in members where member.userId == allReminders[indexPath.row].memberId {
+            memberName = member.userName
+        }
+        let time = allReminders[indexPath.row].remindTime
+        let type = allReminders[indexPath.row].type
+        
+        reminderCell.createReminderCell(member: memberName ?? "", type: type, groupName: groupName ?? "", time: time)
+        
+        return reminderCell
+    }
 }
