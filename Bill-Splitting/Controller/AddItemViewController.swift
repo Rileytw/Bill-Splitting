@@ -47,6 +47,7 @@ class AddItemViewController: UIViewController {
     var involvedMemberName: [String] = []
     
     var itemImageString: String?
+    var itemDescription: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -156,9 +157,18 @@ class AddItemViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let addMoreInfoViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddMoreInfoViewController.self)) as? AddMoreInfoViewController else { return }
         
+        if isItemExist == true {
+            addMoreInfoViewController.itemData = itemData
+            addMoreInfoViewController.isItemExist = true
+        }
+       
         addMoreInfoViewController.urlData = { [weak self] urlString in
             self?.itemImageString = urlString
         }
+        addMoreInfoViewController.itemDescription = { [weak self] itemDes in
+            self?.itemDescription = itemDes
+        }
+        
         self.present(addMoreInfoViewController, animated: true, completion: nil)
     }
     
@@ -190,7 +200,7 @@ class AddItemViewController: UIViewController {
     func addItem() {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
-                                       itemDescription: "",
+                                       itemDescription: itemDescription,
                                        createdTime: Double(NSDate().timeIntervalSince1970),
                                        itemImage: self.itemImageString) { itemId in
             self.itemId = itemId
