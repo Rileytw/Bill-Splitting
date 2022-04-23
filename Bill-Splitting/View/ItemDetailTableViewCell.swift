@@ -13,6 +13,7 @@ class ItemDetailTableViewCell: UITableViewCell {
     @IBOutlet var itemName: UILabel!
     @IBOutlet var createdTime: UILabel!
     @IBOutlet var price: UILabel!
+    @IBOutlet var paidUser: UILabel!
     @IBOutlet var itemDescription: UILabel!
     @IBOutlet var itemImage: UIImageView!
     
@@ -27,7 +28,9 @@ class ItemDetailTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func createDetailCell(group: String, item: String, time: Double, paidPrice: Double, description: String?, image: String?) {
+    func createDetailCell(group: String, item: String, time: Double,
+                          paidPrice: Double, paidMember: String,
+                          description: String?, image: String?) {
         groupName.text = group
         itemName.text = item
         
@@ -38,7 +41,8 @@ class ItemDetailTableViewCell: UITableViewCell {
         createdTime.text = createdDate
         
         price.text = "金額：" + String(paidPrice)
+        paidUser.text = "付款人：" + paidMember
         itemDescription.text = description
-//        itemImage.loadImage(image, placeHolder: nil)
+        itemImage.getImage(image, placeHolder: nil)
     }
 }

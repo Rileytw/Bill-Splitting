@@ -457,6 +457,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         let item = itemData[indexPath.row]
         itemDetailViewController.itemId = item.itemId
         itemDetailViewController.groupName = groupData?.groupName
+        itemDetailViewController.userData = userData
         
         self.show(itemDetailViewController, sender: nil)
         

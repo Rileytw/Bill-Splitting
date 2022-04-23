@@ -24,4 +24,9 @@ class ItemMemberTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    func createItemMamberCell(involedMember: String, involvedPrice: Double) {
+        type.text = "參與人"
+        member.text = involedMember
+        price.text = "金額" + String(involvedPrice)
+    }
 }

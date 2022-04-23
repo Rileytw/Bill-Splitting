@@ -10,13 +10,12 @@ import UIKit
 class ItemDetailViewController: UIViewController {
     
     var itemId: String?
-    var item: ItemData? {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    var item: ItemData?
     var groupName: String?
+    var userData: [UserData] = []
     var tableView = UITableView()
+    var paidUser: [UserData] = []
+    var involvedUser: [UserData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,22 +66,54 @@ class ItemDetailViewController: UIViewController {
     }
     
     func getItemExpense() {
-        ItemManager.shared.fetchPaidItemsExpense(itemId: self.itemId ?? "") { [weak self] result in
-            switch result {
-            case .success(let items):
-                self?.item?.paidInfo = items
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+        let group = DispatchGroup()
+        
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        firstQueue.async(group: group) {
+            ItemManager.shared.fetchPaidItemsExpense(itemId: self.itemId ?? "") { [weak self] result in
+                switch result {
+                case .success(let items):
+                    self?.item?.paidInfo = items
+                    self?.getPayUser()
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                }
+                group.leave()
+
             }
         }
         
-        ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemId ?? "") { [weak self] result in
-            switch result {
-            case .success(let items):
-                self?.item?.involedInfo = items
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        secondQueue.async(group: group) {
+            ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemId ?? "") { [weak self] result in
+                switch result {
+                case .success(let items):
+                    self?.item?.involedInfo = items
+                    self?.getInvolvedUser()
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                }
+                group.leave()
             }
+        }
+        group.notify(queue: DispatchQueue.main) {
+            self.tableView.reloadData()
+//            print("involedUser:\(self.involvedUser) ")
+        }
+    }
+    
+    func getPayUser() {
+        paidUser = userData.filter { $0.userId == item?.paidInfo?[0].userId }
+    }
+    
+    func getInvolvedUser() {
+        guard let item = item?.involedInfo else {
+            return
+        }
+        for index in 0..<item.count {
+            involvedUser += userData.filter { $0.userId == item[index].userId }
         }
     }
 }
@@ -104,7 +135,7 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let item = item else { return UITableViewCell() }
         
-        if indexPath.section == 0 {
+         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: String(describing: ItemDetailTableViewCell.self),
                 for: indexPath
@@ -115,6 +146,7 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
                                         item: item.itemName,
                                         time: item.createdTime,
                                         paidPrice: item.paidInfo?[0].price ?? 0,
+                                        paidMember: paidUser[0].userName,
                                         description: item.itemDescription,
                                         image: item.itemImage)
             
@@ -126,8 +158,9 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
             )
             guard let memberCell = cell as? ItemMemberTableViewCell else { return cell }
             
-           
             
+            memberCell.createItemMamberCell(involedMember: involvedUser[indexPath.row].userName,
+                                            involvedPrice: item.involedInfo?[indexPath.row].price ?? 0)
             return memberCell
         }
     }
