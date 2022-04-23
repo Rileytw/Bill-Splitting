@@ -59,7 +59,7 @@ class ItemManager {
     }
     
     func fetchItem(itemId: String, completion: @escaping (Result<ItemData, Error>) -> Void) {
-        db.collection(FireBaseCollection.item.rawValue).document(itemId).getDocument { (querySnapshot, error) in
+        db.collection(FireBaseCollection.item.rawValue).document(itemId).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))

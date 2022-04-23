@@ -34,6 +34,9 @@ class AddItemViewController: UIViewController {
     var choosePaidMember = UILabel()
     var addMoreButton = UIButton()
     
+    var isItemExist: Bool = false
+    var itemData: ItemData?
+    
     var selectedIndexs = [Int]() {
         didSet {
             if typePickerView.textField.text == SplitType.equal.label {
@@ -70,6 +73,11 @@ class AddItemViewController: UIViewController {
         addItemView.heightAnchor.constraint(equalToConstant: 140).isActive = true
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
+        
+        if isItemExist == true {
+            addItemView.itemNameTextField.text = itemData?.itemName
+            addItemView.priceTextField.text = String(itemData?.paidInfo?[0].price ?? 0)
+        }
     }
 
     func setTypePickerView() {
@@ -168,6 +176,18 @@ class AddItemViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
+        if isItemExist == true {
+            deleteItem() {
+                addItem()
+            }
+        } else {
+            addItem()
+        }
+        
+        self.dismiss(animated: false, completion: nil)
+    }
+    
+    func addItem() {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
                                        itemDescription: "",
@@ -206,7 +226,6 @@ class AddItemViewController: UIViewController {
             }
             self.countPersonalExpense()
         }
-        self.dismiss(animated: false, completion: nil)
     }
     
     func countPersonalExpense() {
@@ -236,6 +255,30 @@ class AddItemViewController: UIViewController {
             guard let involvedPrice = involvedPrice else { return }
             GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
                                                     newExpense: 0 - involvedPrice,
+                                                    groupId: groupData?.groupId ?? "")
+        }
+    }
+    
+    func deleteItem(completion: () -> Void) {
+        reCountPersonalExpense()
+        ItemManager.shared.deleteItem(itemId: itemData?.itemId ?? "")
+        completion()
+    }
+    
+    func reCountPersonalExpense() {
+        guard let paidUserId = itemData?.paidInfo?[0].userId,
+              let paidPrice = itemData?.paidInfo?[0].price
+        else { return }
+        
+        GroupManager.shared.updateMemberExpense(userId: paidUserId ,
+                                                newExpense: 0 - paidPrice,
+                                                groupId: groupData?.groupId ?? "")
+        
+        guard let involvedExpense = itemData?.involedInfo else { return }
+        
+        for user in 0..<involvedExpense.count {
+            GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
+                                                    newExpense: involvedExpense[user].price,
                                                     groupId: groupData?.groupId ?? "")
         }
     }

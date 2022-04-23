@@ -19,9 +19,12 @@ class ItemDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         addMenu()
         setTableView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         getItemData()
     }
     
@@ -200,6 +203,8 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
                 addItemViewController.memberId = self.groupData?.member
                 addItemViewController.memberData = self.userData
                 addItemViewController.groupData = self.groupData
+                addItemViewController.itemData = self.item
+                addItemViewController.isItemExist = true
                 self.present(addItemViewController, animated: true, completion: nil)
             }
            
