@@ -135,4 +135,14 @@ class ItemManager {
             print(error)
         }
     }
+    
+    func deleteItem(itemId: String) {
+        db.collection(FireBaseCollection.item.rawValue).document(itemId).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+            } else {
+                print("Document successfully removed!")
+            }
+        }
+    }
 }

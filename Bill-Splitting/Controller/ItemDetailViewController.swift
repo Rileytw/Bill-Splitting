@@ -11,7 +11,7 @@ class ItemDetailViewController: UIViewController {
     
     var itemId: String?
     var item: ItemData?
-    var groupName: String?
+    var groupData: GroupData?
     var userData: [UserData] = []
     var tableView = UITableView()
     var paidUser: [UserData] = []
@@ -109,11 +109,34 @@ class ItemDetailViewController: UIViewController {
     }
     
     func getInvolvedUser() {
-        guard let item = item?.involedInfo else {
+        guard let involvedExpense = item?.involedInfo else {
             return
         }
-        for index in 0..<item.count {
-            involvedUser += userData.filter { $0.userId == item[index].userId }
+        for index in 0..<involvedExpense.count {
+            involvedUser += userData.filter { $0.userId == involvedExpense[index].userId }
+        }
+    }
+    
+    func deleteItem() {
+        countPersonalExpense()
+        ItemManager.shared.deleteItem(itemId: itemId ?? "")
+    }
+    
+    func countPersonalExpense() {
+        guard let paidUserId = item?.paidInfo?[0].userId,
+              let paidPrice = item?.paidInfo?[0].price
+        else { return }
+        
+        GroupManager.shared.updateMemberExpense(userId: paidUserId ,
+                                                newExpense: 0 - paidPrice,
+                                                groupId: groupData?.groupId ?? "")
+        
+        guard let involvedExpense = item?.involedInfo else { return }
+        
+        for user in 0..<involvedExpense.count {
+            GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
+                                                    newExpense: involvedExpense[user].price,
+                                                    groupId: groupData?.groupId ?? "")
         }
     }
 }
@@ -142,7 +165,7 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
             )
             guard let detailCell = cell as? ItemDetailTableViewCell else { return cell }
             
-            detailCell.createDetailCell(group: groupName ?? "",
+             detailCell.createDetailCell(group: groupData?.groupName ?? "",
                                         item: item.itemName,
                                         time: item.createdTime,
                                         paidPrice: item.paidInfo?[0].price ?? 0,
@@ -172,10 +195,18 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
            
             let editAction = UIAction(title: "編輯", image: UIImage(systemName: "pencil")) { action in
                 print("eeeee")
+                let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+                guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
+                addItemViewController.memberId = self.groupData?.member
+                addItemViewController.memberData = self.userData
+                addItemViewController.groupData = self.groupData
+                self.present(addItemViewController, animated: true, completion: nil)
             }
            
             let removeAction = UIAction(title: "刪除", image: UIImage(systemName: "trash")) { action in
                 print("ddddd")
+                self.deleteItem()
+                self.navigationController?.popViewController(animated: true)
             }
             return UIMenu(title: "", children: [editAction, removeAction])
         }
