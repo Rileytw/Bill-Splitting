@@ -65,7 +65,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
         userData.removeAll()
-
+        
         getItemData()
         getMemberExpense()
     }
@@ -304,7 +304,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         case 0 :
             let components = Calendar.current.dateComponents([.month], from: startDate, to: endDate)
             let month = components.month
-    //        print("Number of months: \(month)")
+            //        print("Number of months: \(month)")
             if month ?? 0 > 1 {
                 var dateComponent = DateComponents()
                 dateComponent.month = 1
@@ -316,7 +316,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         case 1 :
             let components = Calendar.current.dateComponents([.year], from: startDate, to: endDate)
             let year = components.year
-    //        print("Number of years: \(year)")
+            //        print("Number of years: \(year)")
             if year ?? 0 > 1 {
                 var dateComponent = DateComponents()
                 dateComponent.year = 1
@@ -343,7 +343,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                                            price: self.subsriptions[0].paidPrice ?? 0,
                                            itemId: itemId,
                                            createdTime: self.subscriptionCreatedTime ?? 0)
-
+            
             for user in 0..<self.subscriptInvolvedItem.count {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.subscriptInvolvedItem[user].involvedUser,
                                                    price: self.subscriptInvolvedItem[user].involvedPrice,
@@ -453,7 +453,12 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let itemDetailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemDetailViewController.self)) as? ItemDetailViewController else { return }
+        
+        let item = itemData[indexPath.row]
+        itemDetailViewController.itemId = item.itemId
+        itemDetailViewController.groupName = groupData?.groupName
+        
         self.show(itemDetailViewController, sender: nil)
-
+        
     }
 }

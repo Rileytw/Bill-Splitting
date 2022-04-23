@@ -18,19 +18,19 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zW4-JB-34q">
-                        <rect key="frame" x="10" y="10" width="394" height="40"/>
+                        <rect key="frame" x="20" y="10" width="374" height="40"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="mZq-nm-Vio">
-                                <rect key="frame" x="0.0" y="0.0" width="197" height="40"/>
+                                <rect key="frame" x="0.0" y="0.0" width="187" height="40"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMI-TC-yBZ">
-                                        <rect key="frame" x="0.0" y="0.0" width="93.5" height="40"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="88.5" height="40"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Member" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PH8-Q8-nF8">
-                                        <rect key="frame" x="103.5" y="0.0" width="93.5" height="40"/>
+                                        <rect key="frame" x="98.5" y="0.0" width="88.5" height="40"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -38,7 +38,7 @@
                                 </subviews>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Price" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mo2-nQ-vGb">
-                                <rect key="frame" x="197" y="0.0" width="197" height="40"/>
+                                <rect key="frame" x="187" y="0.0" width="187" height="40"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -47,9 +47,9 @@
                     </stackView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="zW4-JB-34q" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="Nip-V3-6CJ"/>
+                    <constraint firstItem="zW4-JB-34q" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="Nip-V3-6CJ"/>
                     <constraint firstAttribute="bottom" secondItem="zW4-JB-34q" secondAttribute="bottom" constant="10" id="deP-QO-JxM"/>
-                    <constraint firstAttribute="trailing" secondItem="zW4-JB-34q" secondAttribute="trailing" constant="10" id="nzs-XU-0Ea"/>
+                    <constraint firstAttribute="trailing" secondItem="zW4-JB-34q" secondAttribute="trailing" constant="20" id="nzs-XU-0Ea"/>
                     <constraint firstItem="zW4-JB-34q" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="yht-W9-hZe"/>
                 </constraints>
             </tableViewCellContentView>

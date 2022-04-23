@@ -58,6 +58,26 @@ class ItemManager {
         }
     }
     
+    func fetchItem(itemId: String, completion: @escaping (Result<ItemData, Error>) -> Void) {
+        db.collection(FireBaseCollection.item.rawValue).document(itemId).getDocument { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                var items: ItemData?
+                do {
+                    if let item = try querySnapshot?.data(as: ItemData.self, decoder: Firestore.Decoder()) {
+                        items = item
+                        guard let items = items else { return }
+                        completion(.success(items))
+                    }
+                } catch {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
     func fetchPaidItemsExpense(itemId: String, completion: @escaping ExpenseInfoResponse) {
         fetchItemsExpense(itemId: itemId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
     }

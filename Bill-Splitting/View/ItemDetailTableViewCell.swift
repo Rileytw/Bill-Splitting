@@ -16,8 +16,6 @@ class ItemDetailTableViewCell: UITableViewCell {
     @IBOutlet var itemDescription: UILabel!
     @IBOutlet var itemImage: UIImageView!
     
-    
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -29,4 +27,18 @@ class ItemDetailTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    func createDetailCell(group: String, item: String, time: Double, paidPrice: Double, description: String?, image: String?) {
+        groupName.text = group
+        itemName.text = item
+        
+        let date = Date(timeIntervalSince1970: time)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
+        let createdDate = dateFormatter.string(from: date)
+        createdTime.text = createdDate
+        
+        price.text = "金額：" + String(paidPrice)
+        itemDescription.text = description
+//        itemImage.loadImage(image, placeHolder: nil)
+    }
 }
