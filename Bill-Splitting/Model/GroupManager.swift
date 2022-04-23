@@ -9,11 +9,6 @@ import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-enum Grouptype: Int {
-    case personal = 0
-    case group = 1
-}
-
 typealias ExpenseInfoResponse = (Result<[ExpenseInfo], Error>) -> Void
 
 class GroupManager {

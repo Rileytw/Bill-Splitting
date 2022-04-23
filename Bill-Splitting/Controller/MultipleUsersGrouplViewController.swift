@@ -59,6 +59,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         navigationItem.title = "群組"
         
         detectSubscription()
+        addMenu()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -367,6 +368,17 @@ class MultipleUsersGrouplViewController: UIViewController {
                                                     groupId: groupData?.groupId ?? "")
         }
     }
+    
+    func addMenu() {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "info.circle"), for: .normal)
+        
+        let barButton = UIBarButtonItem(customView: button)
+        self.navigationItem.rightBarButtonItem = barButton
+        
+        let interaction = UIContextMenuInteraction(delegate: self)
+        button.addInteraction(interaction)
+    }
 }
 
 extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
@@ -461,5 +473,23 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         
         self.show(itemDetailViewController, sender: nil)
         
+    }
+}
+
+extension MultipleUsersGrouplViewController: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
+           
+            let infoAction = UIAction(title: "查看群組資訊", image: UIImage(systemName: "eye")) { action in
+                print("eeeee")
+                let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+                guard let detailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: GroupDetailViewController.self)) as? GroupDetailViewController else { return }
+                detailViewController.groupData = self.groupData
+                detailViewController.userData = self.userData
+                self.present(detailViewController, animated: true, completion: nil)
+            }
+
+            return UIMenu(title: "", children: [infoAction])
+        }
     }
 }

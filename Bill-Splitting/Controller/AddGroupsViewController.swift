@@ -73,7 +73,7 @@ class AddGroupsViewController: UIViewController {
         nameTextField.layer.borderWidth = 1
         self.view.addSubview(nameTextField)
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 100).isActive = true
+        NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
@@ -82,7 +82,7 @@ class AddGroupsViewController: UIViewController {
         nameLabel.text = "群組名稱"
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 100).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
@@ -92,17 +92,16 @@ class AddGroupsViewController: UIViewController {
         descriptionTextView.layer.borderWidth = 1
         self.view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 50).isActive = true
+        NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .bottom, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: descriptionTextView,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
-        
         NSLayoutConstraint(item: descriptionTextView, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
-        NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
+        NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 60).isActive = true
         
         let descriptionLabel = UILabel()
         descriptionLabel.text = "群組簡介"
         view.addSubview(descriptionLabel)
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 50).isActive = true
+        NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: descriptionLabel,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         
         NSLayoutConstraint(item: descriptionLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
@@ -117,16 +116,17 @@ class AddGroupsViewController: UIViewController {
     }
     
     func setTextFieldOfPickerView() {
-        typeTextField = UITextField(frame: CGRect(x: 0, y: 0, width: fullScreenSize.width, height: 60))
-        typeTextField.inputView = pickerView
-        typeTextField.text = pickerViewData[0]
-        typeTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
-        typeTextField.textAlignment = .center
+//        typeTextField = UITextField(frame: .zero)
         self.view.addSubview(typeTextField)
         typeTextField.translatesAutoresizingMaskIntoConstraints = false
         typeTextField.widthAnchor.constraint(equalToConstant: fullScreenSize.width).isActive = true
         typeTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        typeTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
+        typeTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
+        typeTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        typeTextField.inputView = pickerView
+        typeTextField.text = pickerViewData[0]
+        typeTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
+        typeTextField.textAlignment = .center
     }
     
     func setTableView() {
@@ -160,10 +160,10 @@ class AddGroupsViewController: UIViewController {
         addGroupButton.backgroundColor = .systemGray
         view.addSubview(addGroupButton)
         addGroupButton.translatesAutoresizingMaskIntoConstraints = false
-        addGroupButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        addGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         addGroupButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60).isActive = true
         addGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60).isActive = true
-        addGroupButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
+        addGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         
         addGroupButton.addTarget(self, action: #selector(pressAddGroupButton), for: .touchUpInside)
     }
