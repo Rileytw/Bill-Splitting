@@ -58,6 +58,26 @@ class ItemManager {
         }
     }
     
+    func fetchItem(itemId: String, completion: @escaping (Result<ItemData, Error>) -> Void) {
+        db.collection(FireBaseCollection.item.rawValue).document(itemId).addSnapshotListener { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                var items: ItemData?
+                do {
+                    if let item = try querySnapshot?.data(as: ItemData.self, decoder: Firestore.Decoder()) {
+                        items = item
+                        guard let items = items else { return }
+                        completion(.success(items))
+                    }
+                } catch {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
     func fetchPaidItemsExpense(itemId: String, completion: @escaping ExpenseInfoResponse) {
         fetchItemsExpense(itemId: itemId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
     }
@@ -113,6 +133,16 @@ class ItemManager {
             try db.collection("item").document(itemId).collection(collection.rawValue).document().setData(from: involvedInfo)
         } catch {
             print(error)
+        }
+    }
+    
+    func deleteItem(itemId: String) {
+        db.collection(FireBaseCollection.item.rawValue).document(itemId).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+            } else {
+                print("Document successfully removed!")
+            }
         }
     }
 }

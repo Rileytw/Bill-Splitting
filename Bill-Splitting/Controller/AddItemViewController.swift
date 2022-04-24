@@ -34,6 +34,9 @@ class AddItemViewController: UIViewController {
     var choosePaidMember = UILabel()
     var addMoreButton = UIButton()
     
+    var isItemExist: Bool = false
+    var itemData: ItemData?
+    
     var selectedIndexs = [Int]() {
         didSet {
             if typePickerView.textField.text == SplitType.equal.label {
@@ -44,6 +47,7 @@ class AddItemViewController: UIViewController {
     var involvedMemberName: [String] = []
     
     var itemImageString: String?
+    var itemDescription: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,9 +71,14 @@ class AddItemViewController: UIViewController {
         addItemView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        addItemView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        addItemView.heightAnchor.constraint(equalToConstant: 140).isActive = true
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
+        
+        if isItemExist == true {
+            addItemView.itemNameTextField.text = itemData?.itemName
+            addItemView.priceTextField.text = String(itemData?.paidInfo?[0].price ?? 0)
+        }
     }
 
     func setTypePickerView() {
@@ -79,7 +88,7 @@ class AddItemViewController: UIViewController {
         typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
         typePickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        typePickerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         typePickerView.pickerViewData = typePickerViewData
         
         typePickerView.pickerView.dataSource = self
@@ -94,7 +103,7 @@ class AddItemViewController: UIViewController {
         memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 60).isActive = true
         memberPickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        memberPickerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
@@ -148,9 +157,18 @@ class AddItemViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let addMoreInfoViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddMoreInfoViewController.self)) as? AddMoreInfoViewController else { return }
         
+        if isItemExist == true {
+            addMoreInfoViewController.itemData = itemData
+            addMoreInfoViewController.isItemExist = true
+        }
+       
         addMoreInfoViewController.urlData = { [weak self] urlString in
             self?.itemImageString = urlString
         }
+        addMoreInfoViewController.itemDescription = { [weak self] itemDes in
+            self?.itemDescription = itemDes
+        }
+        
         self.present(addMoreInfoViewController, animated: true, completion: nil)
     }
     
@@ -168,9 +186,21 @@ class AddItemViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
+        if isItemExist == true {
+            deleteItem() {
+                addItem()
+            }
+        } else {
+            addItem()
+        }
+        
+        self.dismiss(animated: false, completion: nil)
+    }
+    
+    func addItem() {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
-                                       itemDescription: "",
+                                       itemDescription: itemDescription,
                                        createdTime: Double(NSDate().timeIntervalSince1970),
                                        itemImage: self.itemImageString) { itemId in
             self.itemId = itemId
@@ -206,7 +236,6 @@ class AddItemViewController: UIViewController {
             }
             self.countPersonalExpense()
         }
-        self.dismiss(animated: false, completion: nil)
     }
     
     func countPersonalExpense() {
@@ -236,6 +265,30 @@ class AddItemViewController: UIViewController {
             guard let involvedPrice = involvedPrice else { return }
             GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
                                                     newExpense: 0 - involvedPrice,
+                                                    groupId: groupData?.groupId ?? "")
+        }
+    }
+    
+    func deleteItem(completion: () -> Void) {
+        reCountPersonalExpense()
+        ItemManager.shared.deleteItem(itemId: itemData?.itemId ?? "")
+        completion()
+    }
+    
+    func reCountPersonalExpense() {
+        guard let paidUserId = itemData?.paidInfo?[0].userId,
+              let paidPrice = itemData?.paidInfo?[0].price
+        else { return }
+        
+        GroupManager.shared.updateMemberExpense(userId: paidUserId ,
+                                                newExpense: 0 - paidPrice,
+                                                groupId: groupData?.groupId ?? "")
+        
+        guard let involvedExpense = itemData?.involedInfo else { return }
+        
+        for user in 0..<involvedExpense.count {
+            GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
+                                                    newExpense: involvedExpense[user].price,
                                                     groupId: groupData?.groupId ?? "")
         }
     }

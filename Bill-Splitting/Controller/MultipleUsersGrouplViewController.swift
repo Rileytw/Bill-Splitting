@@ -59,13 +59,14 @@ class MultipleUsersGrouplViewController: UIViewController {
         navigationItem.title = "群組"
         
         detectSubscription()
+        addMenu()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
         userData.removeAll()
-
+        
         getItemData()
         getMemberExpense()
     }
@@ -304,7 +305,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         case 0 :
             let components = Calendar.current.dateComponents([.month], from: startDate, to: endDate)
             let month = components.month
-    //        print("Number of months: \(month)")
+            //        print("Number of months: \(month)")
             if month ?? 0 > 1 {
                 var dateComponent = DateComponents()
                 dateComponent.month = 1
@@ -316,7 +317,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         case 1 :
             let components = Calendar.current.dateComponents([.year], from: startDate, to: endDate)
             let year = components.year
-    //        print("Number of years: \(year)")
+            //        print("Number of years: \(year)")
             if year ?? 0 > 1 {
                 var dateComponent = DateComponents()
                 dateComponent.year = 1
@@ -343,7 +344,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                                            price: self.subsriptions[0].paidPrice ?? 0,
                                            itemId: itemId,
                                            createdTime: self.subscriptionCreatedTime ?? 0)
-
+            
             for user in 0..<self.subscriptInvolvedItem.count {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.subscriptInvolvedItem[user].involvedUser,
                                                    price: self.subscriptInvolvedItem[user].involvedPrice,
@@ -366,6 +367,17 @@ class MultipleUsersGrouplViewController: UIViewController {
                                                     newExpense: 0 - self.subscriptInvolvedItem[user].involvedPrice,
                                                     groupId: groupData?.groupId ?? "")
         }
+    }
+    
+    func addMenu() {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "info.circle"), for: .normal)
+        
+        let barButton = UIBarButtonItem(customView: button)
+        self.navigationItem.rightBarButtonItem = barButton
+        
+        let interaction = UIContextMenuInteraction(delegate: self)
+        button.addInteraction(interaction)
     }
 }
 
@@ -448,5 +460,36 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
             }
         }
         return itemsCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let itemDetailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemDetailViewController.self)) as? ItemDetailViewController else { return }
+        
+        let item = itemData[indexPath.row]
+        itemDetailViewController.itemId = item.itemId
+        itemDetailViewController.userData = userData
+        itemDetailViewController.groupData = groupData
+        
+        self.show(itemDetailViewController, sender: nil)
+        
+    }
+}
+
+extension MultipleUsersGrouplViewController: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
+           
+            let infoAction = UIAction(title: "查看群組資訊", image: UIImage(systemName: "eye")) { action in
+                print("eeeee")
+                let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+                guard let detailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: GroupDetailViewController.self)) as? GroupDetailViewController else { return }
+                detailViewController.groupData = self.groupData
+                detailViewController.userData = self.userData
+                self.present(detailViewController, animated: true, completion: nil)
+            }
+
+            return UIMenu(title: "", children: [infoAction])
+        }
     }
 }

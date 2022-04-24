@@ -25,6 +25,36 @@
             </objects>
             <point key="canvasLocation" x="939.13043478260875" y="65.625"/>
         </scene>
+        <!--Group Detail View Controller-->
+        <scene sceneID="ObO-lL-tHk">
+            <objects>
+                <viewController storyboardIdentifier="GroupDetailViewController" id="vEJ-BN-8cx" customClass="GroupDetailViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="nXu-Xx-OYG">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="9gs-DA-k7n"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="H3g-H0-yGY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1968" y="-848"/>
+        </scene>
+        <!--Item Detail View Controller-->
+        <scene sceneID="95X-GJ-mfj">
+            <objects>
+                <viewController storyboardIdentifier="ItemDetailViewController" id="t9r-A3-Gwk" customClass="ItemDetailViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="BCU-FY-dTY">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="if9-9v-mog"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="u81-ES-CVs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2996" y="-848"/>
+        </scene>
         <!--Multiple Users Groupl View Controller-->
         <scene sceneID="a1y-Aa-5S2">
             <objects>

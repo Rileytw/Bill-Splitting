@@ -18,7 +18,7 @@ class AddGroupsViewController: UIViewController {
     var pickerView: UIPickerView!
     var pickerViewData = ["個人預付", "多人支付"]
     
-    var friendList: [Friend]? {
+    var friendList: [Friend] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -34,6 +34,10 @@ class AddGroupsViewController: UIViewController {
     var type: Int?
     
     var member: [String] = []
+    
+    var isGroupExist: Bool = false
+    var groupData: GroupData?
+    var newGroupMember = [Friend]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,7 +63,9 @@ class AddGroupsViewController: UIViewController {
             switch result {
             case .success(let friend):
                 self?.friendList = friend
-//                print("userData: \(self.friendList)")
+                if self?.isGroupExist == true {
+                    self?.selectedNewMember()
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -73,7 +79,7 @@ class AddGroupsViewController: UIViewController {
         nameTextField.layer.borderWidth = 1
         self.view.addSubview(nameTextField)
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 100).isActive = true
+        NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
@@ -82,31 +88,38 @@ class AddGroupsViewController: UIViewController {
         nameLabel.text = "群組名稱"
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 100).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
+        
+        if isGroupExist == true {
+            nameTextField.text = groupData?.groupName
+        }
     }
     
     func setTextView() {
         descriptionTextView.layer.borderWidth = 1
         self.view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 50).isActive = true
+        NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .bottom, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: descriptionTextView,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
-        
         NSLayoutConstraint(item: descriptionTextView, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
-        NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
+        NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 60).isActive = true
         
         let descriptionLabel = UILabel()
         descriptionLabel.text = "群組簡介"
         view.addSubview(descriptionLabel)
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 50).isActive = true
+        NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: descriptionLabel,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         
         NSLayoutConstraint(item: descriptionLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
+        
+        if isGroupExist == true {
+            descriptionTextView.text = groupData?.groupDescription
+        }
     }
     
     func setUpPickerView(data:[String]) {
@@ -117,16 +130,21 @@ class AddGroupsViewController: UIViewController {
     }
     
     func setTextFieldOfPickerView() {
-        typeTextField = UITextField(frame: CGRect(x: 0, y: 0, width: fullScreenSize.width, height: 60))
-        typeTextField.inputView = pickerView
-        typeTextField.text = pickerViewData[0]
-        typeTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
-        typeTextField.textAlignment = .center
+//        typeTextField = UITextField(frame: .zero)
         self.view.addSubview(typeTextField)
         typeTextField.translatesAutoresizingMaskIntoConstraints = false
         typeTextField.widthAnchor.constraint(equalToConstant: fullScreenSize.width).isActive = true
         typeTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        typeTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
+        typeTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
+        typeTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        typeTextField.inputView = pickerView
+        typeTextField.text = pickerViewData[0]
+        typeTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
+        typeTextField.textAlignment = .center
+        
+        if isGroupExist == true {
+            typeTextField.isHidden = true
+        }
     }
     
     func setTableView() {
@@ -160,35 +178,45 @@ class AddGroupsViewController: UIViewController {
         addGroupButton.backgroundColor = .systemGray
         view.addSubview(addGroupButton)
         addGroupButton.translatesAutoresizingMaskIntoConstraints = false
-        addGroupButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        addGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         addGroupButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60).isActive = true
         addGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60).isActive = true
-        addGroupButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
+        addGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         
         addGroupButton.addTarget(self, action: #selector(pressAddGroupButton), for: .touchUpInside)
     }
     
     @objc func pressAddGroupButton() {
-        print("member:\(self.member)")
-        member.append(userId)
-        
-        if typeTextField.text == "個人預付" {
-            type = 0
-        } else {
-            type = 1
-        }
-        
-        GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
-                                         description: descriptionTextView.text,
-                                         creator: userId,
-                                         type: self.type ?? 0,
-                                         status: 0,
-                                         member: self.member ?? [""],
-                                         createdTime: Double(NSDate().timeIntervalSince1970)) {
-            groupId in
-            self.member.forEach {
-                member in
+        if isGroupExist == true {
+            guard let groupId = groupData?.groupId else { return }
+            GroupManager.shared.updateGroupData(groupId: groupId,
+                                                groupName: nameTextField.text ?? "",
+                                                groupDescription: descriptionTextView.text,
+                                                memberName: member)
+            self.member.forEach { member in
                 GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+            }
+            self.dismiss(animated: true, completion: nil)
+        } else {
+            member.append(userId)
+            
+            if typeTextField.text == "個人預付" {
+                type = 0
+            } else {
+                type = 1
+            }
+            
+            GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
+                                             description: descriptionTextView.text,
+                                             creator: userId,
+                                             type: self.type ?? 0,
+                                             status: 0,
+                                             member: self.member,
+                                             createdTime: Double(NSDate().timeIntervalSince1970)) {
+                groupId in
+                self.member.forEach { member in
+                    GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+                }
             }
         }
         
@@ -215,6 +243,22 @@ class AddGroupsViewController: UIViewController {
             addGroupButton.backgroundColor = .systemGray
         }
     }
+    
+    func selectedNewMember() {
+        guard let groupMember = groupData?.member else {
+            return
+        }
+        
+        newGroupMember = friendList
+        for member in 0..<friendList.count {
+            for index in 0..<groupMember.count {
+                if friendList[member].userId == groupMember[index] {
+                    newGroupMember.remove(at: newGroupMember.firstIndex(of: friendList[member])!)
+                }
+            }
+        }
+        tableView.reloadData()
+    }
 }
 
 extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
@@ -238,7 +282,11 @@ extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource 
 extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return friendList?.count ?? 0
+        if isGroupExist == true {
+            return newGroupMember.count
+        } else {
+            return friendList.count
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -256,7 +304,12 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
         
         guard let addGroupsCell = cell as? AddGroupTableViewCell else { return cell }
         
-        addGroupsCell.friendNameLabel.text = friendList?[indexPath.row].userName
+        if isGroupExist == true {
+            addGroupsCell.friendNameLabel.text = newGroupMember[indexPath.row].userName
+        } else {
+            addGroupsCell.friendNameLabel.text = friendList[indexPath.row].userName
+        }
+        
         if selectedIndexs.contains(indexPath.row) {
             cell.accessoryType = .checkmark
             addGroupsCell.selectedButton.isSelected = true
@@ -276,7 +329,11 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
             member.remove(at: index)
         } else {
             selectedIndexs.append(indexPath.row)
-            member.append(friendList?[indexPath.row].userId ?? "")
+            if isGroupExist == true {
+                member.append(newGroupMember[indexPath.row].userId)
+            } else {
+                member.append(friendList[indexPath.row].userId)
+            }
 //            print(selectedIndexs)
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)

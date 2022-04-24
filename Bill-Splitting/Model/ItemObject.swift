@@ -14,6 +14,8 @@ struct ItemData: Codable {
     var itemDescription: String?
     var createdTime: Double
     var itemImage: String?
+    var paidInfo: [ExpenseInfo]?
+    var involedInfo: [ExpenseInfo]?
 }
 
 struct ExpenseInfo: Codable {
