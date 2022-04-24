@@ -165,7 +165,18 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let multipleUsersGroupViewController =
                 storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
-        multipleUsersGroupViewController.groupData = groups[indexPath.row]
+        if selectedView.buttonIndex == 0 {
+            multipleUsersGroupViewController.groupData = groups[indexPath.row]
+        } else if selectedView.buttonIndex == 1 {
+            multipleUsersGroupViewController.groupData = multipleGroups[indexPath.row]
+        } else if selectedView.buttonIndex == 2 {
+            multipleUsersGroupViewController.groupData = personalGroups[indexPath.row]
+        } else if selectedView.buttonIndex == 3 {
+            multipleUsersGroupViewController.groupData = closedGroups[indexPath.row]
+        } else {
+            multipleUsersGroupViewController.groupData = groups[indexPath.row]
+        }
+//        multipleUsersGroupViewController.groupData = groups[indexPath.row]
         self.show(multipleUsersGroupViewController, sender: nil)
     }
 }
