@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
@@ -20,6 +21,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     var selectedImage: UIImage?
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
+    private var animationView = AnimationView()
     
     var isItemExist: Bool = false
     var itemData: ItemData?
@@ -133,30 +135,42 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     }
     
     @objc func pressComplete() {
+        setAnimation()
         itemDescription?(self.descriptionTextView.text)
-        
-//        guard let selectedImage = selectedImage else { return }
-//        let fileName = "\(userId)" + "\(Date())"
-//        ImageManager.shared.uploadImageToStorage(image: selectedImage, fileName: fileName) { urlString in
-//            self.urlData?(urlString)
-//            self.dismiss(animated: true, completion: nil)
-//        }
-        getImageURL()
-        
         if isItemExist == true {
             if selectedImage == nil {
                 self.urlData?(itemData?.itemImage ?? "")
                 self.dismiss(animated: true, completion: nil)
+            } else {
+                getImageURL()
             }
+        } else if selectedImage != nil && isItemExist == false {
+            getImageURL()
+        } else {
+            self.dismiss(animated: true, completion: nil)
         }
+    }
+    
+    func setAnimation() {
+        let mask = UIView()
+        mask.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        mask.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        
+        animationView = .init(name: "upload")
+        animationView.frame = CGRect(x: width/2 - 75, y: height/2 - 75, width: 150, height: 150)
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        view.addSubview(mask)
+        view.addSubview(animationView)
+        animationView.play()
     }
     
     func getImageURL() {
         guard let selectedImage = selectedImage else { return }
         let fileName = "\(userId)" + "\(Date())"
-        ImageManager.shared.uploadImageToStorage(image: selectedImage, fileName: fileName) { urlString in
-            self.urlData?(urlString)
-            self.dismiss(animated: true, completion: nil)
+        ImageManager.shared.uploadImageToStorage(image: selectedImage, fileName: fileName) { [weak self] urlString in
+            self?.urlData?(urlString)
+            self?.dismiss(animated: true, completion: nil)
         }
     }
     

@@ -48,6 +48,8 @@
 		35568A1C2815526800646B57 /* Records.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35568A1B2815526800646B57 /* Records.storyboard */; };
 		35568A1E281561E200646B57 /* RecordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A1D281561E200646B57 /* RecordsViewController.swift */; };
 		35568A212815628500646B57 /* list.json in Resources */ = {isa = PBXBuildFile; fileRef = 35568A202815628500646B57 /* list.json */; };
+		35568A2328156C7900646B57 /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 35568A2228156C7900646B57 /* loading.json */; };
+		35568A252815727600646B57 /* upload.json in Resources */ = {isa = PBXBuildFile; fileRef = 35568A242815727600646B57 /* upload.json */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -132,6 +134,8 @@
 		35568A1B2815526800646B57 /* Records.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Records.storyboard; sourceTree = "<group>"; };
 		35568A1D281561E200646B57 /* RecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewController.swift; sourceTree = "<group>"; };
 		35568A202815628500646B57 /* list.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = list.json; sourceTree = "<group>"; };
+		35568A2228156C7900646B57 /* loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loading.json; sourceTree = "<group>"; };
+		35568A242815727600646B57 /* upload.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = upload.json; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -340,6 +344,8 @@
 			isa = PBXGroup;
 			children = (
 				35568A202815628500646B57 /* list.json */,
+				35568A2228156C7900646B57 /* loading.json */,
+				35568A242815727600646B57 /* upload.json */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -405,6 +411,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35568A252815727600646B57 /* upload.json in Resources */,
 				35FF63F728080A8A00508EAF /* AddItemTableViewCell.xib in Resources */,
 				350A33622803DF4300201E40 /* Profile.storyboard in Resources */,
 				3593E129281262AE00F3A31C /* ReminderTableViewCell.xib in Resources */,
@@ -420,6 +427,7 @@
 				35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */,
 				35568A212815628500646B57 /* list.json in Resources */,
 				355090E7280EDE020007C0CE /* PaymentTableViewCell.xib in Resources */,
+				35568A2328156C7900646B57 /* loading.json in Resources */,
 				35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */,
 				3593E12F2812C69800F3A31C /* ItemDetailTableViewCell.xib in Resources */,
 				35568A1C2815526800646B57 /* Records.storyboard in Resources */,
