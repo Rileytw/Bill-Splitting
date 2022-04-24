@@ -12,6 +12,7 @@ class InvitationTableViewCell: UITableViewCell {
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var agreeButton: UIButton!
     @IBOutlet var disagreeButton: UIButton!
+    @IBOutlet var email: UILabel!
     
     var delegate: TableViewCellDelegate?
     
