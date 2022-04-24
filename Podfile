@@ -14,5 +14,6 @@ pod 'Firebase/Storage'
 pod 'IQKeyboardManagerSwift'
 pod 'Kingfisher'
 pod 'Charts'
+pod 'lottie-ios'
 
 end
