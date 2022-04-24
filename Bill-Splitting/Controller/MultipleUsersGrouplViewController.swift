@@ -113,6 +113,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         groupDetailView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         groupDetailView.addExpenseButton.addTarget(self, action: #selector(pressAddItem), for: .touchUpInside)
+        groupDetailView.chartButton.addTarget(self, action: #selector(pressChartButton), for: .touchUpInside)
         groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
         
         groupDetailView.personalFinalPaidLabel.text = "你的總支出為："
@@ -126,6 +127,14 @@ class MultipleUsersGrouplViewController: UIViewController {
         addItemViewController.memberData = userData
         addItemViewController.groupData = groupData
         self.present(addItemViewController, animated: true, completion: nil)
+    }
+    
+    @objc func pressChartButton() {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let chartViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ChartViewController.self)) as? ChartViewController else { return }
+        chartViewController.memberExpense = memberExpense
+        chartViewController.userData = userData
+        self.present(chartViewController, animated: true, completion: nil)
     }
     
     @objc func pressSettleUp() {
@@ -142,7 +151,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     func setItemTableView() {
         self.view.addSubview(itemTableView)
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
-        itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 40).isActive = true
+        itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
         itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
