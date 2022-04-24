@@ -33,15 +33,23 @@ class PieChart: UIView {
 
         addSubview(chartView)
         chartView.translatesAutoresizingMaskIntoConstraints = false
-        chartView.topAnchor.constraint(equalTo:self.topAnchor, constant: 0).isActive = true
+        chartView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
         chartView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 0).isActive = true
         chartView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0).isActive = true
         chartView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
         
-        let set = PieChartDataSet(entries: pieChartDataEntries)
-        set.colors = ChartColorTemplates.joyful()
+        let set = PieChartDataSet(entries: pieChartDataEntries, label: "成員")
+        set.colors = ChartColorTemplates.liberty()
         let data = PieChartData(dataSet: set)
         chartView.data = data
+        chartView.rotationEnabled = false
+        chartView.drawHoleEnabled = false
+        chartView.animate(xAxisDuration: 2.0, yAxisDuration: 2.0)
+        
+        let formatter = NumberFormatter()
+        formatter.positivePrefix = "$"
+        data.setValueFormatter(DefaultValueFormatter(formatter: formatter))
+        data.setValueTextColor(.systemGray)
     }
     
 }
