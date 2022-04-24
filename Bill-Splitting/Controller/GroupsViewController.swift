@@ -11,9 +11,9 @@ import SwiftUI
 class GroupsViewController: UIViewController {
 
     let selectedSource = [
-        ButtonModel(color: .systemPink, title: "所有群組"),
-        ButtonModel(color: .systemTeal, title: "多人支付"),
-        ButtonModel(color: .systemGreen, title: "個人預付"),
+        ButtonModel(color: UIColor.hexStringToUIColor(hex: "16C79A"), title: "所有群組"),
+        ButtonModel(color: UIColor.hexStringToUIColor(hex: "19456B"), title: "多人支付"),
+        ButtonModel(color: UIColor.hexStringToUIColor(hex: "11698E"), title: "個人預付"),
         ButtonModel(color: .systemGray, title: "封存群組")
     ]
     let selectedView = SelectionView(frame: .zero)
@@ -33,6 +33,8 @@ class GroupsViewController: UIViewController {
         setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
+        view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        tableView.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -53,6 +55,7 @@ class GroupsViewController: UIViewController {
                            forCellReuseIdentifier: String(describing: GroupsTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        
     }
     
     func getGroupData() {
@@ -152,7 +155,9 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
 
             groupsCell.numberOfMembers.text = String(groups[indexPath.row].member.count) + "人"
         }
-
+        
+        groupsCell.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        
         return groupsCell
     }
     

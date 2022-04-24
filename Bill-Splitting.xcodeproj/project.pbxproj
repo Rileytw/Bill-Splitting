@@ -54,6 +54,7 @@
 		35568A2928157EBC00646B57 /* ButtonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2828157EBC00646B57 /* ButtonModel.swift */; };
 		35568A2B28157F1800646B57 /* SelectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */; };
 		35568A2D28157F3800646B57 /* SelectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */; };
+		35568A2F2815A4E400646B57 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2E2815A4E400646B57 /* UIColor+Extension.swift */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -144,6 +145,7 @@
 		35568A2828157EBC00646B57 /* ButtonModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonModel.swift; sourceTree = "<group>"; };
 		35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewDataSource.swift; sourceTree = "<group>"; };
 		35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewDelegate.swift; sourceTree = "<group>"; };
+		35568A2E2815A4E400646B57 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 			children = (
 				350A33632803EF5000201E40 /* Storyboard+Extension.swift */,
 				35568A0F2813D0BA00646B57 /* Kingfisher.swift */,
+				35568A2E2815A4E400646B57 /* UIColor+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -556,6 +559,7 @@
 				35FF6400280A619E00508EAF /* SettleUpTableViewCell.swift in Sources */,
 				35568A1E281561E200646B57 /* RecordsViewController.swift in Sources */,
 				355090E3280EBC190007C0CE /* AddPaymentViewController.swift in Sources */,
+				35568A2F2815A4E400646B57 /* UIColor+Extension.swift in Sources */,
 				35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */,
 				35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */,
 				35568A152814638300646B57 /* GroupDetailTableViewCell.swift in Sources */,
