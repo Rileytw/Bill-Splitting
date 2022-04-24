@@ -98,66 +98,68 @@ class RemindersViewController: UIViewController {
     }
     
     func fetchReminderInfo() {
-        let group = DispatchGroup()
-        let remindTimeInterval = self.reminders[0].remindTime - Date().timeIntervalSince1970
         
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        firstQueue.async(group: group) {
-            GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
-                switch result {
-                case .success(let groups):
-                    self?.reminderGroups = groups
-                    for group in groups where group.groupId == self?.reminders[0].groupId {
-                        self?.group = group
+        if reminders.isEmpty == false {
+            let group = DispatchGroup()
+            let remindTimeInterval = self.reminders[0].remindTime - Date().timeIntervalSince1970
+            
+            let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+            group.enter()
+            firstQueue.async(group: group) {
+                GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
+                    switch result {
+                    case .success(let groups):
+                        self?.reminderGroups = groups
+                        for group in groups where group.groupId == self?.reminders[0].groupId {
+                            self?.group = group
+                        }
+                    case .failure(let error):
+                        print("Error decoding groups: \(error)")
                     }
-                case .failure(let error):
-                    print("Error decoding groups: \(error)")
+                    group.leave()
+                    
                 }
-                group.leave()
+            }
+            
+            let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+            group.enter()
+            secondQueue.async(group: group) {
+                UserManager.shared.fetchUsersData { [weak self] result in
+                    switch result {
+                    case .success(let users):
+                        self?.members = users
+                        for user in users where user.userId == self?.reminders[0].memberId {
+                            self?.member = user
+                        }
+                    case .failure(let error):
+                        print("Error decoding users: \(error)")
+                    }
+                    
+                    group.leave()
+                }
                 
             }
-        }
-        
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        secondQueue.async(group: group) {
-            UserManager.shared.fetchUsersData { [weak self] result in
-                switch result {
-                case .success(let users):
-                    self?.members = users
-                    for user in users where user.userId == self?.reminders[0].memberId {
-                        self?.member = user
-                    }
-                case .failure(let error):
-                    print("Error decoding users: \(error)")
+            
+            group.notify(queue: DispatchQueue.main) {
+                guard let member = self.member else { return }
+                self.reminderTitle = self.group?.groupName
+                if self.reminders[0].type == RemindType.credit.intData {
+                    self.reminderSubtitle = RemindType.credit.textInfo
+                    self.remindBody = "記得向" + member.userName + "請款"
+                } else {
+                    self.reminderSubtitle = RemindType.debt.textInfo
+                    self.remindBody = "記得付錢給" + member.userName
+                }
+                self.notificationTime = self.reminders[0].remindTime - Date().timeIntervalSince1970
+                
+                if self.reminders.isEmpty == false && remindTimeInterval > 0 {
+                    self.sendNotification()
+                    ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
                 }
                 
-                group.leave()
+                self.tableView.reloadData()
             }
-            
         }
-        
-        group.notify(queue: DispatchQueue.main) {
-            guard let member = self.member else { return }
-            self.reminderTitle = self.group?.groupName
-            if self.reminders[0].type == RemindType.credit.intData {
-                self.reminderSubtitle = RemindType.credit.textInfo
-                self.remindBody = "記得向" + member.userName + "請款"
-            } else {
-                self.reminderSubtitle = RemindType.debt.textInfo
-                self.remindBody = "記得付錢給" + member.userName
-            }
-            self.notificationTime = self.reminders[0].remindTime - Date().timeIntervalSince1970
-            
-            if self.reminders.isEmpty == false && remindTimeInterval > 0 {
-                self.sendNotification()
-                ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
-            }
-            
-            self.tableView.reloadData()
-        }
-        
     }
     
     func setTableView() {
@@ -219,17 +221,17 @@ extension RemindersViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
-            -> UISwipeActionsConfiguration? {
-            let deleteAction = UIContextualAction(style: .destructive, title: nil) { (_, _, completionHandler) in
-                // delete the item here
-                ReminderManager.shared.deleteReminder(documentId: self.allReminders[indexPath.row].documentId)
-                self.allReminders.remove(at: indexPath.row)
-                self.tableView.deleteRows(at: [indexPath], with: .fade)
-                completionHandler(true)
-            }
-            deleteAction.image = UIImage(systemName: "trash")
-            deleteAction.backgroundColor = .systemRed
-            let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
-            return configuration
+    -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: nil) { (_, _, completionHandler) in
+            // delete the item here
+            ReminderManager.shared.deleteReminder(documentId: self.allReminders[indexPath.row].documentId)
+            self.allReminders.remove(at: indexPath.row)
+            self.tableView.deleteRows(at: [indexPath], with: .fade)
+            completionHandler(true)
+        }
+        deleteAction.image = UIImage(systemName: "trash")
+        deleteAction.backgroundColor = .systemRed
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
     }
 }
