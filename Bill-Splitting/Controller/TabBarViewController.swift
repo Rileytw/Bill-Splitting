@@ -11,7 +11,7 @@ private enum Tab {
     case groups
     case reminders
     case addGroups
-//    case records
+    case records
     case profile
     
     func viewController() -> UIViewController {
@@ -24,6 +24,8 @@ private enum Tab {
             viewController = UIStoryboard.reminders.instantiateInitialViewController()!
         case .addGroups:
             viewController = UIStoryboard.addGroups.instantiateInitialViewController()!
+        case .records:
+            viewController = UIStoryboard.records.instantiateInitialViewController()!
         case .profile:
             viewController = UIStoryboard.profile.instantiateInitialViewController()!
         }
@@ -44,6 +46,9 @@ private enum Tab {
         case .addGroups:
             return UITabBarItem(title: "add groups", image: UIImage(systemName: "plus.square"), selectedImage: UIImage(systemName: "plus.square.fill")
             )
+        case .records:
+            return UITabBarItem(title: "records", image: UIImage(systemName: "list.bullet.rectangle.portrait"), selectedImage: UIImage(systemName: "list.bullet.rectangle.portrait.fill")
+            )
         case .profile:
             return UITabBarItem(title: "profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill")
             )
@@ -53,7 +58,7 @@ private enum Tab {
 
 class TabBarViewController: UITabBarController {
     
-    private let tabs:[Tab] = [.groups, .reminders, .addGroups, .profile]
+    private let tabs:[Tab] = [.groups, .reminders, .addGroups, .records, .profile]
     
     var allTabBatItem: UITabBarItem!
     

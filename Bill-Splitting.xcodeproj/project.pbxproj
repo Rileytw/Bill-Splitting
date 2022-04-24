@@ -45,6 +45,7 @@
 		35568A162814638300646B57 /* GroupDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35568A142814638300646B57 /* GroupDetailTableViewCell.xib */; };
 		35568A182815282400646B57 /* PieChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A172815282400646B57 /* PieChart.swift */; };
 		35568A1A281532C900646B57 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A19281532C800646B57 /* ChartViewController.swift */; };
+		35568A1C2815526800646B57 /* Records.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35568A1B2815526800646B57 /* Records.storyboard */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -126,6 +127,7 @@
 		35568A142814638300646B57 /* GroupDetailTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupDetailTableViewCell.xib; sourceTree = "<group>"; };
 		35568A172815282400646B57 /* PieChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChart.swift; sourceTree = "<group>"; };
 		35568A19281532C800646B57 /* ChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
+		35568A1B2815526800646B57 /* Records.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Records.storyboard; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				350A335F2803DF3C00201E40 /* AddGroups.storyboard */,
 				350A33612803DF4300201E40 /* Profile.storyboard */,
 				355090EC28100E150007C0CE /* Reminders.storyboard */,
+				35568A1B2815526800646B57 /* Records.storyboard */,
 				350A334C2800450100201E40 /* Assets.xcassets */,
 				350A334E2800450100201E40 /* LaunchScreen.storyboard */,
 				350A33512800450100201E40 /* Info.plist */,
@@ -404,6 +407,7 @@
 				355090E7280EDE020007C0CE /* PaymentTableViewCell.xib in Resources */,
 				35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */,
 				3593E12F2812C69800F3A31C /* ItemDetailTableViewCell.xib in Resources */,
+				35568A1C2815526800646B57 /* Records.storyboard in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
 				35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */,
