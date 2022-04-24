@@ -6,10 +6,18 @@
 //
 
 import UIKit
+import SwiftUI
 
 class GroupsViewController: UIViewController {
 
     let groupsView = GroupsView(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 80))
+    let selectedSource = [
+        ButtonModel(color: .systemPink, title: "所有群組"),
+        ButtonModel(color: .systemTeal, title: "多人支付"),
+        ButtonModel(color: .systemGreen, title: "個人預付"),
+        ButtonModel(color: .systemGray, title: "封存群組")
+    ]
+    let selectedView = SelectionView(frame: .zero)
     let tableView = UITableView()
     var groups: [GroupData] = [] {
         didSet {
@@ -19,9 +27,11 @@ class GroupsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.addSubview(groupsView)
+//        view.addSubview(groupsView)
+        setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -32,7 +42,7 @@ class GroupsViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: groupsView.bottomAnchor, constant: 20).isActive = true
+        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 20).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -43,8 +53,7 @@ class GroupsViewController: UIViewController {
     }
     
     func getGroupData() {
-        GroupManager.shared.fetchGroups(userId: userId) {
-            [weak self] result in
+        GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
@@ -54,10 +63,17 @@ class GroupsViewController: UIViewController {
         }
     }
     
-//    func setGroupButton() {
-//        view.addSubview(groupsView)
-//        
-//    }
+    func setSelectedView() {
+        view.addSubview(selectedView)
+        selectedView.translatesAutoresizingMaskIntoConstraints = false
+        selectedView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        selectedView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        selectedView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        selectedView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        selectedView.selectionViewDataSource = self
+        selectedView.selectionViewDelegate = self
+    }
 }
 
 extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
@@ -93,4 +109,19 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         multipleUsersGroupViewController.groupData = groups[indexPath.row]
         self.show(multipleUsersGroupViewController, sender: nil)
     }
+}
+
+extension GroupsViewController: SelectionViewDataSource, SelectionViewDelegate {
+    func numberOfSelectionView(_ selectionView: SelectionView) -> Int {
+        return selectedSource.count
+    }
+    
+    func labelOfSelectionView(_ selectionView: SelectionView) -> [ButtonModel] {
+        return selectedSource
+    }
+    
+//    func didSelectedButton(_ selectionView: SelectionView, at index: Int) {
+//        
+//    }
+    
 }
