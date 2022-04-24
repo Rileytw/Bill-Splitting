@@ -37,8 +37,6 @@ class AddItemView: UIView {
         itemName.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
         itemName.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/3).isActive = true
         itemName.heightAnchor.constraint(equalToConstant: 20).isActive = true
-//        itemName.frame = CGRect(x: 20, y: 30, width: UIScreen.main.bounds.width/3, height: 20)
-//        itemName.text = "項目名稱"
         
         addSubview(priceLabel)
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -46,8 +44,6 @@ class AddItemView: UIView {
         priceLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
         priceLabel.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/3).isActive = true
         priceLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
-//        priceLabel.frame = CGRect(x: 20, y: 100, width: UIScreen.main.bounds.width/3, height: 20)
-//        priceLabel.text = "支出金額"
         
         itemName.lineBreakMode = NSLineBreakMode.byWordWrapping
         itemName.numberOfLines = 0
@@ -61,7 +57,6 @@ class AddItemView: UIView {
         itemNameTextField.leadingAnchor.constraint(equalTo: itemName.trailingAnchor, constant: 10).isActive = true
         itemNameTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2 + 20).isActive = true
         itemNameTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-//        itemNameTextField.frame = CGRect(x: UIScreen.main.bounds.width/3, y: 30, width: UIScreen.main.bounds.width/2 + 20, height: 40)
         
         addSubview(priceTextField)
         priceTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -70,6 +65,5 @@ class AddItemView: UIView {
         priceTextField.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 10).isActive = true
         priceTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2 + 20).isActive = true
         priceTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-//        priceTextField.frame = CGRect(x: UIScreen.main.bounds.width/3, y: 100, width: UIScreen.main.bounds.width/2 + 20, height: 40)
     }
 }

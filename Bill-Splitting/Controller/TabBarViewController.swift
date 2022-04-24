@@ -47,7 +47,7 @@ private enum Tab {
             return UITabBarItem(title: "add groups", image: UIImage(systemName: "plus.square"), selectedImage: UIImage(systemName: "plus.square.fill")
             )
         case .records:
-            return UITabBarItem(title: "records", image: UIImage(systemName: "list.bullet.rectangle.portrait"), selectedImage: UIImage(systemName: "list.bullet.rectangle.portrait.fill")
+            return UITabBarItem(title: "records", image: UIImage(systemName: "list.bullet.rectangle"), selectedImage: UIImage(systemName: "list.bullet.rectangle.fill")
             )
         case .profile:
             return UITabBarItem(title: "profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill")

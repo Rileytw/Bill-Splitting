@@ -16,7 +16,7 @@ class AddGroupsViewController: UIViewController {
     var typeTextField = UITextField()
     
     var pickerView: UIPickerView!
-    var pickerViewData = ["個人預付", "多人支付"]
+    var pickerViewData = [GroupType.multipleUsers.typeName, GroupType.personal.typeName]
     
     var friendList: [Friend] = [] {
         didSet {
@@ -162,13 +162,15 @@ class AddGroupsViewController: UIViewController {
     
     func setInviteButton() {
         inviteFriendButton.setTitle("邀請好友", for: .normal)
-        inviteFriendButton.backgroundColor = .systemGray
+        inviteFriendButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        inviteFriendButton.tintColor = .systemGray
+        inviteFriendButton.setTitleColor(.systemGray, for: .normal)
         view.addSubview(inviteFriendButton)
         inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
         inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60).isActive = true
-        inviteFriendButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60).isActive = true
-        inviteFriendButton.bottomAnchor.constraint(equalTo: addGroupButton.topAnchor, constant: -20).isActive = true
+        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        inviteFriendButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        inviteFriendButton.bottomAnchor.constraint(equalTo: addGroupButton.topAnchor, constant: -10).isActive = true
         
         inviteFriendButton.addTarget(self, action: #selector(pressInviteFriendButton), for: .touchUpInside)
     }
@@ -200,7 +202,7 @@ class AddGroupsViewController: UIViewController {
         } else {
             member.append(userId)
             
-            if typeTextField.text == "個人預付" {
+            if typeTextField.text == GroupType.personal.typeName {
                 type = 0
             } else {
                 type = 1
