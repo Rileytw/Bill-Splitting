@@ -10,7 +10,6 @@ import SwiftUI
 
 class GroupsViewController: UIViewController {
 
-    let groupsView = GroupsView(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 80))
     let selectedSource = [
         ButtonModel(color: .systemPink, title: "所有群組"),
         ButtonModel(color: .systemTeal, title: "多人支付"),
@@ -25,18 +24,21 @@ class GroupsViewController: UIViewController {
         }
     }
     
+    var multipleGroups: [GroupData] = []
+    var personalGroups: [GroupData] = []
+    var closedGroups: [GroupData] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        view.addSubview(groupsView)
         setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         getGroupData()
+        getClosedGroupData()
     }
     
     func setTableView() {
@@ -53,10 +55,21 @@ class GroupsViewController: UIViewController {
     }
     
     func getGroupData() {
-        GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
+        GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
+    }
+    
+    func getClosedGroupData() {
+        GroupManager.shared.fetchGroups(userId: userId, status: 1) { [weak self] result in
+            switch result {
+            case .success(let groups):
+                self?.closedGroups = groups
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -78,7 +91,17 @@ class GroupsViewController: UIViewController {
 
 extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return groups.count
+        if selectedView.buttonIndex == 0 {
+            return groups.count
+        } else if selectedView.buttonIndex == 1 {
+            return multipleGroups.count
+        } else if selectedView.buttonIndex == 2 {
+            return personalGroups.count
+        } else if selectedView.buttonIndex == 3 {
+            return closedGroups.count
+        } else {
+            return groups.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -89,16 +112,46 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         
         guard let groupsCell = cell as? GroupsTableViewCell else { return cell }
         
-        groupsCell.groupName.text = groups[indexPath.row].groupName
-        
-        if groups[indexPath.row].type == 1 {
+        if selectedView.buttonIndex == 0 {
+            groupsCell.groupName.text = groups[indexPath.row].groupName
+            
+            if groups[indexPath.row].type == 1 {
+                groupsCell.groupType.text = "多人支付"
+            } else {
+                groupsCell.groupType.text = "個人預付"
+            }
+            
+            groupsCell.numberOfMembers.text = String(groups[indexPath.row].member.count) + "人"
+        } else if selectedView.buttonIndex == 1 {
+            groupsCell.groupName.text = multipleGroups[indexPath.row].groupName
             groupsCell.groupType.text = "多人支付"
-        } else {
+            groupsCell.numberOfMembers.text = String(multipleGroups[indexPath.row].member.count) + "人"
+        } else if selectedView.buttonIndex == 2 {
+            groupsCell.groupName.text = personalGroups[indexPath.row].groupName
             groupsCell.groupType.text = "個人預付"
+            groupsCell.numberOfMembers.text = String(personalGroups[indexPath.row].member.count) + "人"
+        } else if  selectedView.buttonIndex == 3 {
+            groupsCell.groupName.text = closedGroups[indexPath.row].groupName
+            
+            if closedGroups[indexPath.row].type == 1 {
+                groupsCell.groupType.text = "多人支付"
+            } else {
+                groupsCell.groupType.text = "個人預付"
+            }
+            
+            groupsCell.numberOfMembers.text = String(closedGroups[indexPath.row].member.count) + "人"
+        } else {
+            groupsCell.groupName.text = groups[indexPath.row].groupName
+
+            if groups[indexPath.row].type == 1 {
+                groupsCell.groupType.text = "多人支付"
+            } else {
+                groupsCell.groupType.text = "個人預付"
+            }
+
+            groupsCell.numberOfMembers.text = String(groups[indexPath.row].member.count) + "人"
         }
-        
-        groupsCell.numberOfMembers.text = String(groups[indexPath.row].member.count) + "人"
-        
+
         return groupsCell
     }
     
@@ -120,8 +173,17 @@ extension GroupsViewController: SelectionViewDataSource, SelectionViewDelegate {
         return selectedSource
     }
     
-//    func didSelectedButton(_ selectionView: SelectionView, at index: Int) {
-//        
-//    }
-    
+    func didSelectedButton(_ selectionView: SelectionView, at index: Int) {
+        if selectionView.buttonIndex == 0 {
+            tableView.reloadData()
+        } else if selectedView.buttonIndex == 1 {
+            multipleGroups = groups.filter { $0.type == GroupType.multipleUsers.typeInt }
+            tableView.reloadData()
+        } else if selectedView.buttonIndex == 2 {
+            personalGroups = groups.filter { $0.type == GroupType.personal.typeInt }
+            tableView.reloadData()
+        } else {
+            tableView.reloadData()
+        }
+    }
 }

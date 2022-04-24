@@ -60,7 +60,7 @@ class AddReminderViewController: UIViewController {
 //    }
 
     func getGroupData() {
-        GroupManager.shared.fetchGroups(userId: userId) { [weak self] result in
+        GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups

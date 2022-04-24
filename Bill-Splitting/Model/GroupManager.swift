@@ -28,8 +28,8 @@ class GroupManager {
         }
     }
     
-    func fetchGroups(userId: String, completion: @escaping (Result<[GroupData], Error>) -> Void) {
-        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: 0).order(by:"createdTime", descending: true).getDocuments() { (querySnapshot, error) in
+    func fetchGroups(userId: String, status: Int, completion: @escaping (Result<[GroupData], Error>) -> Void) {
+        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: status).order(by:"createdTime", descending: true).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))

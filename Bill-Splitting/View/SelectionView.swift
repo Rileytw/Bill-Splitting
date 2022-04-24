@@ -75,5 +75,6 @@ class SelectionView: UIView {
         UIView.animate(withDuration: 0.25, animations: { [weak self] in
             self?.indicatorView.frame.origin.x = sender.frame.minX
         })
+        self.selectionViewDelegate?.didSelectedButton?(self, at:  buttonIndex ?? 0)
     }
 }
