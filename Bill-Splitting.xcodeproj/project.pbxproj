@@ -45,6 +45,16 @@
 		35568A162814638300646B57 /* GroupDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35568A142814638300646B57 /* GroupDetailTableViewCell.xib */; };
 		35568A182815282400646B57 /* PieChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A172815282400646B57 /* PieChart.swift */; };
 		35568A1A281532C900646B57 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A19281532C800646B57 /* ChartViewController.swift */; };
+		35568A1C2815526800646B57 /* Records.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35568A1B2815526800646B57 /* Records.storyboard */; };
+		35568A1E281561E200646B57 /* RecordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A1D281561E200646B57 /* RecordsViewController.swift */; };
+		35568A212815628500646B57 /* list.json in Resources */ = {isa = PBXBuildFile; fileRef = 35568A202815628500646B57 /* list.json */; };
+		35568A2328156C7900646B57 /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 35568A2228156C7900646B57 /* loading.json */; };
+		35568A252815727600646B57 /* upload.json in Resources */ = {isa = PBXBuildFile; fileRef = 35568A242815727600646B57 /* upload.json */; };
+		35568A2728157BEB00646B57 /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2628157BEB00646B57 /* SelectionView.swift */; };
+		35568A2928157EBC00646B57 /* ButtonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2828157EBC00646B57 /* ButtonModel.swift */; };
+		35568A2B28157F1800646B57 /* SelectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */; };
+		35568A2D28157F3800646B57 /* SelectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */; };
+		35568A2F2815A4E400646B57 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2E2815A4E400646B57 /* UIColor+Extension.swift */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -126,6 +136,16 @@
 		35568A142814638300646B57 /* GroupDetailTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupDetailTableViewCell.xib; sourceTree = "<group>"; };
 		35568A172815282400646B57 /* PieChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChart.swift; sourceTree = "<group>"; };
 		35568A19281532C800646B57 /* ChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
+		35568A1B2815526800646B57 /* Records.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Records.storyboard; sourceTree = "<group>"; };
+		35568A1D281561E200646B57 /* RecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewController.swift; sourceTree = "<group>"; };
+		35568A202815628500646B57 /* list.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = list.json; sourceTree = "<group>"; };
+		35568A2228156C7900646B57 /* loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loading.json; sourceTree = "<group>"; };
+		35568A242815727600646B57 /* upload.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = upload.json; sourceTree = "<group>"; };
+		35568A2628157BEB00646B57 /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
+		35568A2828157EBC00646B57 /* ButtonModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonModel.swift; sourceTree = "<group>"; };
+		35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewDataSource.swift; sourceTree = "<group>"; };
+		35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewDelegate.swift; sourceTree = "<group>"; };
+		35568A2E2815A4E400646B57 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -227,8 +247,10 @@
 				350A335F2803DF3C00201E40 /* AddGroups.storyboard */,
 				350A33612803DF4300201E40 /* Profile.storyboard */,
 				355090EC28100E150007C0CE /* Reminders.storyboard */,
-				350A334C2800450100201E40 /* Assets.xcassets */,
+				35568A1B2815526800646B57 /* Records.storyboard */,
 				350A334E2800450100201E40 /* LaunchScreen.storyboard */,
+				350A334C2800450100201E40 /* Assets.xcassets */,
+				35568A1F2815623800646B57 /* Assets */,
 				350A33512800450100201E40 /* Info.plist */,
 				350A33672803F65800201E40 /* GoogleService-Info.plist */,
 			);
@@ -258,6 +280,7 @@
 				355090EE28100FA80007C0CE /* RemindersViewController.swift */,
 				355090F0281039110007C0CE /* AddReminderViewController.swift */,
 				35568A19281532C800646B57 /* ChartViewController.swift */,
+				35568A1D281561E200646B57 /* RecordsViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -267,6 +290,7 @@
 			children = (
 				350A33632803EF5000201E40 /* Storyboard+Extension.swift */,
 				35568A0F2813D0BA00646B57 /* Kingfisher.swift */,
+				35568A2E2815A4E400646B57 /* UIColor+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -303,6 +327,9 @@
 				35568A132814638300646B57 /* GroupDetailTableViewCell.swift */,
 				35568A142814638300646B57 /* GroupDetailTableViewCell.xib */,
 				35568A172815282400646B57 /* PieChart.swift */,
+				35568A2628157BEB00646B57 /* SelectionView.swift */,
+				35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */,
+				35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -323,8 +350,19 @@
 				3593E1222811884900F3A31C /* ReminderManager.swift */,
 				3593E124281188D100F3A31C /* ReminderObject.swift */,
 				355090DE280DA5900007C0CE /* FireBaseCollection.swift */,
+				35568A2828157EBC00646B57 /* ButtonModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		35568A1F2815623800646B57 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				35568A202815628500646B57 /* list.json */,
+				35568A2228156C7900646B57 /* loading.json */,
+				35568A242815727600646B57 /* upload.json */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -388,6 +426,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35568A252815727600646B57 /* upload.json in Resources */,
 				35FF63F728080A8A00508EAF /* AddItemTableViewCell.xib in Resources */,
 				350A33622803DF4300201E40 /* Profile.storyboard in Resources */,
 				3593E129281262AE00F3A31C /* ReminderTableViewCell.xib in Resources */,
@@ -401,9 +440,12 @@
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,
 				35FF63D328055BA000508EAF /* ProfileTableViewCell.xib in Resources */,
+				35568A212815628500646B57 /* list.json in Resources */,
 				355090E7280EDE020007C0CE /* PaymentTableViewCell.xib in Resources */,
+				35568A2328156C7900646B57 /* loading.json in Resources */,
 				35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */,
 				3593E12F2812C69800F3A31C /* ItemDetailTableViewCell.xib in Resources */,
+				35568A1C2815526800646B57 /* Records.storyboard in Resources */,
 				350A334D2800450100201E40 /* Assets.xcassets in Resources */,
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
 				35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */,
@@ -480,7 +522,9 @@
 			files = (
 				350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */,
 				350A337B2805060B00201E40 /* FriendManager.swift in Sources */,
+				35568A2928157EBC00646B57 /* ButtonModel.swift in Sources */,
 				350A3379280469BB00201E40 /* UserObject.swift in Sources */,
+				35568A2D28157F3800646B57 /* SelectionViewDelegate.swift in Sources */,
 				35FF63DD2806560F00508EAF /* ItemManager.swift in Sources */,
 				35FF6405280C2B8500508EAF /* SpecificSettleIUpViewController.swift in Sources */,
 				35568A1A281532C900646B57 /* ChartViewController.swift in Sources */,
@@ -505,6 +549,7 @@
 				350A33482800450000201E40 /* AddGroupsViewController.swift in Sources */,
 				350A33442800450000201E40 /* AppDelegate.swift in Sources */,
 				350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */,
+				35568A2B28157F1800646B57 /* SelectionViewDataSource.swift in Sources */,
 				350A33732804638A00201E40 /* GroupManager.swift in Sources */,
 				35FF6407280C62C900508EAF /* SubscribeViewController.swift in Sources */,
 				355090E1280EB9360007C0CE /* PaymentViewController.swift in Sources */,
@@ -512,7 +557,9 @@
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
 				35FF63D528055F6500508EAF /* FriendListViewController.swift in Sources */,
 				35FF6400280A619E00508EAF /* SettleUpTableViewCell.swift in Sources */,
+				35568A1E281561E200646B57 /* RecordsViewController.swift in Sources */,
 				355090E3280EBC190007C0CE /* AddPaymentViewController.swift in Sources */,
+				35568A2F2815A4E400646B57 /* UIColor+Extension.swift in Sources */,
 				35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */,
 				35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */,
 				35568A152814638300646B57 /* GroupDetailTableViewCell.swift in Sources */,
@@ -524,6 +571,7 @@
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
 				355090F1281039110007C0CE /* AddReminderViewController.swift in Sources */,
 				3593E125281188D100F3A31C /* ReminderObject.swift in Sources */,
+				35568A2728157BEB00646B57 /* SelectionView.swift in Sources */,
 				355090E9280FAA690007C0CE /* AddMoreInfoViewController.swift in Sources */,
 				35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */,
 				355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */,

@@ -23,7 +23,7 @@ class ChartViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         setCreditLabel()
         setCreditChart()
         setDebtLabel()

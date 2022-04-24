@@ -76,7 +76,7 @@ class SubscribeViewController: UIViewController {
         
         view.addSubview(cycleLabel)
         cycleLabel.translatesAutoresizingMaskIntoConstraints = false
-        cycleLabel.topAnchor.constraint(equalTo: endTimeLabel.bottomAnchor, constant: 40).isActive = true
+        cycleLabel.topAnchor.constraint(equalTo: endTimeLabel.bottomAnchor, constant: 20).isActive = true
         cycleLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         cycleLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         cycleLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -90,7 +90,7 @@ class SubscribeViewController: UIViewController {
         startTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
         startTimeDatePicker.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         startTimeDatePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        startTimeDatePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -20).isActive = true
+        startTimeDatePicker.leadingAnchor.constraint(equalTo: startTimeLabel.trailingAnchor, constant: 10).isActive = true
         startTimeDatePicker.widthAnchor.constraint(equalToConstant: 180).isActive = true
         
         startTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
@@ -101,7 +101,7 @@ class SubscribeViewController: UIViewController {
         endTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
         endTimeDatePicker.topAnchor.constraint(equalTo: startTimeLabel.bottomAnchor, constant: 20).isActive = true
         endTimeDatePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        endTimeDatePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -20).isActive = true
+        endTimeDatePicker.leadingAnchor.constraint(equalTo: endTimeLabel.trailingAnchor, constant: 10).isActive = true
         endTimeDatePicker.widthAnchor.constraint(equalToConstant: 180).isActive = true
         endTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
         endTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
@@ -111,10 +111,10 @@ class SubscribeViewController: UIViewController {
     func setCyclePicker() {
         view.addSubview(cyclePicker)
         cyclePicker.translatesAutoresizingMaskIntoConstraints = false
-        cyclePicker.topAnchor.constraint(equalTo: cycleLabel.bottomAnchor, constant: 20).isActive = true
+        cyclePicker.topAnchor.constraint(equalTo: cycleLabel.bottomAnchor, constant: 0).isActive = true
         cyclePicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         cyclePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        cyclePicker.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        cyclePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         cyclePicker.pickerView.dataSource = self
         cyclePicker.pickerView.delegate = self
@@ -142,16 +142,19 @@ class SubscribeViewController: UIViewController {
     func setAddItemView() {
         view.addSubview(addItemView)
         addItemView.translatesAutoresizingMaskIntoConstraints = false
-        addItemView.topAnchor.constraint(equalTo: cyclePicker.bottomAnchor, constant: 0).isActive = true
+        addItemView.topAnchor.constraint(equalTo: cyclePicker.bottomAnchor, constant: 10).isActive = true
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        addItemView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        addItemView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+        
+        addItemView.itemName.text = "項目名稱"
+        addItemView.priceLabel.text = "支出金額"
     }
     
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
+        tableView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: completeButton.topAnchor, constant: 10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true

@@ -13,10 +13,10 @@ import FirebaseStorage
 class ImageManager {
     static var shared = ImageManager()
     
-    func uploadImageToStorage(image: UIImage, fileName: String, completion: @escaping (String) -> Void) {
+    func uploadImageToStorage(image: UIImage?, fileName: String?, completion: @escaping (String) -> Void) {
         let storageRef = Storage.storage().reference().child("ItemImages").child("\(fileName).png")
         
-        if let uploadData = image.pngData() {
+        if let uploadData = image?.pngData() {
             storageRef.putData(uploadData, metadata: nil) { (data, error) in
                 if error != nil {
                     print("Error: \(error!.localizedDescription)")

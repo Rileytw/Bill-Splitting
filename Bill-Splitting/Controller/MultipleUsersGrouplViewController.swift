@@ -152,7 +152,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         self.view.addSubview(itemTableView)
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
         itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
-        itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
+        itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80).isActive = true
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
@@ -167,10 +167,12 @@ class MultipleUsersGrouplViewController: UIViewController {
         closedGroupButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
         closedGroupButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
         closedGroupButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        closedGroupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        closedGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         
         closedGroupButton.setTitle("封存群組", for: .normal)
-        closedGroupButton.backgroundColor = .systemGray
+        closedGroupButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        closedGroupButton.tintColor = .systemGray
+        closedGroupButton.setTitleColor(.systemGray, for: .normal)
         closedGroupButton.addTarget(self, action: #selector(pressClosedGroup), for: .touchUpInside)
         
     }
@@ -183,10 +185,10 @@ class MultipleUsersGrouplViewController: UIViewController {
     func setSubscribeButton() {
         view.addSubview(subscribeButton)
         subscribeButton.translatesAutoresizingMaskIntoConstraints = false
-        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
-        subscribeButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        subscribeButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        subscribeButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        subscribeButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
+        subscribeButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
+        subscribeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         
         if groupData?.type == 1 {
             subscribeButton.isHidden = true
@@ -195,7 +197,9 @@ class MultipleUsersGrouplViewController: UIViewController {
         }
         
         subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
+        subscribeButton.setTitle("設定週期", for: .normal)
         subscribeButton.tintColor = .systemGray
+        subscribeButton.setTitleColor(.systemGray, for: .normal)
         subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
     }
     
