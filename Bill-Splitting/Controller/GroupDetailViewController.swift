@@ -10,21 +10,22 @@ import UIKit
 class GroupDetailViewController: UIViewController {
 
     var tableView = UITableView()
+    var editButton = UIButton()
     var groupData: GroupData?
     var userData: [UserData] = []
     
     let fullScreenSize = UIScreen.main.bounds.size
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTableView()
+        setButton()
     }
     
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 30).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
@@ -32,6 +33,25 @@ class GroupDetailViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: InvitationTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: InvitationTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    func setButton() {
+        view.addSubview(editButton)
+        editButton.translatesAutoresizingMaskIntoConstraints = false
+        editButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        editButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
+        editButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        editButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
+        editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
+    }
+    
+    @objc func pressEdit() {
+        let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+        guard let addGroupViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
+        addGroupViewController.isGroupExist = true
+        addGroupViewController.groupData = groupData
+        self.present(addGroupViewController, animated: true, completion: nil)
     }
 }
 

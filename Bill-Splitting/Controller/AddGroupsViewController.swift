@@ -18,7 +18,7 @@ class AddGroupsViewController: UIViewController {
     var pickerView: UIPickerView!
     var pickerViewData = ["個人預付", "多人支付"]
     
-    var friendList: [Friend]? {
+    var friendList: [Friend] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -34,6 +34,10 @@ class AddGroupsViewController: UIViewController {
     var type: Int?
     
     var member: [String] = []
+    
+    var isGroupExist: Bool = false
+    var groupData: GroupData?
+    var newGroupMember = [Friend]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,7 +63,9 @@ class AddGroupsViewController: UIViewController {
             switch result {
             case .success(let friend):
                 self?.friendList = friend
-//                print("userData: \(self.friendList)")
+                if self?.isGroupExist == true {
+                    self?.selectedNewMember()
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -86,6 +92,10 @@ class AddGroupsViewController: UIViewController {
         NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
+        
+        if isGroupExist == true {
+            nameTextField.text = groupData?.groupName
+        }
     }
     
     func setTextView() {
@@ -106,6 +116,10 @@ class AddGroupsViewController: UIViewController {
         
         NSLayoutConstraint(item: descriptionLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
+        
+        if isGroupExist == true {
+            descriptionTextView.text = groupData?.goupDescription
+        }
     }
     
     func setUpPickerView(data:[String]) {
@@ -127,6 +141,10 @@ class AddGroupsViewController: UIViewController {
         typeTextField.text = pickerViewData[0]
         typeTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         typeTextField.textAlignment = .center
+        
+        if isGroupExist == true {
+            typeTextField.isHidden = true
+        }
     }
     
     func setTableView() {
@@ -215,6 +233,24 @@ class AddGroupsViewController: UIViewController {
             addGroupButton.backgroundColor = .systemGray
         }
     }
+    
+    func selectedNewMember() {
+        guard let groupMember = groupData?.member else {
+            return
+        }
+        
+        newGroupMember = friendList
+        for member in 0..<friendList.count {
+            for index in 0..<groupMember.count {
+                if friendList[member].userId == groupMember[index] {
+                    newGroupMember.remove(at: newGroupMember.firstIndex(of: friendList[member])!)
+                }
+            }
+        }
+        
+        print("newGroupMember: \(newGroupMember)")
+        tableView.reloadData()
+    }
 }
 
 extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource {
@@ -238,7 +274,11 @@ extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource 
 extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return friendList?.count ?? 0
+        if isGroupExist == true {
+            return newGroupMember.count
+        } else {
+            return friendList.count
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -256,7 +296,12 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
         
         guard let addGroupsCell = cell as? AddGroupTableViewCell else { return cell }
         
-        addGroupsCell.friendNameLabel.text = friendList?[indexPath.row].userName
+        if isGroupExist == true {
+            addGroupsCell.friendNameLabel.text = newGroupMember[indexPath.row].userName
+        } else {
+            addGroupsCell.friendNameLabel.text = friendList[indexPath.row].userName
+        }
+        
         if selectedIndexs.contains(indexPath.row) {
             cell.accessoryType = .checkmark
             addGroupsCell.selectedButton.isSelected = true
@@ -276,7 +321,7 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
             member.remove(at: index)
         } else {
             selectedIndexs.append(indexPath.row)
-            member.append(friendList?[indexPath.row].userId ?? "")
+            member.append(friendList[indexPath.row].userId ?? "")
 //            print(selectedIndexs)
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)

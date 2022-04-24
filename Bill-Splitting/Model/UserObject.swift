@@ -23,7 +23,7 @@ struct Payment: Codable {
     var paymentLink: String?
 }
 
-struct Friend: Codable {
+struct Friend: Codable, Equatable {
     var userId: String
     var userName: String
     var userEmail: String
