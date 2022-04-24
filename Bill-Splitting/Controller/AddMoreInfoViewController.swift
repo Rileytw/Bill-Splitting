@@ -12,10 +12,8 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     var photoImageView = UIImageView()
     var addPhotoButton = UIButton()
-    var addPhotoLabel = UILabel()
     var completeButton = UIButton()
-    var descriptionLabel = UILabel()
-    var descriptionImage = UIButton()
+    var descriptionButton = UIButton()
     var descriptionTextView = UITextView()
     let imagePickerController = UIImagePickerController()
     var selectedImage: UIImage?
@@ -36,7 +34,6 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         super.viewDidLoad()
        
         setAddPhotoButton()
-        setAddPhotoLabel()
         setPhotoImageView()
         setDescription()
         setCompleteButton()
@@ -44,27 +41,18 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         
     }
     
-    func setAddPhotoLabel() {
-        view.addSubview(addPhotoLabel)
-        addPhotoLabel.translatesAutoresizingMaskIntoConstraints = false
-        addPhotoLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
-        addPhotoLabel.leftAnchor.constraint(equalTo: addPhotoButton.rightAnchor, constant: 10).isActive = true
-        addPhotoLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        addPhotoLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        
-        addPhotoLabel.text = "上傳照片"
-    }
-    
     func setAddPhotoButton() {
         view.addSubview(addPhotoButton)
         addPhotoButton.translatesAutoresizingMaskIntoConstraints = false
         addPhotoButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
         addPhotoButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        addPhotoButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        addPhotoButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
         addPhotoButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         addPhotoButton.setImage(UIImage(systemName: "camera"), for: .normal)
-        addPhotoButton.tintColor = .systemBlue
+        addPhotoButton.setTitle("上傳照片", for: .normal)
+        addPhotoButton.setTitleColor(.systemOrange, for: .normal)
+        addPhotoButton.tintColor = .systemOrange
         addPhotoButton.addTarget(self, action: #selector(pressUploadPhoto), for: .touchUpInside)
     }
     
@@ -175,26 +163,20 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     }
     
     func setDescription() {
-        view.addSubview(descriptionImage)
-        descriptionImage.translatesAutoresizingMaskIntoConstraints = false
-        descriptionImage.topAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: 20).isActive = true
-        descriptionImage.leftAnchor.constraint(equalTo: addPhotoButton.leftAnchor, constant: 0).isActive = true
-        descriptionImage.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        descriptionImage.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        descriptionImage.setImage(UIImage(systemName: "pencil"), for: .normal)
-        descriptionImage.tintColor = .systemBlue
-        
-        view.addSubview(descriptionLabel)
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.topAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: 20).isActive = true
-        descriptionLabel.leftAnchor.constraint(equalTo: descriptionImage.rightAnchor, constant: 20).isActive = true
-        descriptionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 20).isActive = true
-        descriptionLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        descriptionLabel.text = "詳細說明"
+        view.addSubview(descriptionButton)
+        descriptionButton.translatesAutoresizingMaskIntoConstraints = false
+        descriptionButton.topAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: 20).isActive = true
+        descriptionButton.leftAnchor.constraint(equalTo: addPhotoButton.leftAnchor, constant: 0).isActive = true
+        descriptionButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        descriptionButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        descriptionButton.setImage(UIImage(systemName: "pencil"), for: .normal)
+        descriptionButton.setTitle("詳細說明", for: .normal)
+        descriptionButton.tintColor = .systemYellow
+        descriptionButton.setTitleColor(.systemYellow, for: .normal)
         
         view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20).isActive = true
+        descriptionTextView.topAnchor.constraint(equalTo: descriptionButton.bottomAnchor, constant: 20).isActive = true
         descriptionTextView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         descriptionTextView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         descriptionTextView.heightAnchor.constraint(equalToConstant: 100).isActive = true
