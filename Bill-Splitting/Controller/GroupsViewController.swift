@@ -44,12 +44,13 @@ class GroupsViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 20).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
+        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 10).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
-        tableView.register(UINib(nibName: String(describing: GroupsTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: GroupsTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: GroupsTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: GroupsTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
     }

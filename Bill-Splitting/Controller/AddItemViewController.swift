@@ -71,7 +71,7 @@ class AddItemViewController: UIViewController {
         addItemView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        addItemView.heightAnchor.constraint(equalToConstant: 140).isActive = true
+        addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
         
@@ -175,7 +175,7 @@ class AddItemViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: memberPickerView.bottomAnchor, constant: 20).isActive = true
+        tableView.topAnchor.constraint(equalTo: memberPickerView.bottomAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: 10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
