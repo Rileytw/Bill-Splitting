@@ -118,7 +118,7 @@ class AddGroupsViewController: UIViewController {
         NSLayoutConstraint(item: descriptionLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
         
         if isGroupExist == true {
-            descriptionTextView.text = groupData?.goupDescription
+            descriptionTextView.text = groupData?.groupDescription
         }
     }
     
@@ -187,26 +187,36 @@ class AddGroupsViewController: UIViewController {
     }
     
     @objc func pressAddGroupButton() {
-        print("member:\(self.member)")
-        member.append(userId)
-        
-        if typeTextField.text == "個人預付" {
-            type = 0
-        } else {
-            type = 1
-        }
-        
-        GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
-                                         description: descriptionTextView.text,
-                                         creator: userId,
-                                         type: self.type ?? 0,
-                                         status: 0,
-                                         member: self.member ?? [""],
-                                         createdTime: Double(NSDate().timeIntervalSince1970)) {
-            groupId in
-            self.member.forEach {
-                member in
+        if isGroupExist == true {
+            guard let groupId = groupData?.groupId else { return }
+            GroupManager.shared.updateGroupData(groupId: groupId,
+                                                groupName: nameTextField.text ?? "",
+                                                groupDescription: descriptionTextView.text,
+                                                memberName: member)
+            self.member.forEach { member in
                 GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+            }
+            self.dismiss(animated: true, completion: nil)
+        } else {
+            member.append(userId)
+            
+            if typeTextField.text == "個人預付" {
+                type = 0
+            } else {
+                type = 1
+            }
+            
+            GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
+                                             description: descriptionTextView.text,
+                                             creator: userId,
+                                             type: self.type ?? 0,
+                                             status: 0,
+                                             member: self.member,
+                                             createdTime: Double(NSDate().timeIntervalSince1970)) {
+                groupId in
+                self.member.forEach { member in
+                    GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+                }
             }
         }
         
@@ -247,8 +257,6 @@ class AddGroupsViewController: UIViewController {
                 }
             }
         }
-        
-        print("newGroupMember: \(newGroupMember)")
         tableView.reloadData()
     }
 }
@@ -321,7 +329,11 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
             member.remove(at: index)
         } else {
             selectedIndexs.append(indexPath.row)
-            member.append(friendList[indexPath.row].userId ?? "")
+            if isGroupExist == true {
+                member.append(newGroupMember[indexPath.row].userId)
+            } else {
+                member.append(friendList[indexPath.row].userId)
+            }
 //            print(selectedIndexs)
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)

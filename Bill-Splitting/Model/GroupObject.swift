@@ -13,7 +13,7 @@ import FirebaseFirestoreSwift
 struct GroupData: Codable {
     var groupId: String
     var groupName: String
-    var goupDescription: String?
+    var groupDescription: String?
     var creator: String
     var type: Int
     var status: Int

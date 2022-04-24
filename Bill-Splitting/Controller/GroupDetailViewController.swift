@@ -44,6 +44,10 @@ class GroupDetailViewController: UIViewController {
         editButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
         editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
+        
+        if groupData?.creator != userId {
+            editButton.isHidden = true
+        }
     }
     
     @objc func pressEdit() {
@@ -78,7 +82,7 @@ extension GroupDetailViewController: UITableViewDataSource, UITableViewDelegate 
             guard let detailCell = cell as? GroupDetailTableViewCell else { return cell }
             
             detailCell.createDetailCell(groupName: groupData.groupName,
-                                        content: groupData.goupDescription,
+                                        content: groupData.groupDescription,
                                         groupType: groupData.type)
             
             return detailCell
