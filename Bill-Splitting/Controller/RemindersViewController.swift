@@ -98,50 +98,49 @@ class RemindersViewController: UIViewController {
     }
     
     func fetchReminderInfo() {
-        
-        if reminders.isEmpty == false {
-            let group = DispatchGroup()
-            let remindTimeInterval = self.reminders[0].remindTime - Date().timeIntervalSince1970
-            
-            let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-            group.enter()
-            firstQueue.async(group: group) {
-                GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
-                    switch result {
-                    case .success(let groups):
-                        self?.reminderGroups = groups
+        let group = DispatchGroup()
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        firstQueue.async(group: group) {
+            GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
+                switch result {
+                case .success(let groups):
+                    self?.reminderGroups = groups
+                    if self?.reminders.isEmpty == false {
                         for group in groups where group.groupId == self?.reminders[0].groupId {
                             self?.group = group
                         }
-                    case .failure(let error):
-                        print("Error decoding groups: \(error)")
                     }
-                    group.leave()
-                    
+                case .failure(let error):
+                    print("Error decoding groups: \(error)")
                 }
+                group.leave()
             }
-            
-            let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-            group.enter()
-            secondQueue.async(group: group) {
-                UserManager.shared.fetchUsersData { [weak self] result in
-                    switch result {
-                    case .success(let users):
-                        self?.members = users
+        }
+        
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        secondQueue.async(group: group) {
+            UserManager.shared.fetchUsersData { [weak self] result in
+                switch result {
+                case .success(let users):
+                    self?.members = users
+                    if self?.reminders.isEmpty == false {
                         for user in users where user.userId == self?.reminders[0].memberId {
                             self?.member = user
                         }
-                    case .failure(let error):
-                        print("Error decoding users: \(error)")
                     }
-                    
-                    group.leave()
+                case .failure(let error):
+                    print("Error decoding users: \(error)")
                 }
-                
+                group.leave()
             }
-            
-            group.notify(queue: DispatchQueue.main) {
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            if self.reminders.isEmpty == false {
                 guard let member = self.member else { return }
+                let remindTimeInterval = self.reminders[0].remindTime - Date().timeIntervalSince1970
                 self.reminderTitle = self.group?.groupName
                 if self.reminders[0].type == RemindType.credit.intData {
                     self.reminderSubtitle = RemindType.credit.textInfo
@@ -154,11 +153,11 @@ class RemindersViewController: UIViewController {
                 
                 if self.reminders.isEmpty == false && remindTimeInterval > 0 {
                     self.sendNotification()
+                    //  MARK: - Bug of reminders overlap when setting multiple reminders
                     ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
                 }
-                
-                self.tableView.reloadData()
             }
+            self.tableView.reloadData()
         }
     }
     
@@ -196,8 +195,7 @@ extension RemindersViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
             withIdentifier: String(describing: ReminderTableViewCell.self),
-            for: indexPath
-        )
+            for: indexPath)
         guard let reminderCell = cell as? ReminderTableViewCell else { return cell }
         
         var memberName: String?
