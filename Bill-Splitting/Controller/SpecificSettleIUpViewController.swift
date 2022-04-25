@@ -20,17 +20,16 @@ class SpecificSettleIUpViewController: UIViewController {
     var price = UILabel()
     var account = UILabel()
     var settleButton = UIButton()
+    var tableView = UITableView()
     
     typealias AddItemColsure = (String) -> Void
     var addItemColsure: AddItemColsure?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //        print("userData:\(userData)")
-        //        print("memberExpense:\(memberExpense)")
         setUserInfo()
         setSettleUpButton()
-        print("memberExoense : \(memberExpense)")
+        setTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,9 +46,7 @@ class SpecificSettleIUpViewController: UIViewController {
         guard let memberExpense = memberExpense,
               let userData = userData
         else { return }
-        
         let userExpense = userExpense.filter { $0.userId == userId }
-        
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
@@ -63,8 +60,7 @@ class SpecificSettleIUpViewController: UIViewController {
             nameLabel.text = "收款對象：\(userData.userName)"
             nameLabel.textColor = .systemTeal
         }
-        
-        nameLabel.font = nameLabel.font.withSize(24)
+        nameLabel.font = nameLabel.font.withSize(20)
         
         view.addSubview(price)
         price.translatesAutoresizingMaskIntoConstraints = false
@@ -86,11 +82,9 @@ class SpecificSettleIUpViewController: UIViewController {
             } else {
                 price.text = "收款金額：\(abs(userExpense[0].allExpense)) 元"
             }
-            
             price.textColor = .systemTeal
         }
-        
-        price.font = price.font.withSize(24)
+        price.font = price.font.withSize(20)
         
         view.addSubview(account)
         account.translatesAutoresizingMaskIntoConstraints = false
@@ -100,6 +94,19 @@ class SpecificSettleIUpViewController: UIViewController {
         account.heightAnchor.constraint(equalToConstant: 40).isActive = true
         account.text = "帳戶資訊"
         account.font = price.font.withSize(20)
+    }
+    
+    func setTableView() {
+        view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: account.bottomAnchor, constant: 10).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 10).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: settleButton.topAnchor, constant: 10).isActive = true
+        
+        tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
     }
     
     func setSettleUpButton() {
@@ -134,8 +141,8 @@ class SpecificSettleIUpViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupId ?? "",
                                        itemName: "結帳",
                                        itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970)) {
-            itemId in
+                                       createdTime: Double(NSDate().timeIntervalSince1970),
+                                       itemImage: nil) { itemId in
             self.itemId = itemId
             
             var paidUserId: String?
@@ -241,5 +248,27 @@ class SpecificSettleIUpViewController: UIViewController {
     
     func addItem(closure: @escaping AddItemColsure) {
         addItemColsure = closure
+    }
+}
+
+extension SpecificSettleIUpViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return userData?.payment?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: PaymentTableViewCell.self),
+            for: indexPath
+        )
+        
+        guard let paymentCell = cell as? PaymentTableViewCell else { return cell }
+        let userPayment = userData?.payment
+        
+        paymentCell.createPaymentCell(payment: userPayment?[indexPath.row].paymentName ?? "",
+                                      accountName: userPayment?[indexPath.row].paymentAccount ?? "",
+                                      link: userPayment?[indexPath.row].paymentLink ?? "")
+
+        return paymentCell
     }
 }

@@ -9,9 +9,9 @@ import UIKit
 
 private enum Tab {
     case groups
-//    case reminders
+    case reminders
     case addGroups
-//    case records
+    case records
     case profile
     
     func viewController() -> UIViewController {
@@ -20,8 +20,12 @@ private enum Tab {
         switch self {
         case .groups:
             viewController = UIStoryboard.groups.instantiateInitialViewController()!
+        case .reminders:
+            viewController = UIStoryboard.reminders.instantiateInitialViewController()!
         case .addGroups:
             viewController = UIStoryboard.addGroups.instantiateInitialViewController()!
+        case .records:
+            viewController = UIStoryboard.records.instantiateInitialViewController()!
         case .profile:
             viewController = UIStoryboard.profile.instantiateInitialViewController()!
         }
@@ -36,8 +40,14 @@ private enum Tab {
         case .groups:
             return UITabBarItem(title: "groups", image: UIImage(systemName: "person.3"), selectedImage: UIImage(systemName: "person.3.fill")
             )
+        case .reminders:
+            return UITabBarItem(title: "reminders", image: UIImage(systemName: "bell"), selectedImage: UIImage(systemName: "bell.fill")
+            )
         case .addGroups:
             return UITabBarItem(title: "add groups", image: UIImage(systemName: "plus.square"), selectedImage: UIImage(systemName: "plus.square.fill")
+            )
+        case .records:
+            return UITabBarItem(title: "records", image: UIImage(systemName: "list.bullet.rectangle"), selectedImage: UIImage(systemName: "list.bullet.rectangle.fill")
             )
         case .profile:
             return UITabBarItem(title: "profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill")
@@ -48,7 +58,7 @@ private enum Tab {
 
 class TabBarViewController: UITabBarController {
     
-    private let tabs:[Tab] = [.groups, .addGroups, .profile]
+    private let tabs:[Tab] = [.groups, .reminders, .addGroups, .records, .profile]
     
     var allTabBatItem: UITabBarItem!
     

@@ -9,6 +9,11 @@ target 'Bill-Splitting' do
 pod 'SwiftLint'
 pod 'Firebase/Firestore'
 pod 'FirebaseFirestoreSwift'
+pod ‘Firebase/Database’
+pod 'Firebase/Storage'
 pod 'IQKeyboardManagerSwift'
+pod 'Kingfisher'
+pod 'Charts'
+pod 'lottie-ios'
 
 end

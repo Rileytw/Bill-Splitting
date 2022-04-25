@@ -29,10 +29,6 @@ class FriendManager {
                         if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
                             userData = user
                         }
-//                        guard let userData = userData else { return }
-//
-//                        completion(.success(userData))
-                        
                     } catch {
                         
                         completion(.failure(error))
@@ -62,9 +58,6 @@ class FriendManager {
                         if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
                             invitationData = invitation
                         }
-//                        guard let invitationData = invitationData else { return }
-//
-//                        completion(.success(invitationData))
                         
                     } catch {
                         
@@ -95,9 +88,6 @@ class FriendManager {
                         if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
                             invitationData = invitation
                         }
-//                        guard let invitationData = invitationData else { return }
-//
-//                        completion(.success(invitationData))
                         
                     } catch {
                         
@@ -135,10 +125,6 @@ class FriendManager {
                         if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
                             invitationData.append(invitation)
                         }
-//                        guard let invitationData = invitationData else { return }
-                        
-//                        completion(.success(invitationData))
-                        
                     } catch {
                         
                         completion(.failure(error))

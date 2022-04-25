@@ -11,7 +11,7 @@ class AddItemViewController: UIViewController {
 
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
-    var typePickerViewData = ["平分", "按比例", "自訂"]
+    var typePickerViewData = [SplitType.equal.label, SplitType.percent.label, SplitType.customize.label]
     var memberPickerView = BasePickerViewInTextField(frame: .zero)
     let addButton = UIButton()
     let tableView = UITableView()
@@ -32,12 +32,22 @@ class AddItemViewController: UIViewController {
     var involvedExpenseData: [ExpenseInfo] = []
     var involvedPrice: Double?
     var choosePaidMember = UILabel()
+    var addMoreButton = UIButton()
     
-    var selectedIndexs = [Int]()
+    var isItemExist: Bool = false
+    var itemData: ItemData?
+    
+    var selectedIndexs = [Int]() {
+        didSet {
+            if typePickerView.textField.text == SplitType.equal.label {
+                tableView.reloadData()
+            }
+        }
+    }
     var involvedMemberName: [String] = []
     
-    typealias AddItemColsure = (String) -> Void
-    var addItemColsure: AddItemColsure?
+    var itemImageString: String?
+    var itemDescription: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,17 +56,14 @@ class AddItemViewController: UIViewController {
         setmemberPickerView()
         setAddButton()
         setTableView()
+        setAddMoreButton()
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        tabBarController?.tabBar.isHidden = true
-//        navigationController?.setNavigationBarHidden(true, animated: animated)
-//    }
-//
-//    override func viewWillDisappear(_ animated: Bool) {
-//        navigationController?.setNavigationBarHidden(false, animated: animated)
-//    }
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
+        addMoreButton.clipsToBounds = true
+    }
     
     func setAddItemView() {
         view.addSubview(addItemView)
@@ -64,16 +71,24 @@ class AddItemViewController: UIViewController {
         addItemView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        addItemView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        addItemView.itemName.text = "項目名稱"
+        addItemView.priceLabel.text = "支出金額"
+        
+        if isItemExist == true {
+            addItemView.itemNameTextField.text = itemData?.itemName
+            addItemView.priceTextField.text = String(itemData?.paidInfo?[0].price ?? 0)
+        }
     }
 
     func setTypePickerView() {
         view.addSubview(typePickerView)
+//        typePickerView.frame = CGRect(x: 20, y: 200, width: 100, height: 20)
         typePickerView.translatesAutoresizingMaskIntoConstraints = false
         typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
         typePickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        typePickerView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         typePickerView.pickerViewData = typePickerViewData
         
         typePickerView.pickerView.dataSource = self
@@ -85,15 +100,13 @@ class AddItemViewController: UIViewController {
     func setmemberPickerView() {
         view.addSubview(memberPickerView)
         memberPickerView.translatesAutoresizingMaskIntoConstraints = false
-        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
+        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 60).isActive = true
         memberPickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        memberPickerView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
-//        memberPickerView.textField.text = "請選擇付款人"
-        
         memberPickerView.pickerView.tag = 1
         
         if groupData?.type == 0 {
@@ -126,10 +139,43 @@ class AddItemViewController: UIViewController {
         addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
     }
     
+    func setAddMoreButton() {
+        view.addSubview(addMoreButton)
+        addMoreButton.translatesAutoresizingMaskIntoConstraints = false
+        addMoreButton.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -5).isActive = true
+        addMoreButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        addMoreButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        addMoreButton.backgroundColor = .systemTeal
+        addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
+        addMoreButton.tintColor = .white
+        addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
+    }
+    
+    @objc func pressAddMore() {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let addMoreInfoViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddMoreInfoViewController.self)) as? AddMoreInfoViewController else { return }
+        
+        if isItemExist == true {
+            addMoreInfoViewController.itemData = itemData
+            addMoreInfoViewController.isItemExist = true
+        }
+       
+        addMoreInfoViewController.urlData = { [weak self] urlString in
+            self?.itemImageString = urlString
+        }
+        addMoreInfoViewController.itemDescription = { [weak self] itemDes in
+            self?.itemDescription = itemDes
+        }
+        
+        self.present(addMoreInfoViewController, animated: true, completion: nil)
+    }
+    
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: memberPickerView.bottomAnchor, constant: 20).isActive = true
+        tableView.topAnchor.constraint(equalTo: memberPickerView.bottomAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: 10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -140,11 +186,23 @@ class AddItemViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
+        if isItemExist == true {
+            deleteItem() {
+                addItem()
+            }
+        } else {
+            addItem()
+        }
+        
+        self.dismiss(animated: false, completion: nil)
+    }
+    
+    func addItem() {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
-                                       itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970)) {
-            itemId in
+                                       itemDescription: itemDescription,
+                                       createdTime: Double(NSDate().timeIntervalSince1970),
+                                       itemImage: self.itemImageString) { itemId in
             self.itemId = itemId
             
             var paidUserId: String?
@@ -155,24 +213,29 @@ class AddItemViewController: UIViewController {
             }
             
             self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
+            let paidPrice = self.paidPrice
             
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                           price: self.paidPrice ?? 0,
+                                           price: paidPrice ?? 0,
                                            itemId: itemId,
                                            createdTime: Double(NSDate().timeIntervalSince1970))
 
             for user in 0..<self.involvedExpenseData.count {
+                var involvedPrice: Double?
+                if self.typePickerView.textField.text == SplitType.equal.label {
+                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+                } else if self.typePickerView.textField.text == SplitType.percent.label {
+                    involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+                } else {
+                    involvedPrice = self.involvedExpenseData[user].price
+                }
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
-                                                   price: self.involvedExpenseData[user].price,
+                                                   price: involvedPrice ?? 0,
                                                    itemId: itemId,
                                                    createdTime: Double(NSDate().timeIntervalSince1970))
             }
             self.countPersonalExpense()
         }
-        self.dismiss(animated: false, completion: nil)
-//        navigationController?.popViewController(animated: true)
-        addItemColsure?("id")
-        
     }
     
     func countPersonalExpense() {
@@ -184,19 +247,50 @@ class AddItemViewController: UIViewController {
             paidUserId = userId
         }
         
+        let paidPrice = self.paidPrice
+        
         GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                 newExpense: self.paidPrice ?? 0,
                                                 groupId: groupData?.groupId ?? "")
         
         for user in 0..<self.involvedExpenseData.count {
+            var involvedPrice: Double?
+            if self.typePickerView.textField.text == SplitType.equal.label {
+                involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+            } else if self.typePickerView.textField.text == SplitType.percent.label {
+                involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+            } else {
+                involvedPrice = self.involvedExpenseData[user].price
+            }
+            guard let involvedPrice = involvedPrice else { return }
             GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
-                                                    newExpense: 0 - self.involvedExpenseData[user].price,
+                                                    newExpense: 0 - involvedPrice,
                                                     groupId: groupData?.groupId ?? "")
         }
     }
     
-    func addItem(closure: @escaping AddItemColsure) {
-        addItemColsure = closure
+    func deleteItem(completion: () -> Void) {
+        reCountPersonalExpense()
+        ItemManager.shared.deleteItem(itemId: itemData?.itemId ?? "")
+        completion()
+    }
+    
+    func reCountPersonalExpense() {
+        guard let paidUserId = itemData?.paidInfo?[0].userId,
+              let paidPrice = itemData?.paidInfo?[0].price
+        else { return }
+        
+        GroupManager.shared.updateMemberExpense(userId: paidUserId ,
+                                                newExpense: 0 - paidPrice,
+                                                groupId: groupData?.groupId ?? "")
+        
+        guard let involvedExpense = itemData?.involedInfo else { return }
+        
+        for user in 0..<involvedExpense.count {
+            GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
+                                                    newExpense: involvedExpense[user].price,
+                                                    groupId: groupData?.groupId ?? "")
+        }
     }
 }
 
@@ -223,6 +317,7 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView.tag == 0 {
+            tableView.reloadData()
             return typePickerView.textField.text = typePickerViewData[row]
         } else {
             paidId = memberData?[row].userId
@@ -247,13 +342,42 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
         
         memberCell.memberName.text = memberData?[indexPath.row].userName
         
-        if selectedIndexs.contains(indexPath.row) {
-            memberCell.selectedButton.isSelected = true
-            memberCell.priceTextField.isHidden = false
-        } else {
-            cell.accessoryType = .none
-            memberCell.selectedButton.isSelected = false
+        if typePickerView.textField.text == SplitType.equal.label {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.equalLabel.isHidden = false
+                memberCell.percentLabel.isHidden = false
+                memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.equalLabel.isHidden = true
+                memberCell.percentLabel.isHidden = true
+            }
             memberCell.priceTextField.isHidden = true
+        } else if typePickerView.textField.text == SplitType.percent.label {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.priceTextField.isHidden = false
+                memberCell.percentLabel.isHidden = false
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.priceTextField.isHidden = true
+                memberCell.percentLabel.isHidden = true
+            }
+            memberCell.equalLabel.isHidden = true
+        } else if typePickerView.textField.text == SplitType.customize.label {
+            if selectedIndexs.contains(indexPath.row) {
+                memberCell.selectedButton.isSelected = true
+                memberCell.priceTextField.isHidden = false
+            } else {
+                cell.accessoryType = .none
+                memberCell.selectedButton.isSelected = false
+                memberCell.priceTextField.isHidden = true
+            }
+            memberCell.equalLabel.isHidden = true
+            memberCell.percentLabel.isHidden = true
         }
         
         memberCell.delegate = self
@@ -271,7 +395,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             selectedIndexs.append(indexPath.row)
             involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
             
-            var involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
+            let involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
             involvedExpenseData.append(involedExpense)
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -284,7 +408,7 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
         involvedPrice = Double(cell.priceTextField.text ?? "0")
         
         let name = cell.memberName.text
-        var selectedUser = memberData?.filter { $0.userName == name }
+        let selectedUser = memberData?.filter { $0.userName == name }
         guard let id = selectedUser?[0].userId else { return }
                 
         for index in 0..<involvedExpenseData.count {
@@ -292,7 +416,6 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
             }
-            
         }
     }
 }

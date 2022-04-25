@@ -22,7 +22,7 @@ class ProfileViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 200).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -36,7 +36,7 @@ class ProfileViewController: UIViewController {
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -48,6 +48,8 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         guard let profileCell = cell as? ProfileTableViewCell else { return cell }
         
         if indexPath.row == 0 {
+            profileCell.profileItemName.text = "設定付款方式"
+        } else if indexPath.row == 1 {
             profileCell.profileItemName.text = "朋友列表"
         } else {
             profileCell.profileItemName.text = "朋友邀請"
@@ -63,12 +65,16 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
-            self.present(friendListViewController, animated: true, completion: nil)
+            let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
+            self.show(paymentViewController, sender: nil)
         } else if indexPath.row == 1 {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+            let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
+            self.show(friendListViewController, sender: nil)
+        } else {
+            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
             let friendInvitationViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self))
-            self.present(friendInvitationViewController, animated: true, completion: nil)
+            self.show(friendInvitationViewController, sender: nil)
         }
     }
 }

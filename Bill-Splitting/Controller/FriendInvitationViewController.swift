@@ -94,6 +94,7 @@ extension FriendInvitationViewController: UITableViewDataSource, UITableViewDele
         invitationCell.delegate = self
         
         invitationCell.nameLabel.text = invitationUsers[indexPath.row].userName
+        invitationCell.email.text = invitationUsers[indexPath.row].userEmail
         
         return invitationCell
     }

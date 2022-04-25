@@ -13,6 +13,9 @@ struct ItemData: Codable {
     var itemId: String
     var itemDescription: String?
     var createdTime: Double
+    var itemImage: String?
+    var paidInfo: [ExpenseInfo]?
+    var involedInfo: [ExpenseInfo]?
 }
 
 struct ExpenseInfo: Codable {
@@ -20,4 +23,22 @@ struct ExpenseInfo: Codable {
     var price: Double
     var createdTime: Double?
     var itemId: String?
+}
+
+enum SplitType {
+    case equal
+    case percent
+    case customize
+    
+    var label: String {
+        switch self {
+        case .equal:
+            return "平分"
+        case .percent:
+            return "按比例"
+        case .customize:
+            return "自訂"
+        }
+    }
+    
 }

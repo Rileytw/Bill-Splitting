@@ -9,11 +9,6 @@ import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-enum Grouptype: Int {
-    case personal = 0
-    case group = 1
-}
-
 typealias ExpenseInfoResponse = (Result<[ExpenseInfo], Error>) -> Void
 
 class GroupManager {
@@ -23,7 +18,7 @@ class GroupManager {
     func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String], createdTime: Double, completion: @escaping (String) -> Void) {
         let ref = db.collection("group").document()
         
-        let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, goupDescription: description, creator: creator, type: type, status: status, member: member, createdTime: createdTime)
+        let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, groupDescription: description, creator: creator, type: type, status: status, member: member, createdTime: createdTime)
         
         do {
             try db.collection("group").document("\(ref.documentID)").setData(from: groupData)
@@ -33,8 +28,8 @@ class GroupManager {
         }
     }
     
-    func fetchGroups(userId: String, completion: @escaping (Result<[GroupData], Error>) -> Void) {
-        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: 0).order(by:"createdTime", descending: true).getDocuments() { (querySnapshot, error) in
+    func fetchGroups(userId: String, status: Int, completion: @escaping (Result<[GroupData], Error>) -> Void) {
+        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: status).order(by:"createdTime", descending: true).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -110,7 +105,7 @@ class GroupManager {
     }
     
     func fetchMemberExpense(groupId: String, userId: String, completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
-        db.collection("group").document(groupId).collection("memberExpense").getDocuments() { (querySnapshot, error) in
+        db.collection("group").document(groupId).collection("memberExpense").addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -171,6 +166,30 @@ class GroupManager {
             } else {
                 print("Document successfully updated")
             }
+        }
+    }
+    
+    func updateGroupData(groupId: String, groupName: String, groupDescription: String, memberName: [String]?) {
+        let groupRef = db.collection(FireBaseCollection.group.rawValue).document(groupId)
+        
+        groupRef.updateData([
+            "groupName": groupName,
+            "groupDescription": groupDescription
+            
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+            }
+        }
+        
+        guard let memberName = memberName else { return }
+
+        for index in 0..<memberName.count {
+            groupRef.updateData([
+                "member": FieldValue.arrayUnion([memberName[index]])
+            ])
         }
     }
 }

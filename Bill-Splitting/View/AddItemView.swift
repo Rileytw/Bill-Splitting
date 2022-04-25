@@ -9,7 +9,6 @@ import UIKit
 
 class AddItemView: UIView {
 
-    let createdTimeLabel = UILabel()
     let itemName = UILabel()
     let itemNameTextField = UITextField()
     let priceLabel = UILabel()
@@ -32,28 +31,39 @@ class AddItemView: UIView {
     }
     
     func setLabel() {
-        createdTimeLabel.frame = CGRect(x: 20, y: 10, width: UIScreen.main.bounds.width/4, height: 60)
-//        createdTimeLabel.text = "新增時間"
-//        addSubview(createdTimeLabel)
-        
-        itemName.frame = CGRect(x: 20, y: 30, width: UIScreen.main.bounds.width/3, height: 60)
-        itemName.text = "項目名稱"
         addSubview(itemName)
+        itemName.translatesAutoresizingMaskIntoConstraints = false
+        itemName.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
+        itemName.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
+        itemName.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/3).isActive = true
+        itemName.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
-        priceLabel.frame = CGRect(x: 20, y: 100, width: UIScreen.main.bounds.width/3, height: 60)
-        priceLabel.text = "支出金額"
         addSubview(priceLabel)
+        priceLabel.translatesAutoresizingMaskIntoConstraints = false
+        priceLabel.topAnchor.constraint(equalTo: itemName.bottomAnchor, constant: 40).isActive = true
+        priceLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
+        priceLabel.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/3).isActive = true
+        priceLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        
+        itemName.lineBreakMode = NSLineBreakMode.byWordWrapping
+        itemName.numberOfLines = 0
     }
     
     func setTextField() {
+        addSubview(itemNameTextField)
         itemNameTextField.translatesAutoresizingMaskIntoConstraints = false
         itemNameTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        itemNameTextField.frame = CGRect(x: 20 + UIScreen.main.bounds.width/3, y: 30, width: UIScreen.main.bounds.width/2, height: 60)
-        addSubview(itemNameTextField)
+        itemNameTextField.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true
+        itemNameTextField.leadingAnchor.constraint(equalTo: itemName.trailingAnchor, constant: 10).isActive = true
+        itemNameTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2 + 20).isActive = true
+        itemNameTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
+        addSubview(priceTextField)
         priceTextField.translatesAutoresizingMaskIntoConstraints = false
         priceTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        priceTextField.frame = CGRect(x: 20 + UIScreen.main.bounds.width/3, y: 100, width: UIScreen.main.bounds.width/2, height: 60)
-        addSubview(priceTextField)
+        priceTextField.topAnchor.constraint(equalTo: itemNameTextField.bottomAnchor, constant: 10).isActive = true
+        priceTextField.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 10).isActive = true
+        priceTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2 + 20).isActive = true
+        priceTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
 }
