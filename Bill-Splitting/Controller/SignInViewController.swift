@@ -11,7 +11,7 @@ import AuthenticationServices
 class SignInViewController: UIViewController {
     
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
-    var user: UserData = UserData(userId: "", userName: "", userEmail: "")
+    var user: UserData = UserData(appleId: nil, userId: "", userName: "", userEmail: "", group: nil, payment: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,7 +56,7 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         print("Email: \(String(describing: credential.email))")
         print("realUserStatus: \(String(describing: credential.realUserStatus))")
         
-        user.userName = "\(credential.fullName)"
+        user.userName = "\(credential.fullName?.familyName)" + "\(credential.fullName?.givenName)"
         user.userEmail = "\(credential.email)"
         user.appleId = String(credential.user)
         UserManager.shared.addUserData(userData: user) { result in
