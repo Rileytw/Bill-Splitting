@@ -224,7 +224,7 @@ class AddGroupsViewController: UIViewController {
         
         self.nameTextField.text? = ""
         self.descriptionTextView.text = ""
-        self.typeTextField.text = "個人預付"
+//        self.typeTextField.text = "個人預付"
         self.selectedIndexs.removeAll()
         self.tableView.reloadData()
         self.member.removeAll()
