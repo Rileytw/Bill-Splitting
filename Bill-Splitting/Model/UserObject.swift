@@ -10,11 +10,21 @@ import FirebaseFirestoreSwift
 import FirebaseFirestore
 
 struct UserData: Codable {
+    var appleId: String?
     var userId: String
     var userName: String
     var userEmail: String
     var group: [String]?
     var payment: [Payment]?
+    
+    init(appleId: String?, userId: String, userName: String, userEmail: String, group: [String]?, payment: [Payment]?) {
+        self.userId = userId
+        self.userEmail = userEmail
+        self.userName = userName
+        self.appleId = appleId
+        self.group = group
+        self.payment = payment
+    }
 }
 
 struct Payment: Codable {

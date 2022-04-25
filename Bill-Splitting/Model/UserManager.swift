@@ -11,6 +11,20 @@ class UserManager {
     static var shared = UserManager()
     lazy var db = Firestore.firestore()
     
+    func addUserData(userData: UserData, completion: @escaping (Result<String, Error>) -> Void) {
+        let ref = db.collection(FireBaseCollection.user.rawValue).document()
+        
+        var userData = userData
+        userData.userId = "\(ref.documentID)"
+        do {
+            try db.collection(FireBaseCollection.user.rawValue).document("\(ref.documentID)").setData(from: userData)
+            completion(.success("\(ref.documentID)"))
+        } catch {
+            print(error)
+            completion(.failure(error))
+        }
+    }
+    
     func fetchFriendData(userId: String, completion: @escaping (Result<[Friend], Error>) -> Void) {
         db.collection(FireBaseCollection.user.rawValue).document(userId).collection("friend").getDocuments() { (querySnapshot, error) in
             

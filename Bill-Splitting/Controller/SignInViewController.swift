@@ -11,6 +11,7 @@ import AuthenticationServices
 class SignInViewController: UIViewController {
     
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
+    var user: UserData = UserData(userId: "", userName: "", userEmail: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,13 +50,27 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             return
         }
+        
         print("user: \(credential.user)")
         print("fullName: \(String(describing: credential.fullName))")
         print("Email: \(String(describing: credential.email))")
         print("realUserStatus: \(String(describing: credential.realUserStatus))")
         
-        let tabViewController = storyboard?.instantiateViewController(withIdentifier: "TabBarViewController") as? UITabBarController
-        view.window?.rootViewController = tabViewController
+        user.userName = "\(credential.fullName)"
+        user.userEmail = "\(credential.email)"
+        user.appleId = String(credential.user)
+        UserManager.shared.addUserData(userData: user) { result in
+            switch result {
+            case .success(let id):
+                self.user.userId = id
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+            
+        }
+        
+        let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
+        view.window?.rootViewController = tabBarViewController
         view.window?.makeKeyAndVisible()
     }
     
