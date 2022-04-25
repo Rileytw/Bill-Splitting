@@ -15,20 +15,14 @@ class SignInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setSignInButton()
-        // Do any additional setup after loading the view.
     }
     
     func setSignInButton() {
         view.addSubview(authorizationButton)
         authorizationButton.translatesAutoresizingMaskIntoConstraints = false
-        authorizationButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-        authorizationButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0).isActive = true
-        authorizationButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        authorizationButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        setAuthorizationButtonConstraint()
         authorizationButton.cornerRadius = 8.0
-        //        authorizationButton.frame = CGRect(x: 20, y: 100, width: 100, height: 100)
         authorizationButton.addTarget(self, action: #selector(handleAuthorizationAppleIDButtonPress), for: .touchUpInside)
-        
     }
     
     @objc func handleAuthorizationAppleIDButtonPress() {
@@ -41,6 +35,13 @@ class SignInViewController: UIViewController {
         authorizationController.presentationContextProvider = self
         authorizationController.performRequests()
     }
+    
+    func setAuthorizationButtonConstraint() {
+        authorizationButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
+        authorizationButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0).isActive = true
+        authorizationButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        authorizationButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
 }
 
 extension SignInViewController: ASAuthorizationControllerDelegate {
@@ -52,6 +53,10 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         print("fullName: \(String(describing: credential.fullName))")
         print("Email: \(String(describing: credential.email))")
         print("realUserStatus: \(String(describing: credential.realUserStatus))")
+        
+        let tabViewController = storyboard?.instantiateViewController(withIdentifier: "TabBarViewController") as? UITabBarController
+        view.window?.rootViewController = tabViewController
+        view.window?.makeKeyAndVisible()
     }
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
