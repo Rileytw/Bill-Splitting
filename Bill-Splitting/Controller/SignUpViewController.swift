@@ -81,7 +81,6 @@ class SignUpViewController: UIViewController {
         passwordTextField.layer.borderWidth = 1
     }
     
-    
     func setValidPassword() {
         view.addSubview(validPasswiedLabel)
         validPasswiedLabel.translatesAutoresizingMaskIntoConstraints = false
