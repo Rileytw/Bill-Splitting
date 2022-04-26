@@ -36,7 +36,8 @@ class SignInViewController: UIViewController {
         setLoginButton()
         setAppleSignInButton()
         setSignUpButton()
-        checkAppleIDCredentialState(userID: appleId ?? "")
+//        checkAppleIDCredentialState(userID: appleId ?? "")
+        checkUserSignIn()
     }
     
     func setAppleSignInButton() {
@@ -60,6 +61,12 @@ class SignInViewController: UIViewController {
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = self
         authorizationController.performRequests()
+    }
+    
+    func checkUserSignIn() {
+        if Auth.auth().currentUser != nil {
+            enterFistPage()
+        }
     }
     
     func setAccount() {
