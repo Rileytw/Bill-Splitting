@@ -29,7 +29,8 @@ class SignInManager {
                 print(error?.localizedDescription)
                 return
             }
-            completion("\(result?.user.uid)")
+            guard let uid = result?.user.uid else { return }
+            completion("\(uid)")
         }
     }
 }

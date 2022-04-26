@@ -130,7 +130,7 @@ class SignInViewController: UIViewController {
                 self?.user.userEmail = user?.userEmail ?? ""
                 self?.user.userId = user?.userId ?? ""
                 print("Login successed!")
-                if  user == nil {
+                if user == nil {
                     self?.user.userId = userId
                     self?.addNewUserData()
                 }
@@ -163,16 +163,16 @@ class SignInViewController: UIViewController {
         self.present(signUpViewController, animated: true, completion: nil)
     }
     
-    func checkAppleIDCredentialState(userID: String) {
-        ASAuthorizationAppleIDProvider().getCredentialState(forUserID: userID) { [weak self] credentialState, error in
-            switch credentialState {
-            case .authorized:
-                self?.fetchUserData(userId: userID)
-            default:
-                break
-            }
-        }
-    }
+//    func checkAppleIDCredentialState(userID: String) {
+//        ASAuthorizationAppleIDProvider().getCredentialState(forUserID: userID) { [weak self] credentialState, error in
+//            switch credentialState {
+//            case .authorized:
+//                self?.fetchUserData(userId: userID)
+//            default:
+//                break
+//            }
+//        }
+//    }
     
     func enterFistPage() {
         let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
@@ -283,13 +283,11 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         user.userEmail = "\(credential.email ?? "")"
 
         firebaseSignInWithApple(credential: appCredential)
-        
     }
     
     func firebaseSignInWithApple(credential: AuthCredential) {
         Auth.auth().signIn(with: credential) { authResult, error in
             guard error == nil else { return }
-            print("===\(authResult?.credential)")
             self.getFirebaseUserInfo()
         }
     }
@@ -298,10 +296,8 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         let currentUser = Auth.auth().currentUser
         guard let user = currentUser else { return }
         let uid = user.uid
-        let email = user.email
+//        let email = user.email
         self.user.userId = uid
-        print("=====\(uid)")
-        print("=====\(email)")
         fetchUserData(userId: uid)
     }
     

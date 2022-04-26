@@ -116,7 +116,6 @@ class SignUpViewController: UIViewController {
         
         SignInManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
-//            print("===\(firebaseId)")
             self?.userData.userName = self?.userNameTextField.text ?? ""
             self?.userData.userEmail = self?.emailTextField.text ?? ""
             self?.userData.userId = firebaseId
