@@ -188,9 +188,59 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         print("Email: \(String(describing: credential.email))")
         print("realUserStatus: \(String(describing: credential.realUserStatus))")
         
-        user.userName = "\(credential.fullName?.familyName)" + "\(credential.fullName?.givenName)"
-        user.userEmail = "\(credential.email)"
+        user.userName = "\(credential.fullName?.familyName ?? "")" + "\(credential.fullName?.givenName ?? "")"
+        user.userEmail = "\(credential.email ?? "")"
         user.appleId = String(credential.user)
+        
+        detectNewUser(appleId: String(credential.user))
+        
+        let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
+        view.window?.rootViewController = tabBarViewController
+        view.window?.makeKeyAndVisible()
+    }
+    
+    func detectNewUser(appleId: String) {
+        let semaphore = DispatchSemaphore(value: 0)
+        let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
+        
+        queue.async {
+
+            UserManager.shared.fetchAppleIdUser(appleId: appleId) { [weak self] result in
+                switch result {
+                case .success(let user):
+                    print(user)
+                    self?.user.userName = user.userName
+                    self?.user.userEmail = user.userEmail
+                    self?.user.userId = user.userId
+                    semaphore.signal()
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                    semaphore.signal()
+                }
+            }
+            
+            semaphore.wait()
+            if self.user.userId == "" {
+                self.addNewUserData()
+            }
+        }
+    }
+    
+//    func fetchUserData() {
+//        UserManager.shared.fetchSignInUserData(appleId: appleId, firebaseId: nil) { [weak self] result in
+//            switch result {
+//            case .success(let user):
+//                print(user)
+//                self?.user.userName = user.userName
+//                self?.user.userEmail = user.userEmail
+//                self?.user.userId = user.userId
+//            case .failure(let error):
+//                print("Error decoding userData: \(error)")
+//            }
+//        }
+//    }
+//
+    func addNewUserData() {
         UserManager.shared.addUserData(userData: user) { result in
             switch result {
             case .success(let id):
@@ -198,12 +248,7 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
-            
         }
-        
-        let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
-        view.window?.rootViewController = tabBarViewController
-        view.window?.makeKeyAndVisible()
     }
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {

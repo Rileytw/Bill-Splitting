@@ -119,6 +119,27 @@ class UserManager {
         }
     }
     
+    func fetchAppleIdUser(appleId: String, completion: @escaping (Result<UserData, Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).whereField("appleId", isEqualTo: appleId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                            print("===\(user)")
+                            completion(.success(user))
+                        }
+                    } catch {
+                        completion(.failure(error))
+                    }
+                }
+            }
+        }
+    }
+    
     func fetchSignInUserData(appleId: String?, firebaseId: String?, completion: @escaping (Result<UserData, Error>) -> Void) {
         if appleId != nil {
             db.collection(FireBaseCollection.user.rawValue).whereField("appleId", isEqualTo: appleId).getDocuments() { (querySnapshot, error) in
@@ -128,20 +149,20 @@ class UserManager {
                     completion(.failure(error))
                 } else {
                     
-                    var userData: UserData?
+//                    var userData: UserData?
                     
                     for document in querySnapshot!.documents {
                         
                         do {
                             if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
-                                userData = user
+//                                userData = user
+                                print("===\(user)")
+                                completion(.success(user))
                             }
                         } catch {
                             completion(.failure(error))
                         }
                     }
-                    guard let userData = userData else { return }
-                    completion(.success(userData))
                 }
             }
         } else if firebaseId != nil {
