@@ -39,6 +39,7 @@
 		355090ED28100E150007C0CE /* Reminders.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 355090EC28100E150007C0CE /* Reminders.storyboard */; };
 		355090EF28100FA80007C0CE /* RemindersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090EE28100FA80007C0CE /* RemindersViewController.swift */; };
 		355090F1281039110007C0CE /* AddReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090F0281039110007C0CE /* AddReminderViewController.swift */; };
+		3555072A2817900500FD2465 /* SignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355507292817900500FD2465 /* SignInManager.swift */; };
 		35568A102813D0BA00646B57 /* Kingfisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A0F2813D0BA00646B57 /* Kingfisher.swift */; };
 		35568A1228145DA000646B57 /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A1128145DA000646B57 /* GroupDetailViewController.swift */; };
 		35568A152814638300646B57 /* GroupDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A132814638300646B57 /* GroupDetailTableViewCell.swift */; };
@@ -132,6 +133,7 @@
 		355090EC28100E150007C0CE /* Reminders.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Reminders.storyboard; sourceTree = "<group>"; };
 		355090EE28100FA80007C0CE /* RemindersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersViewController.swift; sourceTree = "<group>"; };
 		355090F0281039110007C0CE /* AddReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReminderViewController.swift; sourceTree = "<group>"; };
+		355507292817900500FD2465 /* SignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInManager.swift; sourceTree = "<group>"; };
 		35568A0F2813D0BA00646B57 /* Kingfisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kingfisher.swift; sourceTree = "<group>"; };
 		35568A1128145DA000646B57 /* GroupDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailViewController.swift; sourceTree = "<group>"; };
 		35568A132814638300646B57 /* GroupDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailTableViewCell.swift; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 				3593E124281188D100F3A31C /* ReminderObject.swift */,
 				355090DE280DA5900007C0CE /* FireBaseCollection.swift */,
 				35568A2828157EBC00646B57 /* ButtonModel.swift */,
+				355507292817900500FD2465 /* SignInManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -588,6 +591,7 @@
 				350A336A2804192C00201E40 /* BaseTexFieldView + PickerView.swift in Sources */,
 				35568A182815282400646B57 /* PieChart.swift in Sources */,
 				35FF63E128066F8800508EAF /* GroupsView.swift in Sources */,
+				3555072A2817900500FD2465 /* SignInManager.swift in Sources */,
 				355090DF280DA5900007C0CE /* FireBaseCollection.swift in Sources */,
 				35FF63FA2809672100508EAF /* ItemTableViewCell.swift in Sources */,
 			);

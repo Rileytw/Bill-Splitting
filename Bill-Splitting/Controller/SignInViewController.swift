@@ -7,11 +7,13 @@
 
 import UIKit
 import AuthenticationServices
+import Firebase
+import FirebaseAuth
 
 class SignInViewController: UIViewController {
     
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
-    var user: UserData = UserData(appleId: nil, userId: "", userName: "", userEmail: "", group: nil, payment: nil)
+    var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil, appleId: nil, firebaseId: nil)
     
     var accountLabel = UILabel()
     var passwordLabel = UILabel()
@@ -19,6 +21,7 @@ class SignInViewController: UIViewController {
     var passwordTextField = UITextField()
     var logInButton = UIButton()
     var signUpButton = UIButton()
+    var thirdPartyId: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,6 +94,15 @@ class SignInViewController: UIViewController {
         logInButton.setTitleColor(.systemGray, for: .normal)
         logInButton.layer.cornerRadius = 8.0
         logInButton.layer.borderWidth = 1
+        logInButton.addTarget(self, action: #selector(pressLogin), for: .touchUpInside)
+    }
+    
+    @objc func pressLogin() {
+        SignInManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
+                                                password: passwordTextField.text ?? "") { [weak self] firebaseId in
+            self?.thirdPartyId = firebaseId
+            print("Login successed!")
+        }
     }
     
     func setSignUpButton() {

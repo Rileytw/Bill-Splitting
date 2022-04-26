@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class SignUpViewController: UIViewController {
 
@@ -102,13 +104,19 @@ class SignUpViewController: UIViewController {
         view.addSubview(signUpButton)
         signUpButton.translatesAutoresizingMaskIntoConstraints = false
         setSignUpconstraint()
-        signUpButton.setTitle("沒有帳號嗎？開始註冊", for: .normal)
+        signUpButton.setTitle("註冊", for: .normal)
         signUpButton.setTitleColor(.systemGray, for: .normal)
+        signUpButton.layer.cornerRadius = 8.0
+        signUpButton.layer.borderWidth = 1
         signUpButton.addTarget(self, action: #selector(pressSignUp), for: .touchUpInside)
     }
     
     @objc func pressSignUp() {
-
+        
+        SignInManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
+                                                password: passwordTextField.text ?? "") { userId in
+            print("===\(userId)")
+        }
     }
 
     func setPassordLabelConstraint() {
