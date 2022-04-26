@@ -18,6 +18,7 @@ class SignInViewController: UIViewController {
     var accountTextField = UITextField()
     var passwordTextField = UITextField()
     var logInButton = UIButton()
+    var signUpButton = UIButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +28,7 @@ class SignInViewController: UIViewController {
         setPasswordTextField()
         setLoginButton()
         setAppleSignInButton()
+        setSignUpButton()
     }
     
     func setAppleSignInButton() {
@@ -91,6 +93,28 @@ class SignInViewController: UIViewController {
         logInButton.layer.borderWidth = 1
     }
     
+    func setSignUpButton() {
+        view.addSubview(signUpButton)
+        signUpButton.translatesAutoresizingMaskIntoConstraints = false
+        setSignUpconstraint()
+        signUpButton.setTitle("沒有帳號嗎？開始註冊", for: .normal)
+        signUpButton.setTitleColor(.systemGray, for: .normal)
+        signUpButton.addTarget(self, action: #selector(pressSignUp), for: .touchUpInside)
+    }
+    
+    @objc func pressSignUp() {
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        guard let signUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignUpViewController.self)) as? SignUpViewController else { return }
+        
+        if #available(iOS 15.0, *) {
+            if let sheet = signUpViewController.sheetPresentationController {
+                sheet.detents = [.medium()]
+                sheet.preferredCornerRadius = 20
+            }
+        }
+        self.present(signUpViewController, animated: true, completion: nil)
+    }
+
     func setPassordLabelConstraint() {
         passwordLabel.topAnchor.constraint(equalTo: accountLabel.bottomAnchor, constant: 20).isActive = true
         passwordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
@@ -131,6 +155,13 @@ class SignInViewController: UIViewController {
         authorizationButton.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 20).isActive = true
         authorizationButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         authorizationButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    func setSignUpconstraint() {
+        signUpButton.topAnchor.constraint(equalTo: authorizationButton.bottomAnchor, constant: 20).isActive = true
+        signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
+        signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
 }
 
