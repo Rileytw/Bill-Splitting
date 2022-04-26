@@ -100,8 +100,27 @@ class SignInViewController: UIViewController {
     @objc func pressLogin() {
         SignInManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
+            
             self?.thirdPartyId = firebaseId
+            self?.fetchUserData()
             print("Login successed!")
+            self?.enterFistPage()
+        }
+    }
+    
+    func fetchUserData() {
+        guard let thirdPartyId = thirdPartyId else { return }
+        
+        UserManager.shared.fetchSignInUserData(appleId: nil, firebaseId: thirdPartyId) { [weak self] result in
+            switch result {
+            case .success(let user):
+                print(user)
+                self?.user.userName = user.userName
+                self?.user.userEmail = user.userEmail
+                self?.user.userId = user.userId
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
         }
     }
     
@@ -126,7 +145,13 @@ class SignInViewController: UIViewController {
         }
         self.present(signUpViewController, animated: true, completion: nil)
     }
-
+    
+    func enterFistPage() {
+        let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
+        view.window?.rootViewController = tabBarViewController
+        view.window?.makeKeyAndVisible()
+    }
+    
     func setPassordLabelConstraint() {
         passwordLabel.topAnchor.constraint(equalTo: accountLabel.bottomAnchor, constant: 20).isActive = true
         passwordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
@@ -194,9 +219,7 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         
         detectNewUser(appleId: String(credential.user))
         
-        let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
-        view.window?.rootViewController = tabBarViewController
-        view.window?.makeKeyAndVisible()
+        enterFistPage()
     }
     
     func detectNewUser(appleId: String) {
@@ -204,7 +227,7 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
         
         queue.async {
-
+            
             UserManager.shared.fetchAppleIdUser(appleId: appleId) { [weak self] result in
                 switch result {
                 case .success(let user):
@@ -226,20 +249,20 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         }
     }
     
-//    func fetchUserData() {
-//        UserManager.shared.fetchSignInUserData(appleId: appleId, firebaseId: nil) { [weak self] result in
-//            switch result {
-//            case .success(let user):
-//                print(user)
-//                self?.user.userName = user.userName
-//                self?.user.userEmail = user.userEmail
-//                self?.user.userId = user.userId
-//            case .failure(let error):
-//                print("Error decoding userData: \(error)")
-//            }
-//        }
-//    }
-//
+    //    func fetchUserData() {
+    //        UserManager.shared.fetchSignInUserData(appleId: appleId, firebaseId: nil) { [weak self] result in
+    //            switch result {
+    //            case .success(let user):
+    //                print(user)
+    //                self?.user.userName = user.userName
+    //                self?.user.userEmail = user.userEmail
+    //                self?.user.userId = user.userId
+    //            case .failure(let error):
+    //                print("Error decoding userData: \(error)")
+    //            }
+    //        }
+    //    }
+    //
     func addNewUserData() {
         UserManager.shared.addUserData(userData: user) { result in
             switch result {
