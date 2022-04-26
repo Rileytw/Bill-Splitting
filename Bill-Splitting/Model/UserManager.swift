@@ -118,4 +118,56 @@ class UserManager {
             }
         }
     }
+    
+    func fetchSignInUserData(appleId: String?, firebaseId: String?, completion: @escaping (Result<UserData, Error>) -> Void) {
+        if appleId != nil {
+            db.collection(FireBaseCollection.user.rawValue).whereField("appleId", isEqualTo: appleId).getDocuments() { (querySnapshot, error) in
+                
+                if let error = error {
+                    
+                    completion(.failure(error))
+                } else {
+                    
+                    var userData: UserData?
+                    
+                    for document in querySnapshot!.documents {
+                        
+                        do {
+                            if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                                userData = user
+                            }
+                        } catch {
+                            completion(.failure(error))
+                        }
+                    }
+                    guard let userData = userData else { return }
+                    completion(.success(userData))
+                }
+            }
+        } else if firebaseId != nil {
+            db.collection(FireBaseCollection.user.rawValue).whereField("firebaseId", isEqualTo: firebaseId).getDocuments() { (querySnapshot, error) in
+                
+                if let error = error {
+                    
+                    completion(.failure(error))
+                } else {
+                    
+                    var userData: UserData?
+                    
+                    for document in querySnapshot!.documents {
+                        
+                        do {
+                            if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                                userData = user
+                            }
+                        } catch {
+                            completion(.failure(error))
+                        }
+                    }
+                    guard let userData = userData else { return }
+                    completion(.success(userData))
+                }
+            }
+        }
+    }
 }
