@@ -20,7 +20,7 @@ class SignUpViewController: UIViewController {
     var validPasswiedLabel = UILabel()
     var validPasswordTextField = UITextField()
     var signUpButton = UIButton()
-    var userData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil, appleId: nil, firebaseId: nil)
+    var userData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -116,20 +116,20 @@ class SignUpViewController: UIViewController {
         
         SignInManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
-            print("===\(firebaseId)")
+//            print("===\(firebaseId)")
             self?.userData.userName = self?.userNameTextField.text ?? ""
             self?.userData.userEmail = self?.emailTextField.text ?? ""
-            self?.userData.firebaseId = firebaseId
+            self?.userData.userId = firebaseId
             self?.uploadUserData()
-            self?.dismiss(animated: true, completion: nil)
+            
         }
     }
     
     func uploadUserData() {
         UserManager.shared.addUserData(userData: userData) {  [weak self] result in
             switch result {
-            case .success(let documentId):
-                self?.userData.userId = documentId
+            case .success(_):
+                self?.dismiss(animated: true, completion: nil)
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }

@@ -9,11 +9,12 @@ import UIKit
 import AuthenticationServices
 import Firebase
 import FirebaseAuth
+import CryptoKit
 
 class SignInViewController: UIViewController {
     
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
-    var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil, appleId: nil, firebaseId: nil)
+    var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
     
     var accountLabel = UILabel()
     var passwordLabel = UILabel()
@@ -22,6 +23,9 @@ class SignInViewController: UIViewController {
     var logInButton = UIButton()
     var signUpButton = UIButton()
     var thirdPartyId: String?
+    var appleId: String?
+    
+    fileprivate var currentNonce: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +36,7 @@ class SignInViewController: UIViewController {
         setLoginButton()
         setAppleSignInButton()
         setSignUpButton()
+        checkAppleIDCredentialState(userID: appleId ?? "")
     }
     
     func setAppleSignInButton() {
@@ -43,9 +48,13 @@ class SignInViewController: UIViewController {
     }
     
     @objc func handleAuthorizationAppleIDButtonPress() {
+        let nonce = randomNonceString()
+        currentNonce = nonce
+        
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email]
+        request.nonce = sha256(nonce)
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
@@ -100,24 +109,25 @@ class SignInViewController: UIViewController {
     @objc func pressLogin() {
         SignInManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
-            
-            self?.thirdPartyId = firebaseId
-            self?.fetchUserData()
-            print("Login successed!")
-            self?.enterFistPage()
+            self?.fetchUserData(userId: firebaseId)
         }
     }
     
-    func fetchUserData() {
-        guard let thirdPartyId = thirdPartyId else { return }
+    func fetchUserData(userId: String) {
         
-        UserManager.shared.fetchSignInUserData(appleId: nil, firebaseId: thirdPartyId) { [weak self] result in
+        UserManager.shared.fetchSignInUserData(userId: userId) { [weak self] result in
             switch result {
             case .success(let user):
                 print(user)
-                self?.user.userName = user.userName
-                self?.user.userEmail = user.userEmail
-                self?.user.userId = user.userId
+                self?.user.userName = user?.userName ?? ""
+                self?.user.userEmail = user?.userEmail ?? ""
+                self?.user.userId = user?.userId ?? ""
+                print("Login successed!")
+                if  user == nil {
+                    self?.user.userId = userId
+                    self?.addNewUserData()
+                }
+                self?.enterFistPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -146,10 +156,60 @@ class SignInViewController: UIViewController {
         self.present(signUpViewController, animated: true, completion: nil)
     }
     
+    func checkAppleIDCredentialState(userID: String) {
+        ASAuthorizationAppleIDProvider().getCredentialState(forUserID: userID) { [weak self] credentialState, error in
+            switch credentialState {
+            case .authorized:
+                self?.fetchUserData(userId: userID)
+            default:
+                break
+            }
+        }
+    }
+    
     func enterFistPage() {
         let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
         view.window?.rootViewController = tabBarViewController
         view.window?.makeKeyAndVisible()
+    }
+    
+    private func randomNonceString(length: Int = 32) -> String {
+        precondition(length > 0)
+        let charset: Array<Character> = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remainingLength = length
+        
+        while(remainingLength > 0) {
+            let randoms: [UInt8] = (0 ..< 16).map { _ in
+                var random: UInt8 = 0
+                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
+                if (errorCode != errSecSuccess) {
+                    fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
+                }
+                return random
+            }
+            
+            randoms.forEach { random in
+                if (remainingLength == 0) {
+                    return
+                }
+                
+                if (random < charset.count) {
+                    result.append(charset[Int(random)])
+                    remainingLength -= 1
+                }
+            }
+        }
+        return result
+    }
+    
+    private func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        let hashString = hashedData.compactMap {
+            return String(format: "%02x", $0)
+        }.joined()
+        return hashString
     }
     
     func setPassordLabelConstraint() {
@@ -204,70 +264,45 @@ class SignInViewController: UIViewController {
 
 extension SignInViewController: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-            return
-        }
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
         
-        print("user: \(credential.user)")
-        print("fullName: \(String(describing: credential.fullName))")
-        print("Email: \(String(describing: credential.email))")
-        print("realUserStatus: \(String(describing: credential.realUserStatus))")
+        guard let nonce = currentNonce else { return }
         
+        guard let appleIDToken = credential.identityToken else { return }
+        guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { return}
+        let appCredential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
+        self.appleId = credential.user
         user.userName = "\(credential.fullName?.familyName ?? "")" + "\(credential.fullName?.givenName ?? "")"
         user.userEmail = "\(credential.email ?? "")"
-        user.appleId = String(credential.user)
+
+        firebaseSignInWithApple(credential: appCredential)
         
-        detectNewUser(appleId: String(credential.user))
-        
-        enterFistPage()
     }
     
-    func detectNewUser(appleId: String) {
-        let semaphore = DispatchSemaphore(value: 0)
-        let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
-        
-        queue.async {
-            
-            UserManager.shared.fetchAppleIdUser(appleId: appleId) { [weak self] result in
-                switch result {
-                case .success(let user):
-                    print(user)
-                    self?.user.userName = user.userName
-                    self?.user.userEmail = user.userEmail
-                    self?.user.userId = user.userId
-                    semaphore.signal()
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    semaphore.signal()
-                }
-            }
-            
-            semaphore.wait()
-            if self.user.userId == "" {
-                self.addNewUserData()
-            }
+    func firebaseSignInWithApple(credential: AuthCredential) {
+        Auth.auth().signIn(with: credential) { authResult, error in
+            guard error == nil else { return }
+            print("===\(authResult?.credential)")
+            self.getFirebaseUserInfo()
         }
     }
     
-    //    func fetchUserData() {
-    //        UserManager.shared.fetchSignInUserData(appleId: appleId, firebaseId: nil) { [weak self] result in
-    //            switch result {
-    //            case .success(let user):
-    //                print(user)
-    //                self?.user.userName = user.userName
-    //                self?.user.userEmail = user.userEmail
-    //                self?.user.userId = user.userId
-    //            case .failure(let error):
-    //                print("Error decoding userData: \(error)")
-    //            }
-    //        }
-    //    }
-    //
+    func getFirebaseUserInfo() {
+        let currentUser = Auth.auth().currentUser
+        guard let user = currentUser else { return }
+        let uid = user.uid
+        let email = user.email
+        self.user.userId = uid
+        print("=====\(uid)")
+        print("=====\(email)")
+        fetchUserData(userId: uid)
+    }
+    
     func addNewUserData() {
-        UserManager.shared.addUserData(userData: user) { result in
+        UserManager.shared.addUserData(userData: user) { [weak self] result in
             switch result {
             case .success(let id):
-                self.user.userId = id
+                self?.enterFistPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }

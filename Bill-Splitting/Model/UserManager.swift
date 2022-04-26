@@ -11,14 +11,11 @@ class UserManager {
     static var shared = UserManager()
     lazy var db = Firestore.firestore()
     
+    
     func addUserData(userData: UserData, completion: @escaping (Result<String, Error>) -> Void) {
-        let ref = db.collection(FireBaseCollection.user.rawValue).document()
-        
-        var userData = userData
-        userData.userId = "\(ref.documentID)"
         do {
-            try db.collection(FireBaseCollection.user.rawValue).document("\(ref.documentID)").setData(from: userData)
-            completion(.success("\(ref.documentID)"))
+            try db.collection(FireBaseCollection.user.rawValue).document(userData.userId).setData(from: userData)
+            completion(.success("update"))
         } catch {
             print(error)
             completion(.failure(error))
@@ -118,75 +115,21 @@ class UserManager {
             }
         }
     }
-    
-    func fetchAppleIdUser(appleId: String, completion: @escaping (Result<UserData, Error>) -> Void) {
-        db.collection(FireBaseCollection.user.rawValue).whereField("appleId", isEqualTo: appleId).getDocuments() { (querySnapshot, error) in
+
+    func fetchSignInUserData(userId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
             } else {
-                for document in querySnapshot!.documents {
-                    
-                    do {
-                        if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
-                            print("===\(user)")
-                            completion(.success(user))
-                        }
-                    } catch {
-                        completion(.failure(error))
+                do {
+                    if let user = try querySnapshot!.documents.first?.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                        completion(.success(user))
+                    } else {
+                        completion(.success(nil))
                     }
-                }
-            }
-        }
-    }
-    
-    func fetchSignInUserData(appleId: String?, firebaseId: String?, completion: @escaping (Result<UserData, Error>) -> Void) {
-        if appleId != nil {
-            db.collection(FireBaseCollection.user.rawValue).whereField("appleId", isEqualTo: appleId).getDocuments() { (querySnapshot, error) in
-                
-                if let error = error {
-                    
+                } catch {
                     completion(.failure(error))
-                } else {
-                    
-//                    var userData: UserData?
-                    
-                    for document in querySnapshot!.documents {
-                        
-                        do {
-                            if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
-//                                userData = user
-                                print("===\(user)")
-                                completion(.success(user))
-                            }
-                        } catch {
-                            completion(.failure(error))
-                        }
-                    }
-                }
-            }
-        } else if firebaseId != nil {
-            db.collection(FireBaseCollection.user.rawValue).whereField("firebaseId", isEqualTo: firebaseId).getDocuments() { (querySnapshot, error) in
-                
-                if let error = error {
-                    
-                    completion(.failure(error))
-                } else {
-                    
-                    var userData: UserData?
-                    
-                    for document in querySnapshot!.documents {
-                        
-                        do {
-                            if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
-                                userData = user
-                            }
-                        } catch {
-                            completion(.failure(error))
-                        }
-                    }
-                    guard let userData = userData else { return }
-                    completion(.success(userData))
                 }
             }
         }
