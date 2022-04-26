@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class ProfileViewController: UIViewController {
     
@@ -30,13 +32,26 @@ class ProfileViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: ProfileTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ProfileTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
-        
+    }
+    
+    func logOut() {
+        if Auth.auth().currentUser != nil {
+            do {
+                try Auth.auth().signOut()
+                let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+                let signInViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self))
+                view.window?.rootViewController = signInViewController
+                view.window?.makeKeyAndVisible()
+            } catch let error as NSError {
+                print(error.localizedDescription)
+            }
+        }
     }
 }
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -51,8 +66,10 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             profileCell.profileItemName.text = "設定付款方式"
         } else if indexPath.row == 1 {
             profileCell.profileItemName.text = "朋友列表"
-        } else {
+        } else  if indexPath.row == 2 {
             profileCell.profileItemName.text = "朋友邀請"
+        } else {
+            profileCell.profileItemName.text = "登出"
         }
         
         return profileCell
@@ -71,10 +88,12 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
             let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
             self.show(friendListViewController, sender: nil)
-        } else {
+        } else if indexPath.row == 2 {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
             let friendInvitationViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self))
             self.show(friendInvitationViewController, sender: nil)
+        } else {
+            logOut()
         }
     }
 }

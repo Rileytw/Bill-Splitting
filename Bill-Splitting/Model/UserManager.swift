@@ -11,6 +11,17 @@ class UserManager {
     static var shared = UserManager()
     lazy var db = Firestore.firestore()
     
+    
+    func addUserData(userData: UserData, completion: @escaping (Result<String, Error>) -> Void) {
+        do {
+            try db.collection(FireBaseCollection.user.rawValue).document(userData.userId).setData(from: userData)
+            completion(.success("update"))
+        } catch {
+            print(error)
+            completion(.failure(error))
+        }
+    }
+    
     func fetchFriendData(userId: String, completion: @escaping (Result<[Friend], Error>) -> Void) {
         db.collection(FireBaseCollection.user.rawValue).document(userId).collection("friend").getDocuments() { (querySnapshot, error) in
             
@@ -101,6 +112,25 @@ class UserManager {
             
             if let error = error {
                 print(error.localizedDescription)
+            }
+        }
+    }
+
+    func fetchSignInUserData(userId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                do {
+                    if let user = try querySnapshot!.documents.first?.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                        completion(.success(user))
+                    } else {
+                        completion(.success(nil))
+                    }
+                } catch {
+                    completion(.failure(error))
+                }
             }
         }
     }

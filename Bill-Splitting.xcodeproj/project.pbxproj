@@ -39,6 +39,7 @@
 		355090ED28100E150007C0CE /* Reminders.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 355090EC28100E150007C0CE /* Reminders.storyboard */; };
 		355090EF28100FA80007C0CE /* RemindersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090EE28100FA80007C0CE /* RemindersViewController.swift */; };
 		355090F1281039110007C0CE /* AddReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090F0281039110007C0CE /* AddReminderViewController.swift */; };
+		3555072A2817900500FD2465 /* SignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355507292817900500FD2465 /* SignInManager.swift */; };
 		35568A102813D0BA00646B57 /* Kingfisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A0F2813D0BA00646B57 /* Kingfisher.swift */; };
 		35568A1228145DA000646B57 /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A1128145DA000646B57 /* GroupDetailViewController.swift */; };
 		35568A152814638300646B57 /* GroupDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A132814638300646B57 /* GroupDetailTableViewCell.swift */; };
@@ -55,6 +56,8 @@
 		35568A2B28157F1800646B57 /* SelectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */; };
 		35568A2D28157F3800646B57 /* SelectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */; };
 		35568A2F2815A4E400646B57 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A2E2815A4E400646B57 /* UIColor+Extension.swift */; };
+		35568A322816D20E00646B57 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A312816D20E00646B57 /* SignInViewController.swift */; };
+		35568A342817800100646B57 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A332817800100646B57 /* SignUpViewController.swift */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -130,6 +133,7 @@
 		355090EC28100E150007C0CE /* Reminders.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Reminders.storyboard; sourceTree = "<group>"; };
 		355090EE28100FA80007C0CE /* RemindersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersViewController.swift; sourceTree = "<group>"; };
 		355090F0281039110007C0CE /* AddReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReminderViewController.swift; sourceTree = "<group>"; };
+		355507292817900500FD2465 /* SignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInManager.swift; sourceTree = "<group>"; };
 		35568A0F2813D0BA00646B57 /* Kingfisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kingfisher.swift; sourceTree = "<group>"; };
 		35568A1128145DA000646B57 /* GroupDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailViewController.swift; sourceTree = "<group>"; };
 		35568A132814638300646B57 /* GroupDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailTableViewCell.swift; sourceTree = "<group>"; };
@@ -146,6 +150,9 @@
 		35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewDataSource.swift; sourceTree = "<group>"; };
 		35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewDelegate.swift; sourceTree = "<group>"; };
 		35568A2E2815A4E400646B57 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		35568A302816D10400646B57 /* Bill-Splitting.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Bill-Splitting.entitlements"; sourceTree = "<group>"; };
+		35568A312816D20E00646B57 /* SignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
+		35568A332817800100646B57 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -236,6 +243,7 @@
 		350A33422800450000201E40 /* Bill-Splitting */ = {
 			isa = PBXGroup;
 			children = (
+				35568A302816D10400646B57 /* Bill-Splitting.entitlements */,
 				350A33432800450000201E40 /* AppDelegate.swift */,
 				350A33452800450000201E40 /* SceneDelegate.swift */,
 				350A33662803F45100201E40 /* Extension */,
@@ -281,6 +289,8 @@
 				355090F0281039110007C0CE /* AddReminderViewController.swift */,
 				35568A19281532C800646B57 /* ChartViewController.swift */,
 				35568A1D281561E200646B57 /* RecordsViewController.swift */,
+				35568A312816D20E00646B57 /* SignInViewController.swift */,
+				35568A332817800100646B57 /* SignUpViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -351,6 +361,7 @@
 				3593E124281188D100F3A31C /* ReminderObject.swift */,
 				355090DE280DA5900007C0CE /* FireBaseCollection.swift */,
 				35568A2828157EBC00646B57 /* ButtonModel.swift */,
+				355507292817900500FD2465 /* SignInManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -536,6 +547,7 @@
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
 				355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */,
 				355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */,
+				35568A342817800100646B57 /* SignUpViewController.swift in Sources */,
 				3593E12E2812C69800F3A31C /* ItemDetailTableViewCell.swift in Sources */,
 				3593E12B2812C44200F3A31C /* ItemDetailViewController.swift in Sources */,
 				35568A102813D0BA00646B57 /* Kingfisher.swift in Sources */,
@@ -550,6 +562,7 @@
 				350A33442800450000201E40 /* AppDelegate.swift in Sources */,
 				350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */,
 				35568A2B28157F1800646B57 /* SelectionViewDataSource.swift in Sources */,
+				35568A322816D20E00646B57 /* SignInViewController.swift in Sources */,
 				350A33732804638A00201E40 /* GroupManager.swift in Sources */,
 				35FF6407280C62C900508EAF /* SubscribeViewController.swift in Sources */,
 				355090E1280EB9360007C0CE /* PaymentViewController.swift in Sources */,
@@ -578,6 +591,7 @@
 				350A336A2804192C00201E40 /* BaseTexFieldView + PickerView.swift in Sources */,
 				35568A182815282400646B57 /* PieChart.swift in Sources */,
 				35FF63E128066F8800508EAF /* GroupsView.swift in Sources */,
+				3555072A2817900500FD2465 /* SignInManager.swift in Sources */,
 				355090DF280DA5900007C0CE /* FireBaseCollection.swift in Sources */,
 				35FF63FA2809672100508EAF /* ItemTableViewCell.swift in Sources */,
 			);
@@ -728,6 +742,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Bill-Splitting/Bill-Splitting.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 96D753D9GJ;
@@ -757,6 +772,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Bill-Splitting/Bill-Splitting.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 96D753D9GJ;
