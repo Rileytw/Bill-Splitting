@@ -13,6 +13,7 @@ class InviteFriendViewController: UIViewController {
     let searchButton = UIButton()
     let friendNameLabel = UILabel()
     let sendButton = UIButton()
+    var scanQRCode = UIButton()
     var friendData: UserData?
     var friendList: [Friend]?
     
@@ -22,6 +23,7 @@ class InviteFriendViewController: UIViewController {
         setTextField()
         setSearchButton()
         setSearchResult()
+        setScanQRCodeButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -89,6 +91,17 @@ class InviteFriendViewController: UIViewController {
         friendNameLabel.widthAnchor.constraint(equalTo: friendTextField.widthAnchor).isActive = true
         friendNameLabel.heightAnchor.constraint(equalTo: friendTextField.heightAnchor).isActive = true
     }
+    
+    func setScanQRCodeButton() {
+        view.addSubview(scanQRCode)
+        scanQRCode.translatesAutoresizingMaskIntoConstraints = false
+        setScanQRCodeButtonConstraint()
+        scanQRCode.setTitle("掃描 QRCode", for: .normal)
+        scanQRCode.setTitleColor(.systemGray, for: .normal)
+        scanQRCode.contentHorizontalAlignment = .left
+    }
+    
+   
     
     @objc func pressSearchButton() {
         FriendManager.shared.fetchFriendUserData(userEmail: friendTextField.text ?? "") { [weak self] result in
@@ -162,6 +175,13 @@ class InviteFriendViewController: UIViewController {
         self.friendData = nil
         sendButton.isHidden = true
         friendNameLabel.isHidden = true
+    }
+    
+    func setScanQRCodeButtonConstraint() {
+        scanQRCode.topAnchor.constraint(equalTo: friendTextField.bottomAnchor, constant: 10).isActive = true
+        scanQRCode.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        scanQRCode.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        scanQRCode.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
 }
 
