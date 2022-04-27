@@ -38,7 +38,7 @@ class RecordsViewController: UIViewController {
             case .success(let groups):
                 self?.groups = groups
                 // MARK: - Use group data to get item data from each group
-                self?.getBetweenGroupsItems()
+                self?.getGroupsItemExpense()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -46,20 +46,45 @@ class RecordsViewController: UIViewController {
     }
 
 // MARK: - Get items from all groups
-    func getBetweenGroupsItems() {
-        for groupData in self.groups {
-            ItemManager.shared.fetchGroupItemData(groupId: groupData.groupId) { [weak self] result in
-                switch result {
-                case .success(let items):
-                    self?.itemData += items
-                    
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    
+    
+//  Replace by getGroupsItemExpense()
+//    func getBetweenGroupsItems() {
+//        paidItem.removeAll()
+//        involvedItem.removeAll()
+//        for groupData in self.groups {
+//            ItemManager.shared.fetchGroupItemData(groupId: groupData.groupId) { [weak self] result in
+//                switch result {
+//                case .success(let items):
+//                    self?.itemData += items
+//                case .failure(let error):
+//                    print("Error decoding userData: \(error)")
+//
+//                }
+//                // MARK: - Get subCollection of item collection
+////                self?.getItemExpense()
+//            }
+//        }
+//    }
+    
+    func getGroupsItemExpense() {
+        let semaphore = DispatchSemaphore(value: 0)
+        let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
+        
+        queue.async {
+            for groupData in self.groups {
+                ItemManager.shared.fetchGroupItemData(groupId: groupData.groupId) { [weak self] result in
+                    switch result {
+                    case .success(let items):
+                        self?.itemData += items
+                        semaphore.signal()
+                    case .failure(let error):
+                        print("Error decoding userData: \(error)")
+                        
+                    }
                 }
-                // MARK: - Get subCollection of item collection
-                self?.getItemExpense()
+                semaphore.wait()
             }
+            self.getItemExpense()
         }
     }
     
@@ -68,39 +93,40 @@ class RecordsViewController: UIViewController {
         let group = DispatchGroup()
         
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        firstQueue.async(group: group) {
-            self.paidItem.removeAll()
+//            self.paidItem.removeAll()
             for item in self.itemData {
-                ItemManager.shared.fetchPaidItemsExpense(itemId: item.itemId) { [weak self] result in
-                    switch result {
-                    case .success(let items):
-                        self?.paidItem += items
-                    case .failure(let error):
-                        print("Error decoding userData: \(error)")
+                group.enter()
+                firstQueue.async(group: group) {
+                    ItemManager.shared.fetchPaidItemsExpense(itemId: item.itemId) { [weak self] result in
+                        switch result {
+                        case .success(let items):
+                            self?.paidItem += items
+                            group.leave()
+                        case .failure(let error):
+                            print("Error decoding userData: \(error)")
+                        }
                     }
+
                 }
             }
-            group.leave()
-        }
         
         let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        secondQueue.async(group: group) {
-            self.involvedItem.removeAll()
+//            self.involvedItem.removeAll()
             for index in 0..<self.itemData.count {
-                ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemData[index].itemId) { [weak self] result in
-                    switch result {
-                    case .success(let items):
-                        self?.involvedItem += items
-                    case .failure(let error):
-                        print("Error decoding userData: \(error)")
+                group.enter()
+                secondQueue.async(group: group) {
+                    ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemData[index].itemId) {
+                        [weak self] result in
+                        switch result {
+                        case .success(let items):
+                            self?.involvedItem += items
+                            group.leave()
+                        case .failure(let error):
+                            print("Error decoding userData: \(error)")
+                        }
                     }
                 }
             }
-            group.leave()
-        }
-        
         group.notify(queue: DispatchQueue.main) {
             print("====paid:\(self.paidItem)")
             print("====paidCount:\(self.paidItem.count)")
