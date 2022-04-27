@@ -99,9 +99,14 @@ class InviteFriendViewController: UIViewController {
         scanQRCode.setTitle("掃描 QRCode", for: .normal)
         scanQRCode.setTitleColor(.systemGray, for: .normal)
         scanQRCode.contentHorizontalAlignment = .left
+        scanQRCode.addTarget(self, action: #selector(pressScanQRCode), for: .touchUpInside)
     }
     
-   
+    @objc func pressScanQRCode() {
+        let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+        let scanQRCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ScanQRCodeViewController.self))
+        self.present(scanQRCodeViewController, animated: true, completion: nil)
+    }
     
     @objc func pressSearchButton() {
         FriendManager.shared.fetchFriendUserData(userEmail: friendTextField.text ?? "") { [weak self] result in

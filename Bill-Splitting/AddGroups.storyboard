@@ -58,6 +58,21 @@
             </objects>
             <point key="canvasLocation" x="28.985507246376812" y="65.625"/>
         </scene>
+        <!--ScanQR Code View Controller-->
+        <scene sceneID="cOg-yR-MHI">
+            <objects>
+                <viewController storyboardIdentifier="ScanQRCodeViewController" id="gSD-hD-2g2" customClass="ScanQRCodeViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cQ9-Td-KXL">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="1AK-km-Xap"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jSG-X8-Aot" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2699" y="66"/>
+        </scene>
     </scenes>
     <resources>
         <systemColor name="systemBackgroundColor">
