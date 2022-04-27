@@ -12,13 +12,12 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
     
     var captureSession = AVCaptureSession()
     var previewLayer = AVCaptureVideoPreviewLayer()
-    var qrCodeFrameView: UIView?
+    var qrCodeFrameView = UIView()
     var qrCodeContent: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         scanQRCode()
-        setQRCodeFrameView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -57,18 +56,9 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
 
     }
     
-    func setQRCodeFrameView() {
-        if let qrCodeFrameView = qrCodeFrameView {
-            qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
-            qrCodeFrameView.layer.borderWidth = 1
-            view.addSubview(qrCodeFrameView)
-            view.bringSubviewToFront(qrCodeFrameView)
-        }
-    }
-    
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         if metadataObjects.count == 0 {
-            qrCodeFrameView?.frame = CGRect.zero
+            qrCodeFrameView.frame = CGRect.zero
             return
         }
 
@@ -77,7 +67,11 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
 
         if metadataObj.type == AVMetadataObject.ObjectType.qr {
             if let barCodeObject = previewLayer.transformedMetadataObject(for: metadataObj) {
-                qrCodeFrameView?.frame = barCodeObject.bounds
+                qrCodeFrameView.frame = barCodeObject.bounds
+                qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
+                qrCodeFrameView.layer.borderWidth = 4
+                view.addSubview(qrCodeFrameView)
+                view.bringSubviewToFront(qrCodeFrameView)
             }
             
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
