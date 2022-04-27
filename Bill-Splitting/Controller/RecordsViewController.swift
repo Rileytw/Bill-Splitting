@@ -15,16 +15,19 @@ class RecordsViewController: UIViewController {
     var itemData: [ItemData] = []
     var paidItem: [ExpenseInfo] = []
     var involvedItem: [ExpenseInfo] = []
+    var personalPaid: [ExpenseInfo] = []
+    var personalInvolved: [ExpenseInfo] = []
+    var allPersonalItem: [ExpenseInfo] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        getGroupData()
+        getGroupData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 //        setAnimation()
-        getGroupData()
+//        getGroupData()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -93,7 +96,7 @@ class RecordsViewController: UIViewController {
         let group = DispatchGroup()
         
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-//            self.paidItem.removeAll()
+            self.paidItem.removeAll()
             for item in self.itemData {
                 group.enter()
                 firstQueue.async(group: group) {
@@ -111,7 +114,7 @@ class RecordsViewController: UIViewController {
             }
         
         let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-//            self.involvedItem.removeAll()
+            self.involvedItem.removeAll()
             for index in 0..<self.itemData.count {
                 group.enter()
                 secondQueue.async(group: group) {
@@ -128,11 +131,25 @@ class RecordsViewController: UIViewController {
                 }
             }
         group.notify(queue: DispatchQueue.main) {
-            print("====paid:\(self.paidItem)")
-            print("====paidCount:\(self.paidItem.count)")
-            print("====count:\(self.itemData.count)")
-            print("====involved:\(self.involvedItem)")
-            print("====involvedCount:\(self.involvedItem.count)")
+//            print("====paid:\(self.paidItem)")
+//            print("====paidCount:\(self.paidItem.count)")
+//            print("====count:\(self.itemData.count)")
+//            print("====involved:\(self.involvedItem)")
+//            print("====involvedCount:\(self.involvedItem.count)")
+//
+            self.personalPaid = self.paidItem.filter { $0.userId == userId }
+            self.personalInvolved = self.involvedItem.filter { $0.userId == userId }
+            
+            for index in 0..<self.personalInvolved.count {
+                self.personalInvolved[index].price = 0 - self.personalInvolved[index].price
+            }
+            print("====involved:\(self.personalInvolved)")
+            
+            self.allPersonalItem = self.personalPaid + self.personalInvolved
+            self.allPersonalItem.sort { $0.createdTime ?? 0 > $1.createdTime ?? 0 }
+            self.allPersonalItem = Array(self.allPersonalItem.prefix(5))
+            print("====all:\(self.allPersonalItem)")
+            print("====allCount:\(self.allPersonalItem.count)")
         }
     }
     
