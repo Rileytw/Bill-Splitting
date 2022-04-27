@@ -11,6 +11,7 @@ import Lottie
 class RecordsViewController: UIViewController {
     
     private var animationView = AnimationView()
+    var tableView = UITableView()
     var groups: [GroupData] = []
     var itemData: [ItemData] = []
     var paidItem: [ExpenseInfo] = []
@@ -22,6 +23,7 @@ class RecordsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         getGroupData()
+        setTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -150,6 +152,7 @@ class RecordsViewController: UIViewController {
             self.allPersonalItem = Array(self.allPersonalItem.prefix(5))
             print("====all:\(self.allPersonalItem)")
             print("====allCount:\(self.allPersonalItem.count)")
+            self.tableView.reloadData()
         }
     }
     
@@ -164,4 +167,61 @@ class RecordsViewController: UIViewController {
         animationView.play()
     }
     
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        tableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+    }
+}
+
+extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return allPersonalItem.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: ItemTableViewCell.self),
+            for: indexPath
+        )
+        
+        guard let itemsCell = cell as? ItemTableViewCell else { return cell }
+        
+        let item = allPersonalItem[indexPath.row]
+        
+        let timeStamp = item.createdTime
+        let timeInterval = TimeInterval(timeStamp ?? 0)
+        let date = Date(timeIntervalSince1970: timeInterval)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
+        let time = dateFormatter.string(from: date)
+        
+        var itemName: String?
+        for items in itemData where items.itemId == item.itemId {
+            itemName = items.itemName
+        }
+        
+        if item.price > 0 {
+            itemsCell.createItemCell(time: time,
+                                     name: itemName ?? "",
+                                     description: PaidDescription.paid,
+                                     price: "\(item.price)")
+            itemsCell.paidDescription.textColor = .systemGreen
+        } else {
+            itemsCell.createItemCell(time: time,
+                                     name: itemName ?? "",
+                                     description: PaidDescription.involved,
+                                     price: "\(abs(item.price))")
+            itemsCell.paidDescription.textColor = .systemRed
+        }
+      
+        return itemsCell
+    }
 }
