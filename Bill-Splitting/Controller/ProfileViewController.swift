@@ -51,7 +51,7 @@ class ProfileViewController: UIViewController {
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return 5
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -63,10 +63,12 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         guard let profileCell = cell as? ProfileTableViewCell else { return cell }
         
         if indexPath.row == 0 {
-            profileCell.profileItemName.text = "設定付款方式"
+            profileCell.profileItemName.text = "QRCode"
         } else if indexPath.row == 1 {
+            profileCell.profileItemName.text = "設定付款方式"
+        } else if indexPath.row == 2 {
             profileCell.profileItemName.text = "朋友列表"
-        } else  if indexPath.row == 2 {
+        } else  if indexPath.row == 3 {
             profileCell.profileItemName.text = "朋友邀請"
         } else {
             profileCell.profileItemName.text = "登出"
@@ -82,13 +84,17 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+            let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
+            self.show(qrCodeViewController, sender: nil)
+        } else if indexPath.row == 1 {
+            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
             let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
             self.show(paymentViewController, sender: nil)
-        } else if indexPath.row == 1 {
+        } else if indexPath.row == 2 {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
             let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
             self.show(friendListViewController, sender: nil)
-        } else if indexPath.row == 2 {
+        } else if indexPath.row == 3 {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
             let friendInvitationViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self))
             self.show(friendInvitationViewController, sender: nil)
