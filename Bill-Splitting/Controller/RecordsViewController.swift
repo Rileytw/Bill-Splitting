@@ -51,26 +51,6 @@ class RecordsViewController: UIViewController {
     }
 
 // MARK: - Get items from all groups
-    
-//  Replace by getGroupsItemExpense()
-//    func getBetweenGroupsItems() {
-//        paidItem.removeAll()
-//        involvedItem.removeAll()
-//        for groupData in self.groups {
-//            ItemManager.shared.fetchGroupItemData(groupId: groupData.groupId) { [weak self] result in
-//                switch result {
-//                case .success(let items):
-//                    self?.itemData += items
-//                case .failure(let error):
-//                    print("Error decoding userData: \(error)")
-//
-//                }
-//                // MARK: - Get subCollection of item collection
-////                self?.getItemExpense()
-//            }
-//        }
-//    }
-    
     func getGroupsItemExpense() {
         let semaphore = DispatchSemaphore(value: 0)
         let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
@@ -133,12 +113,6 @@ class RecordsViewController: UIViewController {
                 }
             }
         group.notify(queue: DispatchQueue.main) {
-//            print("====paid:\(self.paidItem)")
-//            print("====paidCount:\(self.paidItem.count)")
-//            print("====count:\(self.itemData.count)")
-//            print("====involved:\(self.involvedItem)")
-//            print("====involvedCount:\(self.involvedItem.count)")
-//
             self.personalPaid = self.paidItem.filter { $0.userId == userId }
             self.personalInvolved = self.involvedItem.filter { $0.userId == userId }
             
@@ -149,9 +123,9 @@ class RecordsViewController: UIViewController {
             
             self.allPersonalItem = self.personalPaid + self.personalInvolved
             self.allPersonalItem.sort { $0.createdTime ?? 0 > $1.createdTime ?? 0 }
-            self.allPersonalItem = Array(self.allPersonalItem.prefix(5))
-            print("====all:\(self.allPersonalItem)")
-            print("====allCount:\(self.allPersonalItem.count)")
+            self.allPersonalItem = Array(self.allPersonalItem.prefix(10))
+//            print("====all:\(self.allPersonalItem)")
+//            print("====allCount:\(self.allPersonalItem.count)")
             self.tableView.reloadData()
         }
     }
@@ -223,5 +197,21 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         }
       
         return itemsCell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let multipleUsersGroupViewController =
+                storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
+        
+        var personalItem: ItemData?
+        var groupData = [GroupData]()
+        for items in itemData where items.itemId == allPersonalItem[indexPath.row].itemId {
+            personalItem = items
+        }
+        
+        groupData = groups.filter { $0.groupId == personalItem?.groupId }
+//        print("peronalitem:\(personalItem)")
+        multipleUsersGroupViewController.groupData = groupData[0]
+        self.show(multipleUsersGroupViewController, sender: nil)
     }
 }
