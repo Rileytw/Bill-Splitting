@@ -17,6 +17,16 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        scanQRCode()
+        setQRCodeFrameView()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        captureSession.stopRunning()
+    }
+    
+    func scanQRCode() {
         
         guard let captureDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
             print("Failed to get the camera device")
@@ -38,17 +48,13 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
             previewLayer.frame = view.layer.bounds
             view.layer.addSublayer(previewLayer)
             captureSession.startRunning()
-            setQRCodeFrameView()
+            
         } catch {
   
             print(error)
             return
         }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        captureSession.stopRunning()
+
     }
     
     func setQRCodeFrameView() {
@@ -70,12 +76,16 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
         guard let metadataObj = metadataObj else { return }
 
         if metadataObj.type == AVMetadataObject.ObjectType.qr {
-            let barCodeObject = previewLayer.transformedMetadataObject(for: metadataObj)
-            qrCodeFrameView?.frame = barCodeObject!.bounds
+            if let barCodeObject = previewLayer.transformedMetadataObject(for: metadataObj) {
+                qrCodeFrameView?.frame = barCodeObject.bounds
+            }
+            
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
 
             if metadataObj.stringValue != nil {
                 qrCodeContent = metadataObj.stringValue
                 print("\(qrCodeContent)")
+                self.dismiss(animated: true, completion: nil)
             }
         }
     }
