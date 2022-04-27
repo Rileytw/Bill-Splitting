@@ -104,12 +104,20 @@ class InviteFriendViewController: UIViewController {
     
     @objc func pressScanQRCode() {
         let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
-        let scanQRCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ScanQRCodeViewController.self))
+        guard let scanQRCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ScanQRCodeViewController.self)) as? ScanQRCodeViewController else { return }
+        
+        scanQRCodeViewController.qrCodeContent = { [weak self] qrCode in
+            self?.searchFriend(userEmail: qrCode)
+        }
         self.present(scanQRCodeViewController, animated: true, completion: nil)
     }
     
     @objc func pressSearchButton() {
-        FriendManager.shared.fetchFriendUserData(userEmail: friendTextField.text ?? "") { [weak self] result in
+        searchFriend(userEmail: friendTextField.text ?? "")
+    }
+    
+    func searchFriend(userEmail: String) {
+        FriendManager.shared.fetchFriendUserData(userEmail: userEmail) { [weak self] result in
             switch result {
             case .success(let user):
                 self?.friendData = user

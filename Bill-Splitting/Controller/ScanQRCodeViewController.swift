@@ -13,7 +13,8 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
     var captureSession = AVCaptureSession()
     var previewLayer = AVCaptureVideoPreviewLayer()
     var qrCodeFrameView = UIView()
-    var qrCodeContent: String?
+    typealias QRCodeData = (String) -> Void
+    var qrCodeContent: QRCodeData?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,8 +78,8 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
 
             if metadataObj.stringValue != nil {
-                qrCodeContent = metadataObj.stringValue
-                print("\(qrCodeContent)")
+                qrCodeContent?(metadataObj.stringValue ?? "")
+//                print("\(qrCodeContent)")
                 self.dismiss(animated: true, completion: nil)
             }
         }
