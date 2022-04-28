@@ -13,6 +13,7 @@ class InviteFriendViewController: UIViewController {
     let searchButton = UIButton()
     let friendNameLabel = UILabel()
     let sendButton = UIButton()
+    var scanQRCode = UIButton()
     var friendData: UserData?
     var friendList: [Friend]?
     
@@ -22,6 +23,7 @@ class InviteFriendViewController: UIViewController {
         setTextField()
         setSearchButton()
         setSearchResult()
+        setScanQRCodeButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -90,8 +92,32 @@ class InviteFriendViewController: UIViewController {
         friendNameLabel.heightAnchor.constraint(equalTo: friendTextField.heightAnchor).isActive = true
     }
     
+    func setScanQRCodeButton() {
+        view.addSubview(scanQRCode)
+        scanQRCode.translatesAutoresizingMaskIntoConstraints = false
+        setScanQRCodeButtonConstraint()
+        scanQRCode.setTitle("掃描 QRCode", for: .normal)
+        scanQRCode.setTitleColor(.systemGray, for: .normal)
+        scanQRCode.contentHorizontalAlignment = .left
+        scanQRCode.addTarget(self, action: #selector(pressScanQRCode), for: .touchUpInside)
+    }
+    
+    @objc func pressScanQRCode() {
+        let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+        guard let scanQRCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ScanQRCodeViewController.self)) as? ScanQRCodeViewController else { return }
+        
+        scanQRCodeViewController.qrCodeContent = { [weak self] qrCode in
+            self?.searchFriend(userEmail: qrCode)
+        }
+        self.present(scanQRCodeViewController, animated: true, completion: nil)
+    }
+    
     @objc func pressSearchButton() {
-        FriendManager.shared.fetchFriendUserData(userEmail: friendTextField.text ?? "") { [weak self] result in
+        searchFriend(userEmail: friendTextField.text ?? "")
+    }
+    
+    func searchFriend(userEmail: String) {
+        FriendManager.shared.fetchFriendUserData(userEmail: userEmail) { [weak self] result in
             switch result {
             case .success(let user):
                 self?.friendData = user
@@ -162,6 +188,13 @@ class InviteFriendViewController: UIViewController {
         self.friendData = nil
         sendButton.isHidden = true
         friendNameLabel.isHidden = true
+    }
+    
+    func setScanQRCodeButtonConstraint() {
+        scanQRCode.topAnchor.constraint(equalTo: friendTextField.bottomAnchor, constant: 10).isActive = true
+        scanQRCode.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        scanQRCode.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        scanQRCode.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
 }
 

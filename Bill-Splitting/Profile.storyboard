@@ -70,6 +70,21 @@
             </objects>
             <point key="canvasLocation" x="2074" y="66"/>
         </scene>
+        <!--Code View Controller-->
+        <scene sceneID="zrl-j0-25l">
+            <objects>
+                <viewController storyboardIdentifier="QRCodeViewController" id="pIC-et-M6b" customClass="QRCodeViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="H5d-WT-KgB">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="oJi-qa-aSs"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OYP-Sv-AKc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3335" y="66"/>
+        </scene>
         <!--Friend Invitation View Controller-->
         <scene sceneID="hCW-Q7-Orr">
             <objects>
