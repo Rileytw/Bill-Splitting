@@ -126,14 +126,14 @@ class SignInViewController: UIViewController {
             switch result {
             case .success(let user):
                 print(user)
-                self?.user.userName = user?.userName ?? ""
-                self?.user.userEmail = user?.userEmail ?? ""
-                self?.user.userId = user?.userId ?? ""
-                print("Login successed!")
                 if user == nil {
                     self?.user.userId = userId
                     self?.addNewUserData()
                 }
+                self?.user.userName = user?.userName ?? ""
+                self?.user.userEmail = user?.userEmail ?? ""
+                self?.user.userId = user?.userId ?? ""
+                print("Login successed!")
                 self?.enterFistPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
