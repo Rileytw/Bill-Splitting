@@ -14,6 +14,10 @@ class ProfileViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var currentUser: UserData?
     let tableView = UITableView()
+    var profileView = UIView()
+    let userName = UILabel()
+    let userEmail = UILabel()
+    let editButton = UIButton()
     
     var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
     
@@ -21,6 +25,7 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         
         getUserData()
+        setProfileView()
         setTableView()
         
         navigationItem.title = "個人頁面"
@@ -31,6 +36,8 @@ class ProfileViewController: UIViewController {
             switch result {
             case .success(let user):
                 self?.currentUser = user
+                self?.userName.text = user?.userName
+                self?.userEmail.text = user?.userEmail
             case.failure(let error):
                 print(error.localizedDescription)
             }
@@ -40,7 +47,7 @@ class ProfileViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        tableView.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -48,6 +55,65 @@ class ProfileViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: ProfileTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ProfileTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    func setProfileView() {
+        self.view.addSubview(profileView)
+        profileView.translatesAutoresizingMaskIntoConstraints = false
+        setProfileViewConstraint()
+        
+        profileView.addSubview(userName)
+        userName.translatesAutoresizingMaskIntoConstraints = false
+        userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
+        userName.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
+        userName.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
+        userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        userName.tintColor = .systemGray
+        
+        profileView.addSubview(userEmail)
+        userEmail.translatesAutoresizingMaskIntoConstraints = false
+        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 10).isActive = true
+        userEmail.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
+        userEmail.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
+        userEmail.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        userEmail.tintColor = .systemGray
+        
+        profileView.addSubview(editButton)
+        editButton.translatesAutoresizingMaskIntoConstraints = false
+        editButton.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
+        editButton.trailingAnchor.constraint(equalTo: profileView.trailingAnchor, constant: -20).isActive = true
+        editButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        editButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
+        editButton.tintColor = .systemGray
+        editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
+    }
+    
+    @objc func pressEdit() {
+        let alertController = UIAlertController(title: "修改名稱", message: "請輸入使用者名稱", preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.placeholder = "新名稱"
+        }
+        let renameAlert = UIAlertAction(title: "修改", style: .default) { [weak self] _ in
+            self?.updateUserName(newUserName: alertController.textFields?[0].text ?? "")
+//            print(alertController.textFields?[0].text)
+        }
+        let cancelAlert = UIAlertAction(title: "取消", style: .default, handler: nil)
+        alertController.addAction(renameAlert)
+        alertController.addAction(cancelAlert)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func updateUserName(newUserName: String) {
+        UserManager.shared.updateUserName(userId: currentUserId, userName: newUserName) { [weak self] result in
+            switch result {
+            case .success():
+                print("userName update successfully")
+                self?.getUserData()
+            case .failure(_):
+                print("userName update failed")
+            }
+        }
     }
     
     func logOut() {
@@ -101,6 +167,13 @@ class ProfileViewController: UIViewController {
         
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
+    }
+    
+    func setProfileViewConstraint() {
+        profileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        profileView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
 }
 

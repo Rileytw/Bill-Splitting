@@ -144,4 +144,18 @@ class UserManager {
             }
         }
     }
+    
+    func updateUserName(userId: String, userName: String, completion: @escaping (Result<(), Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).document(userId).updateData([
+            "userName": userName
+        ]) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
+            }
+        }
+    }
 }
