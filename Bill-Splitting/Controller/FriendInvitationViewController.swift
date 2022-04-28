@@ -10,6 +10,7 @@ import UIKit
 class FriendInvitationViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
+    var currentUserName: String?
     let tableView = UITableView()
     
     var senderId: [String] = []
@@ -112,7 +113,7 @@ extension FriendInvitationViewController: TableViewCellDelegate {
         
         FriendManager.shared.receiverToFriends(userId: currentUserId,
                                                senderId: senderId[indexPath.row],
-                                               userName: AccountManager.shared.currentUser.currentUserId, // use id temporary
+                                               userName: currentUserName ?? "",
                                                userEmail: AccountManager.shared.currentUser.currentUserEmail)
         
         self.invitationUsers.remove(at: indexPath.row)

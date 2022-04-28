@@ -10,7 +10,8 @@ import UIKit
 class SettleUpViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
-    let currentUserName = AccountManager.shared.currentUser.currentUserId // Use id temporary
+    var currentUserName: String?
+    var creator: UserData?
     var groupData: GroupData?
     var memberExpense: [MemberExpense] = []
     var userData: [UserData] = []
@@ -22,6 +23,8 @@ class SettleUpViewController: UIViewController {
         super.viewDidLoad()
 
         navigationItem.title = "結算群組帳務"
+        getCurrentUserName()
+        getCreatorData()
         setTableView()
         removeCreatorData()
     }
@@ -55,6 +58,24 @@ class SettleUpViewController: UIViewController {
             memberExpense = memberExpense.filter { $0.userId != currentUserId }
         }
     }
+    
+    func getCurrentUserName() {
+        UserManager.shared.fetchSignInUserData(userId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let user):
+                self?.currentUserName = user?.userName
+                self?.tableView.reloadData()
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
+    }
+    
+    func getCreatorData() {
+        for member in userData where member.userId == groupData?.creator {
+            creator = member
+        }
+    }
 }
 
 extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
@@ -81,23 +102,23 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         if groupData?.creator == currentUserId {
             if memberExpense.allExpense > 0 {
                 settleUpCell.price.text = " $ \(memberExpense.allExpense)"
-                settleUpCell.payerName.text = "\(currentUserName)"
+                settleUpCell.payerName.text = "\(currentUserName ?? "")"
                 settleUpCell.creditorName.text = "\(memberData[0].userName)"
                 
             } else {
                 settleUpCell.price.text = " $ \(abs(memberExpense.allExpense))"
-                settleUpCell.creditorName.text = "\(currentUserName)"
+                settleUpCell.creditorName.text = "\(currentUserName ?? "")"
                 settleUpCell.payerName.text = "\(memberData[0].userName)"
             }
         } else {
-            if memberExpense.allExpense < 0 {
-                settleUpCell.creditorName.text = "\(currentUserName)"
-                settleUpCell.payerName.text = "\(memberData[0].userName)"
-                settleUpCell.price.text = " $ \(expense)"
-            } else {
+            if expense < 0 {
+                settleUpCell.payerName.text = "\(currentUserName ?? "")"
+                settleUpCell.creditorName.text = "\(creator?.userName ?? "")"
                 settleUpCell.price.text = " $ \(abs(expense))"
-                settleUpCell.payerName.text = "\(currentUserName)"
-                settleUpCell.creditorName.text = "\(memberData[0].userName)"
+            } else {
+                settleUpCell.price.text = " $ \(expense)"
+                settleUpCell.creditorName.text = "\(currentUserName ?? "")"
+                settleUpCell.payerName.text = "\(creator?.userName ?? "")"
             }
         }
         
@@ -112,11 +133,21 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         let memberExpense = memberExpense[indexPath.row]
         let memberData = userData.filter { $0.userId == memberExpense.userId }
         let userExpense = self.memberExpense.filter { $0.userId == currentUserId}
-        specificSettleUpViewController.userData = memberData[0]
-        specificSettleUpViewController.memberExpense = memberExpense
-        specificSettleUpViewController.groupId = groupData?.groupId
-        specificSettleUpViewController.groupData = groupData
-        specificSettleUpViewController.userExpense = userExpense
+        if groupData?.creator == currentUserId {
+            specificSettleUpViewController.userData = memberData[0]
+            specificSettleUpViewController.memberExpense = memberExpense
+            specificSettleUpViewController.groupId = groupData?.groupId
+            specificSettleUpViewController.groupData = groupData
+            specificSettleUpViewController.userExpense = userExpense
+        } else {
+            // MARK: - Bugs of not creator user
+            specificSettleUpViewController.userData = creator
+            specificSettleUpViewController.memberExpense = memberExpense
+            specificSettleUpViewController.groupId = groupData?.groupId
+            specificSettleUpViewController.groupData = groupData
+            specificSettleUpViewController.userExpense = userExpense
+        }
+    
         self.show(specificSettleUpViewController, sender: nil)
     }
 }

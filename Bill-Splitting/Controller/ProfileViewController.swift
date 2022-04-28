@@ -12,6 +12,7 @@ import FirebaseAuth
 class ProfileViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
+    var currentUser: UserData?
     let tableView = UITableView()
     
     var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
@@ -19,9 +20,21 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        getUserData()
         setTableView()
         
         navigationItem.title = "個人頁面"
+    }
+    
+    func getUserData() {
+        UserManager.shared.fetchSignInUserData(userId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let user):
+                self?.currentUser = user
+            case.failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func setTableView() {
@@ -140,8 +153,10 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             self.show(friendListViewController, sender: nil)
         } else if indexPath.row == 3 {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            let friendInvitationViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self))
-            self.show(friendInvitationViewController, sender: nil)
+            guard let friendInvitationVC = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self)) as? FriendInvitationViewController
+            else { return }
+            friendInvitationVC.currentUserName = currentUser?.userName
+            self.show(friendInvitationVC, sender: nil)
         } else if indexPath.row == 4 {
             logOut()
         } else {

@@ -324,11 +324,7 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
             return groupPicker.textField.text = groupPickerData[row]
         } else {
             reminderData.memberId = member[row].userId
-            if groups[row].creator != currentUserId {
-                return userPicker.textField.text = AccountManager.shared.currentUser.currentUserId // Use id temporary
-            } else {
-                return userPicker.textField.text = member[row].userName
-            }
+            return userPicker.textField.text = member[row].userName
         }
     }
 }

@@ -240,6 +240,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                     semaphore.signal()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    semaphore.signal()
                 }
             }
             
@@ -261,7 +262,7 @@ class MultipleUsersGrouplViewController: UIViewController {
             switch result {
             case .success(let expense):
                 self?.memberExpense = expense
-                let personalExpense = expense.filter { $0.userId == self?.currentUserId }
+                let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
                 self?.expense = personalExpense[0].allExpense
             case .failure(let error):
                 print("Error decoding userData: \(error)")
