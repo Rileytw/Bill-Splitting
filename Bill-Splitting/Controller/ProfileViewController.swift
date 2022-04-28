@@ -13,6 +13,34 @@ class ProfileViewController: UIViewController {
     
     let tableView = UITableView()
     
+    enum ProfileList {
+        case qrCode
+        case payment
+        case friendList
+        case friendInvitation
+        case logOut
+        case deleteAccount
+        
+        var content: String {
+            switch self {
+            case .qrCode:
+                return "QRCode"
+            case .payment:
+                return "設定付款方式"
+            case .friendList:
+                return "好友列表"
+            case .friendInvitation:
+                return "交友邀請"
+            case .logOut:
+                return "登出"
+            case .deleteAccount:
+                return "刪除帳號"
+            }
+        }
+    }
+    
+    var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -47,11 +75,23 @@ class ProfileViewController: UIViewController {
             }
         }
     }
+    
+    func deletAccount() {
+        UserManager.shared.deleteUserData(userId: userId) { result in
+            switch result {
+            case .success():
+                print("")
+            case .failure(let error):
+                print("Error updating document: \(error)")
+                
+            }
+        }
+    }
 }
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return profileList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -63,15 +103,17 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         guard let profileCell = cell as? ProfileTableViewCell else { return cell }
         
         if indexPath.row == 0 {
-            profileCell.profileItemName.text = "QRCode"
+            profileCell.profileItemName.text = ProfileList.qrCode.content
         } else if indexPath.row == 1 {
-            profileCell.profileItemName.text = "設定付款方式"
+            profileCell.profileItemName.text = ProfileList.payment.content
         } else if indexPath.row == 2 {
-            profileCell.profileItemName.text = "朋友列表"
+            profileCell.profileItemName.text = ProfileList.friendList.content
         } else  if indexPath.row == 3 {
-            profileCell.profileItemName.text = "朋友邀請"
+            profileCell.profileItemName.text = ProfileList.friendInvitation.content
+        } else if indexPath.row == 4 {
+            profileCell.profileItemName.text = ProfileList.logOut.content
         } else {
-            profileCell.profileItemName.text = "登出"
+            profileCell.profileItemName.text = ProfileList.deleteAccount.content
         }
         
         return profileCell
@@ -98,7 +140,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
             let friendInvitationViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self))
             self.show(friendInvitationViewController, sender: nil)
-        } else {
+        } else if indexPath.row == 4 {
             logOut()
         }
     }

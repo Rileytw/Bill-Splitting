@@ -3,9 +3,9 @@ import FirebaseFirestoreSwift
 import FirebaseFirestore
 
 // MARK: Fake data for testing
-let userId = "07MPW5R5bYtYQWuDdUXb"
+let userId = "S6ujGuvd6rM2fzKzcsYsCMjFY2e2"
 let userEmail = "riley@gmail.com"
-let userName = "Riley"
+let userName = "Testuser1"
 
 class UserManager {
     static var shared = UserManager()
@@ -131,6 +131,21 @@ class UserManager {
                 } catch {
                     completion(.failure(error))
                 }
+            }
+        }
+    }
+    
+    func deleteUserData(userId: String, completion: @escaping (Result<(), Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).document(userId).updateData([
+            "userEmail": FieldValue.delete(),
+            "payment": FieldValue.delete(),
+        ]) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
             }
         }
     }
