@@ -65,7 +65,7 @@ class ProfileViewController: UIViewController {
     }
     
     func deletAccount() {
-        UserManager.shared.deleteUserData(userId: currentUserId) { result in
+        UserManager.shared.deleteUserData(userId: currentUserId, userName: currentUser?.userName ?? "") { result in
             switch result {
             case .success():
                 AccountManager.shared.deleteAccount() { [weak self] result in

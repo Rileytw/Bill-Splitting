@@ -129,10 +129,11 @@ class UserManager {
         }
     }
     
-    func deleteUserData(userId: String, completion: @escaping (Result<(), Error>) -> Void) {
+    func deleteUserData(userId: String, userName: String, completion: @escaping (Result<(), Error>) -> Void) {
         db.collection(FireBaseCollection.user.rawValue).document(userId).updateData([
-            "userEmail": FieldValue.delete(),
+            "userEmail": "",
             "payment": FieldValue.delete(),
+            "userName": userName + "(帳號已刪除)"
         ]) { error in
             if let error = error {
                 print("Error updating document: \(error)")
