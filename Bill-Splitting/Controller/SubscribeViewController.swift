@@ -9,6 +9,7 @@ import UIKit
 
 class SubscribeViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var startTimeDatePicker = UIDatePicker()
     var endTimeDatePicker = UIDatePicker()
     
@@ -212,7 +213,7 @@ class SubscribeViewController: UIViewController {
         guard let cycleNumber = cycleNumber else { return }
         SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
                                                        itemName: addItemView.itemNameTextField.text ?? "",
-                                                       paidUser: userId,
+                                                       paidUser: currentUserId,
                                                        paidPrice: paidPrice ?? 0,
                                                        startedTime: startTimeStamp ?? nowTimeStamp,
                                                        endedTime: endTimeStamp ?? nowTimeStamp,

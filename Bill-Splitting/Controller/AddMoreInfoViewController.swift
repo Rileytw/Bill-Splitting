@@ -10,6 +10,7 @@ import Lottie
 
 class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var photoImageView = UIImageView()
     var addPhotoButton = UIButton()
     var completeButton = UIButton()
@@ -155,7 +156,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     func getImageURL() {
         guard let selectedImage = selectedImage else { return }
-        let fileName = "\(userId)" + "\(Date())"
+        let fileName = "\(currentUserId)" + "\(Date())"
         ImageManager.shared.uploadImageToStorage(image: selectedImage, fileName: fileName) { [weak self] urlString in
             self?.urlData?(urlString)
             self?.dismiss(animated: true, completion: nil)

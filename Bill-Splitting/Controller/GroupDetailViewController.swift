@@ -9,6 +9,7 @@ import UIKit
 
 class GroupDetailViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var tableView = UITableView()
     var editButton = UIButton()
     var groupData: GroupData?
@@ -49,7 +50,7 @@ class GroupDetailViewController: UIViewController {
         editButton.contentHorizontalAlignment = .right
         editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
         
-        if groupData?.creator != userId {
+        if groupData?.creator != currentUserId {
             editButton.isHidden = true
         }
     }

@@ -2,15 +2,9 @@ import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-// MARK: Fake data for testing
-let userId = "07MPW5R5bYtYQWuDdUXb"
-let userEmail = "riley@gmail.com"
-let userName = "Riley"
-
 class UserManager {
     static var shared = UserManager()
     lazy var db = Firestore.firestore()
-    
     
     func addUserData(userData: UserData, completion: @escaping (Result<String, Error>) -> Void) {
         do {
@@ -105,7 +99,7 @@ class UserManager {
     }
     
     func addPaymentData(paymentName: String?, account: String?, link: String?) {
-        let ref = db.collection(FireBaseCollection.user.rawValue).document(userId)
+        let ref = db.collection(FireBaseCollection.user.rawValue).document(AccountManager.shared.currentUser.currentUserId)
         let replyDictionary = ["paymentName": paymentName, "paymentAccount": account, "paymentLink": link ]
         
         ref.updateData(["payment": FieldValue.arrayUnion([replyDictionary])]) { (error) in
@@ -131,6 +125,36 @@ class UserManager {
                 } catch {
                     completion(.failure(error))
                 }
+            }
+        }
+    }
+    
+    func deleteUserData(userId: String, userName: String, completion: @escaping (Result<(), Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).document(userId).updateData([
+            "userEmail": "",
+            "payment": FieldValue.delete(),
+            "userName": userName + "(帳號已刪除)"
+        ]) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func updateUserName(userId: String, userName: String, completion: @escaping (Result<(), Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).document(userId).updateData([
+            "userName": userName
+        ]) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
             }
         }
     }

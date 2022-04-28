@@ -9,6 +9,7 @@ import UIKit
 
 class SpecificSettleIUpViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var userData: UserData?
     var groupId: String?
     var groupData: GroupData?
@@ -46,7 +47,7 @@ class SpecificSettleIUpViewController: UIViewController {
         guard let memberExpense = memberExpense,
               let userData = userData
         else { return }
-        let userExpense = userExpense.filter { $0.userId == userId }
+        let userExpense = userExpense.filter { $0.userId == currentUserId }
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
@@ -69,7 +70,7 @@ class SpecificSettleIUpViewController: UIViewController {
         price.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 40).isActive = true
         price.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
-            if groupData?.creator == userId {
+            if groupData?.creator == currentUserId {
                 price.text = "付款金額：\(abs(memberExpense.allExpense)) 元"
                 
             } else {
@@ -77,7 +78,7 @@ class SpecificSettleIUpViewController: UIViewController {
             }
             price.textColor = .systemPink
         } else {
-            if groupData?.creator == userId {
+            if groupData?.creator == currentUserId {
                 price.text = "收款金額：\(abs(memberExpense.allExpense)) 元"
             } else {
                 price.text = "收款金額：\(abs(userExpense[0].allExpense)) 元"
@@ -136,7 +137,7 @@ class SpecificSettleIUpViewController: UIViewController {
               let memberId = memberExpense?.userId
         else { return }
         
-        let userExpense = userExpense.filter { $0.userId == userId }
+        let userExpense = userExpense.filter { $0.userId == currentUserId }
         
         ItemManager.shared.addItemData(groupId: groupId ?? "",
                                        itemName: "結帳",
@@ -147,13 +148,13 @@ class SpecificSettleIUpViewController: UIViewController {
             
             var paidUserId: String?
             var creditorId: String?
-            if self.groupData?.creator == userId {
+            if self.groupData?.creator == self.currentUserId {
                 if expense <= 0 {
-                    paidUserId = userId
+                    paidUserId = self.currentUserId
                     creditorId = memberId
                 } else {
                     paidUserId = memberId
-                    creditorId = userId
+                    creditorId = self.currentUserId
                 }
                 
                 ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
@@ -167,11 +168,11 @@ class SpecificSettleIUpViewController: UIViewController {
                                                    createdTime: Double(NSDate().timeIntervalSince1970))
             } else {
                 if userExpense[0].allExpense <= 0 {
-                    paidUserId = userId
+                    paidUserId = self.currentUserId
                     creditorId = memberId
                 } else {
                     paidUserId = memberId
-                    creditorId = userId
+                    creditorId = self.currentUserId
                 }
                 
                 ItemManager.shared.addPaidInfo(paidUserId: creditorId ?? "",
@@ -197,11 +198,11 @@ class SpecificSettleIUpViewController: UIViewController {
         var paidUserId: String?
         var creditorId: String?
         
-        let userExpense = userExpense.filter { $0.userId == userId }
+        let userExpense = userExpense.filter { $0.userId == currentUserId }
         
-        if groupData?.creator == userId {
+        if groupData?.creator == currentUserId {
             if expense <= 0 {
-                paidUserId = userId
+                paidUserId = currentUserId
                 creditorId = memberId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: expense,
@@ -212,7 +213,7 @@ class SpecificSettleIUpViewController: UIViewController {
                                                         groupId: groupId ?? "")
             } else {
                 paidUserId = memberId
-                creditorId = userId
+                creditorId = currentUserId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: 0 - expense,
                                                         groupId: groupId ?? "")
@@ -223,7 +224,7 @@ class SpecificSettleIUpViewController: UIViewController {
             }
         } else {
             if userExpense[0].allExpense <= 0 {
-                paidUserId = userId
+                paidUserId = currentUserId
                 creditorId = memberId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: 0 - userExpense[0].allExpense,
@@ -234,7 +235,7 @@ class SpecificSettleIUpViewController: UIViewController {
                                                         groupId: groupId ?? "")
             } else {
                 paidUserId = memberId
-                creditorId = userId
+                creditorId = currentUserId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: userExpense[0].allExpense,
                                                         groupId: groupId ?? "")

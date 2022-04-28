@@ -9,6 +9,7 @@ import UIKit
 
 class PaymentViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let addPaymentButton = UIButton()
     let tableView = UITableView()
     var userData: UserData?
@@ -72,7 +73,7 @@ class PaymentViewController: UIViewController {
     }
     
     func getUserPayment() {
-        UserManager.shared.fetchUserData(friendId: userId) { [weak self] result in
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
             switch result {
             case .success(let userData):
                 guard let userPayment = userData.payment else { return }

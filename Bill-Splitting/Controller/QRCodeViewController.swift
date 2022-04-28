@@ -40,7 +40,7 @@ class QRCodeViewController: UIViewController {
         qrCodeView.widthAnchor.constraint(equalToConstant: 150).isActive = true
         qrCodeView.heightAnchor.constraint(equalToConstant: 150).isActive = true
         
-        qrCodeView.image = generateQRCode(qrString: userEmail)
+        qrCodeView.image = generateQRCode(qrString: AccountManager.shared.currentUser.currentUserEmail)
     }
 
 }

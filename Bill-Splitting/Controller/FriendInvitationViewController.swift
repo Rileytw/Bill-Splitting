@@ -9,6 +9,8 @@ import UIKit
 
 class FriendInvitationViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    var currentUserName: String?
     let tableView = UITableView()
     
     var senderId: [String] = []
@@ -27,7 +29,7 @@ class FriendInvitationViewController: UIViewController {
     }
     
     func getSenderData(completion: @escaping ([String]) -> Void) {
-        FriendManager.shared.fetchFriendInvitation(userId: userId) { [weak self] result in
+        FriendManager.shared.fetchFriendInvitation(userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let invitation):
                 let senderId = invitation.map { $0.senderId }
@@ -105,11 +107,14 @@ extension FriendInvitationViewController: TableViewCellDelegate {
         guard let indexPath = tableView.indexPath(for: sender) else { return }
         FriendManager.shared.deleteFriendInvitation(documentId: invitationId[indexPath.row])
         
-        FriendManager.shared.senderToFriends(userId: userId, senderId: senderId[indexPath.row],
+        FriendManager.shared.senderToFriends(userId: currentUserId, senderId: senderId[indexPath.row],
                                              senderName: invitationUsers[indexPath.row].userName,
                                              senderEmail: invitationUsers[indexPath.row].userEmail)
         
-        FriendManager.shared.receiverToFriends(userId: userId, senderId: senderId[indexPath.row], userName: userName, userEmail: userEmail)
+        FriendManager.shared.receiverToFriends(userId: currentUserId,
+                                               senderId: senderId[indexPath.row],
+                                               userName: currentUserName ?? "",
+                                               userEmail: AccountManager.shared.currentUser.currentUserEmail)
         
         self.invitationUsers.remove(at: indexPath.row)
         self.tableView.deleteRows(at: [IndexPath(row: indexPath.row, section: indexPath.section)], with: .fade)

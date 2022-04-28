@@ -100,7 +100,6 @@ class SignUpViewController: UIViewController {
         validPasswordTextField.layer.borderWidth = 1
     }
     
-
     func setSignUpButton() {
         view.addSubview(signUpButton)
         signUpButton.translatesAutoresizingMaskIntoConstraints = false
@@ -114,7 +113,7 @@ class SignUpViewController: UIViewController {
     
     @objc func pressSignUp() {
         
-        SignInManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
+        AccountManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
             self?.userData.userName = self?.userNameTextField.text ?? ""
             self?.userData.userEmail = self?.emailTextField.text ?? ""

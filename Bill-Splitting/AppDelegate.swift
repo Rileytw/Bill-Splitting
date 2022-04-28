@@ -29,9 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         UNUserNotificationCenter.current().delegate = self
-        
-//        UIApplication.shared.applicationIconBadgeNumber = 0
-        
+              
         return true
     }
     

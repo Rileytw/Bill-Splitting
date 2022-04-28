@@ -9,6 +9,7 @@ import UIKit
 
 class AddItemViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
     var typePickerViewData = [SplitType.equal.label, SplitType.percent.label, SplitType.customize.label]
@@ -209,7 +210,7 @@ class AddItemViewController: UIViewController {
             if self.groupData?.type == 1 {
                 paidUserId = self.paidId
             } else {
-                paidUserId = userId
+                paidUserId = self.currentUserId
             }
             
             self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
@@ -244,7 +245,7 @@ class AddItemViewController: UIViewController {
         if self.groupData?.type == 1 {
             paidUserId = self.paidId
         } else {
-            paidUserId = userId
+            paidUserId = currentUserId
         }
         
         let paidPrice = self.paidPrice

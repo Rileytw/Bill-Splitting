@@ -9,8 +9,9 @@ import UIKit
 import Firebase
 import FirebaseAuth
 
-class SignInManager {
-    static var shared = SignInManager()
+class AccountManager {
+    static var shared = AccountManager()
+    var currentUser = CurrentUser(currentUserId: "", currentUserEmail: "")
     
     func signUpWithFireBase(email: String, password: String, completion: @escaping (String) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
@@ -32,5 +33,28 @@ class SignInManager {
             guard let uid = result?.user.uid else { return }
             completion("\(uid)")
         }
+    }
+    
+    func deleteAccount(completion: @escaping (Result<(), Error>) -> Void) {
+        let user = Auth.auth().currentUser
+        
+        user?.delete(completion: { error in
+            if let error = error {
+                print(error.localizedDescription)
+                completion(.failure(error))
+              } else {
+                  completion(.success(()))
+              }
+        })
+    }
+    
+    
+    func getCurrentUserInfo() {
+        let currentUser = Auth.auth().currentUser
+        guard let user = currentUser else { return }
+        let uid = user.uid
+        let email = user.email
+        self.currentUser.currentUserId = uid
+        self.currentUser.currentUserEmail = email ?? ""
     }
 }

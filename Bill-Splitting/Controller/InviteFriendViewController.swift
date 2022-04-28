@@ -9,6 +9,7 @@ import UIKit
 
 class InviteFriendViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let friendTextField = UITextField()
     let searchButton = UIButton()
     let friendNameLabel = UILabel()
@@ -141,7 +142,7 @@ class InviteFriendViewController: UIViewController {
     }
     
     func detectFriendList() {
-        UserManager.shared.fetchFriendData(userId: userId) { [weak self] result in
+        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let friend):
                 //                self.friendList = friend
@@ -163,7 +164,7 @@ class InviteFriendViewController: UIViewController {
     }
     
     func detectInvitation() {
-        FriendManager.shared.fetchReceiverInvitation(userId: userId, friendId: self.friendData?.userId ?? "") { [weak self] result in
+        FriendManager.shared.fetchReceiverInvitation(userId: currentUserId, friendId: self.friendData?.userId ?? "") { [weak self] result in
             switch result {
             case .success:
                 self?.friendNameLabel.text = "對方已寄送好友邀請"
@@ -172,7 +173,7 @@ class InviteFriendViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
-        FriendManager.shared.fetchSenderInvitation(userId: userId, friendId: self.friendData?.userId ?? "") { [weak self] result in
+        FriendManager.shared.fetchSenderInvitation(userId: currentUserId, friendId: self.friendData?.userId ?? "") { [weak self] result in
             switch result {
             case .success:
                 self?.friendNameLabel.text = "已寄送好友邀請"
@@ -184,7 +185,7 @@ class InviteFriendViewController: UIViewController {
     }
     
     @objc func pressSendButton() {
-        FriendManager.shared.updateFriendInvitation(senderId: userId, receiverId: self.friendData?.userId ?? "")
+        FriendManager.shared.updateFriendInvitation(senderId: currentUserId, receiverId: self.friendData?.userId ?? "")
         self.friendData = nil
         sendButton.isHidden = true
         friendNameLabel.isHidden = true
