@@ -36,7 +36,6 @@ class SignInViewController: UIViewController {
         setLoginButton()
         setAppleSignInButton()
         setSignUpButton()
-//        checkAppleIDCredentialState(userID: appleId ?? "")
         checkUserSignIn()
     }
     
@@ -116,11 +115,11 @@ class SignInViewController: UIViewController {
     @objc func pressLogin() {
         AccountManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
-            self?.fetchUserData(userId: firebaseId)
+            self?.fetchUserData(userId: firebaseId, email: self?.accountTextField.text ?? "")
         }
     }
     
-    func fetchUserData(userId: String) {
+    func fetchUserData(userId: String, email: String) {
         
         UserManager.shared.fetchSignInUserData(userId: userId) { [weak self] result in
             switch result {
@@ -128,11 +127,12 @@ class SignInViewController: UIViewController {
                 print(user)
                 if user == nil {
                     self?.user.userId = userId
+                    self?.user.userEmail = email
                     self?.addNewUserData()
                 }
-                self?.user.userName = user?.userName ?? ""
-                self?.user.userEmail = user?.userEmail ?? ""
-                self?.user.userId = user?.userId ?? ""
+//                self?.user.userName = user?.userName ?? ""
+//                self?.user.userEmail = user?.userEmail ?? ""
+//                self?.user.userId = user?.userId ?? ""
                 print("Login successed!")
                 self?.enterFistPage()
             case .failure(let error):
@@ -162,17 +162,6 @@ class SignInViewController: UIViewController {
         }
         self.present(signUpViewController, animated: true, completion: nil)
     }
-    
-//    func checkAppleIDCredentialState(userID: String) {
-//        ASAuthorizationAppleIDProvider().getCredentialState(forUserID: userID) { [weak self] credentialState, error in
-//            switch credentialState {
-//            case .authorized:
-//                self?.fetchUserData(userId: userID)
-//            default:
-//                break
-//            }
-//        }
-//    }
     
     func enterFistPage() {
         let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
@@ -296,9 +285,10 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         let currentUser = Auth.auth().currentUser
         guard let user = currentUser else { return }
         let uid = user.uid
-//        let email = user.email
+        let email = user.email
         self.user.userId = uid
-        fetchUserData(userId: uid)
+        self.user.userEmail = email ?? ""
+        fetchUserData(userId: uid, email: email ?? "")
     }
     
     func addNewUserData() {
