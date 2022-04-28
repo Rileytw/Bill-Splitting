@@ -13,32 +13,7 @@ class ProfileViewController: UIViewController {
     
     let tableView = UITableView()
     
-    enum ProfileList {
-        case qrCode
-        case payment
-        case friendList
-        case friendInvitation
-        case logOut
-        case deleteAccount
-        
-        var content: String {
-            switch self {
-            case .qrCode:
-                return "QRCode"
-            case .payment:
-                return "設定付款方式"
-            case .friendList:
-                return "好友列表"
-            case .friendInvitation:
-                return "交友邀請"
-            case .logOut:
-                return "登出"
-            case .deleteAccount:
-                return "刪除帳號"
-            }
-        }
-    }
-    
+   
     var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
     
     override func viewDidLoad() {
@@ -80,12 +55,24 @@ class ProfileViewController: UIViewController {
         UserManager.shared.deleteUserData(userId: userId) { result in
             switch result {
             case .success():
-                print("")
+                AccountManager.shared.deleteAccount()
             case .failure(let error):
                 print("Error updating document: \(error)")
                 
             }
         }
+    }
+    
+    func alertDeleteAccount() {
+        let alertController = UIAlertController(title: "刪除帳號", message: "請確認是否刪除帳號", preferredStyle: .alert)
+        let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
+            self?.deletAccount()
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
 }
 
@@ -142,6 +129,34 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             self.show(friendInvitationViewController, sender: nil)
         } else if indexPath.row == 4 {
             logOut()
+        } else {
+            alertDeleteAccount()
+        }
+    }
+}
+
+enum ProfileList {
+    case qrCode
+    case payment
+    case friendList
+    case friendInvitation
+    case logOut
+    case deleteAccount
+    
+    var content: String {
+        switch self {
+        case .qrCode:
+            return "QRCode"
+        case .payment:
+            return "設定付款方式"
+        case .friendList:
+            return "好友列表"
+        case .friendInvitation:
+            return "交友邀請"
+        case .logOut:
+            return "登出"
+        case .deleteAccount:
+            return "刪除帳號"
         }
     }
 }

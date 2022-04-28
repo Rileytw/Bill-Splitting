@@ -114,7 +114,7 @@ class SignInViewController: UIViewController {
     }
     
     @objc func pressLogin() {
-        SignInManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
+        AccountManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
             self?.fetchUserData(userId: firebaseId)
         }
