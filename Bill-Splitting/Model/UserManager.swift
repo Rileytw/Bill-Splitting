@@ -2,15 +2,9 @@ import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-// MARK: Fake data for testing
-let userId = "S6ujGuvd6rM2fzKzcsYsCMjFY2e2"
-let userEmail = "riley@gmail.com"
-let userName = "Testuser1"
-
 class UserManager {
     static var shared = UserManager()
     lazy var db = Firestore.firestore()
-    
     
     func addUserData(userData: UserData, completion: @escaping (Result<String, Error>) -> Void) {
         do {
@@ -105,7 +99,7 @@ class UserManager {
     }
     
     func addPaymentData(paymentName: String?, account: String?, link: String?) {
-        let ref = db.collection(FireBaseCollection.user.rawValue).document(userId)
+        let ref = db.collection(FireBaseCollection.user.rawValue).document(AccountManager.shared.currentUser.currentUserId)
         let replyDictionary = ["paymentName": paymentName, "paymentAccount": account, "paymentLink": link ]
         
         ref.updateData(["payment": FieldValue.arrayUnion([replyDictionary])]) { (error) in

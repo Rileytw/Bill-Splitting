@@ -10,6 +10,7 @@ import Lottie
 
 class RecordsViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     private var animationView = AnimationView()
     var tableView = UITableView()
     var groups: [GroupData] = []
@@ -38,7 +39,7 @@ class RecordsViewController: UIViewController {
     }
     // MARK: - Get groups data first
     func getGroupData() {
-        GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
+        GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
@@ -113,8 +114,8 @@ class RecordsViewController: UIViewController {
                 }
             }
         group.notify(queue: DispatchQueue.main) {
-            self.personalPaid = self.paidItem.filter { $0.userId == userId }
-            self.personalInvolved = self.involvedItem.filter { $0.userId == userId }
+            self.personalPaid = self.paidItem.filter { $0.userId == self.currentUserId }
+            self.personalInvolved = self.involvedItem.filter { $0.userId == self.currentUserId }
             
             for index in 0..<self.personalInvolved.count {
                 self.personalInvolved[index].price = 0 - self.personalInvolved[index].price

@@ -9,6 +9,7 @@ import UIKit
 
 class AddReminderViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let groupLabel = UILabel()
     let groupPicker = BasePickerViewInTextField(frame: .zero)
     let userLabel = UILabel()
@@ -28,7 +29,13 @@ class AddReminderViewController: UIViewController {
     var member: [UserData] = []
     var userData: [UserData] = []
     var remindTimeStamp: Double?
-    var reminderData = Reminder(groupId: "", memberId: "", creatorId: userId, type: 0, remindTime: 0, status: 1, documentId: "")
+    var reminderData = Reminder(groupId: "",
+                                memberId: "",
+                                creatorId: AccountManager.shared.currentUser.currentUserId,
+                                type: 0,
+                                remindTime: 0,
+                                status: 1,
+                                documentId: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +67,7 @@ class AddReminderViewController: UIViewController {
 //    }
 
     func getGroupData() {
-        GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
+        GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
@@ -121,7 +128,7 @@ class AddReminderViewController: UIViewController {
     }
     
     func addReminder() {
-        reminderData.creatorId = userId
+        reminderData.creatorId = currentUserId
         ReminderManager.shared.addReminderData(reminder: reminderData)
     }
     
@@ -184,7 +191,7 @@ class AddReminderViewController: UIViewController {
             }
         }
         member = memberData
-        member = member.filter { $0.userId != userId }
+        member = member.filter { $0.userId != currentUserId }
     }
     
     func setReminderLael() {
@@ -317,8 +324,8 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
             return groupPicker.textField.text = groupPickerData[row]
         } else {
             reminderData.memberId = member[row].userId
-            if groups[row].creator != userId {
-                return userPicker.textField.text = userName
+            if groups[row].creator != currentUserId {
+                return userPicker.textField.text = AccountManager.shared.currentUser.currentUserId // Use id temporary
             } else {
                 return userPicker.textField.text = member[row].userName
             }

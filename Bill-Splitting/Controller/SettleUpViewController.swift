@@ -9,6 +9,8 @@ import UIKit
 
 class SettleUpViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    let currentUserName = AccountManager.shared.currentUser.currentUserId // Use id temporary
     var groupData: GroupData?
     var memberExpense: [MemberExpense] = []
     var userData: [UserData] = []
@@ -49,15 +51,15 @@ class SettleUpViewController: UIViewController {
     }
     
     func removeCreatorData() {
-        if groupData?.creator == userId {
-            memberExpense = memberExpense.filter { $0.userId != userId }
+        if groupData?.creator == currentUserId {
+            memberExpense = memberExpense.filter { $0.userId != currentUserId }
         }
     }
 }
 
 extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if groupData?.creator == userId {
+        if groupData?.creator == currentUserId {
             return memberExpense.count
         } else {
             return 1
@@ -76,25 +78,25 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         let memberExpense = memberExpense[indexPath.row]
         let memberData = userData.filter { $0.userId == memberExpense.userId }
         
-        if groupData?.creator == userId {
+        if groupData?.creator == currentUserId {
             if memberExpense.allExpense > 0 {
                 settleUpCell.price.text = " $ \(memberExpense.allExpense)"
-                settleUpCell.payerName.text = "\(userName)"
+                settleUpCell.payerName.text = "\(currentUserName)"
                 settleUpCell.creditorName.text = "\(memberData[0].userName)"
                 
             } else {
                 settleUpCell.price.text = " $ \(abs(memberExpense.allExpense))"
-                settleUpCell.creditorName.text = "\(userName)"
+                settleUpCell.creditorName.text = "\(currentUserName)"
                 settleUpCell.payerName.text = "\(memberData[0].userName)"
             }
         } else {
             if memberExpense.allExpense < 0 {
-                settleUpCell.creditorName.text = "\(userName)"
+                settleUpCell.creditorName.text = "\(currentUserName)"
                 settleUpCell.payerName.text = "\(memberData[0].userName)"
                 settleUpCell.price.text = " $ \(expense)"
             } else {
                 settleUpCell.price.text = " $ \(abs(expense))"
-                settleUpCell.payerName.text = "\(userName)"
+                settleUpCell.payerName.text = "\(currentUserName)"
                 settleUpCell.creditorName.text = "\(memberData[0].userName)"
             }
         }
@@ -109,7 +111,7 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         
         let memberExpense = memberExpense[indexPath.row]
         let memberData = userData.filter { $0.userId == memberExpense.userId }
-        let userExpense = self.memberExpense.filter { $0.userId == userId}
+        let userExpense = self.memberExpense.filter { $0.userId == currentUserId}
         specificSettleUpViewController.userData = memberData[0]
         specificSettleUpViewController.memberExpense = memberExpense
         specificSettleUpViewController.groupId = groupData?.groupId

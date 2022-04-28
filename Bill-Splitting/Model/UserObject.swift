@@ -34,3 +34,9 @@ struct Invitation: Codable {
     var receiverId: String
     var senderId: String
 }
+
+struct CurrentUser {
+    var currentUserId: String
+    var currentUserEmail: String
+//    var currentUserName: String
+}

@@ -10,6 +10,8 @@ import SwiftUI
 
 class GroupsViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    
     let selectedSource = [
         ButtonModel(color: UIColor.hexStringToUIColor(hex: "16C79A"), title: "所有群組"),
         ButtonModel(color: UIColor.hexStringToUIColor(hex: "19456B"), title: "多人支付"),
@@ -59,7 +61,7 @@ class GroupsViewController: UIViewController {
     }
     
     func getGroupData() {
-        GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
+        GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
@@ -70,7 +72,7 @@ class GroupsViewController: UIViewController {
     }
     
     func getClosedGroupData() {
-        GroupManager.shared.fetchGroups(userId: userId, status: 1) { [weak self] result in
+        GroupManager.shared.fetchGroups(userId: currentUserId, status: 1) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.closedGroups = groups

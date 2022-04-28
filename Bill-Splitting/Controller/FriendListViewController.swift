@@ -9,6 +9,7 @@ import UIKit
 
 class FriendListViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let tableView = UITableView()
     
     var friends: [Friend]? {
@@ -26,7 +27,7 @@ class FriendListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        UserManager.shared.fetchFriendData(userId: userId) { [weak self] result in
+        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let friend):
                 self?.friends = friend

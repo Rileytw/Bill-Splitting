@@ -9,6 +9,7 @@ import UIKit
 
 class AddGroupsViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var nameTextField = UITextField()
     let descriptionTextView = UITextView()
     
@@ -59,7 +60,7 @@ class AddGroupsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        UserManager.shared.fetchFriendData(userId: userId) { [weak self] result in
+        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let friend):
                 self?.friendList = friend
@@ -200,7 +201,7 @@ class AddGroupsViewController: UIViewController {
             }
             self.dismiss(animated: true, completion: nil)
         } else {
-            member.append(userId)
+            member.append(currentUserId)
             
             if typeTextField.text == GroupType.personal.typeName {
                 type = 0
@@ -210,7 +211,7 @@ class AddGroupsViewController: UIViewController {
             
             GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
                                              description: descriptionTextView.text,
-                                             creator: userId,
+                                             creator: currentUserId,
                                              type: self.type ?? 0,
                                              status: 0,
                                              member: self.member,

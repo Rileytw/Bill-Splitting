@@ -9,6 +9,7 @@ import UIKit
 
 class MultipleUsersGrouplViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
     let closedGroupButton = UIButton()
@@ -192,7 +193,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         
         if groupData?.type == 1 {
             subscribeButton.isHidden = true
-        } else if groupData?.type == 0 && groupData?.creator != userId {
+        } else if groupData?.type == 0 && groupData?.creator != currentUserId {
             subscribeButton.isHidden = true
         }
         
@@ -256,11 +257,11 @@ class MultipleUsersGrouplViewController: UIViewController {
     }
     
     func getMemberExpense() {
-        GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", userId: userId) { [weak self] result in
+        GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let expense):
                 self?.memberExpense = expense
-                let personalExpense = expense.filter { $0.userId == userId }
+                let personalExpense = expense.filter { $0.userId == self?.currentUserId }
                 self?.expense = personalExpense[0].allExpense
             case .failure(let error):
                 print("Error decoding userData: \(error)")
@@ -269,7 +270,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     }
     
     func detectParticipantUser() {
-        if groupData?.type == 0 && userId != groupData?.creator {
+        if groupData?.type == 0 && currentUserId != groupData?.creator {
             groupDetailView.addExpenseButton.isEnabled = false
             groupDetailView.addExpenseButton.isHidden = true
             closedGroupButton.isHidden = true
@@ -420,7 +421,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         for index in 0..<involvedItem.count {
             involves = involvedItem[index]
             for involve in  0..<involves.count {
-                if involves[involve].itemId == item.itemId && involves[involve].userId == userId {
+                if involves[involve].itemId == item.itemId && involves[involve].userId == currentUserId {
                     involved = involves[involve]
                     break
                 }
@@ -434,7 +435,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
         let time = dateFormatter.string(from: date)
         
-        if paid?.userId == userId {
+        if paid?.userId == currentUserId {
             
             if item.itemName == "結帳" {
                 itemsCell.createItemCell(time: time,
@@ -450,7 +451,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
                 itemsCell.paidDescription.textColor = .systemGreen
             }
         } else {
-            if involved?.userId == userId {
+            if involved?.userId == currentUserId {
                 if item.itemName == "結帳" {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,

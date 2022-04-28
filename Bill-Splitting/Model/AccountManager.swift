@@ -11,6 +11,7 @@ import FirebaseAuth
 
 class AccountManager {
     static var shared = AccountManager()
+    var currentUser = CurrentUser(currentUserId: "", currentUserEmail: "")
     
     func signUpWithFireBase(email: String, password: String, completion: @escaping (String) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
@@ -45,5 +46,15 @@ class AccountManager {
                   completion(.success(()))
               }
         })
+    }
+    
+    
+    func getCurrentUserInfo() {
+        let currentUser = Auth.auth().currentUser
+        guard let user = currentUser else { return }
+        let uid = user.uid
+        let email = user.email
+        self.currentUser.currentUserId = uid
+        self.currentUser.currentUserEmail = email ?? ""
     }
 }

@@ -11,6 +11,7 @@ import FirebaseAuth
 
 class ProfileViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let tableView = UITableView()
     
     var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
@@ -51,7 +52,7 @@ class ProfileViewController: UIViewController {
     }
     
     func deletAccount() {
-        UserManager.shared.deleteUserData(userId: userId) { result in
+        UserManager.shared.deleteUserData(userId: currentUserId) { result in
             switch result {
             case .success():
                 AccountManager.shared.deleteAccount() { [weak self] result in

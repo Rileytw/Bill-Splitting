@@ -15,6 +15,7 @@ class SignInViewController: UIViewController {
     
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
     var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
+    let userDefault = UserDefaults()
     
     var accountLabel = UILabel()
     var passwordLabel = UILabel()
@@ -130,10 +131,11 @@ class SignInViewController: UIViewController {
                     self?.user.userEmail = email
                     self?.addNewUserData()
                 }
-//                self?.user.userName = user?.userName ?? ""
-//                self?.user.userEmail = user?.userEmail ?? ""
-//                self?.user.userId = user?.userId ?? ""
+                self?.user.userName = user?.userName ?? ""
+                self?.user.userEmail = user?.userEmail ?? ""
+                self?.user.userId = user?.userId ?? ""
                 print("Login successed!")
+                AccountManager.shared.getCurrentUserInfo()
                 self?.enterFistPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
