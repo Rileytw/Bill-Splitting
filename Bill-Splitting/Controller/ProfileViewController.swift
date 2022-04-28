@@ -13,7 +13,6 @@ class ProfileViewController: UIViewController {
     
     let tableView = UITableView()
     
-   
     var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
     
     override func viewDidLoad() {
@@ -55,16 +54,22 @@ class ProfileViewController: UIViewController {
         UserManager.shared.deleteUserData(userId: userId) { result in
             switch result {
             case .success():
-                AccountManager.shared.deleteAccount()
+                AccountManager.shared.deleteAccount() { [weak self] result in
+                    switch result {
+                    case .success():
+                        print("Account successfully deleted ")
+                    case .failure(_):
+                        self?.alertSignInAgain()
+                    }
+                }
             case .failure(let error):
                 print("Error updating document: \(error)")
-                
             }
         }
     }
     
     func alertDeleteAccount() {
-        let alertController = UIAlertController(title: "刪除帳號", message: "請確認是否刪除帳號", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "刪除帳號", message: "請確認是否刪除帳號。提醒：若刪除帳號，將刪除您的 email 及收款資訊，但不會刪除您在群組中的帳務資訊", preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
             self?.deletAccount()
         }
@@ -72,6 +77,15 @@ class ProfileViewController: UIViewController {
         
         alertController.addAction(deleteAction)
         alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func alertSignInAgain() {
+        let alertController = UIAlertController(title: "重新登入", message: "若需刪除帳號，請重新登入", preferredStyle: .alert)
+
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        
+        alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
     }
 }

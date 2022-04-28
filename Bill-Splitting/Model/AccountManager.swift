@@ -34,16 +34,15 @@ class AccountManager {
         }
     }
     
-    func deleteAccount() {
+    func deleteAccount(completion: @escaping (Result<(), Error>) -> Void) {
         let user = Auth.auth().currentUser
         
         user?.delete(completion: { error in
             if let error = error {
                 print(error.localizedDescription)
-                print(error)
-                
+                completion(.failure(error))
               } else {
-                print("Account successfully deleted ")
+                  completion(.success(()))
               }
         })
     }
