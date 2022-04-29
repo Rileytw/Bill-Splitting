@@ -29,6 +29,7 @@ class GroupsViewController: UIViewController {
     var multipleGroups: [GroupData] = []
     var personalGroups: [GroupData] = []
     var closedGroups: [GroupData] = []
+    var filteredItems: [GroupData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +38,7 @@ class GroupsViewController: UIViewController {
         navigationItem.title = "我的群組"
         view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         tableView.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        setSearchBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,6 +84,26 @@ class GroupsViewController: UIViewController {
         }
     }
     
+    func setSearchBar() {
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 40))
+        tableView.tableHeaderView = searchBar
+        searchBar.delegate = self
+        searchBar.showsCancelButton = true
+        guard let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton else { return }
+        cancelButton.setTitle("取消", for: .normal)
+    }
+    
+    func search(_ searchTerm: String) {
+           if searchTerm.isEmpty {
+               filteredItems = groups
+           } else {
+               filteredItems = groups.filter {
+                   $0.groupName.contains(searchTerm)
+               }
+           }
+           tableView.reloadData()
+       }
+    
     func setSelectedView() {
         view.addSubview(selectedView)
         selectedView.translatesAutoresizingMaskIntoConstraints = false
@@ -98,16 +120,22 @@ class GroupsViewController: UIViewController {
 extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if selectedView.buttonIndex == 0 {
-            return groups.count
+            filteredItems = groups
+//            return groups.count
         } else if selectedView.buttonIndex == 1 {
-            return multipleGroups.count
+            filteredItems = multipleGroups
+//            return multipleGroups.count
         } else if selectedView.buttonIndex == 2 {
-            return personalGroups.count
+            filteredItems = personalGroups
+//            return personalGroups.count
         } else if selectedView.buttonIndex == 3 {
-            return closedGroups.count
+            filteredItems = closedGroups
+//            return closedGroups.count
         } else {
-            return groups.count
+            filteredItems = groups
+//            return groups.count
         }
+        return filteredItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -147,15 +175,26 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
             
             groupsCell.numberOfMembers.text = String(closedGroups[indexPath.row].member.count) + "人"
         } else {
-            groupsCell.groupName.text = groups[indexPath.row].groupName
+            filteredItems = groups
+            
+            groupsCell.groupName.text = filteredItems[indexPath.row].groupName
 
-            if groups[indexPath.row].type == 1 {
+            if filteredItems[indexPath.row].type == 1 {
                 groupsCell.groupType.text = "多人支付"
             } else {
                 groupsCell.groupType.text = "個人預付"
             }
 
-            groupsCell.numberOfMembers.text = String(groups[indexPath.row].member.count) + "人"
+            groupsCell.numberOfMembers.text = String(filteredItems[indexPath.row].member.count) + "人"
+//            groupsCell.groupName.text = groups[indexPath.row].groupName
+//
+//            if groups[indexPath.row].type == 1 {
+//                groupsCell.groupType.text = "多人支付"
+//            } else {
+//                groupsCell.groupType.text = "個人預付"
+//            }
+//
+//            groupsCell.numberOfMembers.text = String(groups[indexPath.row].member.count) + "人"
         }
         
         groupsCell.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
@@ -204,5 +243,20 @@ extension GroupsViewController: SelectionViewDataSource, SelectionViewDelegate {
         } else {
             tableView.reloadData()
         }
+    }
+}
+
+extension GroupsViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//        searchBar.showsCancelButton = true
+        let searchTerm = searchBar.text ?? ""
+        search(searchTerm)
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//        searchBar.showsCancelButton = false
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
     }
 }
