@@ -48,20 +48,15 @@ class AddGroupsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setTextField()
         setTextView()
         setUpPickerView(data: pickerViewData)
-        
         setTextFieldOfPickerView()
         setAddGroupButton()
         setInviteButton()
         setTableView()
-        //        setSearchBar()
-        nameTextField.delegate = self
         navigationItem.title = "新增群組"
         setSearchBar()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,7 +78,7 @@ class AddGroupsViewController: UIViewController {
             }
         }
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         friends.removeAll()
@@ -98,7 +93,7 @@ class AddGroupsViewController: UIViewController {
             buttonName = "建立群組"
         }
         
-        let addButton = UIBarButtonItem.init(title: buttonName ?? "",
+        let addButton = UIBarButtonItem.init(title: buttonName,
                                              style: UIBarButtonItem.Style.plain,
                                              target: self, action: #selector(pressAddGroupButton))
         self.navigationItem.setRightBarButton(addButton, animated: true)
@@ -111,51 +106,12 @@ class AddGroupsViewController: UIViewController {
             addMembers()
             
             if isGroupExist == true {
-                guard let groupId = groupData?.groupId else { return }
-                GroupManager.shared.updateGroupData(groupId: groupId,
-                                                    groupName: nameTextField.text ?? "",
-                                                    groupDescription: descriptionTextView.text,
-                                                    memberName: member)
-                self.member.forEach { member in
-                    GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
-                }
+                updateExistGroupData()
                 self.navigationController?.popToRootViewController(animated: true)
             } else {
-                member.append(currentUserId)
-                
-                var type: Int?
-                
-                if typeTextField.text == GroupType.personal.typeName {
-                    type = 0
-                } else {
-                    type = 1
-                }
-                
-                GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
-                                                 description: descriptionTextView.text,
-                                                 creator: currentUserId,
-                                                 type: type ?? 0,
-                                                 status: 0,
-                                                 member: self.member,
-                                                 createdTime: Double(NSDate().timeIntervalSince1970)) {
-                    groupId in
-                    self.member.forEach { member in
-                        GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
-                    }
-                }
+                uploadGroupData()
             }
-            
-            self.nameTextField.text? = ""
-            self.descriptionTextView.text = ""
-
-            for index in 0..<filteredMembers.count {
-                if filteredMembers[index].isSelected == true {
-                    filteredMembers[index].isSelected = false
-                }
-            }
-            
-            self.tableView.reloadData()
-            self.member.removeAll()
+            cleanData()
         }
     }
     
@@ -169,6 +125,53 @@ class AddGroupsViewController: UIViewController {
         }
     }
     
+    func updateExistGroupData() {
+        guard let groupId = groupData?.groupId else { return }
+        GroupManager.shared.updateGroupData(groupId: groupId,
+                                            groupName: nameTextField.text ?? "",
+                                            groupDescription: descriptionTextView.text,
+                                            memberName: member)
+        self.member.forEach { member in
+            GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+        }
+    }
+    
+    func uploadGroupData() {
+        member.append(currentUserId)
+        
+        var type: Int?
+        if typeTextField.text == GroupType.personal.typeName {
+            type = 0
+        } else {
+            type = 1
+        }
+        
+        GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
+                                         description: descriptionTextView.text,
+                                         creator: currentUserId,
+                                         type: type ?? 0,
+                                         status: 0,
+                                         member: self.member,
+                                         createdTime: Double(NSDate().timeIntervalSince1970)) {
+            groupId in
+            self.member.forEach { member in
+                GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+            }
+        }
+    }
+    
+    func cleanData() {
+        nameTextField.text? = ""
+        descriptionTextView.text = ""
+        for index in 0..<filteredMembers.count {
+            if filteredMembers[index].isSelected == true {
+                filteredMembers[index].isSelected = false
+            }
+        }
+        tableView.reloadData()
+        member.removeAll()
+    }
+    
     @objc func pressInviteFriendButton() {
         let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
         let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
@@ -177,9 +180,7 @@ class AddGroupsViewController: UIViewController {
     
     func loseGroupNameAlert() {
         let alertController = UIAlertController(title: "請填寫完整資訊", message: "尚未填寫群組名稱", preferredStyle: .alert)
-        
         let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
-        
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
     }
@@ -188,7 +189,6 @@ class AddGroupsViewController: UIViewController {
         guard let groupMember = groupData?.member else {
             return
         }
-        
         newGroupMember = friendList
         for member in 0..<friendList.count {
             for index in 0..<groupMember.count {
@@ -197,12 +197,10 @@ class AddGroupsViewController: UIViewController {
                 }
             }
         }
-        
         for index in 0..<newGroupMember.count {
             let friendModel = FriendSearchModel(friendList: newGroupMember[index], isSelected: false)
             newGroupFriends.append(friendModel)
         }
-        
         setFilterFriendsData()
         tableView.reloadData()
     }
@@ -383,7 +381,7 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
         )
         
         guard let addGroupsCell = cell as? AddGroupTableViewCell else { return cell }
-
+        
         addGroupsCell.friendNameLabel.text = filteredMembers[indexPath.row].friendList.userName
         
         if filteredMembers[indexPath.row].isSelected == true {
@@ -413,7 +411,6 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
                 }
             }
         }
-
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
@@ -433,14 +430,7 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
                 }
             }
         }
-        
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
-    }
-}
-
-extension AddGroupsViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        //        disableAddGroupButton()
     }
 }
 
