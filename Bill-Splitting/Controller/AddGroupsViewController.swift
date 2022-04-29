@@ -37,6 +37,7 @@ class AddGroupsViewController: UIViewController {
     var isGroupExist: Bool = false
     var groupData: GroupData?
     var newGroupMember = [Friend]()
+    var filteredGroups: [Friend] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,6 +53,7 @@ class AddGroupsViewController: UIViewController {
         //        setSearchBar()
         nameTextField.delegate = self
         navigationItem.title = "新增群組"
+        setSearchBar()
         
     }
     
@@ -64,6 +66,7 @@ class AddGroupsViewController: UIViewController {
                 if self?.isGroupExist == true {
                     self?.selectedNewMember()
                 }
+                self?.setFilterGroupData()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -150,6 +153,42 @@ class AddGroupsViewController: UIViewController {
                     newGroupMember.remove(at: newGroupMember.firstIndex(of: friendList[member])!)
                 }
             }
+        }
+        setFilterGroupData()
+        tableView.reloadData()
+    }
+    
+    func setSearchBar() {
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 40))
+        tableView.tableHeaderView = searchBar
+        searchBar.delegate = self
+        searchBar.showsCancelButton = true
+        guard let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton else { return }
+        cancelButton.setTitle("取消", for: .normal)
+    }
+    
+    func searchGroup(_ searchTerm: String) {
+        if searchTerm.isEmpty {
+            setFilterGroupData()
+        } else {
+            if isGroupExist == true {
+                filteredGroups = newGroupMember.filter {
+                    $0.userName.contains(searchTerm)
+                }
+            } else {
+                filteredGroups = friendList.filter {
+                    $0.userName.contains(searchTerm)
+                }
+            }
+            tableView.reloadData()
+        }
+    }
+    
+    func setFilterGroupData() {
+        if isGroupExist == true {
+            filteredGroups = newGroupMember
+        } else {
+            filteredGroups = friendList
         }
         tableView.reloadData()
     }
@@ -278,11 +317,12 @@ extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource 
 extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isGroupExist == true {
-            return newGroupMember.count
-        } else {
-            return friendList.count
-        }
+//        if isGroupExist == true {
+//            return newGroupMember.count
+//        } else {
+//            return friendList.count
+//        }
+        return filteredGroups.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -299,12 +339,13 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
         )
         
         guard let addGroupsCell = cell as? AddGroupTableViewCell else { return cell }
-        
-        if isGroupExist == true {
-            addGroupsCell.friendNameLabel.text = newGroupMember[indexPath.row].userName
-        } else {
-            addGroupsCell.friendNameLabel.text = friendList[indexPath.row].userName
-        }
+//
+//        if isGroupExist == true {
+//            addGroupsCell.friendNameLabel.text = newGroupMember[indexPath.row].userName
+//        } else {
+//            addGroupsCell.friendNameLabel.text = friendList[indexPath.row].userName
+//        }
+        addGroupsCell.friendNameLabel.text = filteredGroups[indexPath.row].userName
         
         if selectedIndexs.contains(indexPath.row) {
             cell.accessoryType = .checkmark
@@ -339,5 +380,19 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
 extension AddGroupsViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         //        disableAddGroupButton()
+    }
+}
+
+extension AddGroupsViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let searchTerm = searchBar.text ?? ""
+        searchGroup(searchTerm)
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        setFilterGroupData()
     }
 }
