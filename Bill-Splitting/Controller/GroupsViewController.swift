@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 
 class GroupsViewController: UIViewController {
-
+    
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     
     let selectedSource = [
@@ -96,15 +96,34 @@ class GroupsViewController: UIViewController {
     }
     
     func searchGroup(_ searchTerm: String) {
-           if searchTerm.isEmpty {
-               setFilterGroupData()
-           } else {
-               filteredGroups = groups.filter {
-                   $0.groupName.contains(searchTerm)
-               }
-               tableView.reloadData()
-           }
-       }
+        if searchTerm.isEmpty {
+            setFilterGroupData()
+        } else {
+            switch selectedView.buttonIndex {
+            case 0:
+                filteredGroups = groups.filter {
+                    $0.groupName.contains(searchTerm)
+                }
+            case 1:
+                filteredGroups = multipleGroups.filter {
+                    $0.groupName.contains(searchTerm)
+                }
+            case 2:
+                filteredGroups = personalGroups.filter {
+                    $0.groupName.contains(searchTerm)
+                }
+            case 3:
+                filteredGroups = closedGroups.filter {
+                    $0.groupName.contains(searchTerm)
+                }
+            default:
+                filteredGroups = groups.filter {
+                    $0.groupName.contains(searchTerm)
+                }
+            }
+            tableView.reloadData()
+        }
+    }
     func setFilterGroupData() {
         if selectedView.buttonIndex == 0 {
             filteredGroups = groups
@@ -164,18 +183,7 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let multipleUsersGroupViewController =
                 storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
-        if selectedView.buttonIndex == 0 {
-            multipleUsersGroupViewController.groupData = groups[indexPath.row]
-        } else if selectedView.buttonIndex == 1 {
-            multipleUsersGroupViewController.groupData = multipleGroups[indexPath.row]
-        } else if selectedView.buttonIndex == 2 {
-            multipleUsersGroupViewController.groupData = personalGroups[indexPath.row]
-        } else if selectedView.buttonIndex == 3 {
-            multipleUsersGroupViewController.groupData = closedGroups[indexPath.row]
-        } else {
-            multipleUsersGroupViewController.groupData = groups[indexPath.row]
-        }
-//        multipleUsersGroupViewController.groupData = groups[indexPath.row]
+        multipleUsersGroupViewController.groupData = filteredGroups[indexPath.row]
         self.show(multipleUsersGroupViewController, sender: nil)
     }
 }
