@@ -7,6 +7,11 @@
 
 import UIKit
 
+struct FriendSearchModel {
+    var friendList: Friend
+    var isSelected: Bool
+}
+
 class AddGroupsViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
@@ -24,7 +29,6 @@ class AddGroupsViewController: UIViewController {
             tableView.reloadData()
         }
     }
-    var selectedIndexs = [Int]()
     
     let tableView = UITableView()
     var searchController: UISearchController!
@@ -37,7 +41,10 @@ class AddGroupsViewController: UIViewController {
     var isGroupExist: Bool = false
     var groupData: GroupData?
     var newGroupMember = [Friend]()
-    var filteredGroups: [Friend] = []
+    var filteredMembers: [FriendSearchModel] = []
+    
+    var friends: [FriendSearchModel] = []
+    var newGroupFriends: [FriendSearchModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,6 +73,10 @@ class AddGroupsViewController: UIViewController {
                 if self?.isGroupExist == true {
                     self?.selectedNewMember()
                 }
+                for index in 0..<friend.count {
+                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
+                    self?.friends.append(friendModel)
+                }
                 self?.setFilterGroupData()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
@@ -73,6 +84,12 @@ class AddGroupsViewController: UIViewController {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        friends.removeAll()
+        newGroupFriends.removeAll()
+    }
+    
     func setAddGroupButton() {
         let addButton = UIBarButtonItem.init(title: "建立群組", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pressAddGroupButton))
         self.navigationItem.setRightBarButton(addButton, animated: true)
@@ -82,6 +99,8 @@ class AddGroupsViewController: UIViewController {
         if nameTextField.text?.isEmpty == true {
             loseGroupNameAlert()
         } else {
+            addMembers()
+            
             if isGroupExist == true {
                 guard let groupId = groupData?.groupId else { return }
                 GroupManager.shared.updateGroupData(groupId: groupId,
@@ -119,10 +138,25 @@ class AddGroupsViewController: UIViewController {
             
             self.nameTextField.text? = ""
             self.descriptionTextView.text = ""
-            //        self.typeTextField.text = "個人預付"
-            self.selectedIndexs.removeAll()
+
+            for index in 0..<filteredMembers.count {
+                if filteredMembers[index].isSelected == true {
+                    filteredMembers[index].isSelected = false
+                }
+            }
+            
             self.tableView.reloadData()
             self.member.removeAll()
+        }
+    }
+    
+    func addMembers() {
+        if isGroupExist == true {
+            let selectedMember = newGroupFriends.filter { $0.isSelected == true }
+            member = selectedMember.map { $0.friendList.userId }
+        } else {
+            let selectedMember = friends.filter { $0.isSelected == true }
+            member = selectedMember.map { $0.friendList.userId }
         }
     }
     
@@ -154,6 +188,12 @@ class AddGroupsViewController: UIViewController {
                 }
             }
         }
+        
+        for index in 0..<newGroupMember.count {
+            let friendModel = FriendSearchModel(friendList: newGroupMember[index], isSelected: false)
+            newGroupFriends.append(friendModel)
+        }
+        
         setFilterGroupData()
         tableView.reloadData()
     }
@@ -172,12 +212,12 @@ class AddGroupsViewController: UIViewController {
             setFilterGroupData()
         } else {
             if isGroupExist == true {
-                filteredGroups = newGroupMember.filter {
-                    $0.userName.contains(searchTerm)
+                filteredMembers = newGroupFriends.filter {
+                    $0.friendList.userName.contains(searchTerm)
                 }
             } else {
-                filteredGroups = friendList.filter {
-                    $0.userName.contains(searchTerm)
+                filteredMembers = friends.filter {
+                    $0.friendList.userName.contains(searchTerm)
                 }
             }
             tableView.reloadData()
@@ -186,9 +226,9 @@ class AddGroupsViewController: UIViewController {
     
     func setFilterGroupData() {
         if isGroupExist == true {
-            filteredGroups = newGroupMember
+            filteredMembers = newGroupFriends
         } else {
-            filteredGroups = friendList
+            filteredMembers = friends
         }
         tableView.reloadData()
     }
@@ -317,12 +357,7 @@ extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource 
 extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        if isGroupExist == true {
-//            return newGroupMember.count
-//        } else {
-//            return friendList.count
-//        }
-        return filteredGroups.count
+        return filteredMembers.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -339,15 +374,10 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
         )
         
         guard let addGroupsCell = cell as? AddGroupTableViewCell else { return cell }
-//
-//        if isGroupExist == true {
-//            addGroupsCell.friendNameLabel.text = newGroupMember[indexPath.row].userName
-//        } else {
-//            addGroupsCell.friendNameLabel.text = friendList[indexPath.row].userName
-//        }
-        addGroupsCell.friendNameLabel.text = filteredGroups[indexPath.row].userName
+
+        addGroupsCell.friendNameLabel.text = filteredMembers[indexPath.row].friendList.userName
         
-        if selectedIndexs.contains(indexPath.row) {
+        if filteredMembers[indexPath.row].isSelected == true {
             cell.accessoryType = .checkmark
             addGroupsCell.selectedButton.isSelected = true
         } else {
@@ -359,20 +389,42 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        filteredMembers[indexPath.row].isSelected.toggle()
         
-        if let index = selectedIndexs.index(of: indexPath.row) {
-            selectedIndexs.remove(at: index)
-            //            print(selectedIndexs)
-            member.remove(at: index)
-        } else {
-            selectedIndexs.append(indexPath.row)
-            if isGroupExist == true {
-                member.append(newGroupMember[indexPath.row].userId)
-            } else {
-                member.append(friendList[indexPath.row].userId)
+        if isGroupExist == true {
+            for index in 0..<newGroupFriends.count {
+                if newGroupFriends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
+                    newGroupFriends[index].isSelected.toggle()
+                }
             }
-            //            print(selectedIndexs)
+        } else {
+            for index in 0..<friends.count {
+                if friends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
+                    friends[index].isSelected.toggle()
+                }
+            }
         }
+
+        self.tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        filteredMembers[indexPath.row].isSelected.toggle()
+        
+        if isGroupExist == true {
+            for index in 0..<newGroupFriends.count {
+                if newGroupFriends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
+                    newGroupFriends[index].isSelected.toggle()
+                }
+            }
+        } else {
+            for index in 0..<friends.count {
+                if friends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
+                    friends[index].isSelected.toggle()
+                }
+            }
+        }
+        
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }
