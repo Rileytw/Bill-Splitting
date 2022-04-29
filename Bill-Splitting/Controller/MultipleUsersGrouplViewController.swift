@@ -501,7 +501,8 @@ extension MultipleUsersGrouplViewController: UIContextMenuInteractionDelegate {
                 guard let detailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: GroupDetailViewController.self)) as? GroupDetailViewController else { return }
                 detailViewController.groupData = self.groupData
                 detailViewController.userData = self.userData
-                self.present(detailViewController, animated: true, completion: nil)
+//                self.present(detailViewController, animated: true, completion: nil)
+                self.show(detailViewController, sender: nil)
             }
 
             return UIMenu(title: "", children: [infoAction])

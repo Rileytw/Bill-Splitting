@@ -21,6 +21,7 @@ class GroupDetailViewController: UIViewController {
         super.viewDidLoad()
         setTableView()
         setButton()
+        setAddGroupButton()
     }
     
     func setTableView() {
@@ -60,7 +61,13 @@ class GroupDetailViewController: UIViewController {
         guard let addGroupViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
         addGroupViewController.isGroupExist = true
         addGroupViewController.groupData = groupData
-        self.present(addGroupViewController, animated: true, completion: nil)
+//        self.present(addGroupViewController, animated: true, completion: nil)
+        self.show(addGroupViewController, sender: nil)
+    }
+    
+    func setAddGroupButton() {
+        let addButton = UIBarButtonItem.init(title: "編輯", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pressEdit))
+        self.navigationItem.setRightBarButton(addButton, animated: true)
     }
 }
 

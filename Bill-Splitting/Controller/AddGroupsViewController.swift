@@ -91,7 +91,16 @@ class AddGroupsViewController: UIViewController {
     }
     
     func setAddGroupButton() {
-        let addButton = UIBarButtonItem.init(title: "建立群組", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pressAddGroupButton))
+        var buttonName: String
+        if isGroupExist == true {
+            buttonName = "儲存"
+        } else {
+            buttonName = "建立群組"
+        }
+        
+        let addButton = UIBarButtonItem.init(title: buttonName ?? "",
+                                             style: UIBarButtonItem.Style.plain,
+                                             target: self, action: #selector(pressAddGroupButton))
         self.navigationItem.setRightBarButton(addButton, animated: true)
     }
     
@@ -110,7 +119,7 @@ class AddGroupsViewController: UIViewController {
                 self.member.forEach { member in
                     GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
                 }
-                self.dismiss(animated: true, completion: nil)
+                self.navigationController?.popToRootViewController(animated: true)
             } else {
                 member.append(currentUserId)
                 
