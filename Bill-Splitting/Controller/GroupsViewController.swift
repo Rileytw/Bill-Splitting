@@ -102,23 +102,23 @@ class GroupsViewController: UIViewController {
             switch selectedView.buttonIndex {
             case 0:
                 filteredGroups = groups.filter {
-                    $0.groupName.contains(searchTerm)
+                    $0.groupName.localizedCaseInsensitiveContains(searchTerm)
                 }
             case 1:
                 filteredGroups = multipleGroups.filter {
-                    $0.groupName.contains(searchTerm)
+                    $0.groupName.localizedCaseInsensitiveContains(searchTerm)
                 }
             case 2:
                 filteredGroups = personalGroups.filter {
-                    $0.groupName.contains(searchTerm)
+                    $0.groupName.localizedCaseInsensitiveContains(searchTerm)
                 }
             case 3:
                 filteredGroups = closedGroups.filter {
-                    $0.groupName.contains(searchTerm)
+                    $0.groupName.localizedCaseInsensitiveContains(searchTerm)
                 }
             default:
                 filteredGroups = groups.filter {
-                    $0.groupName.contains(searchTerm)
+                    $0.groupName.localizedCaseInsensitiveContains(searchTerm)
                 }
             }
             tableView.reloadData()

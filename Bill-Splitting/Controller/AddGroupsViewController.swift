@@ -77,7 +77,7 @@ class AddGroupsViewController: UIViewController {
                     let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
                     self?.friends.append(friendModel)
                 }
-                self?.setFilterGroupData()
+                self?.setFilterFriendsData()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -203,7 +203,7 @@ class AddGroupsViewController: UIViewController {
             newGroupFriends.append(friendModel)
         }
         
-        setFilterGroupData()
+        setFilterFriendsData()
         tableView.reloadData()
     }
     
@@ -218,22 +218,22 @@ class AddGroupsViewController: UIViewController {
     
     func searchGroup(_ searchTerm: String) {
         if searchTerm.isEmpty {
-            setFilterGroupData()
+            setFilterFriendsData()
         } else {
             if isGroupExist == true {
                 filteredMembers = newGroupFriends.filter {
-                    $0.friendList.userName.contains(searchTerm)
+                    $0.friendList.userName.localizedCaseInsensitiveContains(searchTerm)
                 }
             } else {
                 filteredMembers = friends.filter {
-                    $0.friendList.userName.contains(searchTerm)
+                    $0.friendList.userName.localizedCaseInsensitiveContains(searchTerm)
                 }
             }
             tableView.reloadData()
         }
     }
     
-    func setFilterGroupData() {
+    func setFilterFriendsData() {
         if isGroupExist == true {
             filteredMembers = newGroupFriends
         } else {
@@ -454,6 +454,6 @@ extension AddGroupsViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         searchBar.resignFirstResponder()
-        setFilterGroupData()
+        setFilterFriendsData()
     }
 }
