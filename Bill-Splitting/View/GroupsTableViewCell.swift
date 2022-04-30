@@ -25,9 +25,9 @@ class GroupsTableViewCell: UITableViewCell {
 //        cellView.backgroundColor = UIColor(red: 229/255, green: 223/255, blue: 223/255, alpha: 0.8)
         cellView.backgroundColor = UIColor(red: 27/255, green: 38/255, blue: 44/255, alpha: 0.5)
 //        "1D4D4F"
-        groupName.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
-        groupType.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
-        numberOfMembers.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
+        groupName.textColor = UIColor.greenWhite
+        groupType.textColor = UIColor.greenWhite
+        numberOfMembers.textColor = UIColor.greenWhite
         self.selectionStyle = UITableViewCell.SelectionStyle.none
     }
 

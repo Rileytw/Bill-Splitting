@@ -27,7 +27,7 @@ class ElementsStyle {
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.hexStringToUIColor(hex: "29A19C").cgColor
         button.layer.cornerRadius = 10
-        button.tintColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
+        button.tintColor = UIColor.greenWhite
         button.backgroundColor = UIColor.hexStringToUIColor(hex: "29A19C")
     }
     
@@ -45,5 +45,12 @@ class ElementsStyle {
         button.layer.shadowRadius = 0
         button.layer.shadowColor = CGColor.init(srgbRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         button.layer.shadowPath = UIBezierPath(rect: button.bounds).cgPath
+    }
+    
+    static func styleSpecificButton(_ button: UIButton) {
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "29A19C").cgColor
+        button.layer.cornerRadius = 20
+        button.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
     }
 }

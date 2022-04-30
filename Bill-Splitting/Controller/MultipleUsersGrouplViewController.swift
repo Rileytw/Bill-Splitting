@@ -52,6 +52,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         setGroupDetailView()
         setItemTableView()
         setSubscribeButton()
@@ -160,22 +161,24 @@ class MultipleUsersGrouplViewController: UIViewController {
         itemTableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         itemTableView.dataSource = self
         itemTableView.delegate = self
+        
+        itemTableView.backgroundColor = UIColor.clear
     }
     
     func setClosedGroupButton() {
         view.addSubview(closedGroupButton)
         closedGroupButton.translatesAutoresizingMaskIntoConstraints = false
         closedGroupButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
-        closedGroupButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
-        closedGroupButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        closedGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        closedGroupButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
+        closedGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        closedGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         
         closedGroupButton.setTitle("封存群組", for: .normal)
         closedGroupButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
         closedGroupButton.tintColor = .systemGray
         closedGroupButton.setTitleColor(.systemGray, for: .normal)
         closedGroupButton.addTarget(self, action: #selector(pressClosedGroup), for: .touchUpInside)
-        
+        ElementsStyle.styleSpecificButton(closedGroupButton)
     }
     
     @objc func pressClosedGroup() {
@@ -187,9 +190,9 @@ class MultipleUsersGrouplViewController: UIViewController {
         view.addSubview(subscribeButton)
         subscribeButton.translatesAutoresizingMaskIntoConstraints = false
         subscribeButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
-        subscribeButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
-        subscribeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        subscribeButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
+        subscribeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         
         if groupData?.type == 1 {
             subscribeButton.isHidden = true
@@ -202,6 +205,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         subscribeButton.tintColor = .systemGray
         subscribeButton.setTitleColor(.systemGray, for: .normal)
         subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(subscribeButton)
     }
     
     @objc func pressSubscribe() {
@@ -320,7 +324,6 @@ class MultipleUsersGrouplViewController: UIViewController {
         case 0 :
             let components = Calendar.current.dateComponents([.month], from: startDate, to: endDate)
             let month = components.month
-            //        print("Number of months: \(month)")
             if month ?? 0 > 1 {
                 var dateComponent = DateComponents()
                 dateComponent.month = 1
@@ -332,7 +335,6 @@ class MultipleUsersGrouplViewController: UIViewController {
         case 1 :
             let components = Calendar.current.dateComponents([.year], from: startDate, to: endDate)
             let year = components.year
-            //        print("Number of years: \(year)")
             if year ?? 0 > 1 {
                 var dateComponent = DateComponents()
                 dateComponent.year = 1
@@ -443,13 +445,13 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
                                          name: item.itemName,
                                          description: PaidDescription.settleUpInvolved,
                                          price: "$\(paid?.price ?? 0)")
-                itemsCell.paidDescription.textColor = .systemGreen
+                itemsCell.paidDescription.textColor = UIColor.styleGreen
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.paid,
                                          price: "$\(paid?.price ?? 0)")
-                itemsCell.paidDescription.textColor = .systemGreen
+                itemsCell.paidDescription.textColor = UIColor.styleGreen
             }
         } else {
             if involved?.userId == currentUserId {
@@ -458,20 +460,20 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
                                              name: item.itemName,
                                              description: PaidDescription.settleUpPaid,
                                              price: "$\(involved?.price ?? 0)")
-                    itemsCell.paidDescription.textColor = .systemRed
+                    itemsCell.paidDescription.textColor = UIColor.styleRed
                 } else {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,
                                              description: PaidDescription.involved,
                                              price: "$\(involved?.price ?? 0)")
-                    itemsCell.paidDescription.textColor = .systemRed
+                    itemsCell.paidDescription.textColor = UIColor.styleRed
                 }
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.notInvolved,
                                          price: "")
-                itemsCell.paidDescription.textColor = .systemGray
+                itemsCell.paidDescription.textColor = UIColor.greenWhite
             }
         }
         return itemsCell
