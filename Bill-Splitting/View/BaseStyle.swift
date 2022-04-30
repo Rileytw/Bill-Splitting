@@ -16,8 +16,9 @@ class ElementsStyle {
         gradientLayer.startPoint = CGPoint(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint(x: 0, y: 1)
         gradientLayer.locations = [0, 0.8]
-        let darkBlueColor = UIColor.hexStringToUIColor(hex: "19456B").cgColor
-        let lightBlueColor = UIColor(red: 79/255, green: 152/255, blue: 202/255, alpha: 0.9).cgColor
+        let darkBlueColor = UIColor.hexStringToUIColor(hex: "1D4D4F").cgColor
+//        let lightBlueColor = UIColor(red: 53/255, green: 115/255, blue: 118/255, alpha: 0.9).cgColor
+        let lightBlueColor = UIColor.hexStringToUIColor(hex: "6BA8A9").cgColor
         gradientLayer.colors = [darkBlueColor, lightBlueColor]
         view.layer.addSublayer(gradientLayer)
     }

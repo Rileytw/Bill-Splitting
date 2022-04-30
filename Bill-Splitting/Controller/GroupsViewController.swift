@@ -54,6 +54,7 @@ class GroupsViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
         tableView.register(UINib(nibName: String(describing: GroupsTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: GroupsTableViewCell.self))
@@ -180,7 +181,7 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
             groupsCell.groupType.text = "個人預付"
         }
         
-        groupsCell.numberOfMembers.text = String(filteredGroups[indexPath.row].member.count) + "人"
+        groupsCell.numberOfMembers.text = "成員人數：" + String(filteredGroups[indexPath.row].member.count) + "人"
 //        groupsCell.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         groupsCell.backgroundColor = UIColor.clear
         
@@ -194,6 +195,7 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         multipleUsersGroupViewController.groupData = filteredGroups[indexPath.row]
         self.show(multipleUsersGroupViewController, sender: nil)
     }
+    
 }
 
 extension GroupsViewController: SelectionViewDataSource, SelectionViewDelegate {

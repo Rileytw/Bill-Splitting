@@ -12,10 +12,22 @@ class GroupsTableViewCell: UITableViewCell {
     @IBOutlet var groupName: UILabel!
     @IBOutlet var groupType: UILabel!
     @IBOutlet var numberOfMembers: UILabel!
+    @IBOutlet var cellView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        contentView.backgroundColor = UIColor.clear
+//        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 10))
+        let margins = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+        contentView.frame = contentView.frame.inset(by: margins)
+        super.layoutSubviews()
+        
+        cellView.layer.cornerRadius = 10
+//        cellView.backgroundColor = UIColor(red: 229/255, green: 223/255, blue: 223/255, alpha: 0.8)
+        cellView.backgroundColor = UIColor(red: 27/255, green: 38/255, blue: 44/255, alpha: 0.5)
+//        "1D4D4F"
+        groupName.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
+        groupType.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
+        numberOfMembers.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -62,10 +62,13 @@ class TabBarViewController: UITabBarController {
     
     var allTabBatItem: UITabBarItem!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
                 
         viewControllers = tabs.map({ $0.viewController() })
+        self.tabBar.tintColor = UIColor(red: 27/255, green: 38/255, blue: 44/255, alpha: 0.5)
+        
     }
     
 }
