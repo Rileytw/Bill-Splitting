@@ -26,6 +26,8 @@ class SelectionView: UIView {
     
     var buttonIndex: Int?
     
+    var buttons = [UIButton]()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -54,10 +56,13 @@ class SelectionView: UIView {
             let selectedButton = UIButton()
             selectedButton.frame = CGRect(x: (width/CGFloat(numberOfButton ?? 0) + 1) * CGFloat(button), y: 0, width: width/CGFloat(numberOfButton ?? 0) - 0.5, height: buttonHeight)
             selectedButton.setTitle(textOfButtons[button].title, for: .normal)
-            selectedButton.setTitleColor(colorOfText, for: .normal)
             selectedButton.titleLabel?.font = fontOfText
-            selectedButton.backgroundColor = textOfButtons[button].color
+            ElementsStyle.styleButton(selectedButton)
             selectedButton.addTarget(self, action: #selector(changeIndicatorView), for: .touchUpInside)
+            buttons.append(selectedButton)
+            if button == 0 {
+                ElementsStyle.styleSelectedButton(selectedButton)
+            }
             addSubview(selectedButton)
         }
     }
@@ -75,6 +80,13 @@ class SelectionView: UIView {
         UIView.animate(withDuration: 0.25, animations: { [weak self] in
             self?.indicatorView.frame.origin.x = sender.frame.minX
         })
-        self.selectionViewDelegate?.didSelectedButton?(self, at:  buttonIndex ?? 0)
+        self.selectionViewDelegate?.didSelectedButton?(self, at: buttonIndex ?? 0)
+        
+        for button in buttons {
+            if button != sender {
+                ElementsStyle.styleNotSelectedButton(button)
+            }
+        }
+        ElementsStyle.styleSelectedButton(sender)
     }
 }

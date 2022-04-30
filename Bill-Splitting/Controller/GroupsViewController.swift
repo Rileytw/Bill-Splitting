@@ -13,10 +13,10 @@ class GroupsViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     
     let selectedSource = [
-        ButtonModel(color: UIColor.hexStringToUIColor(hex: "16C79A"), title: "所有群組"),
-        ButtonModel(color: UIColor.hexStringToUIColor(hex: "19456B"), title: "多人支付"),
-        ButtonModel(color: UIColor.hexStringToUIColor(hex: "11698E"), title: "個人預付"),
-        ButtonModel(color: .systemGray, title: "封存群組")
+        ButtonModel(title: "所有群組"),
+        ButtonModel(title: "多人支付"),
+        ButtonModel(title: "個人預付"),
+        ButtonModel(title: "封存群組")
     ]
     let selectedView = SelectionView(frame: .zero)
     let tableView = UITableView()
@@ -37,7 +37,6 @@ class GroupsViewController: UIViewController {
         setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
-//        view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         tableView.backgroundColor = UIColor.clear
         setSearchBar()
     }
@@ -51,7 +50,7 @@ class GroupsViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 10).isActive = true
+        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -88,8 +87,11 @@ class GroupsViewController: UIViewController {
     }
     
     func setSearchBar() {
-        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 40))
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
         tableView.tableHeaderView = searchBar
+        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
+        searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
         searchBar.delegate = self
         searchBar.showsCancelButton = true
         guard let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton else { return }
@@ -153,7 +155,7 @@ class GroupsViewController: UIViewController {
     }
     
     func setViewBackground() {
-        Background.styleBackground(view)
+        ElementsStyle.styleBackground(view)
     }
 }
 

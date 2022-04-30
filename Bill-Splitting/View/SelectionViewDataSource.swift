@@ -23,7 +23,7 @@ protocol SelectionViewDataSource: AnyObject {
 
 extension SelectionViewDataSource {
     func colorOfIndicator () -> UIColor {
-        return .systemGray
+        return UIColor.hexStringToUIColor(hex: "EFFFFB")
     }
     
     func colorOfText () -> UIColor {

@@ -17,7 +17,7 @@ class AccountManager {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             guard let user = result?.user,
                   error == nil else {
-                      print(error?.localizedDescription)
+                      print(error?.localizedDescription as Any)
                       return
                   }
             completion("\(user.uid)")

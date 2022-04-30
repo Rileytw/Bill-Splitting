@@ -18,7 +18,6 @@ class AddGroupTableViewCell: UITableViewCell {
 //        }
 //    }
 
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
