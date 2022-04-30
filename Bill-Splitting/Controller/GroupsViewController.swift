@@ -35,6 +35,7 @@ class GroupsViewController: UIViewController {
         setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
         tableView.backgroundColor = UIColor.clear
         setSearchBar()
         setAnimation()

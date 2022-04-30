@@ -14,6 +14,7 @@ class PaymentTableViewCell: UITableViewCell, UITextViewDelegate {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.backgroundColor = UIColor.clear
         paymentName.font = paymentName.font.withSize(18)
     }
 

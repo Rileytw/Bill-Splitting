@@ -23,8 +23,10 @@ class RecordsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         getGroupData()
         setTableView()
+        setAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -128,18 +130,28 @@ class RecordsViewController: UIViewController {
 //            print("====all:\(self.allPersonalItem)")
 //            print("====allCount:\(self.allPersonalItem.count)")
             self.tableView.reloadData()
+            self.removeAnimation()
         }
     }
-    
+
     func setAnimation() {
-        animationView = .init(name: "list")
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
-        animationView.frame = view.bounds
         animationView.contentMode = .scaleAspectFit
         animationView.loopMode = .loop
         animationView.animationSpeed = 0.75
-        view.addSubview(animationView)
         animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
     
     func setTableView() {
@@ -153,6 +165,7 @@ class RecordsViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = .clear
     }
 }
 

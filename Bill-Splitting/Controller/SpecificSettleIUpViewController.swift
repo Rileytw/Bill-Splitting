@@ -28,6 +28,7 @@ class SpecificSettleIUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         setUserInfo()
         setSettleUpButton()
         setTableView()
@@ -56,10 +57,10 @@ class SpecificSettleIUpViewController: UIViewController {
         nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             nameLabel.text = "付款對象：\(userData.userName)"
-            nameLabel.textColor = .systemPink
+            nameLabel.textColor = UIColor.styleRed
         } else {
             nameLabel.text = "收款對象：\(userData.userName)"
-            nameLabel.textColor = .systemTeal
+            nameLabel.textColor = UIColor.styleGreen
         }
         nameLabel.font = nameLabel.font.withSize(20)
         
@@ -76,14 +77,14 @@ class SpecificSettleIUpViewController: UIViewController {
             } else {
                 price.text = "付款金額：\(abs(userExpense[0].allExpense)) 元"
             }
-            price.textColor = .systemPink
+            price.textColor = UIColor.styleRed
         } else {
             if groupData?.creator == currentUserId {
                 price.text = "收款金額：\(abs(memberExpense.allExpense)) 元"
             } else {
                 price.text = "收款金額：\(abs(userExpense[0].allExpense)) 元"
             }
-            price.textColor = .systemTeal
+            price.textColor = UIColor.styleGreen
         }
         price.font = price.font.withSize(20)
         
@@ -95,6 +96,7 @@ class SpecificSettleIUpViewController: UIViewController {
         account.heightAnchor.constraint(equalToConstant: 40).isActive = true
         account.text = "帳戶資訊"
         account.font = price.font.withSize(20)
+        account.textColor = UIColor.greenWhite
     }
     
     func setTableView() {
@@ -102,12 +104,13 @@ class SpecificSettleIUpViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: account.bottomAnchor, constant: 10).isActive = true
         tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 10).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
         tableView.bottomAnchor.constraint(equalTo: settleButton.topAnchor, constant: 10).isActive = true
         
         tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = .clear
     }
     
     func setSettleUpButton() {
@@ -119,7 +122,8 @@ class SpecificSettleIUpViewController: UIViewController {
         settleButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         settleButton.setTitle("已結清", for: .normal)
-        settleButton.backgroundColor = .systemGray
+        ElementsStyle.styleSpecificButton(settleButton)
+//        settleButton.backgroundColor = .systemGray
         settleButton.addTarget(self, action: #selector(pressSettleUpButton), for: .touchUpInside)
     }
     

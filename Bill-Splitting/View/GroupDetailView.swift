@@ -64,8 +64,8 @@ class GroupDetailView: UIView {
         settleUpButton.frame = CGRect(x: (width/3) * 2 + 5, y: 60, width: width/3 - 10, height: 40)
         settleUpButton.setTitle("前往結算", for: .normal)
         settleUpButton.setImage(UIImage(systemName: "dollarsign.circle"), for: .normal)
-        settleUpButton.tintColor = UIColor.hexStringToUIColor(hex: "EE5007")
-        settleUpButton.setTitleColor(UIColor.hexStringToUIColor(hex: "EE5007"), for: .normal)
+        settleUpButton.tintColor = UIColor.hexStringToUIColor(hex: "ECB365")
+        settleUpButton.setTitleColor(UIColor.hexStringToUIColor(hex: "ECB365"), for: .normal)
         addSubview(settleUpButton)
     }
     

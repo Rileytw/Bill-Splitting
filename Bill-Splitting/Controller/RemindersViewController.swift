@@ -26,6 +26,7 @@ class RemindersViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         setTableView()
         setAddButton()
     }
@@ -47,6 +48,7 @@ class RemindersViewController: UIViewController {
         addNotificationButton.tintColor = .white
         addNotificationButton.backgroundColor = .systemGray
         addNotificationButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(addNotificationButton)
     }
     
     @objc func pressAddButton() {
@@ -168,6 +170,7 @@ class RemindersViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: ReminderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ReminderTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = .clear
         //        tableView.isEditing = true
     }
     
