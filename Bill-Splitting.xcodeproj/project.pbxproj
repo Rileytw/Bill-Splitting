@@ -43,6 +43,7 @@
 		3555072C2819633100FD2465 /* QRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3555072B2819633100FD2465 /* QRCodeViewController.swift */; };
 		3555072E28197E6900FD2465 /* ScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3555072D28197E6900FD2465 /* ScanQRCodeViewController.swift */; };
 		35550730281CE1D200FD2465 /* BaseStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3555072F281CE1D100FD2465 /* BaseStyle.swift */; };
+		35550732281D474C00FD2465 /* simpleLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 35550731281D474C00FD2465 /* simpleLoading.json */; };
 		35568A102813D0BA00646B57 /* Kingfisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A0F2813D0BA00646B57 /* Kingfisher.swift */; };
 		35568A1228145DA000646B57 /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A1128145DA000646B57 /* GroupDetailViewController.swift */; };
 		35568A152814638300646B57 /* GroupDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A132814638300646B57 /* GroupDetailTableViewCell.swift */; };
@@ -140,6 +141,7 @@
 		3555072B2819633100FD2465 /* QRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeViewController.swift; sourceTree = "<group>"; };
 		3555072D28197E6900FD2465 /* ScanQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQRCodeViewController.swift; sourceTree = "<group>"; };
 		3555072F281CE1D100FD2465 /* BaseStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseStyle.swift; sourceTree = "<group>"; };
+		35550731281D474C00FD2465 /* simpleLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simpleLoading.json; sourceTree = "<group>"; };
 		35568A0F2813D0BA00646B57 /* Kingfisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kingfisher.swift; sourceTree = "<group>"; };
 		35568A1128145DA000646B57 /* GroupDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailViewController.swift; sourceTree = "<group>"; };
 		35568A132814638300646B57 /* GroupDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailTableViewCell.swift; sourceTree = "<group>"; };
@@ -381,6 +383,7 @@
 				35568A202815628500646B57 /* list.json */,
 				35568A2228156C7900646B57 /* loading.json */,
 				35568A242815727600646B57 /* upload.json */,
+				35550731281D474C00FD2465 /* simpleLoading.json */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -446,6 +449,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35550732281D474C00FD2465 /* simpleLoading.json in Resources */,
 				35568A252815727600646B57 /* upload.json in Resources */,
 				35FF63F728080A8A00508EAF /* AddItemTableViewCell.xib in Resources */,
 				350A33622803DF4300201E40 /* Profile.storyboard in Resources */,

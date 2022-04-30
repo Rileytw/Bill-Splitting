@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import Lottie
 
 class GroupsViewController: UIViewController {
     
@@ -20,6 +21,8 @@ class GroupsViewController: UIViewController {
     ]
     let selectedView = SelectionView(frame: .zero)
     let tableView = UITableView()
+    private var animationView = AnimationView()
+    
     var groups: [GroupData] = [] {
         didSet {
             self.tableView.reloadData()
@@ -39,6 +42,7 @@ class GroupsViewController: UIViewController {
         navigationItem.title = "我的群組"
         tableView.backgroundColor = UIColor.clear
         setSearchBar()
+        setAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -141,6 +145,7 @@ class GroupsViewController: UIViewController {
             filteredGroups = groups
         }
         tableView.reloadData()
+        removeAnimation()
     }
     
     func setSelectedView() {
@@ -157,6 +162,26 @@ class GroupsViewController: UIViewController {
     
     func setViewBackground() {
         ElementsStyle.styleBackground(view)
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
