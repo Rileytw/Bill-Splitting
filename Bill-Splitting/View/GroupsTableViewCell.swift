@@ -28,6 +28,7 @@ class GroupsTableViewCell: UITableViewCell {
         groupName.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
         groupType.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
         numberOfMembers.textColor = UIColor.hexStringToUIColor(hex: "EFFFFB")
+        self.selectionStyle = UITableViewCell.SelectionStyle.none
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

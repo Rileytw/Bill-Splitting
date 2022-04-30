@@ -23,12 +23,7 @@ class GroupsViewController: UIViewController {
     let tableView = UITableView()
     private var animationView = AnimationView()
     
-    var groups: [GroupData] = [] {
-        didSet {
-            self.tableView.reloadData()
-        }
-    }
-    
+    var groups: [GroupData] = []    
     var multipleGroups: [GroupData] = []
     var personalGroups: [GroupData] = []
     var closedGroups: [GroupData] = []
@@ -207,7 +202,6 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         groupsCell.numberOfMembers.text = "成員人數：" + String(filteredGroups[indexPath.row].member.count) + "人"
-//        groupsCell.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         groupsCell.backgroundColor = UIColor.clear
         
         return groupsCell
