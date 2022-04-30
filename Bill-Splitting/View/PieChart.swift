@@ -40,6 +40,9 @@ class PieChart: UIView {
         
         let set = PieChartDataSet(entries: pieChartDataEntries, label: "成員")
         set.colors = ChartColorTemplates.liberty()
+        chartView.legend.textColor = UIColor.greenWhite
+        chartView.legend.font = UIFont.systemFont(ofSize: 16)
+        chartView.legend.font = UIFont.boldSystemFont(ofSize: 16)
         let data = PieChartData(dataSet: set)
         chartView.data = data
         chartView.rotationEnabled = false

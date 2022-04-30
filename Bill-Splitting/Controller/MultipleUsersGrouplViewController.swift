@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class MultipleUsersGrouplViewController: UIViewController {
     
@@ -15,6 +16,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     let closedGroupButton = UIButton()
     let subscribeButton = UIButton()
     let width = UIScreen.main.bounds.width
+    private var animationView = AnimationView()
     
     var groupData: GroupData?
     
@@ -59,9 +61,11 @@ class MultipleUsersGrouplViewController: UIViewController {
         setClosedGroupButton()
         
         navigationItem.title = "群組"
+        self.navigationController?.navigationBar.tintColor = UIColor.systemGray
         
         detectSubscription()
         addMenu()
+        setAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -136,6 +140,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         guard let chartViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ChartViewController.self)) as? ChartViewController else { return }
         chartViewController.memberExpense = memberExpense
         chartViewController.userData = userData
+        chartViewController.modalPresentationStyle = .fullScreen
         self.present(chartViewController, animated: true, completion: nil)
     }
     
@@ -222,6 +227,9 @@ class MultipleUsersGrouplViewController: UIViewController {
         ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") { [weak self] result in
             switch result {
             case .success(let items):
+                if items.isEmpty == true {
+                    self?.removeAnimation()
+                }
                 self?.itemData = items
                 items.forEach { item in
                     self?.getItemDetail(itemId: item.itemId)
@@ -257,6 +265,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
+                self?.removeAnimation()
             }
         }
     }
@@ -395,6 +404,26 @@ class MultipleUsersGrouplViewController: UIViewController {
         
         let interaction = UIContextMenuInteraction(delegate: self)
         button.addInteraction(interaction)
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
