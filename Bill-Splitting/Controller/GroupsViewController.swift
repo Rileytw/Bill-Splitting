@@ -33,11 +33,12 @@ class GroupsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setViewBackground()
         setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
-        view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
-        tableView.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+//        view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        tableView.backgroundColor = UIColor.clear
         setSearchBar()
     }
     
@@ -150,6 +151,10 @@ class GroupsViewController: UIViewController {
         selectedView.selectionViewDataSource = self
         selectedView.selectionViewDelegate = self
     }
+    
+    func setViewBackground() {
+        Background.styleBackground(view)
+    }
 }
 
 extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
@@ -174,7 +179,8 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         groupsCell.numberOfMembers.text = String(filteredGroups[indexPath.row].member.count) + "人"
-        groupsCell.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+//        groupsCell.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        groupsCell.backgroundColor = UIColor.clear
         
         return groupsCell
     }
