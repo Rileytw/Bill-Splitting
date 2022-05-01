@@ -296,9 +296,9 @@
 				35FF6404280C2B8500508EAF /* SpecificSettleIUpViewController.swift */,
 				35FF6406280C62C900508EAF /* SubscribeViewController.swift */,
 				355090EE28100FA80007C0CE /* RemindersViewController.swift */,
-				355090F0281039110007C0CE /* AddReminderViewController.swift */,
 				35568A19281532C800646B57 /* ChartViewController.swift */,
 				35568A1D281561E200646B57 /* RecordsViewController.swift */,
+				355090F0281039110007C0CE /* AddReminderViewController.swift */,
 				35568A312816D20E00646B57 /* SignInViewController.swift */,
 				35568A332817800100646B57 /* SignUpViewController.swift */,
 			);

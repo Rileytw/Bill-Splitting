@@ -183,13 +183,25 @@ class MultipleUsersGrouplViewController: UIViewController {
         closedGroupButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
         closedGroupButton.tintColor = .systemGray
         closedGroupButton.setTitleColor(.systemGray, for: .normal)
-        closedGroupButton.addTarget(self, action: #selector(pressClosedGroup), for: .touchUpInside)
+        closedGroupButton.addTarget(self, action: #selector(confirmCloseGroupAlert), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(closedGroupButton)
     }
     
-    @objc func pressClosedGroup() {
+    func pressClosedGroup() {
         GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "")
         self.navigationController?.popToRootViewController(animated: true)
+    }
+    
+    @objc func confirmCloseGroupAlert() {
+        let alertController = UIAlertController(title: "請確認使否封存群組", message: "封存後群組內容將不可編輯", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "封存", style: .destructive) { [weak self] _ in
+            self?.pressClosedGroup()
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     func setSubscribeButton() {
