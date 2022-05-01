@@ -8,7 +8,7 @@
 import UIKit
 import Lottie
 
-class MultipleUsersGrouplViewController: UIViewController {
+class CustomGroupViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let groupDetailView = GroupDetailView(frame: .zero)
@@ -454,7 +454,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     }
 }
 
-extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
+extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemData.count
     }
@@ -549,7 +549,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
     }
 }
 
-extension MultipleUsersGrouplViewController: UIContextMenuInteractionDelegate {
+extension CustomGroupViewController: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
            

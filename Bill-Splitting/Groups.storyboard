@@ -55,10 +55,10 @@
             </objects>
             <point key="canvasLocation" x="2996" y="-848"/>
         </scene>
-        <!--Multiple Users Groupl View Controller-->
+        <!--Custom Group View Controller-->
         <scene sceneID="a1y-Aa-5S2">
             <objects>
-                <viewController storyboardIdentifier="MultipleUsersGrouplViewController" id="Q05-BR-7k7" customClass="MultipleUsersGrouplViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CustomGroupViewController" id="Q05-BR-7k7" customClass="CustomGroupViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aL8-17-wRK">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

@@ -214,8 +214,8 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let multipleUsersGroupViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
+        guard let customGroupViewController =
+                storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
         
         var personalItem: ItemData?
         var groupData = [GroupData]()
@@ -225,7 +225,7 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         
         groupData = groups.filter { $0.groupId == personalItem?.groupId }
 //        print("peronalitem:\(personalItem)")
-        multipleUsersGroupViewController.groupData = groupData[0]
-        self.show(multipleUsersGroupViewController, sender: nil)
+        customGroupViewController.groupData = groupData[0]
+        self.show(customGroupViewController, sender: nil)
     }
 }

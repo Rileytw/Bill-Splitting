@@ -210,10 +210,10 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let multipleUsersGroupViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
-        multipleUsersGroupViewController.groupData = filteredGroups[indexPath.row]
-        self.show(multipleUsersGroupViewController, sender: nil)
+        guard let customGroupViewController =
+                storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
+        customGroupViewController.groupData = filteredGroups[indexPath.row]
+        self.show(customGroupViewController, sender: nil)
     }
     
 }
