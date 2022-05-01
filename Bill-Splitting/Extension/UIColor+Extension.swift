@@ -38,4 +38,5 @@ extension UIColor {
     
     static let styleRed = UIColor.hexStringToUIColor(hex: "FD5D5D")
 //    FF6363
+    static let selectedColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
 }
