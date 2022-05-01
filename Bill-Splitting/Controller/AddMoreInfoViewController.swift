@@ -13,8 +13,9 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var photoImageView = UIImageView()
     var addPhotoButton = UIButton()
+    var addPhotoLabel = UILabel()
     var completeButton = UIButton()
-    var descriptionButton = UIButton()
+    var descriptionLabek = UILabel()
     let dismissButton = UIButton()
     var descriptionTextView = UITextView()
     let imagePickerController = UIImagePickerController()
@@ -37,6 +38,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         ElementsStyle.styleBackground(view)
         setCompleteButton()
         setDescription()
+        setAddPhotoLabel()
         setAddPhotoButton()
         setPhotoImageView()
         setDismissButton()
@@ -48,15 +50,16 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         view.addSubview(addPhotoButton)
         addPhotoButton.translatesAutoresizingMaskIntoConstraints = false
         addPhotoButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
-        addPhotoButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        addPhotoButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        addPhotoButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        addPhotoButton.leftAnchor.constraint(equalTo: addPhotoLabel.rightAnchor, constant: 20).isActive = true
+        addPhotoButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        addPhotoButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         addPhotoButton.setImage(UIImage(systemName: "camera"), for: .normal)
-        addPhotoButton.setTitle(" 上傳照片", for: .normal)
+        addPhotoButton.setTitle("上傳", for: .normal)
         addPhotoButton.setTitleColor(UIColor.greenWhite, for: .normal)
         addPhotoButton.tintColor = UIColor.greenWhite
         addPhotoButton.addTarget(self, action: #selector(pressUploadPhoto), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(addPhotoButton)
     }
     
     @objc func pressUploadPhoto() {
@@ -167,20 +170,18 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     }
     
     func setDescription() {
-        view.addSubview(descriptionButton)
-        descriptionButton.translatesAutoresizingMaskIntoConstraints = false
-        descriptionButton.topAnchor.constraint(equalTo: completeButton.bottomAnchor, constant: 20).isActive = true
-        descriptionButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        descriptionButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        descriptionButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        descriptionButton.setImage(UIImage(systemName: "pencil"), for: .normal)
-        descriptionButton.setTitle(" 詳細說明", for: .normal)
-        descriptionButton.tintColor = UIColor.greenWhite
-        descriptionButton.setTitleColor(UIColor.greenWhite, for: .normal)
+        view.addSubview(descriptionLabek)
+        descriptionLabek.translatesAutoresizingMaskIntoConstraints = false
+        descriptionLabek.topAnchor.constraint(equalTo: completeButton.bottomAnchor, constant: 20).isActive = true
+        descriptionLabek.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        descriptionLabek.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        descriptionLabek.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        descriptionLabek.text = "詳細說明"
+        descriptionLabek.textColor = UIColor.greenWhite
         
         view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        descriptionTextView.topAnchor.constraint(equalTo: descriptionButton.bottomAnchor, constant: 20).isActive = true
+        descriptionTextView.topAnchor.constraint(equalTo: descriptionLabek.bottomAnchor, constant: 20).isActive = true
         descriptionTextView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         descriptionTextView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         descriptionTextView.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -211,5 +212,17 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func setAddPhotoLabel() {
+        view.addSubview(addPhotoLabel)
+        addPhotoLabel.translatesAutoresizingMaskIntoConstraints = false
+        addPhotoLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
+        addPhotoLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        addPhotoLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        addPhotoLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    
+        addPhotoLabel.textColor = UIColor.greenWhite
+        addPhotoLabel.text = "新增照片"
     }
 }
