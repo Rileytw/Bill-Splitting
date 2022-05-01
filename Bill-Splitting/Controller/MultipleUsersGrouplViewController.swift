@@ -15,6 +15,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     let itemTableView = UITableView()
     let closedGroupButton = UIButton()
     let subscribeButton = UIButton()
+    let groupName = UILabel()
     let width = UIScreen.main.bounds.width
     private var animationView = AnimationView()
     
@@ -55,10 +56,11 @@ class MultipleUsersGrouplViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        setGroupNameLabel()
         setGroupDetailView()
+        setClosedGroupButton()
         setItemTableView()
         setSubscribeButton()
-        setClosedGroupButton()
         
         navigationItem.title = "群組"
         self.navigationController?.navigationBar.tintColor = UIColor.systemGray
@@ -114,7 +116,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     func setGroupDetailView() {
         groupDetailView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(groupDetailView)
-        groupDetailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        groupDetailView.topAnchor.constraint(equalTo: groupName.bottomAnchor, constant: 5).isActive = true
         groupDetailView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         groupDetailView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         groupDetailView.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -160,7 +162,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         self.view.addSubview(itemTableView)
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
         itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
-        itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80).isActive = true
+        itemTableView.bottomAnchor.constraint(equalTo: closedGroupButton.topAnchor, constant: -10).isActive = true
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
@@ -174,7 +176,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     func setClosedGroupButton() {
         view.addSubview(closedGroupButton)
         closedGroupButton.translatesAutoresizingMaskIntoConstraints = false
-        closedGroupButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
+        closedGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         closedGroupButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
         closedGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         closedGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
@@ -417,6 +419,18 @@ class MultipleUsersGrouplViewController: UIViewController {
         
         let interaction = UIContextMenuInteraction(delegate: self)
         button.addInteraction(interaction)
+    }
+    
+    func setGroupNameLabel() {
+        view.addSubview(groupName)
+        groupName.translatesAutoresizingMaskIntoConstraints = false
+        groupName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
+        groupName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        groupName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 10).isActive = true
+        groupName.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        groupName.textColor = .greenWhite
+        groupName.text = groupData?.groupName ?? ""
     }
     
     func setAnimation() {

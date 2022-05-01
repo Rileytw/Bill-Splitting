@@ -151,7 +151,7 @@ class AddItemViewController: UIViewController {
     func setAddMoreButton() {
         view.addSubview(addMoreButton)
         addMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        addMoreButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+        addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         addMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         addMoreButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
         addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
