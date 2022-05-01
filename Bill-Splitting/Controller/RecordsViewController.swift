@@ -201,13 +201,13 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                                      name: itemName ?? "",
                                      description: PaidDescription.paid,
                                      price: "\(item.price)")
-            itemsCell.paidDescription.textColor = .systemGreen
+            itemsCell.paidDescription.textColor = .styleGreen
         } else {
             itemsCell.createItemCell(time: time,
                                      name: itemName ?? "",
                                      description: PaidDescription.involved,
                                      price: "\(abs(item.price))")
-            itemsCell.paidDescription.textColor = .systemRed
+            itemsCell.paidDescription.textColor = .styleRed
         }
       
         return itemsCell
