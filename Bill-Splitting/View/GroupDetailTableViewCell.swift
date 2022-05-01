@@ -23,6 +23,14 @@ class GroupDetailTableViewCell: UITableViewCell {
         groupDescription.text = "群組介紹："
         groupType.text = "群組類型："
         groupMember.text = "群組成員"
+        self.backgroundColor = .clear
+        groupName.textColor = .greenWhite
+        groupDescription.textColor = .greenWhite
+        groupType.textColor = .greenWhite
+        groupMember.textColor = .greenWhite
+        name.textColor = .greenWhite
+        type.textColor = .greenWhite
+        descriptionContent.textColor = .greenWhite
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

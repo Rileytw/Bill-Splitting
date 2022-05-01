@@ -18,6 +18,9 @@ class InvitationTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.backgroundColor = .clear
+        nameLabel.textColor = .greenWhite
+        email.textColor = .greenWhite
         agreeButton.setTitle("同意", for: .normal)
         disagreeButton.setTitle("拒絕", for: .normal)
         

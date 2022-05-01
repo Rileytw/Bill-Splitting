@@ -19,6 +19,7 @@ class GroupDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         setTableView()
         setButton()
         setAddGroupButton()
@@ -35,6 +36,7 @@ class GroupDetailViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: InvitationTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: InvitationTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = .clear
     }
     
     func setButton() {
