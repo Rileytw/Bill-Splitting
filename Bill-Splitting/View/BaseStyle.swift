@@ -68,6 +68,7 @@ class ElementsStyle {
         bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 1, width: textfield.frame.width, height: 1.0)
         bottomLine.backgroundColor = UIColor.selectedColor.cgColor
         textfield.borderStyle = UITextField.BorderStyle.none
+        textfield.textColor = .greenWhite
         textfield.layer.addSublayer(bottomLine)
         textfield.layer.masksToBounds = true
     }
