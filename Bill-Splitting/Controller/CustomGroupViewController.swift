@@ -110,7 +110,6 @@ class CustomGroupViewController: UIViewController {
                 semaphore.wait()
             }
         }
-        
     }
     
     func setGroupDetailView() {
@@ -176,15 +175,15 @@ class CustomGroupViewController: UIViewController {
     func setClosedGroupButton() {
         view.addSubview(closedGroupButton)
         closedGroupButton.translatesAutoresizingMaskIntoConstraints = false
-        closedGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        closedGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         closedGroupButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
         closedGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         closedGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         
         closedGroupButton.setTitle("封存群組", for: .normal)
         closedGroupButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-        closedGroupButton.tintColor = .systemGray
-        closedGroupButton.setTitleColor(.systemGray, for: .normal)
+        closedGroupButton.tintColor = .greenWhite
+        closedGroupButton.setTitleColor(.greenWhite, for: .normal)
         closedGroupButton.addTarget(self, action: #selector(confirmCloseGroupAlert), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(closedGroupButton)
     }
@@ -209,7 +208,7 @@ class CustomGroupViewController: UIViewController {
     func setSubscribeButton() {
         view.addSubview(subscribeButton)
         subscribeButton.translatesAutoresizingMaskIntoConstraints = false
-        subscribeButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
+        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         subscribeButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
         subscribeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
@@ -222,8 +221,8 @@ class CustomGroupViewController: UIViewController {
         
         subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
         subscribeButton.setTitle("設定週期", for: .normal)
-        subscribeButton.tintColor = .systemGray
-        subscribeButton.setTitleColor(.systemGray, for: .normal)
+        subscribeButton.tintColor = .greenWhite
+        subscribeButton.setTitleColor(.greenWhite, for: .normal)
         subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(subscribeButton)
     }
