@@ -28,14 +28,16 @@ class ElementsStyle {
     
     static func styleButton(_ button: UIButton) {
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "E2C275").cgColor
+        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "FFAD60").cgColor
         button.layer.cornerRadius = 10
         button.tintColor = UIColor.greenWhite
-        button.backgroundColor = UIColor.hexStringToUIColor(hex: "E2C275")
+        button.backgroundColor = UIColor.hexStringToUIColor(hex: "FFAD60")
 //        32407B
 //        29A19C
 //        FFD36E
 //        ECB365
+//        FFAD60
+//        E2C275
     }
     
     static func styleSelectedButton(_ button: UIButton) {
@@ -43,8 +45,9 @@ class ElementsStyle {
         button.layer.shadowOpacity = 0.8
         button.layer.shadowRadius = 8
 //        button.layer.shadowColor = UIColor(red: 111/255, green: 223/255, blue: 223/255, alpha: 0.9).cgColor
-        button.layer.shadowColor = UIColor(red: 252/255, green: 217/255, blue: 0/255, alpha: 0.5).cgColor
+        button.layer.shadowColor = UIColor(red: 255/255, green: 238/255, blue: 173/255, alpha: 0.8).cgColor
 //        rgb(236, 179, 101)
+//        rgb(255, 238, 173)
         button.layer.shadowPath = UIBezierPath(rect: button.bounds).cgPath
     }
     

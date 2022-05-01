@@ -23,7 +23,7 @@ protocol SelectionViewDataSource: AnyObject {
 
 extension SelectionViewDataSource {
     func colorOfIndicator () -> UIColor {
-        return UIColor.greenWhite
+        return UIColor.white
     }
     
     func colorOfText () -> UIColor {

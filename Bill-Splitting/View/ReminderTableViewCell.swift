@@ -16,7 +16,12 @@ class ReminderTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        self.backgroundColor = .clear
+        memberLabel.textColor = .greenWhite
+        typeLabel.textColor = .greenWhite
+        groupLabel.textColor = .greenWhite
+        remindTime.textColor = .greenWhite
+        self.selectionStyle = UITableViewCell.SelectionStyle.none
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
