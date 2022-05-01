@@ -55,20 +55,20 @@ class AddItemViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        setAddButton()
         setAddItemView()
         setTypeLabel()
         setTypePickerView()
         setmemberPickerView()
-        setAddButton()
-        setTableView()
         setAddMoreButton()
+        setTableView()
         setDismissButton()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
-        addMoreButton.clipsToBounds = true
+//        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
+//        addMoreButton.clipsToBounds = true
         ElementsStyle.styleTextField(addItemView.itemNameTextField)
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
@@ -76,7 +76,7 @@ class AddItemViewController: UIViewController {
     func setAddItemView() {
         view.addSubview(addItemView)
         addItemView.translatesAutoresizingMaskIntoConstraints = false
-        addItemView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        addItemView.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 10).isActive = true
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -139,10 +139,10 @@ class AddItemViewController: UIViewController {
         addButton.setTitle("完成", for: .normal)
         addButton.backgroundColor = .systemGray
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
-        addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60).isActive = true
-        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60).isActive = true
-        addButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        addButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         ElementsStyle.styleSpecificButton(addButton)
         
         addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
@@ -151,13 +151,14 @@ class AddItemViewController: UIViewController {
     func setAddMoreButton() {
         view.addSubview(addMoreButton)
         addMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        addMoreButton.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -5).isActive = true
-        addMoreButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        addMoreButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        addMoreButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        addMoreButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+        addMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
         addMoreButton.backgroundColor = .systemTeal
         addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
+        addMoreButton.setTitle(" 更多資訊", for: .normal)
         addMoreButton.tintColor = .white
         addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(addMoreButton)
@@ -186,7 +187,7 @@ class AddItemViewController: UIViewController {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: memberPickerView.bottomAnchor, constant: 10).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -10).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: addMoreButton.topAnchor, constant: -10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         tableView.backgroundColor = .clear
@@ -318,8 +319,8 @@ class AddItemViewController: UIViewController {
     func setDismissButton() {
         view.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
         dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
