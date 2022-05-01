@@ -34,16 +34,18 @@ class AddItemView: UIView {
         addSubview(itemName)
         itemName.translatesAutoresizingMaskIntoConstraints = false
         itemName.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
-        itemName.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
-        itemName.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/3).isActive = true
+        itemName.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20).isActive = true
+        itemName.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/3 - 40).isActive = true
         itemName.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        itemName.textColor = UIColor.greenWhite
         
         addSubview(priceLabel)
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         priceLabel.topAnchor.constraint(equalTo: itemName.bottomAnchor, constant: 40).isActive = true
-        priceLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
-        priceLabel.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/3).isActive = true
+        priceLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20).isActive = true
+        priceLabel.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/3 - 40).isActive = true
         priceLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        priceLabel.textColor = UIColor.greenWhite
         
         itemName.lineBreakMode = NSLineBreakMode.byWordWrapping
         itemName.numberOfLines = 0
@@ -52,16 +54,14 @@ class AddItemView: UIView {
     func setTextField() {
         addSubview(itemNameTextField)
         itemNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        itemNameTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        itemNameTextField.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true
+        itemNameTextField.centerYAnchor.constraint(equalTo: itemName.centerYAnchor, constant: -5).isActive = true
         itemNameTextField.leadingAnchor.constraint(equalTo: itemName.trailingAnchor, constant: 10).isActive = true
         itemNameTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2 + 20).isActive = true
         itemNameTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         addSubview(priceTextField)
         priceTextField.translatesAutoresizingMaskIntoConstraints = false
-        priceTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        priceTextField.topAnchor.constraint(equalTo: itemNameTextField.bottomAnchor, constant: 10).isActive = true
+        priceTextField.centerYAnchor.constraint(equalTo: priceLabel.centerYAnchor, constant: -5).isActive = true
         priceTextField.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 10).isActive = true
         priceTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2 + 20).isActive = true
         priceTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true

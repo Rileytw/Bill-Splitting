@@ -78,6 +78,10 @@ class AddGroupsViewController: UIViewController {
             }
         }
     }
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        ElementsStyle.styleTextField(nameTextField)
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -241,9 +245,6 @@ class AddGroupsViewController: UIViewController {
     }
     
     func setTextField() {
-        nameTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        nameTextField.layer.borderColor = UIColor.black.cgColor
-        nameTextField.layer.borderWidth = 1
         self.view.addSubview(nameTextField)
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 20).isActive = true

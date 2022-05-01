@@ -62,4 +62,13 @@ class ElementsStyle {
         button.layer.cornerRadius = 20
         button.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
     }
+    
+    static func styleTextField(_ textfield: UITextField) {        
+        let bottomLine = CALayer()
+        bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 1, width: textfield.frame.width, height: 1.0)
+        bottomLine.backgroundColor = UIColor.selectedColor.cgColor
+        textfield.borderStyle = UITextField.BorderStyle.none
+        textfield.layer.addSublayer(bottomLine)
+        textfield.layer.masksToBounds = true
+    }
 }
