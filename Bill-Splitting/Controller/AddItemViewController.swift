@@ -137,7 +137,7 @@ class AddItemViewController: UIViewController {
     func setAddButton() {
         view.addSubview(addButton)
         addButton.setTitle("完成", for: .normal)
-        addButton.backgroundColor = .systemGray
+//        addButton.backgroundColor = .systemGray
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
         addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
