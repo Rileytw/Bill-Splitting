@@ -248,7 +248,6 @@ class SubscribeViewController: UIViewController {
         }
     }
     
-    
     func setDismissButton() {
         view.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false

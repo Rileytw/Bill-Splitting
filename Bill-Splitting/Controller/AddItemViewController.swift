@@ -35,6 +35,7 @@ class AddItemViewController: UIViewController {
     var involvedExpenseData: [ExpenseInfo] = []
     var involvedPrice: Double?
     var choosePaidMember = UILabel()
+    var chooseInvolvedMember = UILabel()
     var addMoreButton = UIButton()
     
     var isItemExist: Bool = false
@@ -61,6 +62,7 @@ class AddItemViewController: UIViewController {
         setTypePickerView()
         setmemberPickerView()
         setAddMoreButton()
+        setInvolvedMembers()
         setTableView()
         setDismissButton()
     }
@@ -92,7 +94,7 @@ class AddItemViewController: UIViewController {
     func setTypePickerView() {
         view.addSubview(typePickerView)
         typePickerView.translatesAutoresizingMaskIntoConstraints = false
-        typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
+        typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 40).isActive = true
         typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -105,11 +107,25 @@ class AddItemViewController: UIViewController {
     }
     
     func setmemberPickerView() {
+        view.addSubview(choosePaidMember)
+        choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
+        choosePaidMember.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 40).isActive = true
+        choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        choosePaidMember.text = "選擇付款人"
+        choosePaidMember.textColor = UIColor.greenWhite
+        if groupData?.type == 0 {
+            choosePaidMember.isHidden = true
+        }
+        
         view.addSubview(memberPickerView)
         memberPickerView.translatesAutoresizingMaskIntoConstraints = false
-        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 60).isActive = true
-        memberPickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 40).isActive = true
+        memberPickerView.leadingAnchor.constraint(equalTo: choosePaidMember.trailingAnchor, constant: 20).isActive = true
+        memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
+//        typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
+//        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
         memberPickerView.pickerView.dataSource = self
@@ -119,18 +135,6 @@ class AddItemViewController: UIViewController {
         if groupData?.type == 0 {
             memberPickerView.isHidden = true
             memberPickerView.heightAnchor.constraint(equalToConstant: 0).isActive = true
-        }
-        
-        view.addSubview(choosePaidMember)
-        choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
-        choosePaidMember.bottomAnchor.constraint(equalTo: memberPickerView.topAnchor, constant: -10).isActive = true
-        choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        choosePaidMember.text = "選擇付款人"
-        choosePaidMember.textColor = UIColor.greenWhite
-        if groupData?.type == 0 {
-            choosePaidMember.isHidden = true
         }
     }
     
@@ -183,10 +187,21 @@ class AddItemViewController: UIViewController {
         self.present(addMoreInfoViewController, animated: true, completion: nil)
     }
     
+    func setInvolvedMembers() {
+        view.addSubview(chooseInvolvedMember)
+        chooseInvolvedMember.translatesAutoresizingMaskIntoConstraints = false
+        chooseInvolvedMember.topAnchor.constraint(equalTo: choosePaidMember.bottomAnchor, constant: 20).isActive = true
+        chooseInvolvedMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        chooseInvolvedMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        chooseInvolvedMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        chooseInvolvedMember.text = "選擇參與人"
+        chooseInvolvedMember.textColor = UIColor.greenWhite
+    }
+    
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: memberPickerView.bottomAnchor, constant: 10).isActive = true
+        tableView.topAnchor.constraint(equalTo: chooseInvolvedMember.bottomAnchor, constant: 10).isActive = true
         tableView.bottomAnchor.constraint(equalTo: addMoreButton.topAnchor, constant: -10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
@@ -308,7 +323,7 @@ class AddItemViewController: UIViewController {
     func setTypeLabel() {
         view.addSubview(typeLabel)
         typeLabel.translatesAutoresizingMaskIntoConstraints = false
-        typeLabel.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
+        typeLabel.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 40).isActive = true
         typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         typeLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
         typeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
