@@ -29,6 +29,7 @@ class RemindersViewController: UIViewController {
         ElementsStyle.styleBackground(view)
         setTableView()
         setAddButton()
+        navigationItem.title = "提醒"
     }
     
     override func viewWillAppear(_ animated: Bool) {

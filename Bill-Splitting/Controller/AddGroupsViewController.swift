@@ -55,9 +55,12 @@ class AddGroupsViewController: UIViewController {
         setAddGroupButton()
         setInviteButton()
         setTableView()
+//        let appearance = UINavigationBarAppearance()
+//        navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationItem.title = "新增群組"
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
-        self.navigationController?.navigationBar.tintColor = UIColor.systemGray
+//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.selectedColor]
+//        self.navigationController?.navigationBar.tintColor = UIColor.selectedColor
+//        self.navigationController?.navigationBar.barTintColor = .black
         setSearchBar()
     }
     

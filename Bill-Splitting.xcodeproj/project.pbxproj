@@ -74,6 +74,7 @@
 		35D0EAD8281FB806001C9324 /* ProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */; };
 		35D0EAD9281FB806001C9324 /* ProfileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */; };
 		35D0EADC281FC7BF001C9324 /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */; };
+		35D0EADF281FF49F001C9324 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EADE281FF49F001C9324 /* BaseViewController.swift */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -176,6 +177,7 @@
 		35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCollectionViewCell.swift; sourceTree = "<group>"; };
 		35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileCollectionViewCell.xib; sourceTree = "<group>"; };
 		35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
+		35D0EADE281FF49F001C9324 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 			isa = PBXGroup;
 			children = (
 				350A335B2803DD0100201E40 /* TabBarViewController.swift */,
+				35D0EADE281FF49F001C9324 /* BaseViewController.swift */,
 				350A33472800450000201E40 /* AddGroupsViewController.swift */,
 				35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */,
 				3555072D28197E6900FD2465 /* ScanQRCodeViewController.swift */,
@@ -580,6 +583,7 @@
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
 				3593E1322812E34100F3A31C /* ItemMemberTableViewCell.swift in Sources */,
 				3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */,
+				35D0EADF281FF49F001C9324 /* BaseViewController.swift in Sources */,
 				35FF63F32807B2DB00508EAF /* AddItemView.swift in Sources */,
 				35FF63ED2806AAD000508EAF /* CustomGroupViewController.swift in Sources */,
 				35FF63FD280A5B3300508EAF /* SettleUpViewController.swift in Sources */,

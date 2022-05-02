@@ -63,8 +63,8 @@ class CustomGroupViewController: UIViewController {
         setSubscribeButton()
         
         navigationItem.title = "群組"
-        self.navigationController?.navigationBar.tintColor = UIColor.systemGray
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
+//        self.navigationController?.navigationBar.tintColor = UIColor.systemGray
+//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
         
         detectSubscription()
         addMenu()

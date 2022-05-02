@@ -35,8 +35,9 @@ class GroupsViewController: UIViewController {
         setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
-        tableView.backgroundColor = UIColor.clear
+//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.selectedColor]
+//        self.navigationController?.navigationBar.tintColor = UIColor.selectedColor
+//        self.navigationController?.navigationBar.backgroundColor = .black
         setSearchBar()
         setAnimation()
     }
@@ -55,7 +56,7 @@ class GroupsViewController: UIViewController {
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        
+        tableView.backgroundColor = UIColor.clear
         tableView.register(UINib(nibName: String(describing: GroupsTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: GroupsTableViewCell.self))
         tableView.dataSource = self
