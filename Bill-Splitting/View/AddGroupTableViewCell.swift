@@ -22,6 +22,9 @@ class AddGroupTableViewCell: UITableViewCell {
         super.awakeFromNib()
         selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
         selectedButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        self.backgroundColor = .clear
+        friendNameLabel.textColor = .greenWhite
+        selectedButton.tintColor = .greenWhite
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

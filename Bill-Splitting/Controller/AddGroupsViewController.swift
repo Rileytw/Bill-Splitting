@@ -48,6 +48,7 @@ class AddGroupsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         setTextField()
         setTextView()
         setUpPickerView(data: pickerViewData)
@@ -210,8 +211,11 @@ class AddGroupsViewController: UIViewController {
     }
     
     func setSearchBar() {
-        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 40))
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
         tableView.tableHeaderView = searchBar
+        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
+        searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
         searchBar.delegate = self
         searchBar.showsCancelButton = true
         guard let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton else { return }
@@ -254,6 +258,7 @@ class AddGroupsViewController: UIViewController {
         
         let nameLabel = UILabel()
         nameLabel.text = "群組名稱"
+        nameLabel.textColor = .greenWhite
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 20).isActive = true
@@ -267,16 +272,21 @@ class AddGroupsViewController: UIViewController {
     }
     
     func setTextView() {
-        descriptionTextView.layer.borderWidth = 1
         self.view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .bottom, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: descriptionTextView,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
         NSLayoutConstraint(item: descriptionTextView, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 60).isActive = true
+        descriptionTextView.layer.borderWidth = 1
+        descriptionTextView.layer.borderColor = UIColor.greenWhite.cgColor
+        descriptionTextView.backgroundColor = .clear
+        descriptionTextView.textColor = UIColor.greenWhite
+        descriptionTextView.font = UIFont.systemFont(ofSize: 16)
         
         let descriptionLabel = UILabel()
         descriptionLabel.text = "群組簡介"
+        descriptionLabel.textColor = .greenWhite
         view.addSubview(descriptionLabel)
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 20).isActive = true
@@ -325,19 +335,20 @@ class AddGroupsViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: AddGroupTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddGroupTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
-        
+        tableView.backgroundColor = .clear
     }
     
     func setInviteButton() {
         inviteFriendButton.setTitle("邀請好友", for: .normal)
         inviteFriendButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        inviteFriendButton.tintColor = .systemGray
-        inviteFriendButton.setTitleColor(.systemGray, for: .normal)
+        inviteFriendButton.tintColor = .greenWhite
+        inviteFriendButton.setTitleColor(.greenWhite, for: .normal)
+        ElementsStyle.styleSpecificButton(inviteFriendButton)
         view.addSubview(inviteFriendButton)
         inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
         inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        inviteFriendButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        inviteFriendButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
         inviteFriendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5).isActive = true
         
         inviteFriendButton.addTarget(self, action: #selector(pressInviteFriendButton), for: .touchUpInside)
