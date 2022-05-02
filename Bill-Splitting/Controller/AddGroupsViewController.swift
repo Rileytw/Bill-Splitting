@@ -400,10 +400,10 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
         addGroupsCell.friendNameLabel.text = filteredMembers[indexPath.row].friendList.userName
         
         if filteredMembers[indexPath.row].isSelected == true {
-            cell.accessoryType = .checkmark
+//            cell.accessoryType = .checkmark
             addGroupsCell.selectedButton.isSelected = true
         } else {
-            cell.accessoryType = .none
+//            cell.accessoryType = .none
             addGroupsCell.selectedButton.isSelected = false
         }
         

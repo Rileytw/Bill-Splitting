@@ -24,8 +24,8 @@ class AddItemTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
-        selectedButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        selectedButton.setImage(UIImage(systemName: "circle"), for: .normal)
+        selectedButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .selected)
         priceTextField.isHidden = true
         percentLabel.isHidden = true
         equalLabel.isHidden = true
