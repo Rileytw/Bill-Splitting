@@ -43,13 +43,17 @@
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
+                    <constraint firstAttribute="trailing" secondItem="JXx-yL-XF3" secondAttribute="trailing" constant="10" id="1Hf-dA-iz1"/>
+                    <constraint firstItem="JXx-yL-XF3" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="4ZN-Kj-qMa"/>
                     <constraint firstAttribute="bottom" secondItem="JXx-yL-XF3" secondAttribute="bottom" constant="10" id="DeM-L6-gBj"/>
+                    <constraint firstItem="JXx-yL-XF3" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="KKY-o9-Fta"/>
                     <constraint firstItem="JXx-yL-XF3" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="PS7-OZ-u1U"/>
                     <constraint firstItem="JXx-yL-XF3" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="Sfp-GT-gY9"/>
                     <constraint firstItem="rkO-wg-em2" firstAttribute="leading" secondItem="Fae-Nm-H2P" secondAttribute="leading" constant="20" id="UAD-4S-W48"/>
                     <constraint firstItem="Fae-Nm-H2P" firstAttribute="top" secondItem="JXx-yL-XF3" secondAttribute="top" constant="10" id="Wzd-ND-JLS"/>
                     <constraint firstItem="0KB-wq-N0T" firstAttribute="leading" secondItem="rkO-wg-em2" secondAttribute="leading" id="ZKz-Od-yJr"/>
                     <constraint firstAttribute="trailing" secondItem="JXx-yL-XF3" secondAttribute="trailing" constant="10" id="hE2-Xf-pXc"/>
+                    <constraint firstAttribute="bottom" secondItem="JXx-yL-XF3" secondAttribute="bottom" constant="10" id="kfI-iE-396"/>
                     <constraint firstItem="0KB-wq-N0T" firstAttribute="top" secondItem="rkO-wg-em2" secondAttribute="bottom" constant="10" id="mbt-WG-QRa"/>
                     <constraint firstItem="Fae-Nm-H2P" firstAttribute="leading" secondItem="JXx-yL-XF3" secondAttribute="leading" constant="20" id="sek-yy-L7k"/>
                     <constraint firstItem="rkO-wg-em2" firstAttribute="top" secondItem="Fae-Nm-H2P" secondAttribute="bottom" constant="20" id="xgb-jb-ym7"/>
@@ -63,7 +67,7 @@
                 <outlet property="groupType" destination="rkO-wg-em2" id="e2H-nY-LIO"/>
                 <outlet property="numberOfMembers" destination="0KB-wq-N0T" id="jCh-gH-zuX"/>
             </connections>
-            <point key="canvasLocation" x="132" y="114"/>
+            <point key="canvasLocation" x="131.8840579710145" y="113.83928571428571"/>
         </tableViewCell>
     </objects>
     <resources>

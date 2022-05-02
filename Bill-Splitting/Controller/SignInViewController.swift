@@ -10,13 +10,14 @@ import AuthenticationServices
 import Firebase
 import FirebaseAuth
 import CryptoKit
+import Lottie
 
 class SignInViewController: UIViewController {
     
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
     var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
-    let userDefault = UserDefaults()
     
+    private var animationView = AnimationView()
     var accountLabel = UILabel()
     var passwordLabel = UILabel()
     var accountTextField = UITextField()
@@ -116,6 +117,7 @@ class SignInViewController: UIViewController {
     }
     
     @objc func pressLogin() {
+        setAnimation()
         AccountManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
             self?.fetchUserData(userId: firebaseId, email: self?.accountTextField.text ?? "")
@@ -157,13 +159,6 @@ class SignInViewController: UIViewController {
     @objc func pressSignUp() {
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         guard let signUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignUpViewController.self)) as? SignUpViewController else { return }
-//        
-//        if #available(iOS 15.0, *) {
-//            if let sheet = signUpViewController.sheetPresentationController {
-//                sheet.detents = [.medium()]
-//                sheet.preferredCornerRadius = 20
-//            }
-//        }
         self.present(signUpViewController, animated: true, completion: nil)
     }
     
@@ -210,6 +205,21 @@ class SignInViewController: UIViewController {
             return String(format: "%02x", $0)
         }.joined()
         return hashString
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "accountLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
     }
     
     func setPassordLabelConstraint() {

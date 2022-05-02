@@ -75,6 +75,7 @@
 		35D0EAD9281FB806001C9324 /* ProfileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */; };
 		35D0EADC281FC7BF001C9324 /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */; };
 		35D0EADF281FF49F001C9324 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EADE281FF49F001C9324 /* BaseViewController.swift */; };
+		35D0EAE1282039AC001C9324 /* accountLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 35D0EAE0282039AC001C9324 /* accountLoading.json */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */; };
@@ -178,6 +179,7 @@
 		35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileCollectionViewCell.xib; sourceTree = "<group>"; };
 		35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
 		35D0EADE281FF49F001C9324 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		35D0EAE0282039AC001C9324 /* accountLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = accountLoading.json; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -396,6 +398,7 @@
 				35568A2228156C7900646B57 /* loading.json */,
 				35568A242815727600646B57 /* upload.json */,
 				35550731281D474C00FD2465 /* simpleLoading.json */,
+				35D0EAE0282039AC001C9324 /* accountLoading.json */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -473,6 +476,7 @@
 				350A335E2803DF2500201E40 /* Groups.storyboard in Resources */,
 				3593E1332812E34100F3A31C /* ItemMemberTableViewCell.xib in Resources */,
 				35568A162814638300646B57 /* GroupDetailTableViewCell.xib in Resources */,
+				35D0EAE1282039AC001C9324 /* accountLoading.json in Resources */,
 				35FF6401280A619E00508EAF /* SettleUpTableViewCell.xib in Resources */,
 				350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */,
 				350A33502800450100201E40 /* LaunchScreen.storyboard in Resources */,

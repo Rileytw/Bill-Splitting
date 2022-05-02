@@ -8,9 +8,11 @@
 import UIKit
 import Firebase
 import FirebaseAuth
+import Lottie
 
 class SignUpViewController: UIViewController {
 
+    private var animationView = AnimationView()
     var userNameLabel = UILabel()
     var userNameTextField = UITextField()
     var emailLabel = UILabel()
@@ -113,6 +115,7 @@ class SignUpViewController: UIViewController {
     }
     
     @objc func pressSignUp() {
+        setAnimation()
         AccountManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
                                                 password: passwordTextField.text ?? "") { [weak self] firebaseId in
             self?.userData.userName = self?.userNameTextField.text ?? ""
@@ -212,5 +215,20 @@ class SignUpViewController: UIViewController {
     
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "accountLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
     }
 }

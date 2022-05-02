@@ -134,14 +134,18 @@ class ProfileViewController: UIViewController {
         if Auth.auth().currentUser != nil {
             do {
                 try Auth.auth().signOut()
-                let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-                let signInViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self))
-                view.window?.rootViewController = signInViewController
-                view.window?.makeKeyAndVisible()
+                backToSignInPage()
             } catch let error as NSError {
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    func backToSignInPage() {
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let signInViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self))
+        view.window?.rootViewController = signInViewController
+        view.window?.makeKeyAndVisible()
     }
     
     func deletAccount() {
@@ -152,12 +156,14 @@ class ProfileViewController: UIViewController {
                     switch result {
                     case .success():
                         print("Account successfully deleted ")
+                        self?.backToSignInPage()
                     case .failure(_):
                         self?.alertSignInAgain()
                     }
                 }
             case .failure(let error):
                 print("Error updating document: \(error)")
+                //  MARK: - Add alert to tell user: Remove userdata failed
             }
         }
     }

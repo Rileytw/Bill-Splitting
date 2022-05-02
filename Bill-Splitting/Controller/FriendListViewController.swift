@@ -27,7 +27,7 @@ class FriendListViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        tabBarController?.tabBar.isHidden = true
         UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let friend):
@@ -37,6 +37,11 @@ class FriendListViewController: UIViewController {
                 print("Error decoding userData: \(error)")
             }
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
     
     func setInviteButton() {
