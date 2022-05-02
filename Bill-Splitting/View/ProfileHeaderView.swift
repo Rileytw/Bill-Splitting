@@ -14,13 +14,15 @@ class ProfileHeaderView: UICollectionReusableView {
     let label = UILabel()
     
     func configure() {
-        backgroundColor = .greenWhite
+        backgroundColor = .clear
         addSubview(label)
+        label.textColor = .greenWhite
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        label.frame = bounds
+//        label.frame = bounds
+        label.frame = CGRect(x: 20, y: 20, width: 100, height: 40)
     }
     
 }

@@ -14,9 +14,13 @@ class ProfileCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.backgroundColor = .selectedColor
         textLabel.textColor = .greenWhite
         icon.tintColor = .greenWhite
+        
+        self.layer.borderWidth = 1
+        self.layer.borderColor = UIColor.hexStringToUIColor(hex: "29A19C").cgColor
+        self.layer.cornerRadius = 20
+        self.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
     }
     
     func createProfileCell(image: UIImage, text: String) {
