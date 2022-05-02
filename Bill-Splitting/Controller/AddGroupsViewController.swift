@@ -21,7 +21,7 @@ class AddGroupsViewController: UIViewController {
     let fullScreenSize = UIScreen.main.bounds.size
     var typeTextField = UITextField()
     
-    var pickerView: UIPickerView!
+    var typePickerView = BasePickerViewInTextField(frame: .zero)
     var pickerViewData = [GroupType.multipleUsers.typeName, GroupType.personal.typeName]
     
     var friendList: [Friend] = [] {
@@ -51,12 +51,13 @@ class AddGroupsViewController: UIViewController {
         ElementsStyle.styleBackground(view)
         setTextField()
         setTextView()
-        setUpPickerView(data: pickerViewData)
         setTextFieldOfPickerView()
         setAddGroupButton()
         setInviteButton()
         setTableView()
         navigationItem.title = "新增群組"
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
+        self.navigationController?.navigationBar.tintColor = UIColor.systemGray
         setSearchBar()
     }
     
@@ -300,35 +301,37 @@ class AddGroupsViewController: UIViewController {
         }
     }
     
-    func setUpPickerView(data:[String]) {
-        pickerViewData = data
-        pickerView = UIPickerView()
-        pickerView.dataSource = self
-        pickerView.delegate = self
-    }
-    
     func setTextFieldOfPickerView() {
-        //        typeTextField = UITextField(frame: .zero)
-        self.view.addSubview(typeTextField)
-        typeTextField.translatesAutoresizingMaskIntoConstraints = false
-        typeTextField.widthAnchor.constraint(equalToConstant: fullScreenSize.width).isActive = true
-        typeTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        typeTextField.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
-        typeTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        typeTextField.inputView = pickerView
-        typeTextField.text = pickerViewData[0]
-        typeTextField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
-        typeTextField.textAlignment = .center
+        let typeLabel = UILabel()
+        view.addSubview(typeLabel)
+        typeLabel.translatesAutoresizingMaskIntoConstraints = false
+        typeLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
+        typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        typeLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        typeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        typeLabel.text = "群組類型"
+        typeLabel.textColor = .greenWhite
+        
+        view.addSubview(typePickerView)
+        typePickerView.translatesAutoresizingMaskIntoConstraints = false
+        typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        typePickerView.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
+        typePickerView.widthAnchor.constraint(equalTo: descriptionTextView.widthAnchor).isActive = true
+        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        
+        typePickerView.pickerViewData = pickerViewData
+        typePickerView.pickerView.dataSource = self
+        typePickerView.pickerView.delegate = self
         
         if isGroupExist == true {
-            typeTextField.isHidden = true
+            typePickerView.isHidden = true
         }
     }
     
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: typeTextField.bottomAnchor, constant: 20).isActive = true
+        tableView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: inviteFriendButton.topAnchor, constant: 0).isActive = true
@@ -369,7 +372,7 @@ extension AddGroupsViewController: UIPickerViewDelegate, UIPickerViewDataSource 
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        typeTextField.text = pickerViewData[row]
+        typePickerView.textField.text = pickerViewData[row]
     }
 }
 

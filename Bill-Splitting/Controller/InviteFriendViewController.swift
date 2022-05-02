@@ -20,11 +20,12 @@ class InviteFriendViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        ElementsStyle.styleBackground(view)
         setTextField()
         setSearchButton()
         setSearchResult()
         setScanQRCodeButton()
+        setDismissButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,6 +38,7 @@ class InviteFriendViewController: UIViewController {
     func setTextField() {
         let nameLabel = UILabel()
         nameLabel.text = "寄送好友邀請"
+        nameLabel.textColor = .greenWhite
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 100).isActive = true
@@ -45,8 +47,10 @@ class InviteFriendViewController: UIViewController {
         NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
         
         friendTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        friendTextField.layer.borderColor = UIColor.black.cgColor
+        friendTextField.layer.borderColor = UIColor.greenWhite.cgColor
         friendTextField.layer.borderWidth = 1
+        friendTextField.backgroundColor = .clear
+        friendTextField.textColor = .greenWhite
         self.view.addSubview(friendTextField)
         friendTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: friendTextField, attribute: .top, relatedBy: .equal, toItem: nameLabel, attribute: .bottom, multiplier: 1, constant: 20).isActive = true
@@ -67,12 +71,14 @@ class InviteFriendViewController: UIViewController {
         searchButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         searchButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
+        ElementsStyle.styleSpecificButton(searchButton)
         searchButton.addTarget(self, action: #selector(pressSearchButton), for: .touchUpInside)
     }
     
     func setSearchResult() {
         sendButton.setTitle("寄送", for: .normal)
-        sendButton.backgroundColor = .systemGray
+//        sendButton.backgroundColor = .systemGray
+        ElementsStyle.styleSpecificButton(sendButton)
         view.addSubview(sendButton)
         
         sendButton.translatesAutoresizingMaskIntoConstraints = false
@@ -84,6 +90,7 @@ class InviteFriendViewController: UIViewController {
         sendButton.addTarget(self, action: #selector(pressSendButton), for: .touchUpInside)
         
         friendNameLabel.text = friendData?.userName
+        friendNameLabel.textColor = .greenWhite
         view.addSubview(friendNameLabel)
         friendNameLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -98,8 +105,9 @@ class InviteFriendViewController: UIViewController {
         scanQRCode.translatesAutoresizingMaskIntoConstraints = false
         setScanQRCodeButtonConstraint()
         scanQRCode.setTitle("掃描 QRCode", for: .normal)
-        scanQRCode.setTitleColor(.systemGray, for: .normal)
-        scanQRCode.contentHorizontalAlignment = .left
+        scanQRCode.setTitleColor(.greenWhite, for: .normal)
+//        scanQRCode.contentHorizontalAlignment = .left
+        ElementsStyle.styleSpecificButton(scanQRCode)
         scanQRCode.addTarget(self, action: #selector(pressScanQRCode), for: .touchUpInside)
     }
     
@@ -194,8 +202,26 @@ class InviteFriendViewController: UIViewController {
     func setScanQRCodeButtonConstraint() {
         scanQRCode.topAnchor.constraint(equalTo: friendTextField.bottomAnchor, constant: 10).isActive = true
         scanQRCode.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        scanQRCode.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        scanQRCode.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        scanQRCode.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        scanQRCode.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setDismissButton() {
+        let dismissButton = UIButton()
+        view.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = UIColor.greenWhite
+        dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
     }
 }
 
