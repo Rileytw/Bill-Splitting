@@ -286,12 +286,21 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        if let cell = collectionView.cellForItem(at: indexPath) as? ProfileCollectionViewCell {
+//            cell.contentView.backgroundColor = nil
+//        }
         
         if indexPath.section == 0 {
             if indexPath.item == 0 {
                 let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
                 let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
-                self.show(qrCodeViewController, sender: nil)
+                if #available(iOS 15.0, *) {
+                    if let sheet = qrCodeViewController.sheetPresentationController {
+                        sheet.detents = [.medium()]
+                        sheet.preferredCornerRadius = 20
+                    }
+                }
+                self.present(qrCodeViewController, animated: true, completion: nil)
             } else if indexPath.item == 1 {
                 let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
                 let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
@@ -308,13 +317,25 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
                 self.show(friendInvitationVC, sender: nil)
             }
         } else {
-                if indexPath.item == 0 {
-                    logOut()
-                } else {
-                    alertDeleteAccount()
-                }
+            if indexPath.item == 0 {
+                logOut()
+            } else {
+                alertDeleteAccount()
             }
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            cell.backgroundColor = nil
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            cell.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
+        }
+    }
 }
 
 enum ProfileList {
