@@ -280,7 +280,7 @@ class AddGroupsViewController: UIViewController {
         NSLayoutConstraint(item: descriptionTextView, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 60).isActive = true
         descriptionTextView.layer.borderWidth = 1
-        descriptionTextView.layer.borderColor = UIColor.greenWhite.cgColor
+        descriptionTextView.layer.borderColor = UIColor.selectedColor.cgColor
         descriptionTextView.backgroundColor = .clear
         descriptionTextView.textColor = UIColor.greenWhite
         descriptionTextView.font = UIFont.systemFont(ofSize: 16)

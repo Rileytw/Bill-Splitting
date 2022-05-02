@@ -47,7 +47,7 @@ class InviteFriendViewController: UIViewController {
         NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
         
         friendTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        friendTextField.layer.borderColor = UIColor.greenWhite.cgColor
+        friendTextField.layer.borderColor = UIColor.selectedColor.cgColor
         friendTextField.layer.borderWidth = 1
         friendTextField.backgroundColor = .clear
         friendTextField.textColor = .greenWhite

@@ -52,6 +52,7 @@ class AddReminderViewController: UIViewController {
         setReminderLael()
         setDatePicker()
         setCompleteButton()
+        setDismissButton()
     }
     
 // MARK: Wait to try
@@ -303,6 +304,24 @@ class AddReminderViewController: UIViewController {
         completeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
         completeButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
         completeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setDismissButton() {
+        let dismissButton = UIButton()
+        view.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = UIColor.greenWhite
+        dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
     }
 }
 
