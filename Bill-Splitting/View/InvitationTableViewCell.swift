@@ -23,6 +23,10 @@ class InvitationTableViewCell: UITableViewCell {
         email.textColor = .greenWhite
         agreeButton.setTitle("同意", for: .normal)
         disagreeButton.setTitle("拒絕", for: .normal)
+        agreeButton.tintColor = .greenWhite
+        disagreeButton.tintColor = .greenWhite
+        ElementsStyle.styleSpecificButton(agreeButton)
+        ElementsStyle.styleSpecificButton(disagreeButton)
         
         self.agreeButton.addTarget(self, action: #selector(pressAgreeButton), for: .touchUpInside)
         self.disagreeButton.addTarget(self, action: #selector(pressDisagreeButton), for: .touchUpInside)

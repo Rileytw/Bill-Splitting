@@ -207,10 +207,7 @@ extension ProfileViewController: UICollectionViewDataSource {
 //        return profileList.count
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: String(describing: ProfileCollectionViewCell.self),
@@ -245,11 +242,7 @@ extension ProfileViewController: UICollectionViewDataSource {
         return profileCell
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        viewForSupplementaryElementOfKind kind: String,
-        at indexPath: IndexPath
-    ) -> UICollectionReusableView {
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfileHeaderView.identifier,
                                                                            for: indexPath) as? ProfileHeaderView else { return UICollectionReusableView()}
         if indexPath.section == 0 {
@@ -294,30 +287,34 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        if indexPath.item == 0 {
-            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
-            self.show(qrCodeViewController, sender: nil)
-        } else if indexPath.item == 1 {
-            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
-            self.show(paymentViewController, sender: nil)
-        } else if indexPath.item == 2 {
-            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
-            self.show(friendListViewController, sender: nil)
-        } else if indexPath.item == 3 {
-            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            guard let friendInvitationVC = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self)) as? FriendInvitationViewController
-            else { return }
-            friendInvitationVC.currentUserName = currentUser?.userName
-            self.show(friendInvitationVC, sender: nil)
-        } else if indexPath.item == 4 {
-            logOut()
+        if indexPath.section == 0 {
+            if indexPath.item == 0 {
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
+                self.show(qrCodeViewController, sender: nil)
+            } else if indexPath.item == 1 {
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
+                self.show(paymentViewController, sender: nil)
+            } else if indexPath.item == 2 {
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
+                self.show(friendListViewController, sender: nil)
+            } else if indexPath.item == 3 {
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                guard let friendInvitationVC = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self)) as? FriendInvitationViewController
+                else { return }
+                friendInvitationVC.currentUserName = currentUser?.userName
+                self.show(friendInvitationVC, sender: nil)
+            }
         } else {
-            alertDeleteAccount()
+                if indexPath.item == 0 {
+                    logOut()
+                } else {
+                    alertDeleteAccount()
+                }
+            }
         }
-    }
 }
 
 enum ProfileList {

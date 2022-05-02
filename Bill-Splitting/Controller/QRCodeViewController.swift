@@ -14,7 +14,7 @@ class QRCodeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        ElementsStyle.styleBackground(view)
         setQRCodeView()
         
     }
@@ -37,8 +37,8 @@ class QRCodeViewController: UIViewController {
         qrCodeView.translatesAutoresizingMaskIntoConstraints = false
         qrCodeView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         qrCodeView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        qrCodeView.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        qrCodeView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        qrCodeView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        qrCodeView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         qrCodeView.image = generateQRCode(qrString: AccountManager.shared.currentUser.currentUserEmail)
     }

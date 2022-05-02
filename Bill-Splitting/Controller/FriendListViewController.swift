@@ -20,7 +20,8 @@ class FriendListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        ElementsStyle.styleBackground(view)
+        setInviteButton()
         setTableView()
     }
     
@@ -37,14 +38,38 @@ class FriendListViewController: UIViewController {
             }
         }
     }
+    
+    func setInviteButton() {
+        let inviteFriendButton = UIButton()
+        inviteFriendButton.setTitle("邀請好友", for: .normal)
+        inviteFriendButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        inviteFriendButton.tintColor = .greenWhite
+        inviteFriendButton.setTitleColor(.greenWhite, for: .normal)
+        ElementsStyle.styleSpecificButton(inviteFriendButton)
+        view.addSubview(inviteFriendButton)
+        inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
+        inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        inviteFriendButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        inviteFriendButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        
+        inviteFriendButton.addTarget(self, action: #selector(pressInviteFriendButton), for: .touchUpInside)
+    }
+    
+    @objc func pressInviteFriendButton() {
+        let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+        let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
+        self.present(inviteFriendViewController, animated: true, completion: nil)
+    }
 
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 200).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.backgroundColor = .clear
         
         tableView.register(UINib(nibName: String(describing: ProfileTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ProfileTableViewCell.self))
         tableView.dataSource = self
@@ -65,14 +90,10 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
         )
         
         guard let profileCell = cell as? ProfileTableViewCell else { return cell }
-        
-        profileCell.profileItemName.text = friends?[indexPath.row].userName
+        profileCell.createCell(userName: friends?[indexPath.row].userName ?? "",
+                               userEmail: friends?[indexPath.row].userEmail ?? "")
         
         return profileCell
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
-    }
-    
+        
 }
