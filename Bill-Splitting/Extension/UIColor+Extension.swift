@@ -43,4 +43,8 @@ extension UIColor {
     static let styleOrange = UIColor.hexStringToUIColor(hex: "FFAD60")
     
     static let styleBlue = UIColor.hexStringToUIColor(hex: "041C32")
+    
+    static let styleYellow = UIColor.hexStringToUIColor(hex: "FFCE45")
+    
+    static let styleLightBlue = UIColor.hexStringToUIColor(hex: "61A4BC")
 }

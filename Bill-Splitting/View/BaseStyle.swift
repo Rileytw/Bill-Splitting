@@ -28,10 +28,11 @@ class ElementsStyle {
     
     static func styleButton(_ button: UIButton) {
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "FFAD60").cgColor
+        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "FFCE45").cgColor
         button.layer.cornerRadius = 10
         button.tintColor = UIColor.greenWhite
-        button.backgroundColor = UIColor.hexStringToUIColor(hex: "FFAD60")
+        button.setTitleColor(UIColor.styleBlue, for: .normal)
+        button.backgroundColor = UIColor.hexStringToUIColor(hex: "FFCE45")
 //        32407B
 //        29A19C
 //        FFD36E

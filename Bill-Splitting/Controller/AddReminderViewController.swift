@@ -142,12 +142,12 @@ class AddReminderViewController: UIViewController {
         setButtonsConstraint()
         creditButton.setTitle("收款", for: .normal)
         creditButton.titleLabel?.font = creditButton.titleLabel?.font.withSize(14)
-        creditButton.backgroundColor = .styleGreen
+        creditButton.backgroundColor = .styleLightBlue
         creditButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
         creditButton.setTitleColor(.styleBlue, for: .normal)
         
         debtButton.setTitle("付款", for: .normal)
-        debtButton.backgroundColor = .styleOrange
+        debtButton.backgroundColor = .styleYellow
         debtButton.titleLabel?.font = debtButton.titleLabel?.font.withSize(14)
         debtButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
         debtButton.setTitleColor(.styleBlue, for: .normal)
@@ -176,7 +176,7 @@ class AddReminderViewController: UIViewController {
             if button.isSelected && button !== sender {
                 button.isSelected = false
                 button.layer.borderWidth = 0
-                ElementsStyle.styleNotSelectedButton(sender)
+                ElementsStyle.styleNotSelectedButton(button)
             }
         }
     }
@@ -215,7 +215,7 @@ class AddReminderViewController: UIViewController {
         setDatePickerConstraint()
 //        remindTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
         remindTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
-        remindTimeDatePicker.contentHorizontalAlignment = .leading
+        remindTimeDatePicker.contentHorizontalAlignment = .right
         remindTimeDatePicker.overrideUserInterfaceStyle = .dark
         remindTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
     }
@@ -240,8 +240,8 @@ class AddReminderViewController: UIViewController {
         remindTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
         remindTimeDatePicker.topAnchor.constraint(equalTo: creditButton.bottomAnchor, constant: 20).isActive = true
         remindTimeDatePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        remindTimeDatePicker.leadingAnchor.constraint(equalTo: userPicker.leadingAnchor, constant: 0).isActive = true
-        remindTimeDatePicker.widthAnchor.constraint(equalToConstant: 220).isActive = true
+        remindTimeDatePicker.leadingAnchor.constraint(equalTo: reminderLabel.trailingAnchor, constant: 5).isActive = true
+        remindTimeDatePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5).isActive = true
     }
     
     func setGroupLabelConstraint() {
@@ -301,8 +301,8 @@ class AddReminderViewController: UIViewController {
     func setCompleteButtonConstraint() {
         completeButton.topAnchor.constraint(equalTo: typeLabel.bottomAnchor, constant: 100).isActive = true
         completeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-        completeButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        completeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        completeButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        completeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
 }
 
