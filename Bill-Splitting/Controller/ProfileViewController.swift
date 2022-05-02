@@ -353,8 +353,11 @@ enum ProfileList {
         case .friendInvitation:
             return UIImage(systemName: "mail.fill") ?? UIImage()
         case .logOut:
-            return UIImage(systemName: "rectangle.portrait.and.arrow.right.fill") ?? UIImage()
-//            return UIImage(systemName: "arrow.turn.down.right") ?? UIImage()
+            if #available(iOS 15, *) {
+                return UIImage(systemName: "rectangle.portrait.and.arrow.right.fill") ?? UIImage()
+            } else {
+                return UIImage(systemName: "arrow.turn.down.right") ?? UIImage()
+            }
         case .deleteAccount:
             return UIImage(systemName: "person.crop.circle.fill.badge.xmark") ?? UIImage()
         }

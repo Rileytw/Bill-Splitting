@@ -110,5 +110,4 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
     }
-    
 }
