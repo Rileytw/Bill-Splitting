@@ -222,4 +222,17 @@ class GroupManager {
             }
         }
     }
+    
+    func addLeaveMember(groupId: String, userId: String) {
+        let leaveMembersRef = db.collection(FireBaseCollection.group.rawValue).document(groupId)
+        leaveMembersRef.updateData([
+            "leaveMembers": FieldValue.arrayUnion([userId])
+        ])  { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+            }
+        }
+    }
 }

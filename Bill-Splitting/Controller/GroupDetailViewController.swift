@@ -119,6 +119,9 @@ class GroupDetailViewController: UIViewController {
                 print("remove member expense failed")
             }
         }
+        
+        GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
+                                           userId: currentUserId)
     }
     
     func backToGroupsPage() {
