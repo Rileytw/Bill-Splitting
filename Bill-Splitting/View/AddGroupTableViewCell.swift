@@ -11,6 +11,7 @@ class AddGroupTableViewCell: UITableViewCell {
     
     @IBOutlet var friendNameLabel: UILabel!
     @IBOutlet var selectedButton: UIButton!
+    @IBOutlet var chooseButton: UIButton!
 //    {
 //        didSet {
 //            selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
@@ -18,11 +19,14 @@ class AddGroupTableViewCell: UITableViewCell {
 //        }
 //    }
 
-    
     override func awakeFromNib() {
         super.awakeFromNib()
-        selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
-        selectedButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        selectedButton.setImage(UIImage(systemName: "circle"), for: .normal)
+        selectedButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .selected)
+        self.backgroundColor = .clear
+        friendNameLabel.textColor = .greenWhite
+        selectedButton.tintColor = .selectedColor
+
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

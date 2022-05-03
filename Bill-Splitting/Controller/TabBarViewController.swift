@@ -38,19 +38,24 @@ private enum Tab {
     func tabBarItem() -> UITabBarItem {
         switch self {
         case .groups:
-            return UITabBarItem(title: "groups", image: UIImage(systemName: "person.3"), selectedImage: UIImage(systemName: "person.3.fill")
+            return UITabBarItem(title: "groups", image: UIImage(systemName: "person.3"),
+                                selectedImage: UIImage(systemName: "person.3.fill")
             )
         case .reminders:
-            return UITabBarItem(title: "reminders", image: UIImage(systemName: "bell"), selectedImage: UIImage(systemName: "bell.fill")
+            return UITabBarItem(title: "reminders", image: UIImage(systemName: "bell"),
+                                selectedImage: UIImage(systemName: "bell.fill")
             )
         case .addGroups:
-            return UITabBarItem(title: "add groups", image: UIImage(systemName: "plus.square"), selectedImage: UIImage(systemName: "plus.square.fill")
+            return UITabBarItem(title: "add groups", image: UIImage(systemName: "plus.square"),
+                                selectedImage: UIImage(systemName: "plus.square.fill")
             )
         case .records:
-            return UITabBarItem(title: "records", image: UIImage(systemName: "list.bullet.rectangle"), selectedImage: UIImage(systemName: "list.bullet.rectangle.fill")
+            return UITabBarItem(title: "records", image: UIImage(systemName: "list.bullet.rectangle"),
+                                selectedImage: UIImage(systemName: "list.bullet.rectangle.fill")
             )
         case .profile:
-            return UITabBarItem(title: "profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill")
+            return UITabBarItem(title: "profile", image: UIImage(systemName: "person"),
+                                selectedImage: UIImage(systemName: "person.fill")
             )
         }
     }
@@ -66,6 +71,7 @@ class TabBarViewController: UITabBarController {
         super.viewDidLoad()
                 
         viewControllers = tabs.map({ $0.viewController() })
+        self.tabBar.tintColor = .selectedColor
+        self.tabBar.barTintColor = .styleBlue
     }
-    
 }

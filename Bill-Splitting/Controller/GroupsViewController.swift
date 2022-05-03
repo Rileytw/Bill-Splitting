@@ -7,25 +7,23 @@
 
 import UIKit
 import SwiftUI
+import Lottie
 
 class GroupsViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     
     let selectedSource = [
-        ButtonModel(color: UIColor.hexStringToUIColor(hex: "16C79A"), title: "所有群組"),
-        ButtonModel(color: UIColor.hexStringToUIColor(hex: "19456B"), title: "多人支付"),
-        ButtonModel(color: UIColor.hexStringToUIColor(hex: "11698E"), title: "個人預付"),
-        ButtonModel(color: .systemGray, title: "封存群組")
+        ButtonModel(title: "所有群組"),
+        ButtonModel(title: "多人支付"),
+        ButtonModel(title: "個人預付"),
+        ButtonModel(title: "封存群組")
     ]
     let selectedView = SelectionView(frame: .zero)
     let tableView = UITableView()
-    var groups: [GroupData] = [] {
-        didSet {
-            self.tableView.reloadData()
-        }
-    }
+    private var animationView = AnimationView()
     
+    var groups: [GroupData] = []    
     var multipleGroups: [GroupData] = []
     var personalGroups: [GroupData] = []
     var closedGroups: [GroupData] = []
@@ -33,12 +31,15 @@ class GroupsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setViewBackground()
         setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
-        view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
-        tableView.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.selectedColor]
+//        self.navigationController?.navigationBar.tintColor = UIColor.selectedColor
+//        self.navigationController?.navigationBar.backgroundColor = .black
         setSearchBar()
+        setAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -50,11 +51,12 @@ class GroupsViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 10).isActive = true
+        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tableView.backgroundColor = UIColor.clear
         tableView.register(UINib(nibName: String(describing: GroupsTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: GroupsTableViewCell.self))
         tableView.dataSource = self
@@ -87,8 +89,12 @@ class GroupsViewController: UIViewController {
     }
     
     func setSearchBar() {
-        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 40))
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
         tableView.tableHeaderView = searchBar
+        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
+        searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
+        searchBar.searchTextField.textColor = .styleBlue
         searchBar.delegate = self
         searchBar.showsCancelButton = true
         guard let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton else { return }
@@ -137,6 +143,7 @@ class GroupsViewController: UIViewController {
             filteredGroups = groups
         }
         tableView.reloadData()
+        removeAnimation()
     }
     
     func setSelectedView() {
@@ -149,6 +156,30 @@ class GroupsViewController: UIViewController {
         
         selectedView.selectionViewDataSource = self
         selectedView.selectionViewDelegate = self
+    }
+    
+    func setViewBackground() {
+        ElementsStyle.styleBackground(view)
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
@@ -173,19 +204,20 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
             groupsCell.groupType.text = "個人預付"
         }
         
-        groupsCell.numberOfMembers.text = String(filteredGroups[indexPath.row].member.count) + "人"
-        groupsCell.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
+        groupsCell.numberOfMembers.text = "成員人數：" + String(filteredGroups[indexPath.row].member.count) + "人"
+        groupsCell.backgroundColor = UIColor.clear
         
         return groupsCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let multipleUsersGroupViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
-        multipleUsersGroupViewController.groupData = filteredGroups[indexPath.row]
-        self.show(multipleUsersGroupViewController, sender: nil)
+        guard let customGroupViewController =
+                storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
+        customGroupViewController.groupData = filteredGroups[indexPath.row]
+        self.show(customGroupViewController, sender: nil)
     }
+    
 }
 
 extension GroupsViewController: SelectionViewDataSource, SelectionViewDelegate {

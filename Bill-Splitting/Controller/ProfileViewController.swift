@@ -8,25 +8,27 @@
 import UIKit
 import Firebase
 import FirebaseAuth
+import Lottie
 
 class ProfileViewController: UIViewController {
     
+    private var animationView = AnimationView()
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var currentUser: UserData?
-    let tableView = UITableView()
     var profileView = UIView()
     let userName = UILabel()
     let userEmail = UILabel()
     let editButton = UIButton()
+    var collectionView: UICollectionView!
     
     var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        ElementsStyle.styleBackground(view)
         getUserData()
         setProfileView()
-        setTableView()
+        setCollectionView()
         
         navigationItem.title = "個人頁面"
     }
@@ -44,17 +46,30 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    func setTableView() {
-        self.view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 0).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    func setCollectionView() {
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
+        layout.itemSize = CGSize(width: (self.view.frame.size.width - 30) / 2, height: 60)
+        layout.minimumLineSpacing = CGFloat(integerLiteral: 10)
+        layout.minimumInteritemSpacing = CGFloat(integerLiteral: 10)
+        layout.scrollDirection = UICollectionView.ScrollDirection.vertical
+        layout.headerReferenceSize = CGSize(width: 0, height: 100)
         
-        tableView.register(UINib(nibName: String(describing: ProfileTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ProfileTableViewCell.self))
-        tableView.dataSource = self
-        tableView.delegate = self
+        self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        self.view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 0).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5).isActive = true
+        collectionView.backgroundColor = .clear
+        
+        collectionView.register(UINib(nibName: String(describing: ProfileCollectionViewCell.self), bundle: nil), forCellWithReuseIdentifier: String(describing: ProfileCollectionViewCell.self))
+        collectionView.register(ProfileHeaderView.self,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                                withReuseIdentifier: ProfileHeaderView.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
     }
     
     func setProfileView() {
@@ -68,7 +83,8 @@ class ProfileViewController: UIViewController {
         userName.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
         userName.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
         userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        userName.tintColor = .systemGray
+        userName.textColor = .greenWhite
+        userName.font = userName.font.withSize(20)
         
         profileView.addSubview(userEmail)
         userEmail.translatesAutoresizingMaskIntoConstraints = false
@@ -76,7 +92,7 @@ class ProfileViewController: UIViewController {
         userEmail.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
         userEmail.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
         userEmail.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        userEmail.tintColor = .systemGray
+        userEmail.textColor = .greenWhite
         
         profileView.addSubview(editButton)
         editButton.translatesAutoresizingMaskIntoConstraints = false
@@ -85,7 +101,7 @@ class ProfileViewController: UIViewController {
         editButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         editButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
-        editButton.tintColor = .systemGray
+        editButton.tintColor = .greenWhite
         editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
     }
     
@@ -96,7 +112,7 @@ class ProfileViewController: UIViewController {
         }
         let renameAlert = UIAlertAction(title: "修改", style: .default) { [weak self] _ in
             self?.updateUserName(newUserName: alertController.textFields?[0].text ?? "")
-//            print(alertController.textFields?[0].text)
+            //            print(alertController.textFields?[0].text)
         }
         let cancelAlert = UIAlertAction(title: "取消", style: .default, handler: nil)
         alertController.addAction(renameAlert)
@@ -120,14 +136,18 @@ class ProfileViewController: UIViewController {
         if Auth.auth().currentUser != nil {
             do {
                 try Auth.auth().signOut()
-                let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-                let signInViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self))
-                view.window?.rootViewController = signInViewController
-                view.window?.makeKeyAndVisible()
+                backToSignInPage()
             } catch let error as NSError {
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    func backToSignInPage() {
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let signInViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self))
+        view.window?.rootViewController = signInViewController
+        view.window?.makeKeyAndVisible()
     }
     
     func deletAccount() {
@@ -138,12 +158,14 @@ class ProfileViewController: UIViewController {
                     switch result {
                     case .success():
                         print("Account successfully deleted ")
+                        self?.backToSignInPage()
                     case .failure(_):
                         self?.alertSignInAgain()
                     }
                 }
             case .failure(let error):
                 print("Error updating document: \(error)")
+                //  MARK: - Add alert to tell user: Remove userdata failed
             }
         }
     }
@@ -162,7 +184,7 @@ class ProfileViewController: UIViewController {
     
     func alertSignInAgain() {
         let alertController = UIAlertController(title: "重新登入", message: "若需刪除帳號，請重新登入", preferredStyle: .alert)
-
+        
         let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
         
         alertController.addAction(confirmAction)
@@ -175,65 +197,170 @@ class ProfileViewController: UIViewController {
         profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
-}
-
-extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return profileList.count
+    
+    func setAnimation() {
+        animationView = .init(name: "accountLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: String(describing: ProfileTableViewCell.self),
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
+    }
+}
+
+extension ProfileViewController: UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        
+        return 2
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if section == 0 {
+            return 4
+        } else {
+            return 2
+        }
+//        return profileList.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: String(describing: ProfileCollectionViewCell.self),
             for: indexPath
         )
         
-        guard let profileCell = cell as? ProfileTableViewCell else { return cell }
+        guard let profileCell = cell as? ProfileCollectionViewCell else { return cell }
         
-        if indexPath.row == 0 {
-            profileCell.profileItemName.text = ProfileList.qrCode.content
-        } else if indexPath.row == 1 {
-            profileCell.profileItemName.text = ProfileList.payment.content
-        } else if indexPath.row == 2 {
-            profileCell.profileItemName.text = ProfileList.friendList.content
-        } else  if indexPath.row == 3 {
-            profileCell.profileItemName.text = ProfileList.friendInvitation.content
-        } else if indexPath.row == 4 {
-            profileCell.profileItemName.text = ProfileList.logOut.content
+        if indexPath.section == 0 {
+            if indexPath.item == 0 {
+                profileCell.textLabel.text = ProfileList.qrCode.content
+                profileCell.icon.image = ProfileList.qrCode.icon
+            } else if indexPath.item == 1 {
+                profileCell.textLabel.text = ProfileList.payment.content
+                profileCell.icon.image = ProfileList.payment.icon
+            } else if indexPath.item == 2 {
+                profileCell.textLabel.text = ProfileList.friendList.content
+                profileCell.icon.image = ProfileList.friendList.icon
+            } else if indexPath.item == 3 {
+                profileCell.textLabel.text = ProfileList.friendInvitation.content
+                profileCell.icon.image = ProfileList.friendInvitation.icon
+            }
         } else {
-            profileCell.profileItemName.text = ProfileList.deleteAccount.content
+            if indexPath.item == 0 {
+                profileCell.textLabel.text = ProfileList.logOut.content
+                profileCell.icon.image = ProfileList.logOut.icon
+            } else {
+                profileCell.textLabel.text = ProfileList.deleteAccount.content
+                profileCell.icon.image = ProfileList.deleteAccount.icon
+            }
         }
-        
         return profileCell
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfileHeaderView.identifier,
+                                                                           for: indexPath) as? ProfileHeaderView else { return UICollectionReusableView()}
+        if indexPath.section == 0 {
+            header.label.text = "個人資訊"
+        } else {
+            header.label.text = "帳號"
+        }
+        header.configure()
+        return header
+    }
+}
+
+extension ProfileViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let itemWidth: CGFloat = 100
+        let itemHeight: CGFloat = 100
+        return CGSize(width: itemWidth, height: itemHeight)
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
-            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
-            self.show(qrCodeViewController, sender: nil)
-        } else if indexPath.row == 1 {
-            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
-            self.show(paymentViewController, sender: nil)
-        } else if indexPath.row == 2 {
-            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
-            self.show(friendListViewController, sender: nil)
-        } else if indexPath.row == 3 {
-            let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
-            guard let friendInvitationVC = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self)) as? FriendInvitationViewController
-            else { return }
-            friendInvitationVC.currentUserName = currentUser?.userName
-            self.show(friendInvitationVC, sender: nil)
-        } else if indexPath.row == 4 {
-            logOut()
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        
+        return UIEdgeInsets(top: 24.0, left: 0, bottom: 0, right: 0)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        
+        return 24.0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        
+        return 0
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        
+        return CGSize(width: UIScreen.main.bounds.width, height: 48.0)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        if indexPath.section == 0 {
+            if indexPath.item == 0 {
+                setAnimation()
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
+                if #available(iOS 15.0, *) {
+                    if let sheet = qrCodeViewController.sheetPresentationController {
+                        sheet.detents = [.medium()]
+                        sheet.preferredCornerRadius = 20
+                    }
+                }
+                self.present(qrCodeViewController, animated: true, completion: nil)
+                removeAnimation()
+            } else if indexPath.item == 1 {
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
+                self.show(paymentViewController, sender: nil)
+            } else if indexPath.item == 2 {
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
+                self.show(friendListViewController, sender: nil)
+            } else if indexPath.item == 3 {
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                guard let friendInvitationVC = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self)) as? FriendInvitationViewController
+                else { return }
+                friendInvitationVC.currentUserName = currentUser?.userName
+                self.show(friendInvitationVC, sender: nil)
+            }
         } else {
-            alertDeleteAccount()
+            if indexPath.item == 0 {
+                logOut()
+            } else {
+                alertDeleteAccount()
+            }
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            cell.backgroundColor = nil
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            cell.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
         }
     }
 }
@@ -251,7 +378,7 @@ enum ProfileList {
         case .qrCode:
             return "QRCode"
         case .payment:
-            return "設定付款方式"
+            return "付款方式"
         case .friendList:
             return "好友列表"
         case .friendInvitation:
@@ -260,6 +387,27 @@ enum ProfileList {
             return "登出"
         case .deleteAccount:
             return "刪除帳號"
+        }
+    }
+    
+    var icon: UIImage {
+        switch self {
+        case .qrCode:
+            return UIImage(systemName: "qrcode") ?? UIImage()
+        case .payment:
+            return UIImage(systemName: "creditcard") ?? UIImage()
+        case .friendList:
+            return UIImage(systemName: "person.2.fill") ?? UIImage()
+        case .friendInvitation:
+            return UIImage(systemName: "mail.fill") ?? UIImage()
+        case .logOut:
+            if #available(iOS 15, *) {
+                return UIImage(systemName: "rectangle.portrait.and.arrow.right.fill") ?? UIImage()
+            } else {
+                return UIImage(systemName: "arrow.turn.down.right") ?? UIImage()
+            }
+        case .deleteAccount:
+            return UIImage(systemName: "person.crop.circle.fill.badge.xmark") ?? UIImage()
         }
     }
 }

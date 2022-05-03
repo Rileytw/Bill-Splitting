@@ -23,6 +23,7 @@ class SettleUpViewController: UIViewController {
         super.viewDidLoad()
 
         navigationItem.title = "結算群組帳務"
+        ElementsStyle.styleBackground(view)
         getCurrentUserName()
         getCreatorData()
         setTableView()
@@ -51,6 +52,7 @@ class SettleUpViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = 60
+        tableView.backgroundColor = UIColor.clear
     }
     
     func removeCreatorData() {

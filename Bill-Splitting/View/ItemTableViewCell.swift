@@ -24,13 +24,20 @@ class ItemTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        self.backgroundColor = UIColor.clear
+        createdTime.textColor = UIColor.greenWhite
+        itemName.textColor = UIColor.greenWhite
+        priceLabel.textColor = UIColor.greenWhite
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
+        if selected {
+                contentView.backgroundColor = UIColor.selectedColor
+            } else {
+                contentView.backgroundColor = UIColor.clear
+            }
     }
     
     func createItemCell(time: String, name: String, description: PaidDescription, price: String) {

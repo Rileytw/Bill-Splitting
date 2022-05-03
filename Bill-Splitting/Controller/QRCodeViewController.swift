@@ -14,9 +14,9 @@ class QRCodeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        ElementsStyle.styleBackground(view)
         setQRCodeView()
-        
+        setDismissButton()
     }
     
     func generateQRCode(qrString: String) -> UIImage {
@@ -35,12 +35,29 @@ class QRCodeViewController: UIViewController {
     func setQRCodeView() {
         view.addSubview(qrCodeView)
         qrCodeView.translatesAutoresizingMaskIntoConstraints = false
-        qrCodeView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        qrCodeView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50).isActive = true
         qrCodeView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        qrCodeView.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        qrCodeView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        qrCodeView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        qrCodeView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         qrCodeView.image = generateQRCode(qrString: AccountManager.shared.currentUser.currentUserEmail)
     }
-
+    
+    func setDismissButton() {
+        let dismissButton = UIButton()
+        view.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = UIColor.greenWhite
+        dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
+    }
 }

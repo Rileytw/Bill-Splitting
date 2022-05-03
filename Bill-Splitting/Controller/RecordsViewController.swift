@@ -23,8 +23,11 @@ class RecordsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         getGroupData()
         setTableView()
+        setAnimation()
+        navigationItem.title = "近期紀錄"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -128,31 +131,42 @@ class RecordsViewController: UIViewController {
 //            print("====all:\(self.allPersonalItem)")
 //            print("====allCount:\(self.allPersonalItem.count)")
             self.tableView.reloadData()
+            self.removeAnimation()
         }
     }
-    
+
     func setAnimation() {
-        animationView = .init(name: "list")
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
-        animationView.frame = view.bounds
         animationView.contentMode = .scaleAspectFit
         animationView.loopMode = .loop
         animationView.animationSpeed = 0.75
-        view.addSubview(animationView)
         animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
     
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
         tableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = .clear
     }
 }
 
@@ -188,21 +202,21 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                                      name: itemName ?? "",
                                      description: PaidDescription.paid,
                                      price: "\(item.price)")
-            itemsCell.paidDescription.textColor = .systemGreen
+            itemsCell.paidDescription.textColor = .styleGreen
         } else {
             itemsCell.createItemCell(time: time,
                                      name: itemName ?? "",
                                      description: PaidDescription.involved,
                                      price: "\(abs(item.price))")
-            itemsCell.paidDescription.textColor = .systemRed
+            itemsCell.paidDescription.textColor = .styleRed
         }
       
         return itemsCell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let multipleUsersGroupViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: MultipleUsersGrouplViewController.self)) as? MultipleUsersGrouplViewController else { return }
+        guard let customGroupViewController =
+                storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
         
         var personalItem: ItemData?
         var groupData = [GroupData]()
@@ -212,7 +226,7 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         
         groupData = groups.filter { $0.groupId == personalItem?.groupId }
 //        print("peronalitem:\(personalItem)")
-        multipleUsersGroupViewController.groupData = groupData[0]
-        self.show(multipleUsersGroupViewController, sender: nil)
+        customGroupViewController.groupData = groupData[0]
+        self.show(customGroupViewController, sender: nil)
     }
 }

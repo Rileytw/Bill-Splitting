@@ -21,7 +21,9 @@ class SubscribeViewController: UIViewController {
     var startTimeLabel = UILabel()
     var endTimeLabel = UILabel()
     var cycleLabel = UILabel()
+    var involvedMemberLabel = UILabel()
     var completeButton = UIButton()
+    var dismissButton = UIButton()
     
     var cyclePicker = BasePickerViewInTextField(frame: .zero)
     var cycle = ["每月", "每年"]
@@ -48,12 +50,21 @@ class SubscribeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         setLabel()
         setDatePicker()
         setCyclePicker()
         setCompleteButton()
         setAddItemView()
+        setInvolvedMemberLabel()
         setTableView()
+        setDismissButton()
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        ElementsStyle.styleTextField(addItemView.itemNameTextField)
+        ElementsStyle.styleTextField(addItemView.priceTextField)
     }
     
     func setLabel() {
@@ -65,6 +76,7 @@ class SubscribeViewController: UIViewController {
         startTimeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         startTimeLabel.text = "開始時間"
         startTimeLabel.font = startTimeLabel.font.withSize(16)
+        startTimeLabel.textColor = .greenWhite
         
         view.addSubview(endTimeLabel)
         endTimeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -73,17 +85,18 @@ class SubscribeViewController: UIViewController {
         endTimeLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
         endTimeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         endTimeLabel.text = "結束時間"
+        endTimeLabel.textColor = .greenWhite
 //        endTimeLabel.font = endTimeLabel.font.withSize(16)
         
         view.addSubview(cycleLabel)
         cycleLabel.translatesAutoresizingMaskIntoConstraints = false
         cycleLabel.topAnchor.constraint(equalTo: endTimeLabel.bottomAnchor, constant: 20).isActive = true
         cycleLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        cycleLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        cycleLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
         cycleLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         cycleLabel.text = "週期"
         cycleLabel.font = endTimeLabel.font.withSize(16)
-        
+        cycleLabel.textColor = .greenWhite
     }
     
     func setDatePicker() {
@@ -93,10 +106,13 @@ class SubscribeViewController: UIViewController {
         startTimeDatePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
         startTimeDatePicker.leadingAnchor.constraint(equalTo: startTimeLabel.trailingAnchor, constant: 10).isActive = true
         startTimeDatePicker.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        startTimeDatePicker.contentHorizontalAlignment = .leading
         
         startTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
         startTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
         startTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
+//        startTimeDatePicker.setValue(UIColor.greenWhite, forKeyPath: "textColor")
+        startTimeDatePicker.overrideUserInterfaceStyle = .dark
 
         view.addSubview(endTimeDatePicker)
         endTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
@@ -104,17 +120,22 @@ class SubscribeViewController: UIViewController {
         endTimeDatePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
         endTimeDatePicker.leadingAnchor.constraint(equalTo: endTimeLabel.trailingAnchor, constant: 10).isActive = true
         endTimeDatePicker.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        endTimeDatePicker.contentHorizontalAlignment = .leading
+        
         endTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
         endTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
         endTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
+//        endTimeDatePicker.tintColor = .greenWhite
+        endTimeDatePicker.setValue(UIColor.greenWhite, forKeyPath: "textColor")
+        endTimeDatePicker.overrideUserInterfaceStyle = .dark
     }
     
     func setCyclePicker() {
         view.addSubview(cyclePicker)
         cyclePicker.translatesAutoresizingMaskIntoConstraints = false
-        cyclePicker.topAnchor.constraint(equalTo: cycleLabel.bottomAnchor, constant: 0).isActive = true
-        cyclePicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        cyclePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        cyclePicker.centerYAnchor.constraint(equalTo: cycleLabel.centerYAnchor).isActive = true
+        cyclePicker.leadingAnchor.constraint(equalTo: cycleLabel.trailingAnchor, constant: 10).isActive = true
+        cyclePicker.widthAnchor.constraint(equalToConstant: 120).isActive = true
         cyclePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         cyclePicker.pickerView.dataSource = self
@@ -126,11 +147,11 @@ class SubscribeViewController: UIViewController {
         completeButton.translatesAutoresizingMaskIntoConstraints = false
         completeButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
         completeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        completeButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        completeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        completeButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        completeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         completeButton.setTitle("設定", for: .normal)
-        completeButton.backgroundColor = .systemTeal
+        ElementsStyle.styleSpecificButton(completeButton)
         completeButton.addTarget(self, action: #selector(pressCompleteButton), for: .touchUpInside)
     }
     
@@ -143,7 +164,7 @@ class SubscribeViewController: UIViewController {
     func setAddItemView() {
         view.addSubview(addItemView)
         addItemView.translatesAutoresizingMaskIntoConstraints = false
-        addItemView.topAnchor.constraint(equalTo: cyclePicker.bottomAnchor, constant: 10).isActive = true
+        addItemView.topAnchor.constraint(equalTo: cyclePicker.bottomAnchor, constant: 20).isActive = true
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         addItemView.heightAnchor.constraint(equalToConstant: 120).isActive = true
@@ -152,17 +173,30 @@ class SubscribeViewController: UIViewController {
         addItemView.priceLabel.text = "支出金額"
     }
     
+    func setInvolvedMemberLabel() {
+        self.view.addSubview(involvedMemberLabel)
+        involvedMemberLabel.translatesAutoresizingMaskIntoConstraints = false
+        involvedMemberLabel.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 10).isActive = true
+        involvedMemberLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        involvedMemberLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        involvedMemberLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        involvedMemberLabel.textColor = .greenWhite
+        involvedMemberLabel.text = "參與成員"
+    }
+    
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 0).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: completeButton.topAnchor, constant: 10).isActive = true
+        tableView.topAnchor.constraint(equalTo: involvedMemberLabel.bottomAnchor, constant: 0).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: completeButton.topAnchor, constant: -5).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
         tableView.register(UINib(nibName: String(describing: AddItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddItemTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = .clear
     }
     
     @objc func datePickerChanged(sender: UIDatePicker) {
@@ -227,6 +261,23 @@ class SubscribeViewController: UIViewController {
             }
         }
     }
+    
+    func setDismissButton() {
+        view.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 5).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 5).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = UIColor.greenWhite
+        dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
+    }
 }
 
 extension SubscribeViewController: UIPickerViewDelegate, UIPickerViewDataSource {
@@ -265,10 +316,13 @@ extension SubscribeViewController: UITableViewDataSource, UITableViewDelegate {
         if selectedIndexs.contains(indexPath.row) {
             memberCell.selectedButton.isSelected = true
             memberCell.priceTextField.isHidden = false
+            memberCell.percentLabel.text = "元"
+            memberCell.percentLabel.isHidden = false
         } else {
             cell.accessoryType = .none
             memberCell.selectedButton.isSelected = false
             memberCell.priceTextField.isHidden = true
+            memberCell.percentLabel.isHidden = true
         }
         
         memberCell.delegate = self
