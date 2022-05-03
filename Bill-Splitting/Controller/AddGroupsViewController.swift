@@ -220,6 +220,7 @@ class AddGroupsViewController: UIViewController {
         searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
         searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
+        searchBar.searchTextField.textColor = .styleBlue
         searchBar.delegate = self
         searchBar.showsCancelButton = true
         guard let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton else { return }

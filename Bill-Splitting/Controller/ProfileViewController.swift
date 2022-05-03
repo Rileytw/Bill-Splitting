@@ -8,9 +8,11 @@
 import UIKit
 import Firebase
 import FirebaseAuth
+import Lottie
 
 class ProfileViewController: UIViewController {
     
+    private var animationView = AnimationView()
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var currentUser: UserData?
     var profileView = UIView()
@@ -57,7 +59,7 @@ class ProfileViewController: UIViewController {
         self.view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 0).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5).isActive = true
         collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5).isActive = true
         collectionView.backgroundColor = .clear
@@ -195,6 +197,26 @@ class ProfileViewController: UIViewController {
         profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
+    
+    func setAnimation() {
+        animationView = .init(name: "accountLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
+    }
 }
 
 extension ProfileViewController: UICollectionViewDataSource {
@@ -292,12 +314,10 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        if let cell = collectionView.cellForItem(at: indexPath) as? ProfileCollectionViewCell {
-//            cell.contentView.backgroundColor = nil
-//        }
         
         if indexPath.section == 0 {
             if indexPath.item == 0 {
+                setAnimation()
                 let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
                 let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
                 if #available(iOS 15.0, *) {
@@ -307,6 +327,7 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
                     }
                 }
                 self.present(qrCodeViewController, animated: true, completion: nil)
+                removeAnimation()
             } else if indexPath.item == 1 {
                 let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
                 let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))

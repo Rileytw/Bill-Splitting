@@ -33,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             UINavigationBar.appearance().tintColor = UIColor.greenWhite
             UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.greenWhite]
             
+            UITabBar.appearance().barTintColor = .styleBlue
 //            let appearance = UITabBarAppearance()
 //            appearance.configureWithOpaqueBackground()
 //            UITabBar.appearance().standardAppearance = appearance

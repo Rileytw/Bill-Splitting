@@ -283,7 +283,8 @@ class CustomGroupViewController: UIViewController {
             }
         }
     }
-    
+
+// MARK: - Bugs of new user get into groups, can't fetch data
     func getMemberExpense() {
         GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", userId: currentUserId) { [weak self] result in
             switch result {

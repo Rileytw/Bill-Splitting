@@ -29,7 +29,7 @@ class GroupManager {
     }
     
     func fetchGroups(userId: String, status: Int, completion: @escaping (Result<[GroupData], Error>) -> Void) {
-        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: status).order(by:"createdTime", descending: true).getDocuments() { (querySnapshot, error) in
+        db.collection("group").whereField("member", arrayContains: userId).whereField("status", isEqualTo: status).order(by: "createdTime", descending: true).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -104,6 +104,7 @@ class GroupManager {
         ])
     }
     
+// MARK: - addSnapshotListener can't listen to new documents
     func fetchMemberExpense(groupId: String, userId: String, completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
         db.collection("group").document(groupId).collection("memberExpense").addSnapshotListener { (querySnapshot, error) in
             

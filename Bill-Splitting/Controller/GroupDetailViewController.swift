@@ -48,9 +48,10 @@ class GroupDetailViewController: UIViewController {
         editButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
         editButton.setTitle("編輯群組資訊", for: .normal)
-        editButton.setTitleColor(.systemBlue, for: .normal)
-        editButton.tintColor = .systemBlue
-        editButton.contentHorizontalAlignment = .right
+        editButton.setTitleColor(.greenWhite, for: .normal)
+        editButton.tintColor = .greenWhite
+        ElementsStyle.styleSpecificButton(editButton)
+//        editButton.contentHorizontalAlignment = .right
         editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
         
         if groupData?.creator != currentUserId {
