@@ -21,14 +21,14 @@ class GroupDetailViewController: UIViewController {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         setTableView()
-        setButton()
+//        setButton()
         setAddGroupButton()
     }
     
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 30).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
