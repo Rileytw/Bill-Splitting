@@ -10,9 +10,13 @@ import UIKit
 class ProfileTableViewCell: UITableViewCell {
 
     @IBOutlet var profileItemName: UILabel!
+    @IBOutlet var email: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.backgroundColor = .clear
+        profileItemName.textColor = .greenWhite
+        email.textColor = .greenWhite
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -20,4 +24,8 @@ class ProfileTableViewCell: UITableViewCell {
 
     }
     
+    func createCell(userName: String, userEmail: String) {
+        profileItemName.text = userName
+        email.text = userEmail
+    }
 }

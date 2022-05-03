@@ -47,7 +47,7 @@ class ItemManager {
                     do {
                         if let item = try document.data(as: ItemData.self, decoder: Firestore.Decoder()) {
                             items.append(item)
-                        }
+                        } 
                     } catch {
                         
                         completion(.failure(error))

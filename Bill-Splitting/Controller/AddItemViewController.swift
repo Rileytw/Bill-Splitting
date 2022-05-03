@@ -9,12 +9,15 @@ import UIKit
 
 class AddItemViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
     var typePickerViewData = [SplitType.equal.label, SplitType.percent.label, SplitType.customize.label]
     var memberPickerView = BasePickerViewInTextField(frame: .zero)
     let addButton = UIButton()
     let tableView = UITableView()
+    let typeLabel = UILabel()
+    let dismissButton = UIButton()
     
     var groupData: GroupData? 
     var memberId: [String]?
@@ -32,6 +35,7 @@ class AddItemViewController: UIViewController {
     var involvedExpenseData: [ExpenseInfo] = []
     var involvedPrice: Double?
     var choosePaidMember = UILabel()
+    var chooseInvolvedMember = UILabel()
     var addMoreButton = UIButton()
     
     var isItemExist: Bool = false
@@ -51,24 +55,30 @@ class AddItemViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
+        setAddButton()
         setAddItemView()
+        setTypeLabel()
         setTypePickerView()
         setmemberPickerView()
-        setAddButton()
-        setTableView()
         setAddMoreButton()
+        setInvolvedMembers()
+        setTableView()
+        setDismissButton()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
-        addMoreButton.clipsToBounds = true
+//        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
+//        addMoreButton.clipsToBounds = true
+        ElementsStyle.styleTextField(addItemView.itemNameTextField)
+        ElementsStyle.styleTextField(addItemView.priceTextField)
     }
     
     func setAddItemView() {
         view.addSubview(addItemView)
         addItemView.translatesAutoresizingMaskIntoConstraints = false
-        addItemView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        addItemView.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 10).isActive = true
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -83,11 +93,10 @@ class AddItemViewController: UIViewController {
 
     func setTypePickerView() {
         view.addSubview(typePickerView)
-//        typePickerView.frame = CGRect(x: 20, y: 200, width: 100, height: 20)
         typePickerView.translatesAutoresizingMaskIntoConstraints = false
-        typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
-        typePickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 40).isActive = true
+        typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
+        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         typePickerView.pickerViewData = typePickerViewData
         
@@ -98,11 +107,25 @@ class AddItemViewController: UIViewController {
     }
     
     func setmemberPickerView() {
+        view.addSubview(choosePaidMember)
+        choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
+        choosePaidMember.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 40).isActive = true
+        choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        choosePaidMember.text = "選擇付款人"
+        choosePaidMember.textColor = UIColor.greenWhite
+        if groupData?.type == 0 {
+            choosePaidMember.isHidden = true
+        }
+        
         view.addSubview(memberPickerView)
         memberPickerView.translatesAutoresizingMaskIntoConstraints = false
-        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 60).isActive = true
-        memberPickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 40).isActive = true
+        memberPickerView.leadingAnchor.constraint(equalTo: choosePaidMember.trailingAnchor, constant: 20).isActive = true
+        memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
+//        typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
+//        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
         memberPickerView.pickerView.dataSource = self
@@ -113,28 +136,18 @@ class AddItemViewController: UIViewController {
             memberPickerView.isHidden = true
             memberPickerView.heightAnchor.constraint(equalToConstant: 0).isActive = true
         }
-        
-        view.addSubview(choosePaidMember)
-        choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
-        choosePaidMember.bottomAnchor.constraint(equalTo: memberPickerView.topAnchor, constant: -10).isActive = true
-        choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        choosePaidMember.text = "選擇付款人"
-        if groupData?.type == 0 {
-            choosePaidMember.isHidden = true
-        }
     }
     
     func setAddButton() {
         view.addSubview(addButton)
         addButton.setTitle("完成", for: .normal)
-        addButton.backgroundColor = .systemGray
+//        addButton.backgroundColor = .systemGray
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
-        addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
-        addButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        addButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        ElementsStyle.styleSpecificButton(addButton)
         
         addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
     }
@@ -142,15 +155,17 @@ class AddItemViewController: UIViewController {
     func setAddMoreButton() {
         view.addSubview(addMoreButton)
         addMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        addMoreButton.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -5).isActive = true
-        addMoreButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        addMoreButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        addMoreButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        addMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
         addMoreButton.backgroundColor = .systemTeal
         addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
+        addMoreButton.setTitle(" 更多資訊", for: .normal)
         addMoreButton.tintColor = .white
         addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(addMoreButton)
     }
     
     @objc func pressAddMore() {
@@ -172,13 +187,25 @@ class AddItemViewController: UIViewController {
         self.present(addMoreInfoViewController, animated: true, completion: nil)
     }
     
+    func setInvolvedMembers() {
+        view.addSubview(chooseInvolvedMember)
+        chooseInvolvedMember.translatesAutoresizingMaskIntoConstraints = false
+        chooseInvolvedMember.topAnchor.constraint(equalTo: choosePaidMember.bottomAnchor, constant: 20).isActive = true
+        chooseInvolvedMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        chooseInvolvedMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        chooseInvolvedMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        chooseInvolvedMember.text = "選擇參與人"
+        chooseInvolvedMember.textColor = UIColor.greenWhite
+    }
+    
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: memberPickerView.bottomAnchor, constant: 0).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: 10).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: chooseInvolvedMember.bottomAnchor, constant: 10).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: addMoreButton.topAnchor, constant: -10).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        tableView.backgroundColor = .clear
         
         tableView.register(UINib(nibName: String(describing: AddItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddItemTableViewCell.self))
         tableView.dataSource = self
@@ -209,7 +236,7 @@ class AddItemViewController: UIViewController {
             if self.groupData?.type == 1 {
                 paidUserId = self.paidId
             } else {
-                paidUserId = userId
+                paidUserId = self.currentUserId
             }
             
             self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
@@ -244,7 +271,7 @@ class AddItemViewController: UIViewController {
         if self.groupData?.type == 1 {
             paidUserId = self.paidId
         } else {
-            paidUserId = userId
+            paidUserId = currentUserId
         }
         
         let paidPrice = self.paidPrice
@@ -291,6 +318,34 @@ class AddItemViewController: UIViewController {
                                                     newExpense: involvedExpense[user].price,
                                                     groupId: groupData?.groupId ?? "")
         }
+    }
+    
+    func setTypeLabel() {
+        view.addSubview(typeLabel)
+        typeLabel.translatesAutoresizingMaskIntoConstraints = false
+        typeLabel.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 40).isActive = true
+        typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        typeLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        typeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        typeLabel.text = "選擇分款方式"
+        typeLabel.textColor = UIColor.greenWhite
+    }
+    
+    func setDismissButton() {
+        view.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = UIColor.greenWhite
+        dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -346,6 +401,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             if selectedIndexs.contains(indexPath.row) {
                 memberCell.selectedButton.isSelected = true
                 memberCell.equalLabel.isHidden = false
+                memberCell.percentLabel.text = "%"
                 memberCell.percentLabel.isHidden = false
                 memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
             } else {
@@ -359,6 +415,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             if selectedIndexs.contains(indexPath.row) {
                 memberCell.selectedButton.isSelected = true
                 memberCell.priceTextField.isHidden = false
+                memberCell.percentLabel.text = "%"
                 memberCell.percentLabel.isHidden = false
             } else {
                 cell.accessoryType = .none
@@ -371,13 +428,16 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             if selectedIndexs.contains(indexPath.row) {
                 memberCell.selectedButton.isSelected = true
                 memberCell.priceTextField.isHidden = false
+                memberCell.percentLabel.text = "元"
+                memberCell.percentLabel.isHidden = false
             } else {
                 cell.accessoryType = .none
                 memberCell.selectedButton.isSelected = false
                 memberCell.priceTextField.isHidden = true
+                memberCell.percentLabel.isHidden = true
             }
             memberCell.equalLabel.isHidden = true
-            memberCell.percentLabel.isHidden = true
+//            memberCell.percentLabel.isHidden = true
         }
         
         memberCell.delegate = self

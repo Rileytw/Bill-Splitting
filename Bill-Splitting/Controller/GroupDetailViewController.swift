@@ -9,6 +9,7 @@ import UIKit
 
 class GroupDetailViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var tableView = UITableView()
     var editButton = UIButton()
     var groupData: GroupData?
@@ -18,8 +19,10 @@ class GroupDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         setTableView()
         setButton()
+        setAddGroupButton()
     }
     
     func setTableView() {
@@ -33,6 +36,7 @@ class GroupDetailViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: InvitationTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: InvitationTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = .clear
     }
     
     func setButton() {
@@ -44,12 +48,13 @@ class GroupDetailViewController: UIViewController {
         editButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
         editButton.setTitle("編輯群組資訊", for: .normal)
-        editButton.setTitleColor(.systemBlue, for: .normal)
-        editButton.tintColor = .systemBlue
-        editButton.contentHorizontalAlignment = .right
+        editButton.setTitleColor(.greenWhite, for: .normal)
+        editButton.tintColor = .greenWhite
+        ElementsStyle.styleSpecificButton(editButton)
+//        editButton.contentHorizontalAlignment = .right
         editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
         
-        if groupData?.creator != userId {
+        if groupData?.creator != currentUserId {
             editButton.isHidden = true
         }
     }
@@ -59,7 +64,13 @@ class GroupDetailViewController: UIViewController {
         guard let addGroupViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
         addGroupViewController.isGroupExist = true
         addGroupViewController.groupData = groupData
-        self.present(addGroupViewController, animated: true, completion: nil)
+//        self.present(addGroupViewController, animated: true, completion: nil)
+        self.show(addGroupViewController, sender: nil)
+    }
+    
+    func setAddGroupButton() {
+        let addButton = UIBarButtonItem.init(title: "編輯", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pressEdit))
+        self.navigationItem.setRightBarButton(addButton, animated: true)
     }
 }
 

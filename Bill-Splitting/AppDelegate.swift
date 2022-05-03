@@ -22,15 +22,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
             if granted {
                 print("Notifications permission granted.")
-            }
-            else {
+            } else {
                 print("Notifications permission denied because: \(String(describing: error?.localizedDescription)).")
             }
         }
         
         UNUserNotificationCenter.current().delegate = self
         
-//        UIApplication.shared.applicationIconBadgeNumber = 0
+        if #available(iOS 15, *) {
+            UINavigationBar.appearance().tintColor = UIColor.greenWhite
+            UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.greenWhite]
+            
+            UITabBar.appearance().barTintColor = .styleBlue
+//            let appearance = UITabBarAppearance()
+//            appearance.configureWithOpaqueBackground()
+//            UITabBar.appearance().standardAppearance = appearance
+//            UITabBar.appearance().scrollEdgeAppearance = appearance
+            
+        } else {
+            UINavigationBar.appearance().barTintColor = .styleBlue
+            UINavigationBar.appearance().tintColor = UIColor.greenWhite
+            UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.greenWhite]
+            UINavigationBar.appearance().isTranslucent = false
+
+        }
         
         return true
     }

@@ -25,7 +25,7 @@
                         </constraints>
                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                        <state key="normal" image="square" catalog="system"/>
+                        <state key="normal" image="circle" catalog="system"/>
                     </button>
                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AyG-7w-gcE">
                         <rect key="frame" x="314" y="13" width="60" height="34"/>
@@ -35,8 +35,8 @@
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits"/>
                     </textField>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Member" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c9p-vM-lgR">
-                        <rect key="frame" x="60" y="19.5" width="64" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Member" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c9p-vM-lgR">
+                        <rect key="frame" x="60" y="20" width="244" height="20.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -68,6 +68,7 @@
                     <constraint firstItem="pUy-Zo-f0c" firstAttribute="height" secondItem="AyG-7w-gcE" secondAttribute="height" multiplier="0.617647" id="dfE-8S-nDS"/>
                     <constraint firstItem="t8h-ic-9yC" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="dyk-mU-e9H"/>
                     <constraint firstItem="B5S-YA-eTS" firstAttribute="leading" secondItem="AyG-7w-gcE" secondAttribute="trailing" constant="10" id="iV1-wE-ngA"/>
+                    <constraint firstItem="AyG-7w-gcE" firstAttribute="leading" secondItem="c9p-vM-lgR" secondAttribute="trailing" constant="10" id="kkk-Yr-hPg"/>
                     <constraint firstAttribute="trailing" secondItem="AyG-7w-gcE" secondAttribute="trailing" constant="40" id="km3-h3-wDV"/>
                     <constraint firstItem="c9p-vM-lgR" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="nzB-aS-rcL"/>
                     <constraint firstAttribute="trailing" secondItem="B5S-YA-eTS" secondAttribute="trailing" constant="10" id="sBT-ZF-pl4"/>
@@ -85,6 +86,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="square" catalog="system" width="128" height="114"/>
+        <image name="circle" catalog="system" width="128" height="121"/>
     </resources>
 </document>

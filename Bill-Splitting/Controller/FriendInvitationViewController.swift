@@ -9,6 +9,8 @@ import UIKit
 
 class FriendInvitationViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    var currentUserName: String?
     let tableView = UITableView()
     
     var senderId: [String] = []
@@ -17,17 +19,23 @@ class FriendInvitationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        ElementsStyle.styleBackground(view)
         setTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         getUserInfo()
+        tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
     
     func getSenderData(completion: @escaping ([String]) -> Void) {
-        FriendManager.shared.fetchFriendInvitation(userId: userId) { [weak self] result in
+        FriendManager.shared.fetchFriendInvitation(userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let invitation):
                 let senderId = invitation.map { $0.senderId }
@@ -47,8 +55,7 @@ class FriendInvitationViewController: UIViewController {
             
             self?.senderId.forEach {
                 sender in
-                UserManager.shared.fetchUserData(friendId: sender) {
-                    [weak self] result in
+                UserManager.shared.fetchUserData(friendId: sender) { [weak self] result in
                     switch result {
                     case .success(let userData):
                         self?.invitationUsers.append(userData)
@@ -66,10 +73,11 @@ class FriendInvitationViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 200).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.backgroundColor = .clear
         
         tableView.register(UINib(nibName: String(describing: InvitationTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: InvitationTableViewCell.self))
         tableView.dataSource = self
@@ -105,11 +113,14 @@ extension FriendInvitationViewController: TableViewCellDelegate {
         guard let indexPath = tableView.indexPath(for: sender) else { return }
         FriendManager.shared.deleteFriendInvitation(documentId: invitationId[indexPath.row])
         
-        FriendManager.shared.senderToFriends(userId: userId, senderId: senderId[indexPath.row],
+        FriendManager.shared.senderToFriends(userId: currentUserId, senderId: senderId[indexPath.row],
                                              senderName: invitationUsers[indexPath.row].userName,
                                              senderEmail: invitationUsers[indexPath.row].userEmail)
         
-        FriendManager.shared.receiverToFriends(userId: userId, senderId: senderId[indexPath.row], userName: userName, userEmail: userEmail)
+        FriendManager.shared.receiverToFriends(userId: currentUserId,
+                                               senderId: senderId[indexPath.row],
+                                               userName: currentUserName ?? "",
+                                               userEmail: AccountManager.shared.currentUser.currentUserEmail)
         
         self.invitationUsers.remove(at: indexPath.row)
         self.tableView.deleteRows(at: [IndexPath(row: indexPath.row, section: indexPath.section)], with: .fade)

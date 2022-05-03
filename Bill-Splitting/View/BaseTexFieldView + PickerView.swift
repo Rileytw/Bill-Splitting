@@ -35,7 +35,8 @@ class BasePickerViewInTextField: UIView {
     func setTextFieldOfPickerView() {
         addSubview(textField)
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.topAnchor.constraint(equalTo:self.topAnchor , constant: 0).isActive = true
+        textField.borderStyle = .roundedRect
+        textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
         textField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 0).isActive = true
         textField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0).isActive = true
         textField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
@@ -43,6 +44,8 @@ class BasePickerViewInTextField: UIView {
         textField.text = pickerViewData[0]
         textField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         textField.textAlignment = .center
+        textField.backgroundColor = UIColor.selectedColor
+        textField.textColor = UIColor.greenWhite
     }
     
     func setIcon() {
@@ -54,6 +57,6 @@ class BasePickerViewInTextField: UIView {
         icon.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
         icon.widthAnchor.constraint(equalToConstant: 20).isActive = true
         icon.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        icon.tintColor = .systemGray
+        icon.tintColor = UIColor.greenWhite
     }
 }

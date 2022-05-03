@@ -6,14 +6,18 @@
 //
 
 import UIKit
+import Lottie
 
-class MultipleUsersGrouplViewController: UIViewController {
+class CustomGroupViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
     let closedGroupButton = UIButton()
     let subscribeButton = UIButton()
+    let groupName = UILabel()
     let width = UIScreen.main.bounds.width
+    private var animationView = AnimationView()
     
     var groupData: GroupData?
     
@@ -51,15 +55,20 @@ class MultipleUsersGrouplViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
+        setGroupNameLabel()
         setGroupDetailView()
+        setClosedGroupButton()
         setItemTableView()
         setSubscribeButton()
-        setClosedGroupButton()
         
         navigationItem.title = "群組"
+//        self.navigationController?.navigationBar.tintColor = UIColor.systemGray
+//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
         
         detectSubscription()
         addMenu()
+        setAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -101,13 +110,12 @@ class MultipleUsersGrouplViewController: UIViewController {
                 semaphore.wait()
             }
         }
-        
     }
     
     func setGroupDetailView() {
         groupDetailView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(groupDetailView)
-        groupDetailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        groupDetailView.topAnchor.constraint(equalTo: groupName.bottomAnchor, constant: 5).isActive = true
         groupDetailView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         groupDetailView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         groupDetailView.heightAnchor.constraint(equalToConstant: 100).isActive = true
@@ -134,6 +142,7 @@ class MultipleUsersGrouplViewController: UIViewController {
         guard let chartViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ChartViewController.self)) as? ChartViewController else { return }
         chartViewController.memberExpense = memberExpense
         chartViewController.userData = userData
+        chartViewController.modalPresentationStyle = .fullScreen
         self.present(chartViewController, animated: true, completion: nil)
     }
     
@@ -152,55 +161,70 @@ class MultipleUsersGrouplViewController: UIViewController {
         self.view.addSubview(itemTableView)
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
         itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
-        itemTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80).isActive = true
+        itemTableView.bottomAnchor.constraint(equalTo: closedGroupButton.topAnchor, constant: -10).isActive = true
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
         itemTableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         itemTableView.dataSource = self
         itemTableView.delegate = self
+        
+        itemTableView.backgroundColor = UIColor.clear
     }
     
     func setClosedGroupButton() {
         view.addSubview(closedGroupButton)
         closedGroupButton.translatesAutoresizingMaskIntoConstraints = false
-        closedGroupButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
-        closedGroupButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
-        closedGroupButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        closedGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        closedGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        closedGroupButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
+        closedGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        closedGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         
         closedGroupButton.setTitle("封存群組", for: .normal)
         closedGroupButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-        closedGroupButton.tintColor = .systemGray
-        closedGroupButton.setTitleColor(.systemGray, for: .normal)
-        closedGroupButton.addTarget(self, action: #selector(pressClosedGroup), for: .touchUpInside)
-        
+        closedGroupButton.tintColor = .greenWhite
+        closedGroupButton.setTitleColor(.greenWhite, for: .normal)
+        closedGroupButton.addTarget(self, action: #selector(confirmCloseGroupAlert), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(closedGroupButton)
     }
     
-    @objc func pressClosedGroup() {
+    func pressClosedGroup() {
         GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "")
         self.navigationController?.popToRootViewController(animated: true)
+    }
+    
+    @objc func confirmCloseGroupAlert() {
+        let alertController = UIAlertController(title: "請確認使否封存群組", message: "封存後群組內容將不可編輯", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "封存", style: .destructive) { [weak self] _ in
+            self?.pressClosedGroup()
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     func setSubscribeButton() {
         view.addSubview(subscribeButton)
         subscribeButton.translatesAutoresizingMaskIntoConstraints = false
-        subscribeButton.topAnchor.constraint(equalTo: itemTableView.bottomAnchor, constant: 20).isActive = true
-        subscribeButton.widthAnchor.constraint(equalToConstant: width/2 - 40).isActive = true
-        subscribeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        subscribeButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
+        subscribeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         
         if groupData?.type == 1 {
             subscribeButton.isHidden = true
-        } else if groupData?.type == 0 && groupData?.creator != userId {
+        } else if groupData?.type == 0 && groupData?.creator != currentUserId {
             subscribeButton.isHidden = true
         }
         
         subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
         subscribeButton.setTitle("設定週期", for: .normal)
-        subscribeButton.tintColor = .systemGray
-        subscribeButton.setTitleColor(.systemGray, for: .normal)
+        subscribeButton.tintColor = .greenWhite
+        subscribeButton.setTitleColor(.greenWhite, for: .normal)
         subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(subscribeButton)
     }
     
     @objc func pressSubscribe() {
@@ -217,6 +241,9 @@ class MultipleUsersGrouplViewController: UIViewController {
         ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") { [weak self] result in
             switch result {
             case .success(let items):
+                if items.isEmpty == true {
+                    self?.removeAnimation()
+                }
                 self?.itemData = items
                 items.forEach { item in
                     self?.getItemDetail(itemId: item.itemId)
@@ -239,6 +266,7 @@ class MultipleUsersGrouplViewController: UIViewController {
                     semaphore.signal()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    semaphore.signal()
                 }
             }
             
@@ -251,16 +279,18 @@ class MultipleUsersGrouplViewController: UIViewController {
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
+                self?.removeAnimation()
             }
         }
     }
-    
+
+// MARK: - Bugs of new user get into groups, can't fetch data
     func getMemberExpense() {
-        GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", userId: userId) { [weak self] result in
+        GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let expense):
                 self?.memberExpense = expense
-                let personalExpense = expense.filter { $0.userId == userId }
+                let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
                 self?.expense = personalExpense[0].allExpense
             case .failure(let error):
                 print("Error decoding userData: \(error)")
@@ -269,7 +299,7 @@ class MultipleUsersGrouplViewController: UIViewController {
     }
     
     func detectParticipantUser() {
-        if groupData?.type == 0 && userId != groupData?.creator {
+        if groupData?.type == 0 && currentUserId != groupData?.creator {
             groupDetailView.addExpenseButton.isEnabled = false
             groupDetailView.addExpenseButton.isHidden = true
             closedGroupButton.isHidden = true
@@ -318,7 +348,6 @@ class MultipleUsersGrouplViewController: UIViewController {
         case 0 :
             let components = Calendar.current.dateComponents([.month], from: startDate, to: endDate)
             let month = components.month
-            //        print("Number of months: \(month)")
             if month ?? 0 > 1 {
                 var dateComponent = DateComponents()
                 dateComponent.month = 1
@@ -330,7 +359,6 @@ class MultipleUsersGrouplViewController: UIViewController {
         case 1 :
             let components = Calendar.current.dateComponents([.year], from: startDate, to: endDate)
             let year = components.year
-            //        print("Number of years: \(year)")
             if year ?? 0 > 1 {
                 var dateComponent = DateComponents()
                 dateComponent.year = 1
@@ -392,9 +420,41 @@ class MultipleUsersGrouplViewController: UIViewController {
         let interaction = UIContextMenuInteraction(delegate: self)
         button.addInteraction(interaction)
     }
+    
+    func setGroupNameLabel() {
+        view.addSubview(groupName)
+        groupName.translatesAutoresizingMaskIntoConstraints = false
+        groupName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
+        groupName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        groupName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 10).isActive = true
+        groupName.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        groupName.textColor = .greenWhite
+        groupName.text = groupData?.groupName ?? ""
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
+    }
 }
 
-extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewDelegate {
+extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemData.count
     }
@@ -420,7 +480,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         for index in 0..<involvedItem.count {
             involves = involvedItem[index]
             for involve in  0..<involves.count {
-                if involves[involve].itemId == item.itemId && involves[involve].userId == userId {
+                if involves[involve].itemId == item.itemId && involves[involve].userId == currentUserId {
                     involved = involves[involve]
                     break
                 }
@@ -434,42 +494,42 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
         dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
         let time = dateFormatter.string(from: date)
         
-        if paid?.userId == userId {
+        if paid?.userId == currentUserId {
             
             if item.itemName == "結帳" {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.settleUpInvolved,
                                          price: "$\(paid?.price ?? 0)")
-                itemsCell.paidDescription.textColor = .systemGreen
+                itemsCell.paidDescription.textColor = UIColor.styleGreen
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.paid,
                                          price: "$\(paid?.price ?? 0)")
-                itemsCell.paidDescription.textColor = .systemGreen
+                itemsCell.paidDescription.textColor = UIColor.styleGreen
             }
         } else {
-            if involved?.userId == userId {
+            if involved?.userId == currentUserId {
                 if item.itemName == "結帳" {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,
                                              description: PaidDescription.settleUpPaid,
                                              price: "$\(involved?.price ?? 0)")
-                    itemsCell.paidDescription.textColor = .systemRed
+                    itemsCell.paidDescription.textColor = UIColor.styleRed
                 } else {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,
                                              description: PaidDescription.involved,
                                              price: "$\(involved?.price ?? 0)")
-                    itemsCell.paidDescription.textColor = .systemRed
+                    itemsCell.paidDescription.textColor = UIColor.styleRed
                 }
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.notInvolved,
                                          price: "")
-                itemsCell.paidDescription.textColor = .systemGray
+                itemsCell.paidDescription.textColor = UIColor.greenWhite
             }
         }
         return itemsCell
@@ -489,7 +549,7 @@ extension MultipleUsersGrouplViewController: UITableViewDataSource, UITableViewD
     }
 }
 
-extension MultipleUsersGrouplViewController: UIContextMenuInteractionDelegate {
+extension CustomGroupViewController: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
            
@@ -499,7 +559,8 @@ extension MultipleUsersGrouplViewController: UIContextMenuInteractionDelegate {
                 guard let detailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: GroupDetailViewController.self)) as? GroupDetailViewController else { return }
                 detailViewController.groupData = self.groupData
                 detailViewController.userData = self.userData
-                self.present(detailViewController, animated: true, completion: nil)
+//                self.present(detailViewController, animated: true, completion: nil)
+                self.show(detailViewController, sender: nil)
             }
 
             return UIMenu(title: "", children: [infoAction])

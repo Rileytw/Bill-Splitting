@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIColor {
-
+    
     static func hexStringToUIColor(hex: String) -> UIColor {
 
         var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
@@ -31,4 +31,20 @@ extension UIColor {
             alpha: CGFloat(1.0)
         )
     }
+    
+    static let greenWhite = UIColor.hexStringToUIColor(hex: "EFFFFB")
+    
+    static let styleGreen = UIColor.hexStringToUIColor(hex: "05DFD7")
+    
+    static let styleRed = UIColor.hexStringToUIColor(hex: "FD5D5D")
+//    FF6363
+    static let selectedColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
+    
+    static let styleOrange = UIColor.hexStringToUIColor(hex: "FFAD60")
+    
+    static let styleBlue = UIColor.hexStringToUIColor(hex: "041C32")
+    
+    static let styleYellow = UIColor.hexStringToUIColor(hex: "FFCE45")
+    
+    static let styleLightBlue = UIColor.hexStringToUIColor(hex: "61A4BC")
 }

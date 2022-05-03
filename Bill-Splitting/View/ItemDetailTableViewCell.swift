@@ -19,7 +19,15 @@ class ItemDetailTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        self.backgroundColor = UIColor.clear
+        groupName.textColor = .greenWhite
+        itemName.textColor = .greenWhite
+        createdTime.textColor = .greenWhite
+        price.textColor = .greenWhite
+        paidUser.textColor = .greenWhite
+        itemDescription.textColor = .greenWhite
+        self.selectionStyle = UITableViewCell.SelectionStyle.none
+
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

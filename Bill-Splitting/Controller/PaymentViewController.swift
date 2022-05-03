@@ -9,6 +9,7 @@ import UIKit
 
 class PaymentViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let addPaymentButton = UIButton()
     let tableView = UITableView()
     var userData: UserData?
@@ -16,7 +17,7 @@ class PaymentViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        ElementsStyle.styleBackground(view)
         setTableView()
         setAddButton()
     }
@@ -49,6 +50,7 @@ class PaymentViewController: UIViewController {
         addPaymentButton.backgroundColor = .systemTeal
         addPaymentButton.setImage(UIImage(systemName: "plus"), for: .normal)
         addPaymentButton.tintColor = .white
+        ElementsStyle.styleSpecificButton(addPaymentButton)
         addPaymentButton.addTarget(self, action: #selector(addPayment), for: .touchUpInside)
     }
     
@@ -65,6 +67,7 @@ class PaymentViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.backgroundColor = .clear
         
         tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
         tableView.dataSource = self
@@ -72,7 +75,7 @@ class PaymentViewController: UIViewController {
     }
     
     func getUserPayment() {
-        UserManager.shared.fetchUserData(friendId: userId) { [weak self] result in
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
             switch result {
             case .success(let userData):
                 guard let userPayment = userData.payment else { return }

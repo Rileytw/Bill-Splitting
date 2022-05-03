@@ -9,6 +9,7 @@ import UIKit
 
 class AddReminderViewController: UIViewController {
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     let groupLabel = UILabel()
     let groupPicker = BasePickerViewInTextField(frame: .zero)
     let userLabel = UILabel()
@@ -28,11 +29,17 @@ class AddReminderViewController: UIViewController {
     var member: [UserData] = []
     var userData: [UserData] = []
     var remindTimeStamp: Double?
-    var reminderData = Reminder(groupId: "", memberId: "", creatorId: userId, type: 0, remindTime: 0, status: 1, documentId: "")
+    var reminderData = Reminder(groupId: "",
+                                memberId: "",
+                                creatorId: AccountManager.shared.currentUser.currentUserId,
+                                type: 0,
+                                remindTime: 0,
+                                status: 1,
+                                documentId: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        ElementsStyle.styleBackground(view)
         getGroupData()
         getUserData()
         
@@ -45,6 +52,7 @@ class AddReminderViewController: UIViewController {
         setReminderLael()
         setDatePicker()
         setCompleteButton()
+        setDismissButton()
     }
     
 // MARK: Wait to try
@@ -60,7 +68,7 @@ class AddReminderViewController: UIViewController {
 //    }
 
     func getGroupData() {
-        GroupManager.shared.fetchGroups(userId: userId, status: 0) { [weak self] result in
+        GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
@@ -76,6 +84,7 @@ class AddReminderViewController: UIViewController {
         view.addSubview(groupLabel)
         setGroupLabelConstraint()
         groupLabel.text = "選擇群組"
+        groupLabel.textColor = .greenWhite
     }
     
     func setGroupPicker() {
@@ -90,6 +99,7 @@ class AddReminderViewController: UIViewController {
         view.addSubview(userLabel)
         setUserConstraint()
         userLabel.text = "選擇提醒對象"
+        userLabel.textColor = .greenWhite
     }
     
     func setUserPicker() {
@@ -104,6 +114,7 @@ class AddReminderViewController: UIViewController {
         view.addSubview(typeLabel)
         setTypeConstraint()
         typeLabel.text = "選擇類型"
+        typeLabel.textColor = .greenWhite
     }
     
     func setCompleteButton() {
@@ -113,6 +124,7 @@ class AddReminderViewController: UIViewController {
         completeButton.setTitle("設定", for: .normal)
         completeButton.backgroundColor = .systemGray
         completeButton.addTarget(self, action: #selector(pressComplete), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(completeButton)
     }
     
     @objc func pressComplete() {
@@ -121,7 +133,7 @@ class AddReminderViewController: UIViewController {
     }
     
     func addReminder() {
-        reminderData.creatorId = userId
+        reminderData.creatorId = currentUserId
         ReminderManager.shared.addReminderData(reminder: reminderData)
     }
     
@@ -131,20 +143,23 @@ class AddReminderViewController: UIViewController {
         setButtonsConstraint()
         creditButton.setTitle("收款", for: .normal)
         creditButton.titleLabel?.font = creditButton.titleLabel?.font.withSize(14)
-        creditButton.backgroundColor = .systemTeal
+        creditButton.backgroundColor = .styleLightBlue
         creditButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
+        creditButton.setTitleColor(.styleBlue, for: .normal)
         
         debtButton.setTitle("付款", for: .normal)
-        debtButton.backgroundColor = .systemOrange
+        debtButton.backgroundColor = .styleYellow
         debtButton.titleLabel?.font = debtButton.titleLabel?.font.withSize(14)
         debtButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
+        debtButton.setTitleColor(.styleBlue, for: .normal)
         
     }
     
     @objc func pressTypeButton(_ sender: UIButton) {
         if sender.isSelected == false {
-            sender.layer.borderColor = UIColor.black.cgColor
+            sender.layer.borderColor = UIColor.greenWhite.cgColor
             sender.layer.borderWidth = 1
+            ElementsStyle.styleSelectedButton(sender)
             sender.isSelected = true
             
             if sender == creditButton {
@@ -155,12 +170,14 @@ class AddReminderViewController: UIViewController {
         } else {
             sender.layer.borderWidth = 0
             sender.isSelected = false
+            ElementsStyle.styleNotSelectedButton(sender)
         }
         let buttonArray = [creditButton, debtButton]
         for button in buttonArray {
             if button.isSelected && button !== sender {
                 button.isSelected = false
                 button.layer.borderWidth = 0
+                ElementsStyle.styleNotSelectedButton(button)
             }
         }
     }
@@ -184,13 +201,14 @@ class AddReminderViewController: UIViewController {
             }
         }
         member = memberData
-        member = member.filter { $0.userId != userId }
+        member = member.filter { $0.userId != currentUserId }
     }
     
     func setReminderLael() {
         view.addSubview(reminderLabel)
         setReminderLabelConstraint()
         reminderLabel.text = "設定提醒時間"
+        reminderLabel.textColor = .greenWhite
     }
     
     func setDatePicker() {
@@ -198,6 +216,8 @@ class AddReminderViewController: UIViewController {
         setDatePickerConstraint()
 //        remindTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
         remindTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
+        remindTimeDatePicker.contentHorizontalAlignment = .right
+        remindTimeDatePicker.overrideUserInterfaceStyle = .dark
         remindTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
     }
     
@@ -221,8 +241,8 @@ class AddReminderViewController: UIViewController {
         remindTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
         remindTimeDatePicker.topAnchor.constraint(equalTo: creditButton.bottomAnchor, constant: 20).isActive = true
         remindTimeDatePicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        remindTimeDatePicker.trailingAnchor.constraint(equalTo: userPicker.trailingAnchor, constant: 0).isActive = true
-        remindTimeDatePicker.widthAnchor.constraint(equalToConstant: 220).isActive = true
+        remindTimeDatePicker.leadingAnchor.constraint(equalTo: reminderLabel.trailingAnchor, constant: 5).isActive = true
+        remindTimeDatePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5).isActive = true
     }
     
     func setGroupLabelConstraint() {
@@ -282,8 +302,26 @@ class AddReminderViewController: UIViewController {
     func setCompleteButtonConstraint() {
         completeButton.topAnchor.constraint(equalTo: typeLabel.bottomAnchor, constant: 100).isActive = true
         completeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-        completeButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        completeButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        completeButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        completeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setDismissButton() {
+        let dismissButton = UIButton()
+        view.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = UIColor.greenWhite
+        dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -317,11 +355,7 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
             return groupPicker.textField.text = groupPickerData[row]
         } else {
             reminderData.memberId = member[row].userId
-            if groups[row].creator != userId {
-                return userPicker.textField.text = userName
-            } else {
-                return userPicker.textField.text = member[row].userName
-            }
+            return userPicker.textField.text = member[row].userName
         }
     }
 }

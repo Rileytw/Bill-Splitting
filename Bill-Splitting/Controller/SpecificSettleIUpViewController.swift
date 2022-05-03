@@ -9,6 +9,7 @@ import UIKit
 
 class SpecificSettleIUpViewController: UIViewController {
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var userData: UserData?
     var groupId: String?
     var groupData: GroupData?
@@ -27,6 +28,7 @@ class SpecificSettleIUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ElementsStyle.styleBackground(view)
         setUserInfo()
         setSettleUpButton()
         setTableView()
@@ -43,70 +45,32 @@ class SpecificSettleIUpViewController: UIViewController {
     }
     
     func setUserInfo() {
-        guard let memberExpense = memberExpense,
-              let userData = userData
-        else { return }
-        let userExpense = userExpense.filter { $0.userId == userId }
-        view.addSubview(nameLabel)
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
-        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        nameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 40).isActive = true
-        nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        if memberExpense.allExpense >= 0 {
-            nameLabel.text = "付款對象：\(userData.userName)"
-            nameLabel.textColor = .systemPink
-        } else {
-            nameLabel.text = "收款對象：\(userData.userName)"
-            nameLabel.textColor = .systemTeal
-        }
-        nameLabel.font = nameLabel.font.withSize(20)
-        
-        view.addSubview(price)
-        price.translatesAutoresizingMaskIntoConstraints = false
-        price.topAnchor.constraint(equalTo: nameLabel.topAnchor, constant: 60).isActive = true
-        price.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        price.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 40).isActive = true
-        price.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        if memberExpense.allExpense >= 0 {
-            if groupData?.creator == userId {
-                price.text = "付款金額：\(abs(memberExpense.allExpense)) 元"
-                
-            } else {
-                price.text = "付款金額：\(abs(userExpense[0].allExpense)) 元"
-            }
-            price.textColor = .systemPink
-        } else {
-            if groupData?.creator == userId {
-                price.text = "收款金額：\(abs(memberExpense.allExpense)) 元"
-            } else {
-                price.text = "收款金額：\(abs(userExpense[0].allExpense)) 元"
-            }
-            price.textColor = .systemTeal
-        }
-        price.font = price.font.withSize(20)
+        setNameInfo()
+        setPriceInfo()
         
         view.addSubview(account)
         account.translatesAutoresizingMaskIntoConstraints = false
         account.topAnchor.constraint(equalTo: price.topAnchor, constant: 60).isActive = true
         account.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        account.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 40).isActive = true
+        account.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
         account.heightAnchor.constraint(equalToConstant: 40).isActive = true
         account.text = "帳戶資訊"
         account.font = price.font.withSize(20)
+        account.textColor = UIColor.greenWhite
     }
     
     func setTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: account.bottomAnchor, constant: 10).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 10).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: settleButton.topAnchor, constant: 10).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: settleButton.topAnchor, constant: -10).isActive = true
         
         tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = .clear
     }
     
     func setSettleUpButton() {
@@ -118,7 +82,8 @@ class SpecificSettleIUpViewController: UIViewController {
         settleButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         settleButton.setTitle("已結清", for: .normal)
-        settleButton.backgroundColor = .systemGray
+        ElementsStyle.styleSpecificButton(settleButton)
+//        settleButton.backgroundColor = .systemGray
         settleButton.addTarget(self, action: #selector(pressSettleUpButton), for: .touchUpInside)
     }
     
@@ -136,7 +101,7 @@ class SpecificSettleIUpViewController: UIViewController {
               let memberId = memberExpense?.userId
         else { return }
         
-        let userExpense = userExpense.filter { $0.userId == userId }
+        let userExpense = userExpense.filter { $0.userId == currentUserId }
         
         ItemManager.shared.addItemData(groupId: groupId ?? "",
                                        itemName: "結帳",
@@ -147,13 +112,13 @@ class SpecificSettleIUpViewController: UIViewController {
             
             var paidUserId: String?
             var creditorId: String?
-            if self.groupData?.creator == userId {
+            if self.groupData?.creator == self.currentUserId {
                 if expense <= 0 {
-                    paidUserId = userId
+                    paidUserId = self.currentUserId
                     creditorId = memberId
                 } else {
                     paidUserId = memberId
-                    creditorId = userId
+                    creditorId = self.currentUserId
                 }
                 
                 ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
@@ -167,11 +132,11 @@ class SpecificSettleIUpViewController: UIViewController {
                                                    createdTime: Double(NSDate().timeIntervalSince1970))
             } else {
                 if userExpense[0].allExpense <= 0 {
-                    paidUserId = userId
+                    paidUserId = self.currentUserId
                     creditorId = memberId
                 } else {
                     paidUserId = memberId
-                    creditorId = userId
+                    creditorId = self.currentUserId
                 }
                 
                 ItemManager.shared.addPaidInfo(paidUserId: creditorId ?? "",
@@ -197,11 +162,11 @@ class SpecificSettleIUpViewController: UIViewController {
         var paidUserId: String?
         var creditorId: String?
         
-        let userExpense = userExpense.filter { $0.userId == userId }
+        let userExpense = userExpense.filter { $0.userId == currentUserId }
         
-        if groupData?.creator == userId {
+        if groupData?.creator == currentUserId {
             if expense <= 0 {
-                paidUserId = userId
+                paidUserId = currentUserId
                 creditorId = memberId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: expense,
@@ -212,7 +177,7 @@ class SpecificSettleIUpViewController: UIViewController {
                                                         groupId: groupId ?? "")
             } else {
                 paidUserId = memberId
-                creditorId = userId
+                creditorId = currentUserId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: 0 - expense,
                                                         groupId: groupId ?? "")
@@ -223,7 +188,7 @@ class SpecificSettleIUpViewController: UIViewController {
             }
         } else {
             if userExpense[0].allExpense <= 0 {
-                paidUserId = userId
+                paidUserId = currentUserId
                 creditorId = memberId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: 0 - userExpense[0].allExpense,
@@ -234,7 +199,7 @@ class SpecificSettleIUpViewController: UIViewController {
                                                         groupId: groupId ?? "")
             } else {
                 paidUserId = memberId
-                creditorId = userId
+                creditorId = currentUserId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: userExpense[0].allExpense,
                                                         groupId: groupId ?? "")
@@ -248,6 +213,56 @@ class SpecificSettleIUpViewController: UIViewController {
     
     func addItem(closure: @escaping AddItemColsure) {
         addItemColsure = closure
+    }
+    
+    func setNameInfo() {
+        guard let memberExpense = memberExpense,
+              let userData = userData
+        else { return }
+        
+        view.addSubview(nameLabel)
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
+        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
+        nameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
+        nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        if memberExpense.allExpense >= 0 {
+            nameLabel.text = "付款對象：\(userData.userName)"
+            nameLabel.textColor = UIColor.styleRed
+        } else {
+            nameLabel.text = "收款對象：\(userData.userName)"
+            nameLabel.textColor = UIColor.styleGreen
+        }
+        nameLabel.font = nameLabel.font.withSize(20)
+    }
+    
+    func setPriceInfo() {
+        guard let memberExpense = memberExpense else { return }
+        let userExpense = userExpense.filter { $0.userId == currentUserId }
+        
+        view.addSubview(price)
+        price.translatesAutoresizingMaskIntoConstraints = false
+        price.topAnchor.constraint(equalTo: nameLabel.topAnchor, constant: 60).isActive = true
+        price.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
+        price.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
+        price.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        if memberExpense.allExpense >= 0 {
+            if groupData?.creator == currentUserId {
+                price.text = "付款金額：\(abs(memberExpense.allExpense)) 元"
+                
+            } else {
+                price.text = "付款金額：\(abs(userExpense[0].allExpense)) 元"
+            }
+            price.textColor = UIColor.styleRed
+        } else {
+            if groupData?.creator == currentUserId {
+                price.text = "收款金額：\(abs(memberExpense.allExpense)) 元"
+            } else {
+                price.text = "收款金額：\(abs(userExpense[0].allExpense)) 元"
+            }
+            price.textColor = UIColor.styleGreen
+        }
+        price.font = price.font.withSize(20)
     }
 }
 
