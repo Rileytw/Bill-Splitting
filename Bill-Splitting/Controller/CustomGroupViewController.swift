@@ -559,6 +559,7 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
                 guard let detailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: GroupDetailViewController.self)) as? GroupDetailViewController else { return }
                 detailViewController.groupData = self.groupData
                 detailViewController.userData = self.userData
+                detailViewController.personalExpense = self.expense
 //                self.present(detailViewController, animated: true, completion: nil)
                 self.show(detailViewController, sender: nil)
             }
