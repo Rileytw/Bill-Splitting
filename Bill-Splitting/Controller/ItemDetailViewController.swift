@@ -113,6 +113,7 @@ class ItemDetailViewController: UIViewController {
         paidUser = userData.filter { $0.userId == item?.paidInfo?[0].userId }
         if leaveMemberData.isEmpty == false && paidUser.count == 0 {
             paidUser = leaveMemberData.filter { $0.userId == item?.paidInfo?[0].userId }
+            paidUser[0].userName = paidUser[0].userName + "(已離開群組)"
         }
     }
     
@@ -125,9 +126,16 @@ class ItemDetailViewController: UIViewController {
         }
         
         if leaveMemberData.isEmpty == false {
+            var leaveUser = [UserData]()
             for index in 0..<involvedExpense.count {
-                involvedUser += leaveMemberData.filter { $0.userId == involvedExpense[index].userId }
+                leaveUser += leaveMemberData.filter { $0.userId == involvedExpense[index].userId }
             }
+            
+            for index in 0..<leaveUser.count {
+                leaveUser[index].userName = leaveUser[index].userName + "(已離開群組)"
+            }
+ 
+            involvedUser += leaveUser
         }
     }
     
