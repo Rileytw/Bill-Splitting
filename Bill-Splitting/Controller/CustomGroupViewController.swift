@@ -23,6 +23,7 @@ class CustomGroupViewController: UIViewController {
     
     var memberName: [String] = []
     var userData: [UserData] = []
+    var leaveMemberData: [UserData] = []
     var itemData: [ItemData] = []
     
     var paidItem: [[ExpenseInfo]] = [] {
@@ -61,23 +62,21 @@ class CustomGroupViewController: UIViewController {
         setClosedGroupButton()
         setItemTableView()
         setSubscribeButton()
-        
-        navigationItem.title = "群組"
-//        self.navigationController?.navigationBar.tintColor = UIColor.systemGray
-//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
-        
         detectSubscription()
         addMenu()
         setAnimation()
+        navigationItem.title = "群組"
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
         userData.removeAll()
+        leaveMemberData.removeAll()
         
         getItemData()
         getMemberExpense()
+        getLeaveMemberData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -91,23 +90,30 @@ class CustomGroupViewController: UIViewController {
     }
     
     func getUserData() {
-        let semaphore = DispatchSemaphore(value: 0)
-        let queue = DispatchQueue(label: "Queue", qos: .default, attributes: .concurrent)
-        
-        queue.async {
-            self.groupData?.member.forEach { member in
+        groupData?.member.forEach { member in
+            UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
+                switch result {
+                case .success(let userData):
+                    self?.memberName.append(userData.userName)
+                    self?.userData.append(userData)
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                }
+            }
+        }
+    }
+    
+    func getLeaveMemberData() {
+        if groupData?.leaveMembers != nil {
+            groupData?.leaveMembers?.forEach { member in
                 UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
                     switch result {
                     case .success(let userData):
-                        self?.memberName.append(userData.userName)
-                        self?.userData.append(userData)
-                        semaphore.signal()
+                        self?.leaveMemberData.append(userData)
                     case .failure(let error):
                         print("Error decoding userData: \(error)")
-                        semaphore.signal()
                     }
                 }
-                semaphore.wait()
             }
         }
     }
@@ -543,6 +549,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         itemDetailViewController.itemId = item.itemId
         itemDetailViewController.userData = userData
         itemDetailViewController.groupData = groupData
+        itemDetailViewController.leaveMemberData = leaveMemberData
         
         self.show(itemDetailViewController, sender: nil)
         

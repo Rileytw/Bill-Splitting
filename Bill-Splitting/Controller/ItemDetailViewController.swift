@@ -16,6 +16,7 @@ class ItemDetailViewController: UIViewController {
     var tableView = UITableView()
     var paidUser: [UserData] = []
     var involvedUser: [UserData] = []
+    var leaveMemberData: [UserData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -110,6 +111,9 @@ class ItemDetailViewController: UIViewController {
     
     func getPayUser() {
         paidUser = userData.filter { $0.userId == item?.paidInfo?[0].userId }
+        if leaveMemberData.isEmpty == false && paidUser.count == 0 {
+            paidUser = leaveMemberData.filter { $0.userId == item?.paidInfo?[0].userId }
+        }
     }
     
     func getInvolvedUser() {
@@ -118,6 +122,12 @@ class ItemDetailViewController: UIViewController {
         }
         for index in 0..<involvedExpense.count {
             involvedUser += userData.filter { $0.userId == involvedExpense[index].userId }
+        }
+        
+        if leaveMemberData.isEmpty == false {
+            for index in 0..<involvedExpense.count {
+                involvedUser += leaveMemberData.filter { $0.userId == involvedExpense[index].userId }
+            }
         }
     }
     

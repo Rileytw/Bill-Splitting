@@ -31,7 +31,7 @@ class AddGroupsViewController: UIViewController {
         }
     }
     
-    let tableView = UITableView()
+    let tableView = UITableView(frame: .zero, style: .plain)
     var searchController: UISearchController!
     
     let inviteFriendButton = UIButton()
