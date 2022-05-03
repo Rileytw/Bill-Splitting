@@ -193,4 +193,33 @@ class GroupManager {
             ])
         }
     }
+    
+    func removeGroupMember(groupId: String, userId: String, completion: @escaping(Result<String, Error>) -> Void) {
+        let groupRef = db.collection(FireBaseCollection.group.rawValue).document(groupId)
+
+        groupRef.updateData([
+                "member": FieldValue.arrayRemove([userId])
+            ]) { err in
+                if let err = err {
+                    print("Error updating document: \(err)")
+                    completion(.failure(err))
+                } else {
+                    print("Document successfully updated")
+                    completion(.success("success"))
+                }
+            }
+
+        }
+    
+    func removeGroupExpense(groupId: String, userId: String, completion: @escaping(Result<String, Error>) -> Void) {
+        db.collection(FireBaseCollection.group.rawValue).document(groupId).collection("memberExpense").document(userId).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully removed!")
+                completion(.success("success"))
+            }
+        }
+    }
 }

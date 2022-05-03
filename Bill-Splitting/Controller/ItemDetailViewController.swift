@@ -105,7 +105,6 @@ class ItemDetailViewController: UIViewController {
         }
         group.notify(queue: DispatchQueue.main) {
             self.tableView.reloadData()
-//            print("involedUser:\(self.involvedUser) ")
         }
     }
     

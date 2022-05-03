@@ -74,7 +74,10 @@ class GroupDetailViewController: UIViewController {
                                                 message: "退出群組後，將無法查看群組內容",
                                                 preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-        let confirmAction = UIAlertAction(title: "確認離開", style: .destructive, handler: nil)
+        let confirmAction = UIAlertAction(title: "確認離開", style: .destructive) { [weak self] _ in
+            self?.leaveGroup()
+            self?.backToGroupsPage()
+        }
         alertController.addAction(cancelAction)
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
@@ -96,7 +99,30 @@ class GroupDetailViewController: UIViewController {
     }
     
     func leaveGroup() {
+        let groupId = groupData?.groupId
+        GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
+                                              userId: currentUserId) { result in
+            switch result {
+            case .success:
+                print("leave group")
+            case .failure:
+                print("remove group member failed")
+            }
+        }
         
+        GroupManager.shared.removeGroupExpense(groupId: groupId ?? "",
+                                               userId: currentUserId) { result in
+            switch result {
+            case .success:
+                print("leave group")
+            case .failure:
+                print("remove member expense failed")
+            }
+        }
+    }
+    
+    func backToGroupsPage() {
+        self.navigationController?.popToRootViewController(animated: true)
     }
 }
 
