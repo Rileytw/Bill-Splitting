@@ -11,6 +11,11 @@ class FriendListViewController: UIViewController {
 
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let tableView = UITableView()
+    let width = UIScreen.main.bounds.size.width
+    let height = UIScreen.main.bounds.size.height
+    var blockUserView = BlockUserView()
+    var mask = UIView()
+    var removeUserId: String?
     
     var friends: [Friend]? {
         didSet {
@@ -76,7 +81,7 @@ class FriendListViewController: UIViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.backgroundColor = .clear
         
-        tableView.register(UINib(nibName: String(describing: ProfileTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ProfileTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: FriendListTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: FriendListTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
         
@@ -90,15 +95,80 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: String(describing: ProfileTableViewCell.self),
+            withIdentifier: String(describing: FriendListTableViewCell.self),
             for: indexPath
         )
         
-        guard let profileCell = cell as? ProfileTableViewCell else { return cell }
+        guard let profileCell = cell as? FriendListTableViewCell else { return cell }
+        
+        profileCell.delegate = self
+        
         profileCell.createCell(userName: friends?[indexPath.row].userName ?? "",
                                userEmail: friends?[indexPath.row].userEmail ?? "")
+        profileCell.infoButton.addTarget(self, action: #selector(pressMoreInfo), for: .touchUpInside)
         
         return profileCell
     }
+    
+    @objc func pressMoreInfo(_ sender: UIButton) {
+        let point = sender.convert(CGPoint.zero, to: self.tableView)
         
+        if let indexPath = self.tableView.indexPathForRow(at: point) {
+            self.removeUserId = friends?[indexPath.row].userName
+        }
+        
+        revealBlockView()
+    }
+    
+    func revealBlockView() {
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.addSubview(mask)
+        
+        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height -  self.view.safeAreaInsets.bottom - 300, width: UIScreen.main.bounds.size.width, height: 300)
+        }, completion: nil)
+        view.addSubview(blockUserView)
+        
+        blockUserView.blockUserButton.addTarget(self, action: #selector(blockUserAlert), for: .touchUpInside)
+        
+        blockUserView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+    }
+    
+    @objc func pressDismissButton() {
+//        blockUserView.removeFromSuperview()
+        let subviewCount = self.view.subviews.count
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        }, completion: nil)
+        mask.removeFromSuperview()
+    }
+    
+    @objc func blockUserAlert() {
+        let alertController = UIAlertController(title: "請確認是否封鎖使用者", message: "封鎖後不可解除", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "封鎖", style: .destructive) { [weak self] _ in
+//            self?.blockUser
+            print("封鎖\(self?.removeUserId)")
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func blockUser() {
+        
+    }
+}
+
+extension FriendListViewController: InfoDelegate {
+    func getCellInfo(sender: FriendListTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: sender) else { return }
+        
+    }
 }
