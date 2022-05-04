@@ -134,7 +134,10 @@ class ItemDetailViewController: UIViewController {
             for index in 0..<leaveUser.count {
                 leaveUser[index].userName = leaveUser[index].userName + "(已離開群組)"
             }
- 
+            for index in 0..<userData.count {
+                leaveUser = leaveUser.filter { $0.userId != userData[index].userId }
+            }
+            
             involvedUser += leaveUser
         }
     }
