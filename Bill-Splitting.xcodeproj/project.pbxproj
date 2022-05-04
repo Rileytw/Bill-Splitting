@@ -42,7 +42,7 @@
 		3555072A2817900500FD2465 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355507292817900500FD2465 /* AccountManager.swift */; };
 		3555072C2819633100FD2465 /* QRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3555072B2819633100FD2465 /* QRCodeViewController.swift */; };
 		3555072E28197E6900FD2465 /* ScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3555072D28197E6900FD2465 /* ScanQRCodeViewController.swift */; };
-		35550730281CE1D200FD2465 /* BaseStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3555072F281CE1D100FD2465 /* BaseStyle.swift */; };
+		35550730281CE1D200FD2465 /* ElementsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3555072F281CE1D100FD2465 /* ElementsStyle.swift */; };
 		35550732281D474C00FD2465 /* simpleLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 35550731281D474C00FD2465 /* simpleLoading.json */; };
 		35568A102813D0BA00646B57 /* Kingfisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A0F2813D0BA00646B57 /* Kingfisher.swift */; };
 		35568A1228145DA000646B57 /* GroupDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A1128145DA000646B57 /* GroupDetailViewController.swift */; };
@@ -145,7 +145,7 @@
 		355507292817900500FD2465 /* AccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		3555072B2819633100FD2465 /* QRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeViewController.swift; sourceTree = "<group>"; };
 		3555072D28197E6900FD2465 /* ScanQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQRCodeViewController.swift; sourceTree = "<group>"; };
-		3555072F281CE1D100FD2465 /* BaseStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseStyle.swift; sourceTree = "<group>"; };
+		3555072F281CE1D100FD2465 /* ElementsStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementsStyle.swift; sourceTree = "<group>"; };
 		35550731281D474C00FD2465 /* simpleLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simpleLoading.json; sourceTree = "<group>"; };
 		35568A0F2813D0BA00646B57 /* Kingfisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kingfisher.swift; sourceTree = "<group>"; };
 		35568A1128145DA000646B57 /* GroupDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailViewController.swift; sourceTree = "<group>"; };
@@ -330,7 +330,7 @@
 			isa = PBXGroup;
 			children = (
 				350A33692804192C00201E40 /* BaseTexFieldView + PickerView.swift */,
-				3555072F281CE1D100FD2465 /* BaseStyle.swift */,
+				3555072F281CE1D100FD2465 /* ElementsStyle.swift */,
 				350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */,
 				350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */,
 				35FF63D028055BA000508EAF /* ProfileTableViewCell.swift */,
@@ -613,7 +613,7 @@
 				35568A1228145DA000646B57 /* GroupDetailViewController.swift in Sources */,
 				350A3377280468D000201E40 /* UserManager.swift in Sources */,
 				355090E6280EDE020007C0CE /* PaymentTableViewCell.swift in Sources */,
-				35550730281CE1D200FD2465 /* BaseStyle.swift in Sources */,
+				35550730281CE1D200FD2465 /* ElementsStyle.swift in Sources */,
 				35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */,
 				35FF63DF2806563500508EAF /* ItemObject.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
