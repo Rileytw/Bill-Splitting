@@ -13,7 +13,6 @@ class FriendListTableViewCell: UITableViewCell {
     @IBOutlet var email: UILabel!
     @IBOutlet weak var infoButton: UIButton!
     
-    weak var delegate: InfoDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -21,7 +20,6 @@ class FriendListTableViewCell: UITableViewCell {
         profileItemName.textColor = .greenWhite
         email.textColor = .greenWhite
         infoButton.tintColor = .greenWhite
-        self.infoButton.addTarget(self, action: #selector(pressInfoButton), for: .touchUpInside)
         self.selectionStyle = UITableViewCell.SelectionStyle.none
     }
 
@@ -34,12 +32,4 @@ class FriendListTableViewCell: UITableViewCell {
         profileItemName.text = userName
         email.text = userEmail
     }
-    
-    @objc func pressInfoButton() {
-        delegate?.getCellInfo(sender: self)
-    }
-}
-
-protocol InfoDelegate: AnyObject {
-    func getCellInfo(sender: FriendListTableViewCell)
 }

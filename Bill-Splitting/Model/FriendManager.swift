@@ -163,4 +163,31 @@ class FriendManager {
             print(error)
         }
     }
+    
+    func removeFriend(userId: String, friendId: String, completion: @escaping (Result<(), Error>) -> Void) {
+        db.collection(FireBaseCollection.user.rawValue).document(userId).collection("friend").document(friendId).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully removed!")
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func addBlockFriends(userId: String, blockedUser: String, completion: @escaping (Result<(), Error>) -> Void) {
+        let blackListRef = db.collection(FireBaseCollection.user.rawValue).document(userId)
+        blackListRef.updateData([
+            "blackList": FieldValue.arrayUnion([blockedUser])
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
+            }
+        }
+    }
 }

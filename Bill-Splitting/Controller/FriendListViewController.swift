@@ -15,7 +15,7 @@ class FriendListViewController: UIViewController {
     let height = UIScreen.main.bounds.size.height
     var blockUserView = BlockUserView()
     var mask = UIView()
-    var removeUserId: String?
+    var blockedUserId: String?
     
     var friends: [Friend]? {
         didSet {
@@ -33,15 +33,7 @@ class FriendListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
-        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let friend):
-                self?.friends = friend
-//                print("userData: \(self.friends)")
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-            }
-        }
+        fetchFriends()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -84,7 +76,17 @@ class FriendListViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: FriendListTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: FriendListTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
-        
+    }
+    
+    func fetchFriends() {
+        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let friend):
+                self?.friends = friend
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
     }
 }
 
@@ -101,8 +103,6 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
         
         guard let profileCell = cell as? FriendListTableViewCell else { return cell }
         
-        profileCell.delegate = self
-        
         profileCell.createCell(userName: friends?[indexPath.row].userName ?? "",
                                userEmail: friends?[indexPath.row].userEmail ?? "")
         profileCell.infoButton.addTarget(self, action: #selector(pressMoreInfo), for: .touchUpInside)
@@ -114,7 +114,7 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
         let point = sender.convert(CGPoint.zero, to: self.tableView)
         
         if let indexPath = self.tableView.indexPathForRow(at: point) {
-            self.removeUserId = friends?[indexPath.row].userName
+            self.blockedUserId = friends?[indexPath.row].userId
         }
         
         revealBlockView()
@@ -151,8 +151,12 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     @objc func blockUserAlert() {
         let alertController = UIAlertController(title: "請確認是否封鎖使用者", message: "封鎖後不可解除", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "封鎖", style: .destructive) { [weak self] _ in
-//            self?.blockUser
-            print("封鎖\(self?.removeUserId)")
+            print("封鎖\(self?.blockedUserId)")
+            self?.blockUser()
+            self?.addToBlackList()
+            
+            self?.pressDismissButton()
+            self?.navigationController?.popToRootViewController(animated: true)
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
 
@@ -162,13 +166,24 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func blockUser() {
-        
+        FriendManager.shared.removeFriend(userId: currentUserId, friendId: blockedUserId ?? "") { result in
+            switch result {
+            case .success():
+                print("remove friend successfully")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
     }
-}
-
-extension FriendListViewController: InfoDelegate {
-    func getCellInfo(sender: FriendListTableViewCell) {
-        guard let indexPath = tableView.indexPath(for: sender) else { return }
-        
+    
+    func addToBlackList() {
+        FriendManager.shared.addBlockFriends(userId: currentUserId, blockedUser: blockedUserId ?? "") { result in
+            switch result {
+            case .success():
+                print("Add blackList successfully")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
     }
 }
