@@ -21,6 +21,7 @@ class ChartViewController: UIViewController {
     var userData = [UserData]()
     var member = [UserData]()
     let height = UIScreen.main.bounds.height
+    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +32,7 @@ class ChartViewController: UIViewController {
         setDebtLabel()
         setDebtChart()
         getMemberData()
+        detectBlackListUser()
         detectCreditMember()
         detectDebtMember()
         setDismissButton()
@@ -129,5 +131,14 @@ class ChartViewController: UIViewController {
     
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: userData ?? [])
+        userData = newUserData
+        
+        let newMemberData = UserManager.renameBlockedUser(blockList: blackList, userData: member)
+        member = newMemberData
     }
 }

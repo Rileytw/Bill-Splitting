@@ -53,6 +53,8 @@ class AddItemViewController: UIViewController {
     var itemImageString: String?
     var itemDescription: String?
     
+    var blackList = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -65,12 +67,11 @@ class AddItemViewController: UIViewController {
         setInvolvedMembers()
         setTableView()
         setDismissButton()
+        detectBlackListUser()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-//        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
-//        addMoreButton.clipsToBounds = true
         ElementsStyle.styleTextField(addItemView.itemNameTextField)
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
@@ -124,8 +125,6 @@ class AddItemViewController: UIViewController {
         memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 40).isActive = true
         memberPickerView.leadingAnchor.constraint(equalTo: choosePaidMember.trailingAnchor, constant: 20).isActive = true
         memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
-//        typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
-//        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
         memberPickerView.pickerView.dataSource = self
@@ -346,6 +345,12 @@ class AddItemViewController: UIViewController {
     
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: memberData ?? [])
+        memberData = newUserData
     }
 }
 

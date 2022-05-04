@@ -142,6 +142,7 @@ class CustomGroupViewController: UIViewController {
         addItemViewController.memberId = groupData?.member
         addItemViewController.memberData = userData
         addItemViewController.groupData = groupData
+        addItemViewController.blackList = blackList
         self.present(addItemViewController, animated: true, completion: nil)
     }
     
@@ -150,6 +151,7 @@ class CustomGroupViewController: UIViewController {
         guard let chartViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ChartViewController.self)) as? ChartViewController else { return }
         chartViewController.memberExpense = memberExpense
         chartViewController.userData = userData
+        chartViewController.blackList = blackList
         chartViewController.modalPresentationStyle = .fullScreen
         self.present(chartViewController, animated: true, completion: nil)
     }
@@ -162,6 +164,7 @@ class CustomGroupViewController: UIViewController {
         settleUpViewController.memberExpense = memberExpense
         settleUpViewController.userData = userData
         settleUpViewController.expense = expense
+        settleUpViewController.blackList = blackList
         self.show(settleUpViewController, sender: nil)
     }
     
@@ -242,6 +245,7 @@ class CustomGroupViewController: UIViewController {
         subscribeViewController.memberId = groupData?.member
         subscribeViewController.memberData = userData
         subscribeViewController.groupData = groupData
+        subscribeViewController.blackList = blackList
         self.present(subscribeViewController, animated: true, completion: nil)
     }
     
@@ -552,6 +556,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         itemDetailViewController.userData = userData
         itemDetailViewController.groupData = groupData
         itemDetailViewController.leaveMemberData = leaveMemberData
+        itemDetailViewController.blackList = blackList
         
         self.show(itemDetailViewController, sender: nil)
         
@@ -569,7 +574,8 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
                 detailViewController.groupData = self.groupData
                 detailViewController.userData = self.userData
                 detailViewController.personalExpense = self.expense
-//                self.present(detailViewController, animated: true, completion: nil)
+                detailViewController.blackList = self.blackList
+
                 self.show(detailViewController, sender: nil)
             }
 

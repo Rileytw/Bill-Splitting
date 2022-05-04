@@ -15,6 +15,7 @@ class GroupDetailViewController: UIViewController {
     var groupData: GroupData?
     var userData: [UserData] = []
     var personalExpense: Double?
+    var blackList = [String]()
     
     let fullScreenSize = UIScreen.main.bounds.size
     
@@ -25,6 +26,7 @@ class GroupDetailViewController: UIViewController {
         setTableView()
         setAddGroupButton()
         hideLeaveButton()
+        detectBlackListUser()
     }
     
     func setTableView() {
@@ -126,6 +128,12 @@ class GroupDetailViewController: UIViewController {
     
     func backToGroupsPage() {
         self.navigationController?.popToRootViewController(animated: true)
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                      userData: userData)
+        userData = newUserData
     }
 }
 

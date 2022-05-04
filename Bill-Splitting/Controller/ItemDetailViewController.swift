@@ -17,12 +17,14 @@ class ItemDetailViewController: UIViewController {
     var paidUser: [UserData] = []
     var involvedUser: [UserData] = []
     var leaveMemberData: [UserData] = []
+    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         addMenu()
         setTableView()
+        detectBlackListUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -163,6 +165,12 @@ class ItemDetailViewController: UIViewController {
                                                     newExpense: involvedExpense[user].price,
                                                     groupId: groupData?.groupId ?? "")
         }
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                      userData: userData)
+        userData = newUserData
     }
 }
 

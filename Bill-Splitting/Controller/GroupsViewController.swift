@@ -44,6 +44,7 @@ class GroupsViewController: UIViewController {
         super.viewWillAppear(animated)
         getGroupData()
         getClosedGroupData()
+        fetchCurrentUserData()
     }
     
     func setTableView() {

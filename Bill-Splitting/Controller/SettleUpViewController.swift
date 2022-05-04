@@ -16,6 +16,7 @@ class SettleUpViewController: UIViewController {
     var memberExpense: [MemberExpense] = []
     var userData: [UserData] = []
     var expense: Double?
+    var blackList = [String]()
     
     let tableView = UITableView()
     
@@ -28,6 +29,7 @@ class SettleUpViewController: UIViewController {
         getCreatorData()
         setTableView()
         removeCreatorData()
+        detectBlackListUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -51,7 +53,7 @@ class SettleUpViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: SettleUpTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: SettleUpTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.rowHeight = 60
+//        tableView.rowHeight = 60
         tableView.backgroundColor = UIColor.clear
     }
     
@@ -77,6 +79,12 @@ class SettleUpViewController: UIViewController {
         for member in userData where member.userId == groupData?.creator {
             creator = member
         }
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: userData)
+        userData = newUserData
     }
 }
 
