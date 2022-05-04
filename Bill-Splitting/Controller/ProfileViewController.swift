@@ -20,6 +20,7 @@ class ProfileViewController: UIViewController {
     let userEmail = UILabel()
     let editButton = UIButton()
     var collectionView: UICollectionView!
+    var blackList = [String]()
     
     var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
     
@@ -40,6 +41,7 @@ class ProfileViewController: UIViewController {
                 self?.currentUser = user
                 self?.userName.text = user?.userName
                 self?.userEmail.text = user?.userEmail
+                self?.blackList = user?.blackList ?? []
             case.failure(let error):
                 print(error.localizedDescription)
             }
@@ -228,7 +230,7 @@ extension ProfileViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
-            return 4
+            return 5
         } else {
             return 2
         }
@@ -257,6 +259,9 @@ extension ProfileViewController: UICollectionViewDataSource {
             } else if indexPath.item == 3 {
                 profileCell.textLabel.text = ProfileList.friendInvitation.content
                 profileCell.icon.image = ProfileList.friendInvitation.icon
+            } else if indexPath.item == 4 {
+                profileCell.textLabel.text = ProfileList.blackList.content
+                profileCell.icon.image = ProfileList.blackList.icon
             }
         } else {
             if indexPath.item == 0 {
@@ -342,6 +347,12 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
                 else { return }
                 friendInvitationVC.currentUserName = currentUser?.userName
                 self.show(friendInvitationVC, sender: nil)
+            } else if indexPath.item == 4 {
+                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                guard let blackListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: BlackListViewController.self)) as? BlackListViewController
+                else { return }
+                blackListViewController.blackList = blackList
+                self.show(blackListViewController, sender: nil)
             }
         } else {
             if indexPath.item == 0 {
@@ -370,6 +381,7 @@ enum ProfileList {
     case payment
     case friendList
     case friendInvitation
+    case blackList
     case logOut
     case deleteAccount
     
@@ -383,6 +395,8 @@ enum ProfileList {
             return "好友列表"
         case .friendInvitation:
             return "交友邀請"
+        case .blackList:
+            return "黑名單"
         case .logOut:
             return "登出"
         case .deleteAccount:
@@ -400,6 +414,8 @@ enum ProfileList {
             return UIImage(systemName: "person.2.fill") ?? UIImage()
         case .friendInvitation:
             return UIImage(systemName: "mail.fill") ?? UIImage()
+        case .blackList:
+            return UIImage(systemName: "xmark.rectangle.fill") ?? UIImage()
         case .logOut:
             if #available(iOS 15, *) {
                 return UIImage(systemName: "rectangle.portrait.and.arrow.right.fill") ?? UIImage()
