@@ -21,6 +21,7 @@ class RemindersViewController: UIViewController {
     var reminderTitle: String?
     var reminderSubtitle: String?
     var remindBody: String?
+    var blackList = [String]()
     
     var tableView = UITableView()
     
@@ -34,6 +35,7 @@ class RemindersViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        fetchCurrentUserData()
         getReminders()
     }
     override func viewWillLayoutSubviews() {
@@ -129,6 +131,7 @@ class RemindersViewController: UIViewController {
                 switch result {
                 case .success(let users):
                     self?.members = users
+                    self?.detectBlackListUser()
                     if self?.reminders.isEmpty == false {
                         for user in users where user.userId == self?.reminders[0].memberId {
                             self?.member = user
@@ -163,6 +166,26 @@ class RemindersViewController: UIViewController {
             }
             self.tableView.reloadData()
         }
+    }
+    
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let currentUserData):
+                if currentUserData.blackList != nil {
+                    self?.blackList = currentUserData.blackList ?? []
+                }
+                print("success")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: members)
+        members = newUserData
     }
     
     func setTableView() {

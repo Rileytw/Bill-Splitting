@@ -28,6 +28,7 @@ class AddReminderViewController: UIViewController {
     var groups: [GroupData] = []
     var member: [UserData] = []
     var userData: [UserData] = []
+    var blackList = [String]()
     var remindTimeStamp: Double?
     var reminderData = Reminder(groupId: "",
                                 memberId: "",
@@ -42,6 +43,7 @@ class AddReminderViewController: UIViewController {
         ElementsStyle.styleBackground(view)
         getGroupData()
         getUserData()
+        fetchCurrentUserData()
         
         setGroup()
         setGroupPicker()
@@ -187,6 +189,7 @@ class AddReminderViewController: UIViewController {
             switch result {
             case .success(let userData):
                 self?.userData = userData
+                self?.detectBlackListUser()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -227,6 +230,26 @@ class AddReminderViewController: UIViewController {
         let remindDate = remindTimeDatePicker.date
         remindTimeStamp = remindDate.timeIntervalSince1970
         reminderData.remindTime = remindTimeStamp ?? Date().timeIntervalSince1970
+    }
+    
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let currentUserData):
+                if currentUserData.blackList != nil {
+                    self?.blackList = currentUserData.blackList ?? []
+                }
+                print("success")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: userData)
+        userData = newUserData
     }
     
     func setReminderLabelConstraint() {

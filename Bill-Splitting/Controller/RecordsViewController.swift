@@ -20,6 +20,7 @@ class RecordsViewController: UIViewController {
     var personalPaid: [ExpenseInfo] = []
     var personalInvolved: [ExpenseInfo] = []
     var allPersonalItem: [ExpenseInfo] = []
+    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +33,7 @@ class RecordsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        fetchCurrentUserData()
 //        setAnimation()
 //        getGroupData()
     }
@@ -134,6 +136,20 @@ class RecordsViewController: UIViewController {
             self.removeAnimation()
         }
     }
+    
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let currentUserData):
+                if currentUserData.blackList != nil {
+                    self?.blackList = currentUserData.blackList ?? []
+                }
+                print("success")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+    }
 
     func setAnimation() {
         animationView = .init(name: "simpleLoading")
@@ -227,6 +243,7 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         groupData = groups.filter { $0.groupId == personalItem?.groupId }
 //        print("peronalitem:\(personalItem)")
         customGroupViewController.groupData = groupData[0]
+        customGroupViewController.blackList = blackList
         self.show(customGroupViewController, sender: nil)
     }
 }

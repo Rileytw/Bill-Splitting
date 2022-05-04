@@ -27,9 +27,9 @@ class SettleUpViewController: UIViewController {
         ElementsStyle.styleBackground(view)
         getCurrentUserName()
         getCreatorData()
+        detectBlackListUser()
         setTableView()
         removeCreatorData()
-        detectBlackListUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -85,6 +85,13 @@ class SettleUpViewController: UIViewController {
         let newUserData = UserManager.renameBlockedUser(blockList: blackList,
                                                         userData: userData)
         userData = newUserData
+        
+        guard let creatorName = creator?.userName else { return }
+        for user in blackList {
+            if creator?.userId == user {
+                creator?.userName = creatorName + "（已封鎖）"
+            }
+        }
     }
 }
 
