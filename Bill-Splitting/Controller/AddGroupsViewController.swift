@@ -19,7 +19,6 @@ class AddGroupsViewController: UIViewController {
     let descriptionTextView = UITextView()
     
     let fullScreenSize = UIScreen.main.bounds.size
-    var typeTextField = UITextField()
     
     let typeLabel = UILabel()
     var typePickerView = BasePickerViewInTextField(frame: .zero)
@@ -147,7 +146,7 @@ class AddGroupsViewController: UIViewController {
         member.append(currentUserId)
         
         var type: Int?
-        if typeTextField.text == GroupType.personal.typeName {
+        if typePickerView.textField.text == GroupType.personal.typeName {
             type = 0
         } else {
             type = 1
