@@ -54,6 +54,8 @@ class CustomGroupViewController: UIViewController {
     var subsriptions: [Subscription] = []
     var subscriptionCreatedTime: Double?
     
+    var blackList = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)

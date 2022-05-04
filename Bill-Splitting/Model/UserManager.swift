@@ -158,4 +158,16 @@ class UserManager {
             }
         }
     }
+    
+    static func renameBlockedUser(blockList: [String], userData: [UserData]) -> [UserData] {
+        var blockedUserData = userData
+        for user in blockList {
+            for index in 0..<userData.count {
+                if userData[index].userId.contains(user) {
+                    blockedUserData[index].userName = blockedUserData[index].userName + "(已封鎖)"
+                }
+            }
+        }
+       return blockedUserData
+    }
 }

@@ -206,7 +206,6 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
             )
             guard let memberCell = cell as? ItemMemberTableViewCell else { return cell }
             
-            
             memberCell.createItemMamberCell(involedMember: involvedUser[indexPath.row].userName,
                                             involvedPrice: item.involedInfo?[indexPath.row].price ?? 0)
             return memberCell

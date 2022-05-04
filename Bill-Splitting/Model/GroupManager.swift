@@ -227,7 +227,7 @@ class GroupManager {
         let leaveMembersRef = db.collection(FireBaseCollection.group.rawValue).document(groupId)
         leaveMembersRef.updateData([
             "leaveMembers": FieldValue.arrayUnion([userId])
-        ])  { err in
+        ]) { err in
             if let err = err {
                 print("Error updating document: \(err)")
             } else {

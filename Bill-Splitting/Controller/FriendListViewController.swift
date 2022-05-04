@@ -129,7 +129,7 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
         blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
         
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height -  self.view.safeAreaInsets.bottom - 300, width: UIScreen.main.bounds.size.width, height: 300)
+            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
         }, completion: nil)
         view.addSubview(blockUserView)
         

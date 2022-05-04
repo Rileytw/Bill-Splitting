@@ -28,6 +28,7 @@ class GroupsViewController: UIViewController {
     var personalGroups: [GroupData] = []
     var closedGroups: [GroupData] = []
     var filteredGroups: [GroupData] = []
+    var blackList: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,9 +36,6 @@ class GroupsViewController: UIViewController {
         setSelectedView()
         setTableView()
         navigationItem.title = "我的群組"
-//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.selectedColor]
-//        self.navigationController?.navigationBar.tintColor = UIColor.selectedColor
-//        self.navigationController?.navigationBar.backgroundColor = .black
         setSearchBar()
         setAnimation()
     }
@@ -84,6 +82,20 @@ class GroupsViewController: UIViewController {
                 self?.setFilterGroupData()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+            }
+        }
+    }
+    
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let currentUserData):
+                if currentUserData.blackList != nil {
+                    self?.blackList = currentUserData.blackList ?? []
+                }
+                print("success")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
             }
         }
     }
@@ -215,6 +227,7 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         guard let customGroupViewController =
                 storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
         customGroupViewController.groupData = filteredGroups[indexPath.row]
+        customGroupViewController.blackList = blackList
         self.show(customGroupViewController, sender: nil)
     }
     
