@@ -29,7 +29,7 @@
 		350A337B2805060B00201E40 /* FriendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A337A2805060B00201E40 /* FriendManager.swift */; };
 		355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DA280DA0E10007C0CE /* SubscriptionObject.swift */; };
 		355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DC280DA19F0007C0CE /* SubscriptionManager.swift */; };
-		355090DF280DA5900007C0CE /* FireBaseCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DE280DA5900007C0CE /* FireBaseCollection.swift */; };
+		355090DF280DA5900007C0CE /* FirebaseCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DE280DA5900007C0CE /* FirebaseCollection.swift */; };
 		355090E1280EB9360007C0CE /* PaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090E0280EB9360007C0CE /* PaymentViewController.swift */; };
 		355090E3280EBC190007C0CE /* AddPaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090E2280EBC190007C0CE /* AddPaymentViewController.swift */; };
 		355090E6280EDE020007C0CE /* PaymentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090E4280EDE020007C0CE /* PaymentTableViewCell.swift */; };
@@ -64,6 +64,9 @@
 		35568A342817800100646B57 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35568A332817800100646B57 /* SignUpViewController.swift */; };
 		3576B41828222AFC00CECE3F /* BlockUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B41728222AFC00CECE3F /* BlockUserView.swift */; };
 		3576B41A2822EA7A00CECE3F /* BlackListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B4192822EA7A00CECE3F /* BlackListViewController.swift */; };
+		3576B41C28239C4700CECE3F /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B41B28239C4700CECE3F /* ReportView.swift */; };
+		3576B41E2823AA3C00CECE3F /* RoportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B41D2823AA3C00CECE3F /* RoportManager.swift */; };
+		3576B4202823AB5800CECE3F /* ReportObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B41F2823AB5800CECE3F /* ReportObject.swift */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -134,7 +137,7 @@
 		350A337A2805060B00201E40 /* FriendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendManager.swift; sourceTree = "<group>"; };
 		355090DA280DA0E10007C0CE /* SubscriptionObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionObject.swift; sourceTree = "<group>"; };
 		355090DC280DA19F0007C0CE /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
-		355090DE280DA5900007C0CE /* FireBaseCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireBaseCollection.swift; sourceTree = "<group>"; };
+		355090DE280DA5900007C0CE /* FirebaseCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollection.swift; sourceTree = "<group>"; };
 		355090E0280EB9360007C0CE /* PaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViewController.swift; sourceTree = "<group>"; };
 		355090E2280EBC190007C0CE /* AddPaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPaymentViewController.swift; sourceTree = "<group>"; };
 		355090E4280EDE020007C0CE /* PaymentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentTableViewCell.swift; sourceTree = "<group>"; };
@@ -170,6 +173,9 @@
 		35568A332817800100646B57 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		3576B41728222AFC00CECE3F /* BlockUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockUserView.swift; sourceTree = "<group>"; };
 		3576B4192822EA7A00CECE3F /* BlackListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackListViewController.swift; sourceTree = "<group>"; };
+		3576B41B28239C4700CECE3F /* ReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportView.swift; sourceTree = "<group>"; };
+		3576B41D2823AA3C00CECE3F /* RoportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoportManager.swift; sourceTree = "<group>"; };
+		3576B41F2823AB5800CECE3F /* ReportObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportObject.swift; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -371,6 +377,7 @@
 				35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */,
 				35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */,
 				3576B41728222AFC00CECE3F /* BlockUserView.swift */,
+				3576B41B28239C4700CECE3F /* ReportView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -390,9 +397,11 @@
 				355090EA280FBBB10007C0CE /* ImageManager.swift */,
 				3593E1222811884900F3A31C /* ReminderManager.swift */,
 				3593E124281188D100F3A31C /* ReminderObject.swift */,
-				355090DE280DA5900007C0CE /* FireBaseCollection.swift */,
+				355090DE280DA5900007C0CE /* FirebaseCollection.swift */,
 				35568A2828157EBC00646B57 /* ButtonModel.swift */,
 				355507292817900500FD2465 /* AccountManager.swift */,
+				3576B41D2823AA3C00CECE3F /* RoportManager.swift */,
+				3576B41F2823AB5800CECE3F /* ReportObject.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -617,11 +626,14 @@
 				35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */,
 				35FF63D72805626800508EAF /* FriendInvitationViewController.swift in Sources */,
 				35568A152814638300646B57 /* GroupDetailTableViewCell.swift in Sources */,
+				3576B41C28239C4700CECE3F /* ReportView.swift in Sources */,
 				35568A1228145DA000646B57 /* GroupDetailViewController.swift in Sources */,
 				350A3377280468D000201E40 /* UserManager.swift in Sources */,
 				355090E6280EDE020007C0CE /* PaymentTableViewCell.swift in Sources */,
+				3576B4202823AB5800CECE3F /* ReportObject.swift in Sources */,
 				35550730281CE1D200FD2465 /* ElementsStyle.swift in Sources */,
 				35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */,
+				3576B41E2823AA3C00CECE3F /* RoportManager.swift in Sources */,
 				35FF63DF2806563500508EAF /* ItemObject.swift in Sources */,
 				35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */,
 				355090F1281039110007C0CE /* AddReminderViewController.swift in Sources */,
@@ -635,7 +647,7 @@
 				35568A182815282400646B57 /* PieChart.swift in Sources */,
 				35FF63E128066F8800508EAF /* GroupsView.swift in Sources */,
 				3555072A2817900500FD2465 /* AccountManager.swift in Sources */,
-				355090DF280DA5900007C0CE /* FireBaseCollection.swift in Sources */,
+				355090DF280DA5900007C0CE /* FirebaseCollection.swift in Sources */,
 				35FF63FA2809672100508EAF /* ItemTableViewCell.swift in Sources */,
 				3576B41828222AFC00CECE3F /* BlockUserView.swift in Sources */,
 			);

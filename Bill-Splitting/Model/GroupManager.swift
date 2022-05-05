@@ -171,7 +171,7 @@ class GroupManager {
     }
     
     func updateGroupData(groupId: String, groupName: String, groupDescription: String, memberName: [String]?) {
-        let groupRef = db.collection(FireBaseCollection.group.rawValue).document(groupId)
+        let groupRef = db.collection(FirebaseCollection.group.rawValue).document(groupId)
         
         groupRef.updateData([
             "groupName": groupName,
@@ -195,7 +195,7 @@ class GroupManager {
     }
     
     func removeGroupMember(groupId: String, userId: String, completion: @escaping(Result<String, Error>) -> Void) {
-        let groupRef = db.collection(FireBaseCollection.group.rawValue).document(groupId)
+        let groupRef = db.collection(FirebaseCollection.group.rawValue).document(groupId)
 
         groupRef.updateData([
                 "member": FieldValue.arrayRemove([userId])
@@ -212,7 +212,7 @@ class GroupManager {
         }
     
     func removeGroupExpense(groupId: String, userId: String, completion: @escaping(Result<String, Error>) -> Void) {
-        db.collection(FireBaseCollection.group.rawValue).document(groupId).collection("memberExpense").document(userId).delete() { err in
+        db.collection(FirebaseCollection.group.rawValue).document(groupId).collection("memberExpense").document(userId).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")
                 completion(.failure(err))
@@ -224,7 +224,7 @@ class GroupManager {
     }
     
     func addLeaveMember(groupId: String, userId: String) {
-        let leaveMembersRef = db.collection(FireBaseCollection.group.rawValue).document(groupId)
+        let leaveMembersRef = db.collection(FirebaseCollection.group.rawValue).document(groupId)
         leaveMembersRef.updateData([
             "leaveMembers": FieldValue.arrayUnion([userId])
         ]) { err in

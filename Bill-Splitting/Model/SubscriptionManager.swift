@@ -20,7 +20,7 @@ class SubscriptionManager {
     lazy var db = Firestore.firestore()
     
     func addSubscriptionData(groupId: String, itemName: String, paidUser: String, paidPrice: Double, startedTime: Double, endedTime: Double, cycle: Int, completion: @escaping (String) -> Void) {
-        let ref = db.collection(FireBaseCollection.subscription.rawValue).document()
+        let ref = db.collection(FirebaseCollection.subscription.rawValue).document()
         
         let subscriptionData = Subscription(doucmentId: "\(ref.documentID)",
                                             groupId: groupId,
@@ -31,7 +31,7 @@ class SubscriptionManager {
                                             paidPrice: paidPrice,
                                             cycle: cycle)
         do {
-            try db.collection(FireBaseCollection.subscription.rawValue).document("\(ref.documentID)").setData(from: subscriptionData)
+            try db.collection(FirebaseCollection.subscription.rawValue).document("\(ref.documentID)").setData(from: subscriptionData)
             completion("\(ref.documentID)")
         } catch {
             print(error)
@@ -42,14 +42,14 @@ class SubscriptionManager {
         let involvedInfo = SubscriptionMember(documentId: documentId, involvedUser: involvedUserId, involvedPrice: price)
         
         do {
-            try db.collection(FireBaseCollection.subscription.rawValue).document(documentId).collection("involvedInfo").document().setData(from: involvedInfo)
+            try db.collection(FirebaseCollection.subscription.rawValue).document(documentId).collection("involvedInfo").document().setData(from: involvedInfo)
         } catch {
             print(error)
         }
     }
     
     func fetchSubscriptionData(groupId: String, completion: @escaping (Result<[Subscription], Error>) -> Void) {
-        db.collection(FireBaseCollection.subscription.rawValue).whereField("groupId", isEqualTo: groupId).getDocuments() { (querySnapshot, error) in
+        db.collection(FirebaseCollection.subscription.rawValue).whereField("groupId", isEqualTo: groupId).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -74,12 +74,12 @@ class SubscriptionManager {
     }
     
     func updateSubscriptionData(documentId: String, newStartTime: Double) {
-        let subscriptionTimeRef = db.collection(FireBaseCollection.subscription.rawValue).document(documentId)
+        let subscriptionTimeRef = db.collection(FirebaseCollection.subscription.rawValue).document(documentId)
         subscriptionTimeRef.updateData(["startTime": newStartTime])
     }
     
     func deleteSubscriptionDocument(documentId: String) {
-        db.collection(FireBaseCollection.subscription.rawValue).document(documentId).delete() { err in
+        db.collection(FirebaseCollection.subscription.rawValue).document(documentId).delete() { err in
                 if let err = err {
                     print("Error removing document: \(err)")
                 } else {
@@ -89,7 +89,7 @@ class SubscriptionManager {
         }
     
     func fetchSubscriptionInvolvedData(documentId: String, completion: @escaping (Result<[SubscriptionMember], Error>) -> Void) {
-        db.collection(FireBaseCollection.subscription.rawValue).document(documentId).collection("involvedInfo").getDocuments() { (querySnapshot, error) in
+        db.collection(FirebaseCollection.subscription.rawValue).document(documentId).collection("involvedInfo").getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))

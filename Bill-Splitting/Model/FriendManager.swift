@@ -165,7 +165,7 @@ class FriendManager {
     }
     
     func removeFriend(userId: String, friendId: String, completion: @escaping (Result<(), Error>) -> Void) {
-        db.collection(FireBaseCollection.user.rawValue).document(userId).collection("friend").document(friendId).delete() { err in
+        db.collection(FirebaseCollection.user.rawValue).document(userId).collection("friend").document(friendId).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")
                 completion(.failure(err))
@@ -177,7 +177,7 @@ class FriendManager {
     }
     
     func addBlockFriends(userId: String, blockedUser: String, completion: @escaping (Result<(), Error>) -> Void) {
-        let blackListRef = db.collection(FireBaseCollection.user.rawValue).document(userId)
+        let blackListRef = db.collection(FirebaseCollection.user.rawValue).document(userId)
         blackListRef.updateData([
             "blackList": FieldValue.arrayUnion([blockedUser])
         ]) { err in

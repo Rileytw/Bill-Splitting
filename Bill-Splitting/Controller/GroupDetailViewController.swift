@@ -86,7 +86,7 @@ class GroupDetailViewController: UIViewController {
     
     func leaveGroupAlert() {
         let alertController = UIAlertController(title: "請確認是否退出群組",
-                                                message: "退出群組後，將無法查看群組內容",
+                                                message: "退出群組後，將無法查看群組內容。",
                                                 preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         let confirmAction = UIAlertAction(title: "確認退出", style: .destructive) { [weak self] _ in

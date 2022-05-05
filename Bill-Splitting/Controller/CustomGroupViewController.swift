@@ -573,6 +573,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         itemDetailViewController.groupData = groupData
         itemDetailViewController.leaveMemberData = leaveMemberData
         itemDetailViewController.blackList = blackList
+        itemDetailViewController.personalExpense = expense
         
         self.show(itemDetailViewController, sender: nil)
         

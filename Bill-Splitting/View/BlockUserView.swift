@@ -33,7 +33,7 @@ class BlockUserView: UIView {
     
     func setBlockButton() {
 
-        blockUserButton.frame = CGRect(x: (width - 200)/2, y: 40, width: 200, height: 60)
+        blockUserButton.frame = CGRect(x: (width - 180)/2, y: 40, width: 180, height: 40)
         blockUserButton.setTitle(" 封鎖使用者", for: .normal)
         blockUserButton.setImage(UIImage(systemName: "person.crop.circle.badge.exclam.fill"), for: .normal)
         blockUserButton.tintColor = .greenWhite
