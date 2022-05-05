@@ -110,8 +110,9 @@ class UserManager {
         }
     }
 
+//   MARK: - Change getDocuments to addSnapshotListener
     func fetchSignInUserData(userId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
+        db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: userId).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))

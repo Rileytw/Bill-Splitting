@@ -168,7 +168,16 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     func blockUser() {
         FriendManager.shared.removeFriend(userId: currentUserId, friendId: blockedUserId ?? "") { result in
             switch result {
-            case .success():
+            case .success:
+                print("remove friend successfully")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+        
+        FriendManager.shared.removeFriend(userId: blockedUserId ?? "", friendId: currentUserId) { result in
+            switch result {
+            case .success:
                 print("remove friend successfully")
             case .failure(let error):
                 print("\(error.localizedDescription)")
