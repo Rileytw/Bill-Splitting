@@ -22,6 +22,10 @@ class GroupsViewController: UIViewController {
     let selectedView = SelectionView(frame: .zero)
     let tableView = UITableView()
     private var animationView = AnimationView()
+    var blockUserView = BlockUserView()
+    var mask = UIView()
+    let width = UIScreen.main.bounds.size.width
+    let height = UIScreen.main.bounds.size.height
     
     var groups: [GroupData] = []    
     var multipleGroups: [GroupData] = []
@@ -29,6 +33,9 @@ class GroupsViewController: UIViewController {
     var closedGroups: [GroupData] = []
     var filteredGroups: [GroupData] = []
     var blackList: [String] = []
+    var personalExpense: Double?
+    var group: GroupData?
+    var memberExpense: Double = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,10 +57,7 @@ class GroupsViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 0).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        setTableViewConstraint()
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         tableView.backgroundColor = UIColor.clear
         tableView.register(UINib(nibName: String(describing: GroupsTableViewCell.self), bundle: nil),
@@ -61,6 +65,20 @@ class GroupsViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
+        tableView.addGestureRecognizer(longPress)
+    }
+    
+    @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let touchPoint = sender.location(in: tableView)
+            if let indexPath = tableView.indexPathForRow(at: touchPoint) {
+                group = groups[indexPath.row]
+                getMemberExpense(groupId: groups[indexPath.row].groupId,
+                                 members: groups[indexPath.row].member)
+                
+            }
+        }
     }
     
     func getGroupData() {
@@ -91,8 +109,8 @@ class GroupsViewController: UIViewController {
         UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
             switch result {
             case .success(let currentUserData):
-                if currentUserData.blackList != nil {
-                    self?.blackList = currentUserData.blackList ?? []
+                if currentUserData?.blackList != nil {
+                    self?.blackList = currentUserData?.blackList ?? []
                 }
                 print("success")
             case .failure(let error):
@@ -269,5 +287,141 @@ extension GroupsViewController: UISearchBarDelegate {
         searchBar.text = ""
         searchBar.resignFirstResponder()
         setFilterGroupData()
+    }
+}
+
+extension GroupsViewController {
+    func revealBlockView() {
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.addSubview(mask)
+        
+        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        blockUserView.buttonTitle = " 退出群組"
+        blockUserView.content = "退出群組後，將無法查看群組內容。"
+        blockUserView.blockUserButton.setImage(UIImage(systemName: "rectangle.portrait.and.arrow.right.fill"), for: .normal)
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
+        }, completion: nil)
+        view.addSubview(blockUserView)
+        
+        blockUserView.blockUserButton.addTarget(self, action: #selector(detectUserExpense), for: .touchUpInside)
+        blockUserView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+    }
+    
+    @objc func pressDismissButton() {
+        let subviewCount = self.view.subviews.count
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        }, completion: nil)
+        mask.removeFromSuperview()
+    }
+    
+    func getMemberExpense(groupId: String, members: [String]) {
+        GroupManager.shared.fetchMemberExpense(groupId: groupId, members: members) { [weak self] result in
+            switch result {
+            case .success(let expense):
+                let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
+                self?.personalExpense = personalExpense[0].allExpense
+                let allExpense = expense.map { $0.allExpense }
+                self?.memberExpense = 0
+                for member in allExpense {
+                    self?.memberExpense += abs(member)
+                }
+                self?.revealBlockView()
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
+    }
+    
+    @objc func detectUserExpense() {
+        if personalExpense == 0 && group?.creator != currentUserId {
+            leaveGroupAlert()
+        } else if memberExpense == 0 && group?.creator == currentUserId{
+            creatorLeaveAlert()
+        } else {
+            rejectLeaveGroupAlert()
+        }
+    }
+    
+    func leaveGroupAlert() {
+        let alertController = UIAlertController(title: "請確認是否退出群組",
+                                                message: "退出群組後，將無法查看群組內容。",
+                                                preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let confirmAction = UIAlertAction(title: "確認退出", style: .destructive) { [weak self] _ in
+            self?.leaveGroup()
+            self?.pressDismissButton()
+        }
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func leaveGroup() {
+        let groupId = group?.groupId
+        GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
+                                              userId: currentUserId) { result in
+            switch result {
+            case .success:
+                print("leave group")
+            case .failure:
+                print("remove group member failed")
+            }
+        }
+        
+        GroupManager.shared.removeGroupExpense(groupId: groupId ?? "",
+                                               userId: currentUserId) { result in
+            switch result {
+            case .success:
+                print("leave group")
+            case .failure:
+                print("remove member expense failed")
+            }
+        }
+        
+        GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
+                                           userId: currentUserId)
+    }
+    
+    func creatorLeaveAlert() {
+        let alertController = UIAlertController(title: "請確認是否退出群組",
+                                                message: "退出群組後，將無法查看群組內容。您退出群組後，群組將封存。",
+                                                preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let confirmAction = UIAlertAction(title: "確認退出", style: .destructive) { [weak self] _ in
+            self?.closeGroup()
+            self?.leaveGroup()
+            self?.pressDismissButton()
+        }
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func closeGroup() {
+        if group?.creator == currentUserId {
+            GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "")
+            self.navigationController?.popToRootViewController(animated: true)
+        }
+    }
+    
+    func rejectLeaveGroupAlert() {
+        let alertController = UIAlertController(title: "無法退出群組",
+                                                message: "您在群組內還有債務關係，無法退出。",
+                                                preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func setTableViewConstraint() {
+        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 0).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }

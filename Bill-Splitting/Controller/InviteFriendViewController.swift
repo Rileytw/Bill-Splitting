@@ -229,8 +229,8 @@ class InviteFriendViewController: UIViewController {
             UserManager.shared.fetchUserData(friendId: self.searchId ?? "") { [weak self] result in
                 switch result {
                 case .success(let searchUser):
-                    guard let blackList = searchUser.blackList else { return }
-                    if blackList.contains(self?.currentUserId ?? "") {
+                    let blackList = searchUser?.blackList
+                    if ((blackList?.contains(self?.currentUserId ?? "")) != nil) {
                         isBlockUser = true
                     }
                 case .failure(let err):

@@ -16,6 +16,7 @@ class GroupDetailViewController: UIViewController {
     var userData: [UserData] = []
     var personalExpense: Double?
     var blackList = [String]()
+    var memberExpense: Double?
     
     let fullScreenSize = UIScreen.main.bounds.size
     
@@ -53,7 +54,7 @@ class GroupDetailViewController: UIViewController {
     @objc func detectUserExpense() {
         if personalExpense == 0 && groupData?.creator != currentUserId {
             leaveGroupAlert()
-        } else if personalExpense == 0 && groupData?.creator == currentUserId{
+        } else if memberExpense == 0 && groupData?.creator == currentUserId{
             creatorLeaveAlert()
         } else {
             rejectLeaveGroupAlert()

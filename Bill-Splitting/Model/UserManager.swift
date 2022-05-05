@@ -44,7 +44,7 @@ class UserManager {
     }
     
     //    Use friendId to get user's name in user collection (Using in friendInvitation)
-    func fetchUserData(friendId: String, completion: @escaping (Result<UserData, Error>) -> Void) {
+    func fetchUserData(friendId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
         db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: friendId).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
@@ -54,21 +54,25 @@ class UserManager {
                 
                 var userData: UserData?
                 
+                if querySnapshot!.documents.isEmpty == true {
+                    completion(.success(nil))
+                }
+                
                 for document in querySnapshot!.documents {
                     
                     do {
                         if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
                             userData = user
+                        } else {
+                            completion(.success(nil))
                         }
                     } catch {
                         
                         completion(.failure(error))
                     }
                 }
-                guard let userData = userData else { return }
-                
+               
                 completion(.success(userData))
-                
             }
         }
     }

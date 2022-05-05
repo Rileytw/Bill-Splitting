@@ -98,7 +98,7 @@ class FriendManager {
                     do {
                         if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
                             invitationData = invitation
-                            completion(.success(invitationData))
+//                            completion(.success(invitationData))
                         } else {
                             completion(.success(nil))
                         }
@@ -107,7 +107,6 @@ class FriendManager {
                         completion(.failure(error))
                     }
                 }
-//                guard let invitationData = invitationData else { return }
 //
 //                completion(.success(invitationData))
             }

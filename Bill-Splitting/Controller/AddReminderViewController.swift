@@ -236,8 +236,8 @@ class AddReminderViewController: UIViewController {
         UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
             switch result {
             case .success(let currentUserData):
-                if currentUserData.blackList != nil {
-                    self?.blackList = currentUserData.blackList ?? []
+                if currentUserData?.blackList != nil {
+                    self?.blackList = currentUserData?.blackList ?? []
                 }
                 print("success")
             case .failure(let error):

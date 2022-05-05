@@ -50,6 +50,7 @@ class CustomGroupViewController: UIViewController {
     }
     
     var memberExpense: [MemberExpense] = []
+    var allExpense: Double = 0
     
     var subsriptions: [Subscription] = []
     var subscriptionCreatedTime: Double?
@@ -96,8 +97,10 @@ class CustomGroupViewController: UIViewController {
             UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
                 switch result {
                 case .success(let userData):
-                    self?.memberName.append(userData.userName)
-                    self?.userData.append(userData)
+                    self?.memberName.append(userData?.userName ?? "")
+                    if let userData = userData {
+                        self?.userData.append(userData)
+                    }
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                 }
@@ -111,7 +114,9 @@ class CustomGroupViewController: UIViewController {
                 UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
                     switch result {
                     case .success(let userData):
-                        self?.leaveMemberData.append(userData)
+                        if let userData = userData {
+                            self?.leaveMemberData.append(userData)
+                        }
                     case .failure(let error):
                         print("Error decoding userData: \(error)")
                     }
@@ -313,6 +318,11 @@ class CustomGroupViewController: UIViewController {
                 self?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
                 self?.expense = personalExpense[0].allExpense
+                let allExpense = expense.map { $0.allExpense }
+                self?.allExpense = 0
+                for member in allExpense {
+                    self?.allExpense += abs(member)
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -592,6 +602,7 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
                 detailViewController.userData = self.userData
                 detailViewController.personalExpense = self.expense
                 detailViewController.blackList = self.blackList
+                detailViewController.memberExpense = self.allExpense 
 
                 self.show(detailViewController, sender: nil)
             }

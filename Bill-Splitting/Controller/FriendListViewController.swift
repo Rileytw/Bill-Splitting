@@ -127,7 +127,9 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
         
         blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
         blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
-        
+        blockUserView.buttonTitle = " 封鎖使用者"
+        blockUserView.content = "封鎖使用者後，並不會隱藏你們共享的群組，若有需要可在結清帳務後退出群組。"
+        blockUserView.blockUserButton.setImage(UIImage(systemName: "person.crop.circle.badge.exclam.fill"), for: .normal)
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
             self.blockUserView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
         }, completion: nil)
