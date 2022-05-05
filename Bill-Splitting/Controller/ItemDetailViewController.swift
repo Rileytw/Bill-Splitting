@@ -39,8 +39,21 @@ class ItemDetailViewController: UIViewController {
         let barButton = UIBarButtonItem(customView: button)
         self.navigationItem.rightBarButtonItem = barButton
         
-        let interaction = UIContextMenuInteraction(delegate: self)
-        button.addInteraction(interaction)
+        if groupData?.status == GroupStatus.active.typeInt {
+            let interaction = UIContextMenuInteraction(delegate: self)
+            button.addInteraction(interaction)
+        } else {
+            disableInfoButton()
+        }
+    }
+    
+    func disableInfoButton() {
+        let alertController = UIAlertController(title: "無法編輯", message: "已封存群組不可編輯或刪除款項", preferredStyle: .alert)
+        
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     func setTableView() {

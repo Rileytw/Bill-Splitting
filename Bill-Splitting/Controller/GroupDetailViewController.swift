@@ -25,7 +25,7 @@ class GroupDetailViewController: UIViewController {
         setLeaveGroupButton()
         setTableView()
         setAddGroupButton()
-        hideLeaveButton()
+//        hideLeaveButton()
         detectBlackListUser()
     }
     
@@ -59,16 +59,27 @@ class GroupDetailViewController: UIViewController {
     }
     
     @objc func pressEdit() {
-        let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
-        guard let addGroupViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
-        addGroupViewController.isGroupExist = true
-        addGroupViewController.groupData = groupData
-        self.show(addGroupViewController, sender: nil)
+        if groupData?.status == 0 {
+            let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+            guard let addGroupViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
+            addGroupViewController.isGroupExist = true
+            addGroupViewController.groupData = groupData
+            self.show(addGroupViewController, sender: nil)
+        } else {
+            editAlert()
+        }
     }
     
     func setAddGroupButton() {
         let addButton = UIBarButtonItem.init(title: "編輯", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pressEdit))
         self.navigationItem.setRightBarButton(addButton, animated: true)
+    }
+    
+    func editAlert() {
+        let alertController = UIAlertController(title: "不可編輯", message: "已封存群組不可編輯群組內容", preferredStyle: .alert)
+        let confirmAlert = UIAlertAction(title: "確認", style: .default, handler: nil)
+        alertController.addAction(confirmAlert)
+        present(alertController, animated: true, completion: nil)
     }
     
     func leaveGroupAlert() {

@@ -137,13 +137,17 @@ class CustomGroupViewController: UIViewController {
     }
     
     @objc func pressAddItem() {
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
-        addItemViewController.memberId = groupData?.member
-        addItemViewController.memberData = userData
-        addItemViewController.groupData = groupData
-        addItemViewController.blackList = blackList
-        self.present(addItemViewController, animated: true, completion: nil)
+        if groupData?.status == GroupStatus.active.typeInt {
+            let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+            guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
+            addItemViewController.memberId = groupData?.member
+            addItemViewController.memberData = userData
+            addItemViewController.groupData = groupData
+            addItemViewController.blackList = blackList
+            self.present(addItemViewController, animated: true, completion: nil)
+        } else {
+            addItemAlert()
+        }
     }
     
     @objc func pressChartButton() {
@@ -197,6 +201,10 @@ class CustomGroupViewController: UIViewController {
         closedGroupButton.setTitleColor(.greenWhite, for: .normal)
         closedGroupButton.addTarget(self, action: #selector(confirmCloseGroupAlert), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(closedGroupButton)
+        
+        if groupData?.status == GroupStatus.inActive.typeInt {
+            closedGroupButton.isHidden = true
+        }
     }
     
     func pressClosedGroup() {
@@ -431,6 +439,13 @@ class CustomGroupViewController: UIViewController {
         
         let interaction = UIContextMenuInteraction(delegate: self)
         button.addInteraction(interaction)
+    }
+    
+    func addItemAlert() {
+        let alertController = UIAlertController(title: "不可新增", message: "已封存群組無法新增款項", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     func setGroupNameLabel() {

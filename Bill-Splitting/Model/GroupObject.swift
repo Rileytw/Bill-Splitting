@@ -49,3 +49,17 @@ enum GroupType {
         }
     }
 }
+
+enum GroupStatus {
+    case active
+    case inActive
+    
+    var typeInt: Int {
+        switch self {
+        case .active:
+            return 0
+        case .inActive:
+            return 1
+        }
+    }
+}
