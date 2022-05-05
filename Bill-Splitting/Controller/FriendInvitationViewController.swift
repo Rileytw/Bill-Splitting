@@ -58,7 +58,9 @@ class FriendInvitationViewController: UIViewController {
                 UserManager.shared.fetchUserData(friendId: sender) { [weak self] result in
                     switch result {
                     case .success(let userData):
-                        self?.invitationUsers.append(userData)
+                        if let userData = userData {
+                            self?.invitationUsers.append(userData)
+                        }
                         self?.tableView.reloadData()
                         print("userData:\(userData)")
                         print("invitationData: \(self?.invitationUsers)")

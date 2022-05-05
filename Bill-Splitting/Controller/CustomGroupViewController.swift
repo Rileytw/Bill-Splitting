@@ -23,6 +23,7 @@ class CustomGroupViewController: UIViewController {
     
     var memberName: [String] = []
     var userData: [UserData] = []
+    var leaveMemberData: [UserData] = []
     var itemData: [ItemData] = []
     
     var paidItem: [[ExpenseInfo]] = [] {
@@ -49,9 +50,12 @@ class CustomGroupViewController: UIViewController {
     }
     
     var memberExpense: [MemberExpense] = []
+    var allExpense: Double = 0
     
     var subsriptions: [Subscription] = []
     var subscriptionCreatedTime: Double?
+    
+    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,23 +65,21 @@ class CustomGroupViewController: UIViewController {
         setClosedGroupButton()
         setItemTableView()
         setSubscribeButton()
-        
-        navigationItem.title = "群組"
-//        self.navigationController?.navigationBar.tintColor = UIColor.systemGray
-//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemGray]
-        
         detectSubscription()
         addMenu()
         setAnimation()
+        navigationItem.title = "群組"
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
         userData.removeAll()
+        leaveMemberData.removeAll()
         
         getItemData()
         getMemberExpense()
+        getLeaveMemberData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -91,23 +93,34 @@ class CustomGroupViewController: UIViewController {
     }
     
     func getUserData() {
-        let semaphore = DispatchSemaphore(value: 0)
-        let queue = DispatchQueue(label: "Queue", qos: .default, attributes: .concurrent)
-        
-        queue.async {
-            self.groupData?.member.forEach { member in
+        groupData?.member.forEach { member in
+            UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
+                switch result {
+                case .success(let userData):
+                    self?.memberName.append(userData?.userName ?? "")
+                    if let userData = userData {
+                        self?.userData.append(userData)
+                    }
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                }
+            }
+        }
+    }
+    
+    func getLeaveMemberData() {
+        if groupData?.leaveMembers != nil {
+            groupData?.leaveMembers?.forEach { member in
                 UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
                     switch result {
                     case .success(let userData):
-                        self?.memberName.append(userData.userName)
-                        self?.userData.append(userData)
-                        semaphore.signal()
+                        if let userData = userData {
+                            self?.leaveMemberData.append(userData)
+                        }
                     case .failure(let error):
                         print("Error decoding userData: \(error)")
-                        semaphore.signal()
                     }
                 }
-                semaphore.wait()
             }
         }
     }
@@ -129,12 +142,17 @@ class CustomGroupViewController: UIViewController {
     }
     
     @objc func pressAddItem() {
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
-        addItemViewController.memberId = groupData?.member
-        addItemViewController.memberData = userData
-        addItemViewController.groupData = groupData
-        self.present(addItemViewController, animated: true, completion: nil)
+        if groupData?.status == GroupStatus.active.typeInt {
+            let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+            guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
+            addItemViewController.memberId = groupData?.member
+            addItemViewController.memberData = userData
+            addItemViewController.groupData = groupData
+            addItemViewController.blackList = blackList
+            self.present(addItemViewController, animated: true, completion: nil)
+        } else {
+            addItemAlert()
+        }
     }
     
     @objc func pressChartButton() {
@@ -142,6 +160,7 @@ class CustomGroupViewController: UIViewController {
         guard let chartViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ChartViewController.self)) as? ChartViewController else { return }
         chartViewController.memberExpense = memberExpense
         chartViewController.userData = userData
+        chartViewController.blackList = blackList
         chartViewController.modalPresentationStyle = .fullScreen
         self.present(chartViewController, animated: true, completion: nil)
     }
@@ -154,6 +173,8 @@ class CustomGroupViewController: UIViewController {
         settleUpViewController.memberExpense = memberExpense
         settleUpViewController.userData = userData
         settleUpViewController.expense = expense
+        settleUpViewController.blackList = blackList
+        settleUpViewController.leaveMemberData = leaveMemberData
         self.show(settleUpViewController, sender: nil)
     }
     
@@ -186,6 +207,10 @@ class CustomGroupViewController: UIViewController {
         closedGroupButton.setTitleColor(.greenWhite, for: .normal)
         closedGroupButton.addTarget(self, action: #selector(confirmCloseGroupAlert), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(closedGroupButton)
+        
+        if groupData?.status == GroupStatus.inActive.typeInt {
+            closedGroupButton.isHidden = true
+        }
     }
     
     func pressClosedGroup() {
@@ -234,6 +259,7 @@ class CustomGroupViewController: UIViewController {
         subscribeViewController.memberId = groupData?.member
         subscribeViewController.memberData = userData
         subscribeViewController.groupData = groupData
+        subscribeViewController.blackList = blackList
         self.present(subscribeViewController, animated: true, completion: nil)
     }
     
@@ -286,12 +312,17 @@ class CustomGroupViewController: UIViewController {
 
 // MARK: - Bugs of new user get into groups, can't fetch data
     func getMemberExpense() {
-        GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", userId: currentUserId) { [weak self] result in
+        GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", members: groupData?.member ?? []) { [weak self] result in
             switch result {
             case .success(let expense):
                 self?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
                 self?.expense = personalExpense[0].allExpense
+                let allExpense = expense.map { $0.allExpense }
+                self?.allExpense = 0
+                for member in allExpense {
+                    self?.allExpense += abs(member)
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -421,6 +452,13 @@ class CustomGroupViewController: UIViewController {
         button.addInteraction(interaction)
     }
     
+    func addItemAlert() {
+        let alertController = UIAlertController(title: "不可新增", message: "已封存群組無法新增款項", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     func setGroupNameLabel() {
         view.addSubview(groupName)
         groupName.translatesAutoresizingMaskIntoConstraints = false
@@ -543,6 +581,9 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         itemDetailViewController.itemId = item.itemId
         itemDetailViewController.userData = userData
         itemDetailViewController.groupData = groupData
+        itemDetailViewController.leaveMemberData = leaveMemberData
+        itemDetailViewController.blackList = blackList
+        itemDetailViewController.personalExpense = expense
         
         self.show(itemDetailViewController, sender: nil)
         
@@ -559,7 +600,10 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
                 guard let detailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: GroupDetailViewController.self)) as? GroupDetailViewController else { return }
                 detailViewController.groupData = self.groupData
                 detailViewController.userData = self.userData
-//                self.present(detailViewController, animated: true, completion: nil)
+                detailViewController.personalExpense = self.expense
+                detailViewController.blackList = self.blackList
+                detailViewController.memberExpense = self.allExpense 
+
                 self.show(detailViewController, sender: nil)
             }
 

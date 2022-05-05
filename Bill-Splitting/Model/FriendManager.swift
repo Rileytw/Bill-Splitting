@@ -41,7 +41,7 @@ class FriendManager {
         }
     }
     
-    func fetchSenderInvitation(userId: String, friendId: String, completion: @escaping (Result<Invitation, Error>) -> Void) {
+    func fetchSenderInvitation(userId: String, friendId: String, completion: @escaping (Result<Invitation?, Error>) -> Void) {
         
         db.collection("friendInvitation").whereField("senderId", isEqualTo: userId).whereField("receiverId", isEqualTo: friendId).getDocuments() { (querySnapshot, error) in
             
@@ -52,11 +52,18 @@ class FriendManager {
                 
                 var invitationData: Invitation?
                 
+                if querySnapshot!.documents.isEmpty == true {
+                    completion(.success(nil))
+                }
+                
                 for document in querySnapshot!.documents {
                     
                     do {
                         if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
                             invitationData = invitation
+                            completion(.success(invitationData))
+                        } else {
+                            completion(.success(nil))
                         }
                         
                     } catch {
@@ -64,14 +71,14 @@ class FriendManager {
                         completion(.failure(error))
                     }
                 }
-                guard let invitationData = invitationData else { return }
-                
-                completion(.success(invitationData))
+//                guard let invitationData = invitationData else { return }
+//
+//                completion(.success(invitationData))
             }
         }
     }
     
-    func fetchReceiverInvitation(userId: String, friendId: String, completion: @escaping (Result<Invitation, Error>) -> Void) {
+    func fetchReceiverInvitation(userId: String, friendId: String, completion: @escaping (Result<Invitation?, Error>) -> Void) {
         
         db.collection("friendInvitation").whereField("senderId", isEqualTo: friendId).whereField("receiverId", isEqualTo: userId).getDocuments() { (querySnapshot, error) in
             
@@ -82,21 +89,26 @@ class FriendManager {
                 
                 var invitationData: Invitation?
                 
+                if querySnapshot!.documents.isEmpty == true {
+                    completion(.success(nil))
+                }
+                
                 for document in querySnapshot!.documents {
                     
                     do {
                         if let invitation = try document.data(as: Invitation.self, decoder: Firestore.Decoder()) {
                             invitationData = invitation
+//                            completion(.success(invitationData))
+                        } else {
+                            completion(.success(nil))
                         }
-                        
                     } catch {
                         
                         completion(.failure(error))
                     }
                 }
-                guard let invitationData = invitationData else { return }
-                
-                completion(.success(invitationData))
+//
+//                completion(.success(invitationData))
             }
         }
     }
@@ -161,6 +173,33 @@ class FriendManager {
             try db.collection("user").document(senderId).collection("friend").document(userId).setData(from: receiverData)
         } catch {
             print(error)
+        }
+    }
+    
+    func removeFriend(userId: String, friendId: String, completion: @escaping (Result<(), Error>) -> Void) {
+        db.collection(FirebaseCollection.user.rawValue).document(userId).collection("friend").document(friendId).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully removed!")
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func addBlockFriends(userId: String, blockedUser: String, completion: @escaping (Result<(), Error>) -> Void) {
+        let blackListRef = db.collection(FirebaseCollection.user.rawValue).document(userId)
+        blackListRef.updateData([
+            "blackList": FieldValue.arrayUnion([blockedUser])
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
+            }
         }
     }
 }

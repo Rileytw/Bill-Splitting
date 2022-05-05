@@ -78,7 +78,7 @@ class PaymentViewController: UIViewController {
         UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
             switch result {
             case .success(let userData):
-                guard let userPayment = userData.payment else { return }
+                guard let userPayment = userData?.payment else { return }
                 self?.userData = userData
                 self?.userPayment = userPayment
 //                print("userData:\(userData)")

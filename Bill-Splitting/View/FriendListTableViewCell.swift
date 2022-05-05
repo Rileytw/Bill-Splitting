@@ -7,16 +7,20 @@
 
 import UIKit
 
-class ProfileTableViewCell: UITableViewCell {
+class FriendListTableViewCell: UITableViewCell {
 
     @IBOutlet var profileItemName: UILabel!
     @IBOutlet var email: UILabel!
+    @IBOutlet weak var infoButton: UIButton!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
         self.backgroundColor = .clear
         profileItemName.textColor = .greenWhite
         email.textColor = .greenWhite
+        infoButton.tintColor = .greenWhite
+        self.selectionStyle = UITableViewCell.SelectionStyle.none
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

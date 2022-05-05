@@ -59,7 +59,7 @@ class ItemManager {
     }
     
     func fetchItem(itemId: String, completion: @escaping (Result<ItemData, Error>) -> Void) {
-        db.collection(FireBaseCollection.item.rawValue).document(itemId).addSnapshotListener { (querySnapshot, error) in
+        db.collection(FirebaseCollection.item.rawValue).document(itemId).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -137,7 +137,7 @@ class ItemManager {
     }
     
     func deleteItem(itemId: String) {
-        db.collection(FireBaseCollection.item.rawValue).document(itemId).delete() { err in
+        db.collection(FirebaseCollection.item.rawValue).document(itemId).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")
             } else {

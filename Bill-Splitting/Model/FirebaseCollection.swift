@@ -8,11 +8,12 @@
 import Foundation
 import UIKit
 
-enum FireBaseCollection: String {
+enum FirebaseCollection: String {
     case group
     case item
     case user
     case friendInvitaion
     case subscription
     case reminder
+    case reports
 }

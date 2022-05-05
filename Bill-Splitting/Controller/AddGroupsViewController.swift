@@ -19,8 +19,8 @@ class AddGroupsViewController: UIViewController {
     let descriptionTextView = UITextView()
     
     let fullScreenSize = UIScreen.main.bounds.size
-    var typeTextField = UITextField()
     
+    let typeLabel = UILabel()
     var typePickerView = BasePickerViewInTextField(frame: .zero)
     var pickerViewData = [GroupType.multipleUsers.typeName, GroupType.personal.typeName]
     
@@ -30,7 +30,7 @@ class AddGroupsViewController: UIViewController {
         }
     }
     
-    let tableView = UITableView()
+    let tableView = UITableView(frame: .zero, style: .plain)
     var searchController: UISearchController!
     
     let inviteFriendButton = UIButton()
@@ -55,13 +55,10 @@ class AddGroupsViewController: UIViewController {
         setAddGroupButton()
         setInviteButton()
         setTableView()
-//        let appearance = UINavigationBarAppearance()
-//        navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationItem.title = "新增群組"
-//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.selectedColor]
-//        self.navigationController?.navigationBar.tintColor = UIColor.selectedColor
-//        self.navigationController?.navigationBar.barTintColor = .black
         setSearchBar()
+        
+        hideUnchagableGroupInfo()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -149,7 +146,7 @@ class AddGroupsViewController: UIViewController {
         member.append(currentUserId)
         
         var type: Int?
-        if typeTextField.text == GroupType.personal.typeName {
+        if typePickerView.textField.text == GroupType.personal.typeName {
             type = 0
         } else {
             type = 1
@@ -271,9 +268,9 @@ class AddGroupsViewController: UIViewController {
         NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
         
-        if isGroupExist == true {
-            nameTextField.text = groupData?.groupName
-        }
+//        if isGroupExist == true {
+//            nameTextField.text = groupData?.groupName
+//        }
     }
     
     func setTextView() {
@@ -300,13 +297,12 @@ class AddGroupsViewController: UIViewController {
         NSLayoutConstraint(item: descriptionLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
         
-        if isGroupExist == true {
-            descriptionTextView.text = groupData?.groupDescription
-        }
+//        if isGroupExist == true {
+//            descriptionTextView.text = groupData?.groupDescription
+//        }
     }
     
     func setTextFieldOfPickerView() {
-        let typeLabel = UILabel()
         view.addSubview(typeLabel)
         typeLabel.translatesAutoresizingMaskIntoConstraints = false
         typeLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
@@ -327,9 +323,10 @@ class AddGroupsViewController: UIViewController {
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
         
-        if isGroupExist == true {
-            typePickerView.isHidden = true
-        }
+//        if isGroupExist == true {
+//            typePickerView.isHidden = true
+//            typeLabel.isHidden = true
+//        }
     }
     
     func setTableView() {
@@ -359,6 +356,20 @@ class AddGroupsViewController: UIViewController {
         inviteFriendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5).isActive = true
         
         inviteFriendButton.addTarget(self, action: #selector(pressInviteFriendButton), for: .touchUpInside)
+    }
+    
+    func hideUnchagableGroupInfo() {
+        if isGroupExist == true {
+            nameTextField.text = groupData?.groupName
+            descriptionTextView.text = groupData?.groupDescription
+            
+            typePickerView.isHidden = true
+            typeLabel.isHidden = true
+            
+            if groupData?.creator != currentUserId {
+                tableView.isHidden = true
+            }
+        }
     }
 }
 

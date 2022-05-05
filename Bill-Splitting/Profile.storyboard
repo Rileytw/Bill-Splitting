@@ -100,6 +100,21 @@
             </objects>
             <point key="canvasLocation" x="2074" y="871"/>
         </scene>
+        <!--Black List View Controller-->
+        <scene sceneID="aid-vm-6ju">
+            <objects>
+                <viewController storyboardIdentifier="BlackListViewController" id="sp3-gE-Ykq" customClass="BlackListViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="mx6-Me-fct">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="fn7-mV-1et"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gpw-15-qd2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3296" y="871"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="2aq-rY-sfU">
             <objects>
