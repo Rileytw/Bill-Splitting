@@ -159,7 +159,7 @@ class UserManager {
             }
         }
     }
-    
+        
     static func renameBlockedUser(blockList: [String], userData: [UserData]) -> [UserData] {
         var blockedUserData = userData
         for user in blockList {
