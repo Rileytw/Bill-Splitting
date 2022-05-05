@@ -169,6 +169,7 @@ class CustomGroupViewController: UIViewController {
         settleUpViewController.userData = userData
         settleUpViewController.expense = expense
         settleUpViewController.blackList = blackList
+        settleUpViewController.leaveMemberData = leaveMemberData
         self.show(settleUpViewController, sender: nil)
     }
     

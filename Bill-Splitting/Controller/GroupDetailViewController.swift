@@ -51,8 +51,10 @@ class GroupDetailViewController: UIViewController {
     }
     
     @objc func detectUserExpense() {
-        if personalExpense == 0 {
+        if personalExpense == 0 && groupData?.creator != currentUserId {
             leaveGroupAlert()
+        } else if personalExpense == 0 && groupData?.creator == currentUserId{
+            creatorLeaveAlert()
         } else {
             rejectLeaveGroupAlert()
         }
@@ -87,7 +89,22 @@ class GroupDetailViewController: UIViewController {
                                                 message: "退出群組後，將無法查看群組內容",
                                                 preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-        let confirmAction = UIAlertAction(title: "確認離開", style: .destructive) { [weak self] _ in
+        let confirmAction = UIAlertAction(title: "確認退出", style: .destructive) { [weak self] _ in
+            self?.leaveGroup()
+            self?.backToGroupsPage()
+        }
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func creatorLeaveAlert() {
+        let alertController = UIAlertController(title: "請確認是否退出群組",
+                                                message: "退出群組後，將無法查看群組內容。您退出群組後，群組將封存。",
+                                                preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let confirmAction = UIAlertAction(title: "確認退出", style: .destructive) { [weak self] _ in
+            self?.closeGroup()
             self?.leaveGroup()
             self?.backToGroupsPage()
         }
@@ -145,6 +162,13 @@ class GroupDetailViewController: UIViewController {
         let newUserData = UserManager.renameBlockedUser(blockList: blackList,
                                       userData: userData)
         userData = newUserData
+    }
+    
+    func closeGroup() {
+        if groupData?.creator == currentUserId {
+            GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "")
+            self.navigationController?.popToRootViewController(animated: true)
+        }
     }
 }
 

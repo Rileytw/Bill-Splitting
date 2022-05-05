@@ -17,6 +17,7 @@ class SettleUpViewController: UIViewController {
     var userData: [UserData] = []
     var expense: Double?
     var blackList = [String]()
+    var leaveMemberData: [UserData] = []
     
     let tableView = UITableView()
     
@@ -26,6 +27,7 @@ class SettleUpViewController: UIViewController {
         navigationItem.title = "結算群組帳務"
         ElementsStyle.styleBackground(view)
         getCurrentUserName()
+        checkLeaveMember()
         getCreatorData()
         detectBlackListUser()
         setTableView()
@@ -53,7 +55,6 @@ class SettleUpViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: SettleUpTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: SettleUpTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
-//        tableView.rowHeight = 60
         tableView.backgroundColor = UIColor.clear
     }
     
@@ -91,6 +92,16 @@ class SettleUpViewController: UIViewController {
             if creator?.userId == user {
                 creator?.userName = creatorName + "（已封鎖）"
             }
+        }
+    }
+    
+    func checkLeaveMember() {
+        if leaveMemberData.isEmpty == false {
+            for index in 0..<leaveMemberData.count {
+                leaveMemberData[index].userName = leaveMemberData[index].userName + "（已離開群組）"
+            }
+            
+            userData += leaveMemberData
         }
     }
 }

@@ -43,8 +43,8 @@ class BlockUserView: UIView {
     }
     
     func setBlockLabel() {
-        blockLabel.frame = CGRect(x: (width - 250)/2, y: 120, width: 250, height: 60)
-        blockLabel.text = "封鎖使用者後，將隱藏您已結清的共享群組"
+        blockLabel.frame = CGRect(x: (width - 250)/2, y: 120, width: 250, height: 80)
+        blockLabel.text = "封鎖使用者後，並不會隱藏你們共享的群組，若有需要可在結清帳務後退出群組。"
         blockLabel.textColor = .greenWhite
         
         blockLabel.numberOfLines = 0
