@@ -63,15 +63,24 @@ private enum Tab {
 
 class TabBarViewController: UITabBarController {
     
-    private let tabs:[Tab] = [.groups, .reminders, .addGroups, .records, .profile]
+    private let tabs: [Tab] = [.groups, .reminders, .addGroups, .records, .profile]
     
     var allTabBatItem: UITabBarItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         viewControllers = tabs.map({ $0.viewController() })
         self.tabBar.tintColor = .selectedColor
         self.tabBar.barTintColor = .styleBlue
+        
+        if #available(iOS 15.0, *) {
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .styleBlue
+            
+            self.tabBar.standardAppearance = appearance
+            self.tabBar.scrollEdgeAppearance = appearance
+        }
     }
 }
