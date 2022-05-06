@@ -115,25 +115,71 @@ class SignUpViewController: UIViewController {
     }
     
     @objc func pressSignUp() {
-        setAnimation()
+        checkUserInput()
+    }
+    
+    func signUpWithFirebase() {
         AccountManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
-                                                password: passwordTextField.text ?? "") { [weak self] firebaseId in
-            self?.userData.userName = self?.userNameTextField.text ?? ""
-            self?.userData.userEmail = self?.emailTextField.text ?? ""
-            self?.userData.userId = firebaseId
-            self?.uploadUserData()
+                                                password: passwordTextField.text ?? "") { [weak self] result in
+            switch result {
+            case .success(let firebaseId):
+                self?.userData.userName = self?.userNameTextField.text ?? ""
+                self?.userData.userEmail = self?.emailTextField.text ?? ""
+                self?.userData.userId = firebaseId
+                self?.uploadUserData()
+            case .failure(let error):
+                if let errorCode = AuthErrorCode(rawValue: error._code) {
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: errorCode.errorMessage)
+                    self?.removeAnimation()
+                }
+                
+            }
         }
     }
     
     func uploadUserData() {
+//        checkUserInput()
         UserManager.shared.addUserData(userData: userData) {  [weak self] result in
             switch result {
-            case .success(_):
+            case .success:
                 self?.dismiss(animated: true, completion: nil)
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
+            self?.removeAnimation()
         }
+    }
+    
+    func checkUserInput() {
+        if userNameTextField.text == "" {
+            inputAlert(title: "尚未填寫姓名",
+                       message: "請寫姓名再進行註冊")
+        } else if emailTextField.text == "" {
+            inputAlert(title: "尚未填寫 email",
+                       message: "請寫 email 再進行註冊")
+        } else if passwordTextField.text == "" {
+            inputAlert(title: "尚未填寫密碼",
+                       message: "請寫密碼再進行註冊")
+        } else if validPasswordTextField.text == "" {
+            inputAlert(title: "尚未確認密碼",
+                       message: "請確認密碼再進行註冊")
+        } else if validPasswordTextField.text != passwordTextField.text {
+            inputAlert(title: "密碼驗證錯誤",
+                       message: "請重新確認密碼再進行註冊")
+        } else {
+            setAnimation()
+            signUpWithFirebase()
+        }
+    }
+    
+    func inputAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
 
     func setPassordLabelConstraint() {
@@ -162,6 +208,7 @@ class SignUpViewController: UIViewController {
         passwordTextField.leadingAnchor.constraint(equalTo: passwordLabel.trailingAnchor, constant: 20).isActive = true
         passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         passwordTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        passwordTextField.isSecureTextEntry = true
     }
     
     func setSignUpconstraint() {
@@ -172,7 +219,7 @@ class SignUpViewController: UIViewController {
     }
     
     func setNameLabelConstraint() {
-        userNameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 75).isActive = true
+        userNameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
         userNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
         userNameLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
         userNameLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -197,6 +244,7 @@ class SignUpViewController: UIViewController {
         validPasswordTextField.leadingAnchor.constraint(equalTo: validPasswordLabel.trailingAnchor, constant: 20).isActive = true
         validPasswordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         validPasswordTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        validPasswordTextField.isSecureTextEntry = true
     }
     
     func setDismissButton() {
@@ -230,5 +278,10 @@ class SignUpViewController: UIViewController {
         animationView.loopMode = .loop
         animationView.animationSpeed = 0.75
         animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }

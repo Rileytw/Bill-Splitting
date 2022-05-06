@@ -99,6 +99,8 @@ class GroupsViewController: UIViewController {
             case .success(let groups):
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
+//                ProgressHUD.shared.view = self?.view ?? UIView()
+//                ProgressHUD.showSuccess(text: "成功讀取資料")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
