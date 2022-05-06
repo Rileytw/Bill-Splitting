@@ -69,7 +69,7 @@ class ElementsStyle {
     
     static func styleTextField(_ textfield: UITextField) {        
         let bottomLine = CALayer()
-        bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 1, width: textfield.frame.width, height: 1.0)
+        bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 2, width: textfield.frame.width, height: 1.0)
         bottomLine.backgroundColor = UIColor.selectedColor.cgColor
         textfield.borderStyle = UITextField.BorderStyle.none
         textfield.textColor = .greenWhite

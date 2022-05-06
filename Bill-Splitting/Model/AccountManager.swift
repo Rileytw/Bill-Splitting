@@ -13,14 +13,17 @@ class AccountManager {
     static var shared = AccountManager()
     var currentUser = CurrentUser(currentUserId: "", currentUserEmail: "")
     
-    func signUpWithFireBase(email: String, password: String, completion: @escaping (String) -> Void) {
+    func signUpWithFireBase(email: String, password: String, completion: @escaping (Result<(String), Error>) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            guard let user = result?.user,
-                  error == nil else {
-                      print(error?.localizedDescription as Any)
-                      return
-                  }
-            completion("\(user.uid)")
+            
+            if let error = error {
+                print("\(error.localizedDescription)")
+                completion(.failure(error))
+            }
+            
+            if let user = result?.user {
+                completion(.success("\(user.uid)"))
+            }
         }
     }
     
@@ -48,7 +51,6 @@ class AccountManager {
         })
     }
     
-    
     func getCurrentUserInfo() {
         let currentUser = Auth.auth().currentUser
         guard let user = currentUser else { return }
@@ -56,5 +58,26 @@ class AccountManager {
         let email = user.email
         self.currentUser.currentUserId = uid
         self.currentUser.currentUserEmail = email ?? ""
+    }
+}
+
+extension AuthErrorCode {
+    var errorMessage: String {
+        switch self {
+        case .emailAlreadyInUse:
+            return "Email 已被註冊"
+        case .userNotFound:
+            return "帳號不存在，請重新確認"
+        case .invalidEmail, .invalidSender, .invalidRecipientEmail:
+            return "Email 無效，請重新確認"
+        case .networkError:
+            return "網路連線不穩定，請稍後再試"
+        case .weakPassword:
+            return "密碼必須超過 6 個字母"
+        case .wrongPassword:
+            return "密碼錯誤，請重新確認"
+        default:
+            return "發生錯誤，請稍後再試"
+        }
     }
 }
