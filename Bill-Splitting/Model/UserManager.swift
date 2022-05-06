@@ -137,14 +137,45 @@ class UserManager {
     func deleteUserData(userId: String, userName: String, completion: @escaping (Result<(), Error>) -> Void) {
         db.collection(FirebaseCollection.user.rawValue).document(userId).updateData([
             "userEmail": "",
-            "payment": FieldValue.delete(),
-            "userName": userName + "(帳號已刪除)"
+            "payment": FieldValue.delete()
         ]) { error in
             if let error = error {
                 print("Error updating document: \(error)")
                 completion(.failure(error))
             } else {
                 print("Document successfully updated")
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func deleteFriendCollection(documentId: String, collection: String, completion: @escaping (Result<(), Error>) -> Void) {
+        db.collection(FirebaseCollection.user.rawValue).document(documentId).collection(collection).getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+                completion(.failure(err))
+                return
+            }
+            
+            for document in querySnapshot!.documents {
+                print("Deleting \(document.documentID) => \(document.data())")
+                document.reference.delete()
+                completion(.success(()))
+            }
+
+            if querySnapshot!.documents.isEmpty == true {
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func deleteDropUserData(friendId: String, collection: String, userId: String, completion: @escaping (Result<(), Error>) -> Void) {
+        db.collection(FirebaseCollection.user.rawValue).document(friendId).collection("friend").document(userId).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully removed!")
                 completion(.success(()))
             }
         }

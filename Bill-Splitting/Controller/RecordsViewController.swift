@@ -95,6 +95,7 @@ class RecordsViewController: UIViewController {
                             group.leave()
                         case .failure(let error):
                             print("Error decoding userData: \(error)")
+                            group.leave()
                         }
                     }
 
@@ -114,6 +115,7 @@ class RecordsViewController: UIViewController {
                             group.leave()
                         case .failure(let error):
                             print("Error decoding userData: \(error)")
+                            group.leave()
                         }
                     }
                 }

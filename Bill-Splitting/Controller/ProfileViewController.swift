@@ -42,69 +42,22 @@ class ProfileViewController: UIViewController {
                 self?.userName.text = user?.userName
                 self?.userEmail.text = user?.userEmail
                 self?.blackList = user?.blackList ?? []
+                self?.fetchFriends()
             case.failure(let error):
                 print(error.localizedDescription)
             }
         }
     }
     
-    func setCollectionView() {
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
-        layout.itemSize = CGSize(width: (self.view.frame.size.width - 30) / 2, height: 60)
-        layout.minimumLineSpacing = CGFloat(integerLiteral: 10)
-        layout.minimumInteritemSpacing = CGFloat(integerLiteral: 10)
-        layout.scrollDirection = UICollectionView.ScrollDirection.vertical
-        layout.headerReferenceSize = CGSize(width: 0, height: 100)
-        
-        self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        self.view.addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 0).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5).isActive = true
-        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5).isActive = true
-        collectionView.backgroundColor = .clear
-        
-        collectionView.register(UINib(nibName: String(describing: ProfileCollectionViewCell.self), bundle: nil), forCellWithReuseIdentifier: String(describing: ProfileCollectionViewCell.self))
-        collectionView.register(ProfileHeaderView.self,
-                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-                                withReuseIdentifier: ProfileHeaderView.identifier)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-    }
-    
-    func setProfileView() {
-        self.view.addSubview(profileView)
-        profileView.translatesAutoresizingMaskIntoConstraints = false
-        setProfileViewConstraint()
-        
-        profileView.addSubview(userName)
-        userName.translatesAutoresizingMaskIntoConstraints = false
-        userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
-        userName.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
-        userName.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
-        userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        userName.textColor = .greenWhite
-        userName.font = userName.font.withSize(20)
-        
-        profileView.addSubview(userEmail)
-        userEmail.translatesAutoresizingMaskIntoConstraints = false
-        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 10).isActive = true
-        userEmail.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
-        userEmail.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
-        userEmail.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        userEmail.textColor = .greenWhite
-        
-        profileView.addSubview(editButton)
-        editButton.translatesAutoresizingMaskIntoConstraints = false
-        editButton.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
-        editButton.trailingAnchor.constraint(equalTo: profileView.trailingAnchor, constant: -20).isActive = true
-        editButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        editButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
-        editButton.tintColor = .greenWhite
-        editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
+    func fetchFriends() {
+        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let friend):
+                self?.currentUser?.friends = friend
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
     }
     
     @objc func pressEdit() {
@@ -125,10 +78,10 @@ class ProfileViewController: UIViewController {
     func updateUserName(newUserName: String) {
         UserManager.shared.updateUserName(userId: currentUserId, userName: newUserName) { [weak self] result in
             switch result {
-            case .success():
+            case .success:
                 print("userName update successfully")
                 self?.getUserData()
-            case .failure(_):
+            case .failure:
                 print("userName update failed")
             }
         }
@@ -152,30 +105,110 @@ class ProfileViewController: UIViewController {
         view.window?.makeKeyAndVisible()
     }
     
-    func deletAccount() {
-        UserManager.shared.deleteUserData(userId: currentUserId, userName: currentUser?.userName ?? "") { result in
-            switch result {
-            case .success():
-                AccountManager.shared.deleteAccount() { [weak self] result in
-                    switch result {
-                    case .success():
-                        print("Account successfully deleted ")
-                        self?.backToSignInPage()
-                    case .failure(_):
-                        self?.alertSignInAgain()
+    func deleteAllUserData() {
+        if currentUser?.friends == nil {
+            deleteUserData()
+        } else if currentUser?.friends?.isEmpty == true {
+            deleteUserData()
+        } else {
+            removeFriendData()
+        }
+    }
+    
+    func removeFriendData() {
+        var isFriendsRemove: Bool = false
+        var isUserRemove: Bool = false
+        
+        let group = DispatchGroup()
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        // MARK: - Delete user's friendList
+        firstQueue.async(group: group) {
+            UserManager.shared.deleteFriendCollection(documentId: self.currentUserId, collection: "friend") { [weak self] result in
+                switch result {
+                case .success:
+                    print("Delete friends successfully")
+                    isFriendsRemove = true
+                    
+                case .failure(let error):
+                    print("\(error.localizedDescription)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "資料刪除失敗，請稍後再試")
+                }
+                group.leave()
+            }
+        }
+        // MARK: - Delete userData from friend's friendList
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        if let friends = currentUser?.friends {
+            for friend in friends {
+                group.enter()
+                secondQueue.async(group: group) {
+                    UserManager.shared.deleteDropUserData(friendId: friend.userId, collection: "friend", userId: self.currentUserId) { [weak self] result in
+                        switch result {
+                        case .success():
+                            print("delete data successfully")
+                            isUserRemove = true
+                            group.leave()
+                        case .failure(let error):
+                            print("\(error.localizedDescription)")
+                            ProgressHUD.shared.view = self?.view ?? UIView()
+                            ProgressHUD.showFailure(text: "資料刪除失敗，請稍後再試")
+                            isUserRemove = false
+                            group.leave()
+                        }
                     }
                 }
+            }
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            if isUserRemove == true && isFriendsRemove == true {
+                self.deleteUserData()
+            }
+        }
+    }
+
+    func deleteUserData() {
+        UserManager.shared.deleteUserData(userId: currentUserId, userName: currentUser?.userName ?? "") { [weak self] result in
+            switch result {
+            case .success:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showSuccess(text: "資料已刪除")
+                self?.deletAccount()
             case .failure(let error):
                 print("Error updating document: \(error)")
                 //  MARK: - Add alert to tell user: Remove userdata failed
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "刪除資料失敗，請稍後再試")
+            }
+        }
+    }
+    
+    func deletAccount() {
+        let currentUserName = currentUser?.userName ?? ""
+        AccountManager.shared.deleteAccount() { [weak self] result in
+            switch result {
+            case .success:
+                print("Account successfully deleted ")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showSuccess(text: "帳號已刪除")
+                self?.updateUserName(newUserName: currentUserName + "帳號已刪除")
+                self?.backToSignInPage()
+            case .failure:
+                self?.alertSignInAgain()
             }
         }
     }
     
     func alertDeleteAccount() {
-        let alertController = UIAlertController(title: "刪除帳號", message: "請確認是否刪除帳號。提醒：若刪除帳號，將刪除您的 email 及收款資訊，但不會刪除您在群組中的帳務資訊。刪除帳號後，將無法回復帳號。", preferredStyle: .alert)
+        let message = "提醒：若刪除帳號，將刪除您的 email 及收款資訊，但不會刪除您在群組中的帳務資訊。刪除帳號後，將無法回復帳號。"
+        let alertController = UIAlertController(title: "刪除帳號",
+                                                message: message,
+                                                preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
-            self?.deletAccount()
+            self?.deleteAllUserData()
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         
@@ -193,32 +226,6 @@ class ProfileViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-    func setProfileViewConstraint() {
-        profileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        profileView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-    }
-    
-    func setAnimation() {
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        animationView.stop()
-        animationView.removeFromSuperview()
-    }
 }
 
 extension ProfileViewController: UICollectionViewDataSource {
@@ -234,7 +241,7 @@ extension ProfileViewController: UICollectionViewDataSource {
         } else {
             return 2
         }
-//        return profileList.count
+        //        return profileList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -303,9 +310,9 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(
         _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        
-        return 24.0
-    }
+            
+            return 24.0
+        }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         
@@ -314,9 +321,9 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(
         _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        
-        return CGSize(width: UIScreen.main.bounds.width, height: 48.0)
-    }
+            
+            return CGSize(width: UIScreen.main.bounds.width, height: 48.0)
+        }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
@@ -368,11 +375,100 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
             cell.backgroundColor = nil
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
             cell.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
         }
+    }
+}
+
+extension ProfileViewController {
+    
+    func setCollectionView() {
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
+        layout.itemSize = CGSize(width: (self.view.frame.size.width - 30) / 2, height: 60)
+        layout.minimumLineSpacing = CGFloat(integerLiteral: 10)
+        layout.minimumInteritemSpacing = CGFloat(integerLiteral: 10)
+        layout.scrollDirection = UICollectionView.ScrollDirection.vertical
+        layout.headerReferenceSize = CGSize(width: 0, height: 100)
+        
+        self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        self.view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 0).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5).isActive = true
+        collectionView.backgroundColor = .clear
+        
+        collectionView.register(UINib(nibName: String(describing: ProfileCollectionViewCell.self), bundle: nil), forCellWithReuseIdentifier: String(describing: ProfileCollectionViewCell.self))
+        collectionView.register(ProfileHeaderView.self,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                                withReuseIdentifier: ProfileHeaderView.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+    }
+    
+    func setProfileView() {
+        self.view.addSubview(profileView)
+        profileView.translatesAutoresizingMaskIntoConstraints = false
+        setProfileViewConstraint()
+        
+        profileView.addSubview(userName)
+        userName.translatesAutoresizingMaskIntoConstraints = false
+        userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
+        userName.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
+        userName.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
+        userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        userName.textColor = .greenWhite
+        userName.font = userName.font.withSize(20)
+        
+        profileView.addSubview(userEmail)
+        userEmail.translatesAutoresizingMaskIntoConstraints = false
+        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 10).isActive = true
+        userEmail.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
+        userEmail.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
+        userEmail.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        userEmail.textColor = .greenWhite
+        
+        profileView.addSubview(editButton)
+        editButton.translatesAutoresizingMaskIntoConstraints = false
+        editButton.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
+        editButton.trailingAnchor.constraint(equalTo: profileView.trailingAnchor, constant: -20).isActive = true
+        editButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        editButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
+        editButton.tintColor = .greenWhite
+        editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
+    }
+    
+    func setProfileViewConstraint() {
+        profileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        profileView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "accountLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
