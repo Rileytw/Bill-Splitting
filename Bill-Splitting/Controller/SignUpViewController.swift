@@ -115,15 +115,7 @@ class SignUpViewController: UIViewController {
     }
     
     @objc func pressSignUp() {
-//        setAnimation()
         checkUserInput()
-//        AccountManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
-//                                                password: passwordTextField.text ?? "") { [weak self] firebaseId in
-//            self?.userData.userName = self?.userNameTextField.text ?? ""
-//            self?.userData.userEmail = self?.emailTextField.text ?? ""
-//            self?.userData.userId = firebaseId
-//            self?.uploadUserData()
-//        }
     }
     
     func signUpWithFirebase() {
@@ -137,7 +129,6 @@ class SignUpViewController: UIViewController {
                 self?.uploadUserData()
             case .failure(let error):
                 if let errorCode = AuthErrorCode(rawValue: error._code) {
-//                    print(errorCode.errorMessage)
                     ProgressHUD.shared.view = self?.view ?? UIView()
                     ProgressHUD.showFailure(text: errorCode.errorMessage)
                     self?.removeAnimation()

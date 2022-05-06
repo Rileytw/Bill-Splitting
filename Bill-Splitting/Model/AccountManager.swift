@@ -27,14 +27,16 @@ class AccountManager {
         }
     }
     
-    func signInWithFirebase(email: String, password: String, completion: @escaping (String) -> Void) {
+    func signInWithFirebase(email: String, password: String, completion: @escaping (Result<(String), Error>) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            guard error == nil else {
-                print(error?.localizedDescription)
-                return
+            if let error = error {
+                completion(.failure(error))
+                print(error.localizedDescription)
             }
-            guard let uid = result?.user.uid else { return }
-            completion("\(uid)")
+            
+            if let uid = result?.user.uid {
+                completion(.success("\(uid)"))
+            }
         }
     }
     
@@ -53,11 +55,12 @@ class AccountManager {
     
     func getCurrentUserInfo() {
         let currentUser = Auth.auth().currentUser
-        guard let user = currentUser else { return }
-        let uid = user.uid
-        let email = user.email
-        self.currentUser.currentUserId = uid
-        self.currentUser.currentUserEmail = email ?? ""
+        if let user = currentUser {
+            let uid = user.uid
+            let email = user.email
+            self.currentUser.currentUserId = uid
+            self.currentUser.currentUserEmail = email ?? ""
+        }
     }
 }
 

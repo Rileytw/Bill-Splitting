@@ -117,10 +117,22 @@ class SignInViewController: UIViewController {
     }
     
     @objc func pressLogin() {
-        setAnimation()
+        checkUserInput()
+    }
+    
+    func signInWithFirebase() {
         AccountManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
-                                                password: passwordTextField.text ?? "") { [weak self] firebaseId in
-            self?.fetchUserData(userId: firebaseId, email: self?.accountTextField.text ?? "")
+                                                 password: passwordTextField.text ?? "") { [weak self] result in
+            switch result {
+            case .success(let firebaseId):
+                self?.fetchUserData(userId: firebaseId, email: self?.accountTextField.text ?? "")
+            case .failure(let error):
+                if let errorCode = AuthErrorCode(rawValue: error._code) {
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: errorCode.errorMessage)
+                    self?.removeAnimation()
+                }
+            }
         }
     }
     
@@ -129,7 +141,7 @@ class SignInViewController: UIViewController {
         UserManager.shared.fetchSignInUserData(userId: userId) { [weak self] result in
             switch result {
             case .success(let user):
-                print(user)
+//                print(user)
                 if user == nil {
                     self?.user.userId = userId
                     self?.user.userEmail = email
@@ -143,6 +155,8 @@ class SignInViewController: UIViewController {
                 self?.enterFistPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "讀取資料失敗")
             }
         }
     }
@@ -207,6 +221,28 @@ class SignInViewController: UIViewController {
         return hashString
     }
     
+    func checkUserInput() {
+        if accountTextField.text == "" {
+            inputAlert(title: "尚未輸入帳號",
+                       message: "請輸入帳號再進行登入")
+        } else if passwordTextField.text == "" {
+            inputAlert(title: "尚未輸入密碼",
+                       message: "請輸入密碼再進行登入")
+        } else {
+            setAnimation()
+            signInWithFirebase()
+        }
+    }
+    
+    func inputAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
     func setAnimation() {
         animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
@@ -222,6 +258,11 @@ class SignInViewController: UIViewController {
         animationView.play()
     }
     
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
+    }
+    
     func setPassordLabelConstraint() {
         passwordLabel.topAnchor.constraint(equalTo: accountLabel.bottomAnchor, constant: 20).isActive = true
         passwordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
@@ -230,7 +271,7 @@ class SignInViewController: UIViewController {
     }
     
     func setAccountLabelConstraint() {
-        accountLabel.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -140).isActive = true
+        accountLabel.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -150).isActive = true
         accountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
         accountLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
         accountLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -248,6 +289,7 @@ class SignInViewController: UIViewController {
         passwordTextField.leadingAnchor.constraint(equalTo: passwordLabel.trailingAnchor, constant: 20).isActive = true
         passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         passwordTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        passwordTextField.isSecureTextEntry = true
     }
     
     func setLoginButtonConstraint() {
@@ -319,21 +361,33 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         switch (error) {
         case ASAuthorizationError.canceled:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         case ASAuthorizationError.failed:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         case ASAuthorizationError.invalidResponse:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         case ASAuthorizationError.notHandled:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         case ASAuthorizationError.unknown:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         default:
             break
         }
         
         print("didCompleteWithError: \(error.localizedDescription)")
     }
+    
+    func errorHandleWithAppleSignIn() {
+        ProgressHUD.shared.view = self.view
+        ProgressHUD.showFailure(text: "發生錯誤請稍後再試")
+
+    }
+    
 }
 
 extension SignInViewController: ASAuthorizationControllerPresentationContextProviding {
