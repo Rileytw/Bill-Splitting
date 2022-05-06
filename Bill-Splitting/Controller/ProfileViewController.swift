@@ -173,7 +173,7 @@ class ProfileViewController: UIViewController {
     }
     
     func alertDeleteAccount() {
-        let alertController = UIAlertController(title: "刪除帳號", message: "請確認是否刪除帳號。提醒：若刪除帳號，將刪除您的 email 及收款資訊，但不會刪除您在群組中的帳務資訊", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "刪除帳號", message: "請確認是否刪除帳號。提醒：若刪除帳號，將刪除您的 email 及收款資訊，但不會刪除您在群組中的帳務資訊。刪除帳號後，將無法回復帳號。", preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
             self?.deletAccount()
         }
