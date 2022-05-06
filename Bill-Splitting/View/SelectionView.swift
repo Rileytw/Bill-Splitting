@@ -57,11 +57,11 @@ class SelectionView: UIView {
             selectedButton.frame = CGRect(x: (width/CGFloat(numberOfButton ?? 0) + 1) * CGFloat(button), y: 0, width: width/CGFloat(numberOfButton ?? 0) - 0.5, height: buttonHeight)
             selectedButton.setTitle(textOfButtons[button].title, for: .normal)
             selectedButton.titleLabel?.font = fontOfText
-            ElementsStyle.styleButton(selectedButton)
+//            ElementsStyle.styleButton(selectedButton)
             selectedButton.addTarget(self, action: #selector(changeIndicatorView), for: .touchUpInside)
             buttons.append(selectedButton)
             if button == 0 {
-                ElementsStyle.styleSelectedButton(selectedButton)
+//                ElementsStyle.styleSelectedButton(selectedButton)
             }
             addSubview(selectedButton)
         }
@@ -82,11 +82,11 @@ class SelectionView: UIView {
         })
         self.selectionViewDelegate?.didSelectedButton?(self, at: buttonIndex ?? 0)
         
-        for button in buttons {
-            if button != sender {
-                ElementsStyle.styleNotSelectedButton(button)
-            }
-        }
-        ElementsStyle.styleSelectedButton(sender)
+//        for button in buttons {
+//            if button != sender {
+//                ElementsStyle.styleNotSelectedButton(button)
+//            }
+//        }
+//        ElementsStyle.styleSelectedButton(sender)
     }
 }

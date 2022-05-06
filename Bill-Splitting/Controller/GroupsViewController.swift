@@ -24,6 +24,7 @@ class GroupsViewController: UIViewController {
     private var animationView = AnimationView()
     var blockUserView = BlockUserView()
     var mask = UIView()
+    var searchView = UIView()
     let width = UIScreen.main.bounds.size.width
     let height = UIScreen.main.bounds.size.height
     
@@ -41,6 +42,7 @@ class GroupsViewController: UIViewController {
         super.viewDidLoad()
         setViewBackground()
         setSelectedView()
+        setSearchView()
         setTableView()
         navigationItem.title = "我的群組"
         setSearchBar()
@@ -52,6 +54,12 @@ class GroupsViewController: UIViewController {
         getGroupData()
         getClosedGroupData()
         fetchCurrentUserData()
+    }
+    
+    func setSearchView() {
+        view.addSubview(searchView)
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        setSearchViewConstraint()
     }
     
     func setTableView() {
@@ -99,8 +107,6 @@ class GroupsViewController: UIViewController {
             case .success(let groups):
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
-//                ProgressHUD.shared.view = self?.view ?? UIView()
-//                ProgressHUD.showSuccess(text: "成功讀取資料")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -123,7 +129,7 @@ class GroupsViewController: UIViewController {
     
     func setSearchBar() {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
-        tableView.tableHeaderView = searchBar
+        searchView.addSubview(searchBar)
         searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
         searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
@@ -421,9 +427,16 @@ extension GroupsViewController {
     }
     
     func setTableViewConstraint() {
-        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 0).isActive = true
+        tableView.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+    
+    func setSearchViewConstraint() {
+        searchView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 5).isActive = true
+        searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        searchView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        searchView.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
 }

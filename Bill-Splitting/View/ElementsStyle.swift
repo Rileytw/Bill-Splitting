@@ -20,7 +20,8 @@ class ElementsStyle {
 //        272343
 //        1D4D4F
 //        let lightBlueColor = UIColor(red: 53/255, green: 115/255, blue: 118/255, alpha: 0.9).cgColor
-        let lightBlueColor = UIColor.hexStringToUIColor(hex: "357376").cgColor
+        let lightBlueColor = UIColor.hexStringToUIColor(hex: "041C32").cgColor
+//        "357376"
 //        357376
         gradientLayer.colors = [darkBlueColor, lightBlueColor]
         view.layer.addSublayer(gradientLayer)
@@ -75,5 +76,13 @@ class ElementsStyle {
         textfield.textColor = .greenWhite
         textfield.layer.addSublayer(bottomLine)
         textfield.layer.masksToBounds = true
+    }
+    
+    static func styleView(_ view: UIView) {
+        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor.hexStringToUIColor(hex: "74959A").cgColor
+        view.layer.cornerRadius = 10
+//        view.tintColor = UIColor.greenWhite
+//        view.backgroundColor = UIColor.hexStringToUIColor(hex: "FFCE45")
     }
 }

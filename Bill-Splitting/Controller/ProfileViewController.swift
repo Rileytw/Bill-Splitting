@@ -21,6 +21,7 @@ class ProfileViewController: UIViewController {
     let editButton = UIButton()
     var collectionView: UICollectionView!
     var blackList = [String]()
+    let screenWidth = UIScreen.main.bounds.width - 20
     
     var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
     
@@ -298,8 +299,8 @@ extension ProfileViewController: UICollectionViewDataSource {
 extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemWidth: CGFloat = 100
-        let itemHeight: CGFloat = 100
+        let itemWidth: CGFloat = screenWidth / 4 - 5
+        let itemHeight: CGFloat = itemWidth
         return CGSize(width: itemWidth, height: itemHeight)
     }
     
@@ -310,8 +311,13 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(
         _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-            
-            return 24.0
+//            var numberOfItemsPerRow: CGFloat
+//            let interItemSpacing: CGFloat
+//            let screenWidth = UIScreen.main.bounds.width - 20
+//
+//            interItemSpacing = (screenWidth - (5 * 80)) / 5
+//
+            return 24
         }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
