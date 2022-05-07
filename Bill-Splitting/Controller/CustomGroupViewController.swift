@@ -540,12 +540,14 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
                                          description: PaidDescription.settleUpInvolved,
                                          price: "$\(paid?.price ?? 0)")
                 itemsCell.paidDescription.textColor = UIColor.styleGreen
+                itemsCell.setIcon(style: 3)
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.paid,
                                          price: "$\(paid?.price ?? 0)")
                 itemsCell.paidDescription.textColor = UIColor.styleGreen
+                itemsCell.setIcon(style: 0)
             }
         } else {
             if involved?.userId == currentUserId {
@@ -555,12 +557,14 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
                                              description: PaidDescription.settleUpPaid,
                                              price: "$\(involved?.price ?? 0)")
                     itemsCell.paidDescription.textColor = UIColor.styleRed
+                    itemsCell.setIcon(style: 3)
                 } else {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,
                                              description: PaidDescription.involved,
                                              price: "$\(involved?.price ?? 0)")
                     itemsCell.paidDescription.textColor = UIColor.styleRed
+                    itemsCell.setIcon(style: 1)
                 }
             } else {
                 itemsCell.createItemCell(time: time,
@@ -568,6 +572,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
                                          description: PaidDescription.notInvolved,
                                          price: "")
                 itemsCell.paidDescription.textColor = UIColor.greenWhite
+                itemsCell.setIcon(style: 2)
             }
         }
         return itemsCell
