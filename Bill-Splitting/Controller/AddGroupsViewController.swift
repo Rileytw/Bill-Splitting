@@ -107,7 +107,9 @@ class AddGroupsViewController: UIViewController {
     
     @objc func pressAddGroupButton() {
         if nameTextField.text?.isEmpty == true {
-            loseGroupNameAlert()
+            loseGroupInfoAlert(message: "尚未填寫群組名稱")
+        } else if typePickerView.textField.text == "" {
+            loseGroupInfoAlert(message: "尚未選擇群組類型")
         } else {
             addMembers()
             
@@ -184,8 +186,8 @@ class AddGroupsViewController: UIViewController {
         self.present(inviteFriendViewController, animated: true, completion: nil)
     }
     
-    func loseGroupNameAlert() {
-        let alertController = UIAlertController(title: "請填寫完整資訊", message: "尚未填寫群組名稱", preferredStyle: .alert)
+    func loseGroupInfoAlert(message: String) {
+        let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
@@ -351,7 +353,7 @@ class AddGroupsViewController: UIViewController {
         view.addSubview(inviteFriendButton)
         inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
         inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         inviteFriendButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
         inviteFriendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5).isActive = true
         

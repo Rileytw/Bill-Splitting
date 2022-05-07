@@ -102,6 +102,11 @@ class RemindersViewController: UIViewController {
                 self?.allReminders = reminders
                 self?.reminders = reminders.filter { $0.status == RemindStatus.active.statusInt }
                 self?.fetchReminderInfo()
+                if self?.allReminders.isEmpty == true {
+                    self?.emptyLabel.isHidden = false
+                } else {
+                    self?.emptyLabel.isHidden = true
+                }
             case .failure(let error):
                 print("Error decoding reminders: \(error)")
             }
@@ -168,9 +173,6 @@ class RemindersViewController: UIViewController {
                     //  MARK: - Bug of reminders overlap when setting multiple reminders
                     ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
                 }
-                self.emptyLabel.isHidden = true
-            } else {
-                self.emptyLabel.isHidden = false
             }
             self.tableView.reloadData()
             self.removeAnimation()
@@ -200,6 +202,7 @@ class RemindersViewController: UIViewController {
     func setTableView() {
         view.addSubview(tableView)
         setTableViewConstraint()
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         tableView.register(UINib(nibName: String(describing: ReminderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ReminderTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self

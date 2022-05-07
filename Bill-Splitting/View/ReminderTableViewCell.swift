@@ -6,27 +6,44 @@
 //
 
 import UIKit
+import SwiftUI
 
 class ReminderTableViewCell: UITableViewCell {
-
+    
     @IBOutlet var memberLabel: UILabel!
     @IBOutlet var typeLabel: UILabel!
     @IBOutlet var groupLabel: UILabel!
     @IBOutlet var remindTime: UILabel!
+    @IBOutlet weak var cellView: UIView!
+    @IBOutlet weak var icon: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
         self.backgroundColor = .clear
         memberLabel.textColor = .greenWhite
         typeLabel.textColor = .greenWhite
         groupLabel.textColor = .greenWhite
         remindTime.textColor = .greenWhite
         self.selectionStyle = UITableViewCell.SelectionStyle.none
+        ElementsStyle.styleView(cellView)
+        cellView.backgroundColor = UIColor(red: 142/255, green: 198/255, blue: 197/255, alpha: 0.3)
+        setIcon()
     }
-
+    
+    func setIcon() {
+        let configuration = UIImage.SymbolConfiguration(weight: .light)
+        if #available(iOS 15, *) {
+            icon.image = UIImage(systemName: "megaphone", withConfiguration: configuration)
+        } else {
+            icon.image = UIImage(systemName: "bell.circle", withConfiguration: configuration)
+        }
+        icon.tintColor = .greenWhite
+    }
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
@@ -45,9 +62,9 @@ class ReminderTableViewCell: UITableViewCell {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
         let remindDate = dateFormatter.string(from: date)
-        remindTime.text = "提醒時間" + remindDate
+        remindTime.text = "提醒時間：" + remindDate
         
-        if time - Date().timeIntervalSince1970 < 0{
+        if time - Date().timeIntervalSince1970 < 0 {
             remindTime.textColor = .systemGray
         }
     }
