@@ -91,7 +91,7 @@ class RemindersViewController: UIViewController {
     }
     
     func getReminders() {
-        ReminderManager.shared.fetchReminders { [weak self] result in
+        ReminderManager.shared.fetchReminders(currentUser: currentUserId) { [weak self] result in
             switch result {
             case .success(let reminders):
                 self?.allReminders = reminders

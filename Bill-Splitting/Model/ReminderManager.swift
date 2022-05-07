@@ -12,7 +12,6 @@ import FirebaseFirestore
 class ReminderManager {
     static var shared = ReminderManager()
     lazy var db = Firestore.firestore()
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
     
     func addReminderData(reminder: Reminder) {
         let ref = db.collection(FirebaseCollection.reminder.rawValue).document()
@@ -25,8 +24,8 @@ class ReminderManager {
         }
     }
     
-    func fetchReminders(completion: @escaping (Result<[Reminder], Error>) -> Void) {
-        db.collection(FirebaseCollection.reminder.rawValue).whereField("creatorId", isEqualTo: self.currentUserId).order(by: "remindTime", descending: true).getDocuments() {
+    func fetchReminders(currentUser: String, completion: @escaping (Result<[Reminder], Error>) -> Void) {
+        db.collection(FirebaseCollection.reminder.rawValue).whereField("creatorId", isEqualTo: currentUser).order(by: "remindTime", descending: true).getDocuments() {
             (querySnapshot, error) in
             
             if let error = error {
