@@ -316,6 +316,8 @@ extension GroupsViewController {
         
         blockUserView.blockUserButton.addTarget(self, action: #selector(detectUserExpense), for: .touchUpInside)
         blockUserView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+        
+        self.tabBarController?.tabBar.isHidden = true
     }
     
     @objc func pressDismissButton() {
@@ -325,6 +327,7 @@ extension GroupsViewController {
             self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
         }, completion: nil)
         mask.removeFromSuperview()
+        self.tabBarController?.tabBar.isHidden = false
     }
     
     func getMemberExpense(groupId: String, members: [String]) {
