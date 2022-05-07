@@ -11,6 +11,7 @@ class FriendListViewController: UIViewController {
 
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let tableView = UITableView()
+    var noDataView = NoDataView(frame: .zero)
     let width = UIScreen.main.bounds.size.width
     let height = UIScreen.main.bounds.size.height
     var blockUserView = BlockUserView()
@@ -27,6 +28,7 @@ class FriendListViewController: UIViewController {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         setInviteButton()
+        setNoDataView()
         setTableView()
     }
     
@@ -83,6 +85,9 @@ class FriendListViewController: UIViewController {
             switch result {
             case .success(let friend):
                 self?.friends = friend
+                if friend.isEmpty == true {
+                    self?.noDataView.noDataLabel.isHidden = false
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -196,5 +201,15 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
                 print("\(error.localizedDescription)")
             }
         }
+    }
+    
+    func setNoDataView() {
+        self.view.addSubview(noDataView)
+        noDataView.noDataLabel.text = "目前還沒有好友，快邀請好友加入吧！"
+        noDataView.translatesAutoresizingMaskIntoConstraints = false
+        noDataView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
+        noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }

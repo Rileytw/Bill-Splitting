@@ -25,6 +25,7 @@ class GroupsViewController: UIViewController {
     var blockUserView = BlockUserView()
     var mask = UIView()
     var searchView = UIView()
+    var emptyLabel = UILabel()
     let width = UIScreen.main.bounds.size.width
     let height = UIScreen.main.bounds.size.height
     
@@ -43,6 +44,7 @@ class GroupsViewController: UIViewController {
         setViewBackground()
         setSelectedView()
         setSearchView()
+        setEmptyLabel()
         setTableView()
         navigationItem.title = "我的群組"
         setSearchBar()
@@ -95,6 +97,9 @@ class GroupsViewController: UIViewController {
             case .success(let groups):
                 self?.groups = groups
                 self?.setFilterGroupData()
+                if groups.isEmpty == true {
+                    self?.emptyLabel.isHidden = false
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -107,6 +112,9 @@ class GroupsViewController: UIViewController {
             case .success(let groups):
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
+                if groups.isEmpty == true {
+                    self?.emptyLabel.isHidden = false
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -441,5 +449,18 @@ extension GroupsViewController {
         searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         searchView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         searchView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    }
+    
+    func setEmptyLabel() {
+        view.addSubview(emptyLabel)
+        emptyLabel.text = "目前暫無資料"
+        emptyLabel.textColor = .greenWhite
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 5).isActive = true
+        emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        emptyLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        emptyLabel.isHidden = true
     }
 }

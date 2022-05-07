@@ -69,6 +69,7 @@
 		3576B4202823AB5800CECE3F /* ReportObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B41F2823AB5800CECE3F /* ReportObject.swift */; };
 		3576B4222824CD7F00CECE3F /* JGProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B4212824CD7F00CECE3F /* JGProgressHUD.swift */; };
 		3576B42428261C6400CECE3F /* EditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B42328261C6400CECE3F /* EditingView.swift */; };
+		3576B4282826B4BF00CECE3F /* NoDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B4272826B4BF00CECE3F /* NoDataView.swift */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -180,6 +181,7 @@
 		3576B41F2823AB5800CECE3F /* ReportObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportObject.swift; sourceTree = "<group>"; };
 		3576B4212824CD7F00CECE3F /* JGProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JGProgressHUD.swift; sourceTree = "<group>"; };
 		3576B42328261C6400CECE3F /* EditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditingView.swift; sourceTree = "<group>"; };
+		3576B4272826B4BF00CECE3F /* NoDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDataView.swift; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -384,6 +386,7 @@
 				3576B41728222AFC00CECE3F /* BlockUserView.swift */,
 				3576B41B28239C4700CECE3F /* ReportView.swift */,
 				3576B42328261C6400CECE3F /* EditingView.swift */,
+				3576B4272826B4BF00CECE3F /* NoDataView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -620,6 +623,7 @@
 				350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */,
 				35568A2B28157F1800646B57 /* SelectionViewDataSource.swift in Sources */,
 				35568A322816D20E00646B57 /* SignInViewController.swift in Sources */,
+				3576B4282826B4BF00CECE3F /* NoDataView.swift in Sources */,
 				350A33732804638A00201E40 /* GroupManager.swift in Sources */,
 				35FF6407280C62C900508EAF /* SubscribeViewController.swift in Sources */,
 				355090E1280EB9360007C0CE /* PaymentViewController.swift in Sources */,

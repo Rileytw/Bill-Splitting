@@ -13,6 +13,7 @@ class RecordsViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     private var animationView = AnimationView()
     var tableView = UITableView()
+    var emptyLabel = UILabel()
     var groups: [GroupData] = []
     var itemData: [ItemData] = []
     var paidItem: [ExpenseInfo] = []
@@ -26,6 +27,7 @@ class RecordsViewController: UIViewController {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         getGroupData()
+        setEmptyLabel()
         setTableView()
         setAnimation()
         navigationItem.title = "近期紀錄"
@@ -50,6 +52,9 @@ class RecordsViewController: UIViewController {
                 self?.groups = groups
                 // MARK: - Use group data to get item data from each group
                 self?.getGroupsItemExpense()
+                if groups.isEmpty == true {
+                    self?.emptyLabel.isHidden = false
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -185,6 +190,19 @@ class RecordsViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear
+    }
+    
+    func setEmptyLabel() {
+        view.addSubview(emptyLabel)
+        emptyLabel.text = "目前暫無資料"
+        emptyLabel.textColor = .greenWhite
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25).isActive = true
+        emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        emptyLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        emptyLabel.isHidden = true
     }
 }
 
