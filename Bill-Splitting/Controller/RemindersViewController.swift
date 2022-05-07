@@ -168,6 +168,7 @@ class RemindersViewController: UIViewController {
                     //  MARK: - Bug of reminders overlap when setting multiple reminders
                     ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
                 }
+                self.emptyLabel.isHidden = true
             } else {
                 self.emptyLabel.isHidden = false
             }
@@ -227,7 +228,7 @@ class RemindersViewController: UIViewController {
         emptyLabel.text = "目前暫無資料"
         emptyLabel.textColor = .greenWhite
         emptyLabel.translatesAutoresizingMaskIntoConstraints = false
-        emptyLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 15).isActive = true
+        emptyLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15).isActive = true
         emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         emptyLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
         emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true

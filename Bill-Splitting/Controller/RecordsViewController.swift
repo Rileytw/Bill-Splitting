@@ -54,6 +54,8 @@ class RecordsViewController: UIViewController {
                 self?.getGroupsItemExpense()
                 if groups.isEmpty == true {
                     self?.emptyLabel.isHidden = false
+                } else {
+                    self?.emptyLabel.isHidden = true
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")

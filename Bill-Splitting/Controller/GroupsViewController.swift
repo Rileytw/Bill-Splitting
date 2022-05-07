@@ -99,6 +99,8 @@ class GroupsViewController: UIViewController {
                 self?.setFilterGroupData()
                 if groups.isEmpty == true {
                     self?.emptyLabel.isHidden = false
+                } else {
+                    self?.emptyLabel.isHidden = true
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
