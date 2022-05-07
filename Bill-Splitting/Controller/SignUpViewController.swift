@@ -95,6 +95,8 @@ class SignUpViewController: UIViewController {
                 self?.userData.userEmail = self?.emailTextField.text ?? ""
                 self?.userData.userId = firebaseId
                 self?.uploadUserData()
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showSuccess(text: "註冊成功")
             case .failure(let error):
                 if let errorCode = AuthErrorCode(rawValue: error._code) {
                     ProgressHUD.shared.view = self?.view ?? UIView()
@@ -107,7 +109,6 @@ class SignUpViewController: UIViewController {
     }
     
     func uploadUserData() {
-//        checkUserInput()
         UserManager.shared.addUserData(userData: userData) {  [weak self] result in
             switch result {
             case .success:
