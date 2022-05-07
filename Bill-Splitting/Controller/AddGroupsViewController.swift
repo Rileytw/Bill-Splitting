@@ -96,7 +96,7 @@ class AddGroupsViewController: UIViewController {
         if isGroupExist == true {
             buttonName = "儲存"
         } else {
-            buttonName = "建立群組"
+            buttonName = "完成"
         }
         
         let addButton = UIBarButtonItem.init(title: buttonName,
