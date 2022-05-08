@@ -140,7 +140,18 @@ class AddGroupsViewController: UIViewController {
                                             groupDescription: descriptionTextView.text,
                                             memberName: member)
         self.member.forEach { member in
-            GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+            GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId) { [weak self] result in
+                switch result {
+                case .success:
+                    if member == self?.member.last {
+                        ProgressHUD.shared.view = self?.view ?? UIView()
+                        ProgressHUD.showSuccess(text: "已新增群組")
+                    }
+                case .failure:
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                }
+            }
         }
     }
     
@@ -161,9 +172,27 @@ class AddGroupsViewController: UIViewController {
                                          status: 0,
                                          member: self.member,
                                          createdTime: Double(NSDate().timeIntervalSince1970)) {
-            groupId in
-            self.member.forEach { member in
-                GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId)
+           [weak self] result in
+            switch result {
+            case .success(let groupId):
+                self?.member.forEach { member in
+                    GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId) {
+                        [weak self] result in
+                        switch result {
+                        case .success:
+                            if member == self?.member.last {
+                                ProgressHUD.shared.view = self?.view ?? UIView()
+                                ProgressHUD.showSuccess(text: "已新增群組")
+                            }
+                        case .failure(let error):
+                            ProgressHUD.shared.view = self?.view ?? UIView()
+                            ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                        }
+                    }
+                }
+            case .failure(let error):
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
