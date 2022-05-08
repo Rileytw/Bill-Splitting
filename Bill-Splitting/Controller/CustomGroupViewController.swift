@@ -18,6 +18,7 @@ class CustomGroupViewController: UIViewController {
     let groupName = UILabel()
     let width = UIScreen.main.bounds.width
     private var animationView = AnimationView()
+    var noDataView = NoDataView(frame: .zero)
     
     var groupData: GroupData?
     
@@ -63,6 +64,7 @@ class CustomGroupViewController: UIViewController {
         setGroupNameLabel()
         setGroupDetailView()
         setClosedGroupButton()
+        setNoDataView()
         setItemTableView()
         setSubscribeButton()
         detectSubscription()
@@ -269,6 +271,9 @@ class CustomGroupViewController: UIViewController {
             case .success(let items):
                 if items.isEmpty == true {
                     self?.removeAnimation()
+                    self?.noDataView.noDataLabel.isHidden = false
+                } else {
+                    self?.noDataView.noDataLabel.isHidden = true
                 }
                 self?.itemData = items
                 items.forEach { item in
@@ -614,5 +619,17 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
 
             return UIMenu(title: "", children: [infoAction])
         }
+    }
+}
+
+extension CustomGroupViewController {
+    func setNoDataView() {
+        self.view.addSubview(noDataView)
+        noDataView.noDataLabel.text = "群組內尚未新增款項"
+        noDataView.translatesAutoresizingMaskIntoConstraints = false
+        noDataView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
+        noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }

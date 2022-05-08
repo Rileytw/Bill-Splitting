@@ -15,16 +15,17 @@ class GroupManager {
     static var shared = GroupManager()
     lazy var db = Firestore.firestore()
     
-    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String], createdTime: Double, completion: @escaping (String) -> Void) {
+    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String], createdTime: Double, completion: @escaping (Result<String, Error>) -> Void) {
         let ref = db.collection("group").document()
         
         let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, groupDescription: description, creator: creator, type: type, status: status, member: member, createdTime: createdTime)
         
         do {
             try db.collection("group").document("\(ref.documentID)").setData(from: groupData)
-            completion("\(ref.documentID)")
+            completion(.success("\(ref.documentID)"))
         } catch {
             print(error)
+            completion(.failure(error))
         }
     }
     
@@ -85,13 +86,15 @@ class GroupManager {
         }
     }
     
-    func addMemberExpenseData(userId: String, allExpense: Double, groupId: String) {
+    func addMemberExpenseData(userId: String, allExpense: Double, groupId: String, completion: @escaping (Result<(), Error>) -> Void) {
         let expenseData = MemberExpense(userId: userId, allExpense: allExpense)
         
         do {
             try db.collection("group").document(groupId).collection("memberExpense").document(userId).setData(from: expenseData)
+            completion(.success(()))
         } catch {
             print(error)
+            completion(.failure(error))
         }
     }
     
