@@ -46,8 +46,8 @@ class GroupDetailView: UIView {
         addExpenseButton.frame = CGRect(x: 5, y: 60, width: width/3 - 10, height: 40)
         addExpenseButton.setTitle("新增支出", for: .normal)
         addExpenseButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        addExpenseButton.setTitleColor(UIColor.hexStringToUIColor(hex: "006E7F"), for: .normal)
-        addExpenseButton.tintColor = UIColor.hexStringToUIColor(hex: "006E7F")
+        addExpenseButton.setTitleColor(UIColor.greenWhite, for: .normal)
+        addExpenseButton.tintColor = UIColor.greenWhite
         addSubview(addExpenseButton)
     }
     
@@ -55,8 +55,8 @@ class GroupDetailView: UIView {
         chartButton.frame = CGRect(x: width/3 + 5, y: 60, width: width/3 - 10, height: 40)
         chartButton.setTitle("查看圖表", for: .normal)
         chartButton.setImage(UIImage(systemName: "chart.pie"), for: .normal)
-        chartButton.setTitleColor(UIColor.hexStringToUIColor(hex: "F8CB2E"), for: .normal)
-        chartButton.tintColor = UIColor.hexStringToUIColor(hex: "F8CB2E")
+        chartButton.setTitleColor(UIColor.greenWhite, for: .normal)
+        chartButton.tintColor = UIColor.greenWhite
         addSubview(chartButton)
     }
     
@@ -64,8 +64,8 @@ class GroupDetailView: UIView {
         settleUpButton.frame = CGRect(x: (width/3) * 2 + 5, y: 60, width: width/3 - 10, height: 40)
         settleUpButton.setTitle("前往結算", for: .normal)
         settleUpButton.setImage(UIImage(systemName: "dollarsign.circle"), for: .normal)
-        settleUpButton.tintColor = UIColor.hexStringToUIColor(hex: "ECB365")
-        settleUpButton.setTitleColor(UIColor.hexStringToUIColor(hex: "ECB365"), for: .normal)
+        settleUpButton.tintColor = UIColor.greenWhite
+        settleUpButton.setTitleColor(UIColor.greenWhite, for: .normal)
         addSubview(settleUpButton)
     }
     

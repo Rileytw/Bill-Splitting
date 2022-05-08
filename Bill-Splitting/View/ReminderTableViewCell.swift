@@ -27,7 +27,7 @@ class ReminderTableViewCell: UITableViewCell {
         remindTime.textColor = .greenWhite
         self.selectionStyle = UITableViewCell.SelectionStyle.none
         ElementsStyle.styleView(cellView)
-        cellView.backgroundColor = UIColor(red: 142/255, green: 198/255, blue: 197/255, alpha: 0.3)
+//        cellView.backgroundColor = UIColor(red: 142/255, green: 198/255, blue: 197/255, alpha: 0.3)
         setIcon()
     }
     
