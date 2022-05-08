@@ -114,9 +114,6 @@ class GroupsViewController: UIViewController {
             case .success(let groups):
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
-                if groups.isEmpty == true {
-                    self?.emptyLabel.isHidden = false
-                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -249,8 +246,10 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         
         if filteredGroups[indexPath.row].type == 1 {
             groupsCell.groupType.text = "多人支付"
+            groupsCell.setIcon(style: 1)
         } else {
             groupsCell.groupType.text = "個人預付"
+            groupsCell.setIcon(style: 0)
         }
         
         groupsCell.numberOfMembers.text = "成員人數：" + String(filteredGroups[indexPath.row].member.count) + "人"

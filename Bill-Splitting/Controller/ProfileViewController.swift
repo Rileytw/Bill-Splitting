@@ -452,8 +452,7 @@ extension ProfileViewController {
         profileImage.heightAnchor.constraint(equalToConstant: 60).isActive = true
         profileImage.widthAnchor.constraint(equalToConstant: 60).isActive = true
         
-        profileImage.image = UIImage(systemName: "circle.bottomhalf.filled")
-        
+        profileImage.image = UIImage(named: "profile")
     }
     
     func setProfileViewConstraint() {
@@ -544,8 +543,8 @@ extension ProfileViewController {
         
         editingView = EditingView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
         editingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
-        editingView.buttonTitle = "修改名稱"
-        editingView.completeButton.setImage(UIImage(systemName: "pencil"), for: .normal)
+        editingView.buttonTitle = "完成"
+//        editingView.completeButton.setImage(UIImage(systemName: "pencil"), for: .normal)
         editingView.textField.text = currentUser?.userName ?? ""
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
             self.editingView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 400, width: UIScreen.main.bounds.size.width, height: 400)
