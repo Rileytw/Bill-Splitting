@@ -10,6 +10,7 @@ import UIKit
 class InviteFriendViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
+    let nameLabel = UILabel()
     let friendTextField = UITextField()
     let searchButton = UIButton()
     let friendNameLabel = UILabel()
@@ -37,15 +38,13 @@ class InviteFriendViewController: UIViewController {
     }
     
     func setTextField() {
-        let nameLabel = UILabel()
+        
         nameLabel.text = "寄送好友邀請"
         nameLabel.textColor = .greenWhite
+        nameLabel.font = nameLabel.font.withSize(24)
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 100).isActive = true
-        NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
-        NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
-        NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
+        setNameLabelConstraint()
         
         friendTextField.borderStyle = UITextField.BorderStyle.roundedRect
         friendTextField.layer.borderColor = UIColor.selectedColor.cgColor
@@ -54,11 +53,7 @@ class InviteFriendViewController: UIViewController {
         friendTextField.textColor = .greenWhite
         self.view.addSubview(friendTextField)
         friendTextField.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: friendTextField, attribute: .top, relatedBy: .equal, toItem: nameLabel, attribute: .bottom, multiplier: 1, constant: 20).isActive = true
-        NSLayoutConstraint(item: friendTextField, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
-        NSLayoutConstraint(item: friendTextField, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: 0).isActive = true
-        NSLayoutConstraint(item: friendTextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
-        
+        setTextFieldConstraint()
         friendTextField.delegate = self
     }
     
@@ -95,7 +90,7 @@ class InviteFriendViewController: UIViewController {
         friendNameLabel.translatesAutoresizingMaskIntoConstraints = false
         
         friendNameLabel.topAnchor.constraint(equalTo: friendTextField.bottomAnchor, constant: 100).isActive = true
-        friendNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
+        friendNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         friendNameLabel.widthAnchor.constraint(equalTo: friendTextField.widthAnchor).isActive = true
         friendNameLabel.heightAnchor.constraint(equalTo: friendTextField.heightAnchor).isActive = true
     }
@@ -274,7 +269,7 @@ class InviteFriendViewController: UIViewController {
     }
     
     func setScanQRCodeButtonConstraint() {
-        scanQRCode.topAnchor.constraint(equalTo: friendTextField.bottomAnchor, constant: 10).isActive = true
+        scanQRCode.topAnchor.constraint(equalTo: friendTextField.bottomAnchor, constant: 20).isActive = true
         scanQRCode.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         scanQRCode.widthAnchor.constraint(equalToConstant: 160).isActive = true
         scanQRCode.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -311,5 +306,22 @@ extension InviteFriendViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         self.friendData = nil
         friendNameLabel.text = ""
+    }
+}
+
+extension InviteFriendViewController {
+    func setNameLabelConstraint() {
+        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 60).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
+    }
+    
+    func setTextFieldConstraint() {
+        NSLayoutConstraint(item: friendTextField, attribute: .top, relatedBy: .equal, toItem: nameLabel, attribute: .bottom, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: friendTextField, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: friendTextField, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: 0).isActive = true
+        NSLayoutConstraint(item: friendTextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
+        
     }
 }

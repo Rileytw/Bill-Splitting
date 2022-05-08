@@ -20,7 +20,7 @@ class ItemDetailTableViewCell: UITableViewCell {
     @IBOutlet weak var paidLabel: UILabel!
     @IBOutlet weak var involvedLabel: UILabel!
     @IBOutlet weak var paidUserImage: UIImageView!
-    
+    @IBOutlet weak var cellView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -48,6 +48,7 @@ class ItemDetailTableViewCell: UITableViewCell {
         descriptionTextView.isEditable = false
         descriptionTextView.textColor = UIColor.greenWhite
         descriptionTextView.font = UIFont.systemFont(ofSize: 17)
+        setCellView()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -56,9 +57,17 @@ class ItemDetailTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func createDetailCell(group: String, item: String, time: Double,
-                          paidPrice: Double, paidMember: String,
-                          description: String?, image: String?) {
+    func setCellView() {
+        ElementsStyle.styleView(cellView)
+    }
+    
+    func createDetailCell(group: String,
+                          item: String,
+                          time: Double,
+                          paidPrice: Double,
+                          paidMember: String,
+                          description: String?,
+                          image: String?) {
         groupName.text = group
         itemName.text = item
         
