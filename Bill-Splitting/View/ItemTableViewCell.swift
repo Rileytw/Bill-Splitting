@@ -22,7 +22,7 @@ class ItemTableViewCell: UITableViewCell {
     @IBOutlet var paidDescription: UILabel!
     @IBOutlet var priceLabel: UILabel!
     @IBOutlet weak var cellView: UIView!
-    @IBOutlet weak var icon: UIImageView!
+    @IBOutlet weak var colorView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,7 +32,8 @@ class ItemTableViewCell: UITableViewCell {
         priceLabel.textColor = UIColor.greenWhite
         
         ElementsStyle.styleView(cellView)
-        cellView.backgroundColor = UIColor(red: 142/255, green: 198/255, blue: 197/255, alpha: 0.3)
+        colorView.backgroundColor = .styleBlue
+        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -53,16 +54,13 @@ class ItemTableViewCell: UITableViewCell {
     }
     
     func setIcon(style: Int) {
-        let configuration = UIImage.SymbolConfiguration(weight: .light)
-        if style == 0 {
-            icon.image = UIImage(systemName: "increase.indent", withConfiguration: configuration)
-        } else if style == 1 {
-            icon.image = UIImage(systemName: "decrease.indent", withConfiguration: configuration)
-        } else if style == 2 {
-            icon.image = UIImage(systemName: "line.horizontal.3.decrease", withConfiguration: configuration)
-        } else {
-            icon.image = UIImage(systemName: "creditcard", withConfiguration: configuration)
-        }
-        icon.tintColor = .greenWhite
+
+//        if style == 0 {
+//            colorView.backgroundColor = .styleGreen
+//        } else if style == 1 {
+//            colorView.backgroundColor = .styleRed
+//        } else {
+//            colorView.backgroundColor = .greenWhite
+//        }
     }
 }
