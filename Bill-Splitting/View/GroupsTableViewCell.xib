@@ -20,7 +20,20 @@
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JXx-yL-XF3">
                         <rect key="frame" x="5" y="10" width="404" height="120"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MN2-cb-5iA">
+                                <rect key="frame" x="334" y="30" width="60" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="kgJ-p9-1YV"/>
+                                    <constraint firstAttribute="width" constant="60" id="mpX-wH-1hS"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="MN2-cb-5iA" firstAttribute="centerY" secondItem="JXx-yL-XF3" secondAttribute="centerY" id="VQl-nU-h1C"/>
+                            <constraint firstAttribute="trailing" secondItem="MN2-cb-5iA" secondAttribute="trailing" constant="10" id="m08-FT-OxK"/>
+                        </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="GroupName" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fae-Nm-H2P">
                         <rect key="frame" x="25" y="20" width="106.5" height="24"/>
@@ -59,6 +72,7 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="cellView" destination="JXx-yL-XF3" id="cfe-c3-Gba"/>
+                <outlet property="groupIcon" destination="MN2-cb-5iA" id="RXB-3f-MAd"/>
                 <outlet property="groupName" destination="Fae-Nm-H2P" id="AQb-FL-mj8"/>
                 <outlet property="groupType" destination="rkO-wg-em2" id="e2H-nY-LIO"/>
                 <outlet property="numberOfMembers" destination="0KB-wq-N0T" id="jCh-gH-zuX"/>

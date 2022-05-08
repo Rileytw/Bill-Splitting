@@ -13,6 +13,7 @@ class GroupsTableViewCell: UITableViewCell {
     @IBOutlet var groupType: UILabel!
     @IBOutlet var numberOfMembers: UILabel!
     @IBOutlet var cellView: UIView!
+    @IBOutlet weak var groupIcon: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -41,6 +42,17 @@ class GroupsTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    func setIcon(style: Int) {
+//        let configuration = UIImage.SymbolConfiguration(weight: .light)
+        if style == 0 {
+            groupIcon.image = UIImage(named: "profile")
+//            groupIcon.image = UIImage(systemName: "increase.indent", withConfiguration: configuration)
+        } else if style == 1 {
+            groupIcon.image = UIImage(named: "people")
+//            groupIcon.image = UIImage(systemName: "decrease.indent", withConfiguration: configuration)
+        }
     }
     
 }
