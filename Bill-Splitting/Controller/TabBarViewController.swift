@@ -54,7 +54,7 @@ private enum Tab {
                                 selectedImage: UIImage(systemName: "list.bullet.rectangle.fill")
             )
         case .profile:
-            return UITabBarItem(title: "個人檔案", image: UIImage(systemName: "person"),
+            return UITabBarItem(title: "個人頁面", image: UIImage(systemName: "person"),
                                 selectedImage: UIImage(systemName: "person.fill")
             )
         }

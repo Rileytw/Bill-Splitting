@@ -34,7 +34,7 @@ class RemindersViewController: UIViewController {
         setEmptyLabel()
         setTableView()
         setAddButton()
-        navigationItem.title = "提醒"
+        navigationItem.title = "設定提醒"
         setAnimation()
     }
     
