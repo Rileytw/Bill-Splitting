@@ -192,6 +192,7 @@ class CustomGroupViewController: UIViewController {
         itemTableView.dataSource = self
         itemTableView.delegate = self
         
+        itemTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         itemTableView.backgroundColor = UIColor.clear
     }
     
@@ -545,7 +546,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
                                          description: PaidDescription.settleUpInvolved,
                                          price: "$\(paid?.price ?? 0)")
                 itemsCell.paidDescription.textColor = UIColor.styleGreen
-                itemsCell.setIcon(style: 3)
+                itemsCell.setIcon(style: 0)
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
@@ -562,7 +563,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
                                              description: PaidDescription.settleUpPaid,
                                              price: "$\(involved?.price ?? 0)")
                     itemsCell.paidDescription.textColor = UIColor.styleRed
-                    itemsCell.setIcon(style: 3)
+                    itemsCell.setIcon(style: 1)
                 } else {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,

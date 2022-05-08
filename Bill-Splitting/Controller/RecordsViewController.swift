@@ -139,8 +139,6 @@ class RecordsViewController: UIViewController {
             self.allPersonalItem = self.personalPaid + self.personalInvolved
             self.allPersonalItem.sort { $0.createdTime ?? 0 > $1.createdTime ?? 0 }
             self.allPersonalItem = Array(self.allPersonalItem.prefix(10))
-//            print("====all:\(self.allPersonalItem)")
-//            print("====allCount:\(self.allPersonalItem.count)")
             self.tableView.reloadData()
             self.removeAnimation()
         }
@@ -187,6 +185,7 @@ class RecordsViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
         tableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         tableView.dataSource = self
@@ -239,14 +238,14 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
             itemsCell.createItemCell(time: time,
                                      name: itemName ?? "",
                                      description: PaidDescription.paid,
-                                     price: "\(item.price)")
+                                     price: "$ " +  "\(item.price)")
             itemsCell.paidDescription.textColor = .styleGreen
             itemsCell.setIcon(style: 0)
         } else {
             itemsCell.createItemCell(time: time,
                                      name: itemName ?? "",
                                      description: PaidDescription.involved,
-                                     price: "\(abs(item.price))")
+                                     price: "$ " + "\(abs(item.price))")
             itemsCell.paidDescription.textColor = .styleRed
             itemsCell.setIcon(style: 1)
         }
