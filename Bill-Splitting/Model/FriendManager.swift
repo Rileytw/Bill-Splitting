@@ -113,11 +113,12 @@ class FriendManager {
         }
     }
     
-    func updateFriendInvitation(senderId: String, receiverId: String) {
+    func updateFriendInvitation(senderId: String, receiverId: String, completion: @escaping () -> Void) {
         let ref = db.collection("friendInvitation").document()
         ref.setData(["senderId": senderId,
                      "receiverId": receiverId,
                      "documentId": "\(ref.documentID)"])
+        completion()
     }
     
     func fetchFriendInvitation(userId: String, completion: @escaping (Result<[Invitation], Error>) -> Void) {

@@ -262,10 +262,14 @@ class InviteFriendViewController: UIViewController {
     }
 
     @objc func pressSendButton() {
-        FriendManager.shared.updateFriendInvitation(senderId: currentUserId, receiverId: self.friendData?.userId ?? "")
-        self.friendData = nil
-        sendButton.isHidden = true
-        friendNameLabel.isHidden = true
+        FriendManager.shared.updateFriendInvitation(senderId: currentUserId, receiverId: self.friendData?.userId ?? "") { [weak self] in
+            ProgressHUD.shared.view = self?.view ?? UIView()
+            ProgressHUD.showSuccess(text: "已寄出邀請")
+            self?.friendData = nil
+            self?.sendButton.isHidden = true
+            self?.friendNameLabel.isHidden = true
+            self?.friendTextField.text = ""
+        }
     }
     
     func setScanQRCodeButtonConstraint() {
