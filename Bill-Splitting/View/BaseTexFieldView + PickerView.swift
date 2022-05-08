@@ -41,7 +41,7 @@ class BasePickerViewInTextField: UIView {
         textField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0).isActive = true
         textField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
         textField.inputView = pickerView
-        textField.text = pickerViewData[0]
+//        textField.text = pickerViewData[0]
         textField.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         textField.textAlignment = .center
         textField.backgroundColor = UIColor.selectedColor

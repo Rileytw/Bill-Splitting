@@ -16,13 +16,23 @@ class ProfileViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var currentUser: UserData?
     var profileView = UIView()
+    var profileImage = UIImageView()
     let userName = UILabel()
     let userEmail = UILabel()
     let editButton = UIButton()
     var collectionView: UICollectionView!
     var blackList = [String]()
-    
-    var profileList: [ProfileList] = [ProfileList.qrCode, ProfileList.payment, ProfileList.friendList, ProfileList.friendInvitation, ProfileList.logOut, ProfileList.deleteAccount]
+    let screenWidth = UIScreen.main.bounds.width - 20
+    var mask = UIView()
+    var editingView = EditingView()
+    let width = UIScreen.main.bounds.size.width
+    let height = UIScreen.main.bounds.size.height
+    var profileList: [ProfileList] = [ProfileList.qrCode,
+                                      ProfileList.payment,
+                                      ProfileList.friendList,
+                                      ProfileList.friendInvitation,
+                                      ProfileList.logOut,
+                                      ProfileList.deleteAccount]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +40,7 @@ class ProfileViewController: UIViewController {
         getUserData()
         setProfileView()
         setCollectionView()
+        setAddGroupButton()
         
         navigationItem.title = "個人頁面"
     }
@@ -60,19 +71,11 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    @objc func pressEdit() {
-        let alertController = UIAlertController(title: "修改名稱", message: "請輸入使用者名稱", preferredStyle: .alert)
-        alertController.addTextField { textField in
-            textField.placeholder = "新名稱"
-        }
-        let renameAlert = UIAlertAction(title: "修改", style: .default) { [weak self] _ in
-            self?.updateUserName(newUserName: alertController.textFields?[0].text ?? "")
-            //            print(alertController.textFields?[0].text)
-        }
-        let cancelAlert = UIAlertAction(title: "取消", style: .default, handler: nil)
-        alertController.addAction(renameAlert)
-        alertController.addAction(cancelAlert)
-        present(alertController, animated: true, completion: nil)
+    func setAddGroupButton() {
+        let editButton = UIBarButtonItem.init(title: "編輯",
+                                             style: UIBarButtonItem.Style.plain,
+                                             target: self, action: #selector(revealBlockView))
+        self.navigationItem.setRightBarButton(editButton, animated: true)
     }
     
     func updateUserName(newUserName: String) {
@@ -83,6 +86,8 @@ class ProfileViewController: UIViewController {
                 self?.getUserData()
             case .failure:
                 print("userName update failed")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料修改失敗，請稍後再試")
             }
         }
     }
@@ -147,7 +152,7 @@ class ProfileViewController: UIViewController {
                 secondQueue.async(group: group) {
                     UserManager.shared.deleteDropUserData(friendId: friend.userId, collection: "friend", userId: self.currentUserId) { [weak self] result in
                         switch result {
-                        case .success():
+                        case .success:
                             print("delete data successfully")
                             isUserRemove = true
                             group.leave()
@@ -282,9 +287,12 @@ extension ProfileViewController: UICollectionViewDataSource {
         return profileCell
     }
     
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfileHeaderView.identifier,
-                                                                           for: indexPath) as? ProfileHeaderView else { return UICollectionReusableView()}
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: ProfileHeaderView.identifier,
+            for: indexPath) as? ProfileHeaderView else { return UICollectionReusableView()}
         if indexPath.section == 0 {
             header.label.text = "個人資訊"
         } else {
@@ -298,8 +306,8 @@ extension ProfileViewController: UICollectionViewDataSource {
 extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemWidth: CGFloat = 100
-        let itemHeight: CGFloat = 100
+        let itemWidth: CGFloat = screenWidth / 4 - 5
+        let itemHeight: CGFloat = itemWidth
         return CGSize(width: itemWidth, height: itemHeight)
     }
     
@@ -310,8 +318,7 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(
         _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-            
-            return 24.0
+            return 24
         }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -398,9 +405,9 @@ extension ProfileViewController {
         self.view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 0).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5).isActive = true
-        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         collectionView.backgroundColor = .clear
         
         collectionView.register(UINib(nibName: String(describing: ProfileCollectionViewCell.self), bundle: nil), forCellWithReuseIdentifier: String(describing: ProfileCollectionViewCell.self))
@@ -415,40 +422,44 @@ extension ProfileViewController {
         self.view.addSubview(profileView)
         profileView.translatesAutoresizingMaskIntoConstraints = false
         setProfileViewConstraint()
+        setProfileImage()
         
         profileView.addSubview(userName)
         userName.translatesAutoresizingMaskIntoConstraints = false
         userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
-        userName.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
-        userName.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
+        userName.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
+        userName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
         userName.textColor = .greenWhite
         userName.font = userName.font.withSize(20)
         
         profileView.addSubview(userEmail)
         userEmail.translatesAutoresizingMaskIntoConstraints = false
-        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 10).isActive = true
-        userEmail.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 20).isActive = true
-        userEmail.widthAnchor.constraint(equalTo: profileView.widthAnchor, constant: -40).isActive = true
-        userEmail.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 5).isActive = true
+        userEmail.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
+        userEmail.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        userEmail.heightAnchor.constraint(equalToConstant: 60).isActive = true
         userEmail.textColor = .greenWhite
+        userEmail.lineBreakMode = NSLineBreakMode.byWordWrapping
+        userEmail.numberOfLines = 0
+    }
+    
+    func setProfileImage() {
+        profileView.addSubview(profileImage)
+        profileImage.translatesAutoresizingMaskIntoConstraints = false
+        profileImage.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 30).isActive = true
+        profileImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        profileImage.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        profileImage.widthAnchor.constraint(equalToConstant: 60).isActive = true
         
-        profileView.addSubview(editButton)
-        editButton.translatesAutoresizingMaskIntoConstraints = false
-        editButton.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
-        editButton.trailingAnchor.constraint(equalTo: profileView.trailingAnchor, constant: -20).isActive = true
-        editButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        editButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
-        editButton.tintColor = .greenWhite
-        editButton.addTarget(self, action: #selector(pressEdit), for: .touchUpInside)
+        profileImage.image = UIImage(named: "profile")
     }
     
     func setProfileViewConstraint() {
         profileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         profileView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        profileView.heightAnchor.constraint(equalToConstant: 120).isActive = true
     }
     
     func setAnimation() {
@@ -521,5 +532,49 @@ enum ProfileList {
         case .deleteAccount:
             return UIImage(systemName: "person.crop.circle.fill.badge.xmark") ?? UIImage()
         }
+    }
+}
+
+extension ProfileViewController {
+    @objc func revealBlockView() {
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.addSubview(mask)
+        
+        editingView = EditingView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        editingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        editingView.buttonTitle = "完成"
+//        editingView.completeButton.setImage(UIImage(systemName: "pencil"), for: .normal)
+        editingView.textField.text = currentUser?.userName ?? ""
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.editingView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 400, width: UIScreen.main.bounds.size.width, height: 400)
+        }, completion: nil)
+        view.addSubview(editingView)
+        editingView.completeButton.addTarget(self, action: #selector(checkUserNameEmpty), for: .touchUpInside)
+        editingView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+        
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    @objc func checkUserNameEmpty() {
+        if editingView.textField.text == "" {
+            let alertController = UIAlertController(title: "請填寫使用者名稱", message: "使用這名稱不可空白", preferredStyle: .alert)
+            let cancelAlert = UIAlertAction(title: "確認", style: .default, handler: nil)
+            alertController.addAction(cancelAlert)
+            present(alertController, animated: true, completion: nil)
+        } else {
+            let newName = editingView.textField.text ?? ""
+            updateUserName(newUserName: newName )
+        }
+    }
+    
+    @objc func pressDismissButton() {
+        let subviewCount = self.view.subviews.count
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        }, completion: nil)
+        mask.removeFromSuperview()
+        self.tabBarController?.tabBar.isHidden = false
     }
 }

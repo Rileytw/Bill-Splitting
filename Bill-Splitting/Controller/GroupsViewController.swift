@@ -24,6 +24,8 @@ class GroupsViewController: UIViewController {
     private var animationView = AnimationView()
     var blockUserView = BlockUserView()
     var mask = UIView()
+    var searchView = UIView()
+    var emptyLabel = UILabel()
     let width = UIScreen.main.bounds.size.width
     let height = UIScreen.main.bounds.size.height
     
@@ -41,6 +43,8 @@ class GroupsViewController: UIViewController {
         super.viewDidLoad()
         setViewBackground()
         setSelectedView()
+        setSearchView()
+        setEmptyLabel()
         setTableView()
         navigationItem.title = "我的群組"
         setSearchBar()
@@ -52,6 +56,12 @@ class GroupsViewController: UIViewController {
         getGroupData()
         getClosedGroupData()
         fetchCurrentUserData()
+    }
+    
+    func setSearchView() {
+        view.addSubview(searchView)
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        setSearchViewConstraint()
     }
     
     func setTableView() {
@@ -87,6 +97,11 @@ class GroupsViewController: UIViewController {
             case .success(let groups):
                 self?.groups = groups
                 self?.setFilterGroupData()
+                if groups.isEmpty == true {
+                    self?.emptyLabel.isHidden = false
+                } else {
+                    self?.emptyLabel.isHidden = true
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -99,8 +114,6 @@ class GroupsViewController: UIViewController {
             case .success(let groups):
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
-//                ProgressHUD.shared.view = self?.view ?? UIView()
-//                ProgressHUD.showSuccess(text: "成功讀取資料")
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -123,8 +136,8 @@ class GroupsViewController: UIViewController {
     
     func setSearchBar() {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
-        tableView.tableHeaderView = searchBar
-        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
+        searchView.addSubview(searchBar)
+        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "A0B9BF")
         searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
         searchBar.searchTextField.textColor = .styleBlue
@@ -233,8 +246,10 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         
         if filteredGroups[indexPath.row].type == 1 {
             groupsCell.groupType.text = "多人支付"
+            groupsCell.setIcon(style: 1)
         } else {
             groupsCell.groupType.text = "個人預付"
+            groupsCell.setIcon(style: 0)
         }
         
         groupsCell.numberOfMembers.text = "成員人數：" + String(filteredGroups[indexPath.row].member.count) + "人"
@@ -310,6 +325,8 @@ extension GroupsViewController {
         
         blockUserView.blockUserButton.addTarget(self, action: #selector(detectUserExpense), for: .touchUpInside)
         blockUserView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+        
+        self.tabBarController?.tabBar.isHidden = true
     }
     
     @objc func pressDismissButton() {
@@ -319,6 +336,7 @@ extension GroupsViewController {
             self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
         }, completion: nil)
         mask.removeFromSuperview()
+        self.tabBarController?.tabBar.isHidden = false
     }
     
     func getMemberExpense(groupId: String, members: [String]) {
@@ -421,9 +439,29 @@ extension GroupsViewController {
     }
     
     func setTableViewConstraint() {
-        tableView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 0).isActive = true
+        tableView.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+    
+    func setSearchViewConstraint() {
+        searchView.topAnchor.constraint(equalTo: selectedView.bottomAnchor, constant: 5).isActive = true
+        searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        searchView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        searchView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    }
+    
+    func setEmptyLabel() {
+        view.addSubview(emptyLabel)
+        emptyLabel.text = "目前暫無資料"
+        emptyLabel.textColor = .greenWhite
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 5).isActive = true
+        emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        emptyLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        emptyLabel.isHidden = true
     }
 }

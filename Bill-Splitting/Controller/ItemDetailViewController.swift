@@ -200,6 +200,21 @@ class ItemDetailViewController: UIViewController {
         userData = newUserData
     }
     
+    func alertDeleteItem() {
+        let alertController = UIAlertController(title: "刪除款項",
+                                                message: "刪除後無法復原，請確認是否刪除款項",
+                                                preferredStyle: .alert)
+        let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
+            self?.deleteItem()
+            self?.navigationController?.popViewController(animated: true)
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     func revealBlockView() {
         mask = UIView(frame: CGRect(x: 0, y: -0, width: width, height: height))
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
@@ -378,8 +393,7 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
             }
            
             let removeAction = UIAction(title: "刪除", image: UIImage(systemName: "trash")) { action in
-                self.deleteItem()
-                self.navigationController?.popViewController(animated: true)
+                self.alertDeleteItem()
             }
             
             let reportAction = UIAction(title: "檢舉", image: UIImage(systemName: "megaphone")) { action in

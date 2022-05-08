@@ -27,6 +27,8 @@ class InvitationTableViewCell: UITableViewCell {
         disagreeButton.tintColor = .greenWhite
         ElementsStyle.styleSpecificButton(agreeButton)
         ElementsStyle.styleSpecificButton(disagreeButton)
+        agreeButton.layer.cornerRadius = 10
+        disagreeButton.layer.cornerRadius = 10
         
         self.agreeButton.addTarget(self, action: #selector(pressAgreeButton), for: .touchUpInside)
         self.disagreeButton.addTarget(self, action: #selector(pressDisagreeButton), for: .touchUpInside)

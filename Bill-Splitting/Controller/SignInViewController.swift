@@ -18,8 +18,6 @@ class SignInViewController: UIViewController {
     var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
     
     private var animationView = AnimationView()
-    var accountLabel = UILabel()
-    var passwordLabel = UILabel()
     var accountTextField = UITextField()
     var passwordTextField = UITextField()
     var logInButton = UIButton()
@@ -32,9 +30,7 @@ class SignInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
-        setAccount()
         setAccountTextField()
-        setPassword()
         setPasswordTextField()
         setLoginButton()
         setAppleSignInButton()
@@ -73,36 +69,24 @@ class SignInViewController: UIViewController {
     
     func checkUserSignIn() {
         if Auth.auth().currentUser != nil {
-            enterFistPage()
+            enterFirstPage()
         }
     }
-    
-    func setAccount() {
-        view.addSubview(accountLabel)
-        accountLabel.translatesAutoresizingMaskIntoConstraints = false
-        setAccountLabelConstraint()
-        accountLabel.text = "帳號"
-        accountLabel.textColor = .greenWhite
-    }
-    
+
     func setAccountTextField() {
         view.addSubview(accountTextField)
         accountTextField.translatesAutoresizingMaskIntoConstraints = false
         setAccountTextFieldConstraint()
+        accountTextField.attributedPlaceholder = NSAttributedString(string: "輸入帳號",
+                                                                   attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
-    
-    func setPassword() {
-        view.addSubview(passwordLabel)
-        passwordLabel.translatesAutoresizingMaskIntoConstraints = false
-        setPassordLabelConstraint()
-        passwordLabel.text = "密碼"
-        passwordLabel.textColor = .greenWhite
-    }
-    
+
     func setPasswordTextField() {
         view.addSubview(passwordTextField)
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         setPasswordTextFieldConstraint()
+        passwordTextField.attributedPlaceholder = NSAttributedString(string: "輸入密碼",
+                                                                   attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
     
     func setLoginButton() {
@@ -152,7 +136,7 @@ class SignInViewController: UIViewController {
                 self?.user.userId = user?.userId ?? ""
                 print("Login successed!")
                 AccountManager.shared.getCurrentUserInfo()
-                self?.enterFistPage()
+                self?.enterFirstPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
                 ProgressHUD.shared.view = self?.view ?? UIView()
@@ -176,7 +160,7 @@ class SignInViewController: UIViewController {
         self.present(signUpViewController, animated: true, completion: nil)
     }
     
-    func enterFistPage() {
+    func enterFirstPage() {
         let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
         view.window?.rootViewController = tabBarViewController
         view.window?.makeKeyAndVisible()
@@ -263,30 +247,16 @@ class SignInViewController: UIViewController {
         animationView.removeFromSuperview()
     }
     
-    func setPassordLabelConstraint() {
-        passwordLabel.topAnchor.constraint(equalTo: accountLabel.bottomAnchor, constant: 20).isActive = true
-        passwordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        passwordLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        passwordLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
-    }
-    
-    func setAccountLabelConstraint() {
-        accountLabel.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -150).isActive = true
-        accountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        accountLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        accountLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
-    }
-    
     func setAccountTextFieldConstraint() {
         accountTextField.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -150).isActive = true
-        accountTextField.leadingAnchor.constraint(equalTo: accountLabel.trailingAnchor, constant: 20).isActive = true
+        accountTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
         accountTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         accountTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     func setPasswordTextFieldConstraint() {
         passwordTextField.topAnchor.constraint(equalTo: accountTextField.bottomAnchor, constant: 20).isActive = true
-        passwordTextField.leadingAnchor.constraint(equalTo: passwordLabel.trailingAnchor, constant: 20).isActive = true
+        passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
         passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         passwordTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
         passwordTextField.isSecureTextEntry = true
@@ -295,21 +265,21 @@ class SignInViewController: UIViewController {
     func setLoginButtonConstraint() {
         logInButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 60).isActive = true
         logInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-        logInButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        logInButton.widthAnchor.constraint(equalToConstant: 250).isActive = true
         logInButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     func setAuthorizationButtonConstraint() {
         authorizationButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
         authorizationButton.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 40).isActive = true
-        authorizationButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        authorizationButton.widthAnchor.constraint(equalToConstant: 250).isActive = true
         authorizationButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     func setSignUpconstraint() {
         signUpButton.topAnchor.constraint(equalTo: authorizationButton.bottomAnchor, constant: 20).isActive = true
         signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-        signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        signUpButton.widthAnchor.constraint(equalToConstant: 250).isActive = true
         signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
 }
@@ -324,16 +294,20 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { return}
         let appCredential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
         self.appleId = credential.user
-        user.userName = "\(credential.fullName?.familyName ?? "")" + "\(credential.fullName?.givenName ?? "")"
+        user.userName = "\(credential.fullName?.givenName ?? "")"
         user.userEmail = "\(credential.email ?? "")"
 
         firebaseSignInWithApple(credential: appCredential)
     }
     
     func firebaseSignInWithApple(credential: AuthCredential) {
-        Auth.auth().signIn(with: credential) { authResult, error in
-            guard error == nil else { return }
-            self.getFirebaseUserInfo()
+        setAnimation()
+        Auth.auth().signIn(with: credential) { [weak self] authResult, error in
+            if error == nil {
+                self?.getFirebaseUserInfo()
+            } else {
+                self?.errorHandleWithAppleSignIn()
+            }
         }
     }
     
@@ -351,9 +325,11 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         UserManager.shared.addUserData(userData: user) { [weak self] result in
             switch result {
             case .success(let id):
-                self?.enterFistPage()
+                self?.enterFirstPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請重新登入")
             }
         }
     }

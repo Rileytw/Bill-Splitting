@@ -32,15 +32,34 @@ extension UIColor {
         )
     }
     
-    static let greenWhite = UIColor.hexStringToUIColor(hex: "EFFFFB")
+    static let greenWhite = UIColor.hexStringToUIColor(hex: "FAFDF6")
+//    ECEBF3
+//    FAFDF6
+//    BCD4DE
+//    "EFFFFB" (old)
     
-    static let styleGreen = UIColor.hexStringToUIColor(hex: "05DFD7")
+    static let styleGreen = UIColor.hexStringToUIColor(hex: "16BAC5")
+//    A5CCD1
+//    05DFD7(old)
+//    25A18E
+//    9FFFCB
+//    9FFFF5
+//    6ABEA7
+//    16BAC5
     
-    static let styleRed = UIColor.hexStringToUIColor(hex: "FD5D5D")
+    static let styleRed = UIColor.hexStringToUIColor(hex: "C83E4D")
+//FD5D5D(old)
 //    FF6363
-    static let selectedColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
+//    C83E4D
+    static let selectedColor = UIColor.hexStringToUIColor(hex: "5EB1BF")
+    // 3E5C76
+    // 5EB1BF
+    // 508AA8
+    // 6BA8A9
     
-    static let styleOrange = UIColor.hexStringToUIColor(hex: "FFAD60")
+    static let styleOrange = UIColor.hexStringToUIColor(hex: "F4B860")
+//    F4B860
+//    FFAD60(old)
     
     static let styleBlue = UIColor.hexStringToUIColor(hex: "041C32")
     
