@@ -17,6 +17,7 @@ class SignInViewController: UIViewController {
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
     var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
     
+    var appName = UIImageView()
     private var animationView = AnimationView()
     var accountTextField = UITextField()
     var passwordTextField = UITextField()
@@ -30,6 +31,7 @@ class SignInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        setAppName()
         setAccountTextField()
         setPasswordTextField()
         setLoginButton()
@@ -245,6 +247,18 @@ class SignInViewController: UIViewController {
     func removeAnimation() {
         animationView.stop()
         animationView.removeFromSuperview()
+    }
+    
+    func setAppName() {
+        view.addSubview(appName)
+        appName.translatesAutoresizingMaskIntoConstraints = false
+        appName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        appName.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        appName.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        appName.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        appName.contentMode = .scaleAspectFill
+        
+        appName.image = UIImage(named: "Launch")
     }
     
     func setAccountTextFieldConstraint() {
