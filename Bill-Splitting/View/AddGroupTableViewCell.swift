@@ -12,6 +12,8 @@ class AddGroupTableViewCell: UITableViewCell {
     @IBOutlet var friendNameLabel: UILabel!
     @IBOutlet var selectedButton: UIButton!
     @IBOutlet var chooseButton: UIButton!
+    @IBOutlet weak var friendImage: UIImageView!
+    
 //    {
 //        didSet {
 //            selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
@@ -26,7 +28,7 @@ class AddGroupTableViewCell: UITableViewCell {
         self.backgroundColor = .clear
         friendNameLabel.textColor = .greenWhite
         selectedButton.tintColor = .selectedColor
-
+        friendImage.image = UIImage(named: "profile")
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

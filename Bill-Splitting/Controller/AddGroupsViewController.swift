@@ -17,6 +17,7 @@ class AddGroupsViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var nameTextField = UITextField()
     let descriptionTextView = UITextView()
+    var searchView = UIView()
     
     let fullScreenSize = UIScreen.main.bounds.size
     
@@ -54,6 +55,7 @@ class AddGroupsViewController: UIViewController {
         setTextFieldOfPickerView()
         setAddGroupButton()
         setInviteButton()
+        setSearchView()
         setTableView()
         navigationItem.title = "新增群組"
         setSearchBar()
@@ -244,7 +246,7 @@ class AddGroupsViewController: UIViewController {
     
     func setSearchBar() {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
-        tableView.tableHeaderView = searchBar
+        searchView.addSubview(searchBar)
         searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "A0B9BF")
         searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
@@ -363,7 +365,7 @@ class AddGroupsViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
+        tableView.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 5).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: inviteFriendButton.topAnchor, constant: 0).isActive = true
@@ -382,9 +384,9 @@ class AddGroupsViewController: UIViewController {
         view.addSubview(inviteFriendButton)
         inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
         inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         inviteFriendButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        inviteFriendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5).isActive = true
+        inviteFriendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         
         inviteFriendButton.addTarget(self, action: #selector(pressInviteFriendButton), for: .touchUpInside)
     }
@@ -401,6 +403,20 @@ class AddGroupsViewController: UIViewController {
                 tableView.isHidden = true
             }
         }
+    }
+    
+    func setSearchView() {
+        view.addSubview(searchView)
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        setSearchViewConstraint()
+    }
+    
+    
+    func setSearchViewConstraint() {
+        searchView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 10).isActive = true
+        searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        searchView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        searchView.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
 }
 
