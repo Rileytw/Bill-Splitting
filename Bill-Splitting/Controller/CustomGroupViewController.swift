@@ -13,9 +13,7 @@ class CustomGroupViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
-    let closedGroupButton = UIButton()
     let subscribeButton = UIButton()
-    let groupName = UILabel()
     let width = UIScreen.main.bounds.width
     private var animationView = AnimationView()
     var noDataView = NoDataView(frame: .zero)
@@ -61,9 +59,7 @@ class CustomGroupViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
-        setGroupNameLabel()
         setGroupDetailView()
-        setClosedGroupButton()
         setNoDataView()
         setItemTableView()
         setSubscribeButton()
@@ -130,11 +126,12 @@ class CustomGroupViewController: UIViewController {
     func setGroupDetailView() {
         groupDetailView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(groupDetailView)
-        groupDetailView.topAnchor.constraint(equalTo: groupName.bottomAnchor, constant: 5).isActive = true
+        groupDetailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
         groupDetailView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         groupDetailView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        groupDetailView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        groupDetailView.heightAnchor.constraint(equalToConstant: 150).isActive = true
         
+        groupDetailView.groupName.text = groupData?.groupName ?? ""
         groupDetailView.addExpenseButton.addTarget(self, action: #selector(pressAddItem), for: .touchUpInside)
         groupDetailView.chartButton.addTarget(self, action: #selector(pressChartButton), for: .touchUpInside)
         groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
@@ -184,7 +181,7 @@ class CustomGroupViewController: UIViewController {
         self.view.addSubview(itemTableView)
         itemTableView.translatesAutoresizingMaskIntoConstraints = false
         itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
-        itemTableView.bottomAnchor.constraint(equalTo: closedGroupButton.topAnchor, constant: -10).isActive = true
+        itemTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50).isActive = true
         itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
@@ -194,26 +191,6 @@ class CustomGroupViewController: UIViewController {
         
         itemTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         itemTableView.backgroundColor = UIColor.clear
-    }
-    
-    func setClosedGroupButton() {
-        view.addSubview(closedGroupButton)
-        closedGroupButton.translatesAutoresizingMaskIntoConstraints = false
-        closedGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
-        closedGroupButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
-        closedGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        closedGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        
-        closedGroupButton.setTitle("封存群組", for: .normal)
-        closedGroupButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-        closedGroupButton.tintColor = .greenWhite
-        closedGroupButton.setTitleColor(.greenWhite, for: .normal)
-        closedGroupButton.addTarget(self, action: #selector(confirmCloseGroupAlert), for: .touchUpInside)
-        ElementsStyle.styleSpecificButton(closedGroupButton)
-        
-        if groupData?.status == GroupStatus.inActive.typeInt {
-            closedGroupButton.isHidden = true
-        }
     }
     
     func pressClosedGroup() {
@@ -230,6 +207,14 @@ class CustomGroupViewController: UIViewController {
 
         alertController.addAction(cancelAction)
         alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func disableCloseGroup() {
+        let alertController = UIAlertController(title: "群組已封存", message: "不可重複封存群組", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
     }
     
@@ -339,7 +324,7 @@ class CustomGroupViewController: UIViewController {
         if groupData?.type == 0 && currentUserId != groupData?.creator {
             groupDetailView.addExpenseButton.isEnabled = false
             groupDetailView.addExpenseButton.isHidden = true
-            closedGroupButton.isHidden = true
+//            closedGroupButton.isHidden = true
         }
     }
     
@@ -463,18 +448,6 @@ class CustomGroupViewController: UIViewController {
         let confirmAction = UIAlertAction(title: "確認", style: .default)
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
-    }
-    
-    func setGroupNameLabel() {
-        view.addSubview(groupName)
-        groupName.translatesAutoresizingMaskIntoConstraints = false
-        groupName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
-        groupName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        groupName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 10).isActive = true
-        groupName.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        groupName.textColor = .greenWhite
-        groupName.text = groupData?.groupName ?? ""
     }
     
     func setAnimation() {
@@ -617,8 +590,18 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
 
                 self.show(detailViewController, sender: nil)
             }
+            
+            let closeAction = UIAction(title: "封存群組", image: UIImage(systemName: "eye.slash")) { [weak self] action in
+                
+                if self?.groupData?.status == GroupStatus.inActive.typeInt {
+                    self?.disableCloseGroup()
+                } else {
+                    self?.confirmCloseGroupAlert()
+                }
+                
+            }
 
-            return UIMenu(title: "", children: [infoAction])
+            return UIMenu(title: "", children: [infoAction, closeAction])
         }
     }
 }
