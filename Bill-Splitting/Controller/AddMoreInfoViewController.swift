@@ -121,7 +121,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         completeButton.translatesAutoresizingMaskIntoConstraints = false
         completeButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
         completeButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        completeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        completeButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         completeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         
         completeButton.setTitle("儲存", for: .normal)
@@ -220,7 +220,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         addPhotoLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
         addPhotoLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         addPhotoLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        addPhotoLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        addPhotoLabel.heightAnchor.constraint(equalToConstant: 35).isActive = true
     
         addPhotoLabel.textColor = UIColor.greenWhite
         addPhotoLabel.text = "新增照片"

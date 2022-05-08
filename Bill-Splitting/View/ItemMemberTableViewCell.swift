@@ -9,17 +9,19 @@ import UIKit
 
 class ItemMemberTableViewCell: UITableViewCell {
 
-    @IBOutlet var type: UILabel!
     @IBOutlet var member: UILabel!
     @IBOutlet var price: UILabel!
+    
+    @IBOutlet weak var involvedImage: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         self.backgroundColor = .clear
-        type.textColor = .greenWhite
         member.textColor = .greenWhite
         price.textColor = .greenWhite
         self.selectionStyle = UITableViewCell.SelectionStyle.none
+        
+        involvedImage.image = UIImage(named: "profile")
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -29,7 +31,6 @@ class ItemMemberTableViewCell: UITableViewCell {
     }
     
     func createItemMamberCell(involedMember: String, involvedPrice: Double) {
-        type.text = "參與人"
         member.text = involedMember
         price.text = "金額 " + String(involvedPrice) + " 元"
     }

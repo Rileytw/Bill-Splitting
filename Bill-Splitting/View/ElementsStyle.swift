@@ -68,7 +68,7 @@ class ElementsStyle {
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.hexStringToUIColor(hex: "5EB1BF").cgColor
 //        29A19C
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 18
         button.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
     }
     

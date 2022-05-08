@@ -16,6 +16,11 @@ class ItemDetailTableViewCell: UITableViewCell {
     @IBOutlet var paidUser: UILabel!
     @IBOutlet var itemDescription: UILabel!
     @IBOutlet var itemImage: UIImageView!
+    @IBOutlet weak var descriptionTextView: UITextView!
+    @IBOutlet weak var paidLabel: UILabel!
+    @IBOutlet weak var involvedLabel: UILabel!
+    @IBOutlet weak var paidUserImage: UIImageView!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -27,7 +32,22 @@ class ItemDetailTableViewCell: UITableViewCell {
         paidUser.textColor = .greenWhite
         itemDescription.textColor = .greenWhite
         self.selectionStyle = UITableViewCell.SelectionStyle.none
+        
+        involvedLabel.text = "參與者"
+        involvedLabel.textColor = .greenWhite
+        
+        paidLabel.text = "付款者："
+        paidLabel.textColor = .greenWhite
+        
+        itemDescription.text = "備註："
+        itemDescription.textColor = .greenWhite
+        
+        paidUserImage.image = UIImage(named: "profile")
 
+        descriptionTextView.backgroundColor = .clear
+        descriptionTextView.isEditable = false
+        descriptionTextView.textColor = UIColor.greenWhite
+        descriptionTextView.font = UIFont.systemFont(ofSize: 17)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -49,8 +69,8 @@ class ItemDetailTableViewCell: UITableViewCell {
         createdTime.text = createdDate
         
         price.text = "金額：" + String(paidPrice)
-        paidUser.text = "付款人：" + paidMember
-        itemDescription.text = description
+        paidUser.text = paidMember
+        descriptionTextView.text = description
         itemImage.getImage(image, placeHolder: nil)
     }
 }

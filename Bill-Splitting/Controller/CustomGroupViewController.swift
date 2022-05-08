@@ -221,7 +221,7 @@ class CustomGroupViewController: UIViewController {
     func setSubscribeButton() {
         view.addSubview(subscribeButton)
         subscribeButton.translatesAutoresizingMaskIntoConstraints = false
-        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5).isActive = true
         subscribeButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
         subscribeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true

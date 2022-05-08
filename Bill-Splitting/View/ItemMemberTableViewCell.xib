@@ -18,27 +18,31 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zW4-JB-34q">
-                        <rect key="frame" x="20" y="10" width="374" height="40"/>
+                        <rect key="frame" x="20" y="10" width="374" height="50"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="mZq-nm-Vio">
-                                <rect key="frame" x="0.0" y="0.0" width="187" height="40"/>
+                                <rect key="frame" x="0.0" y="0.0" width="187" height="50"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMI-TC-yBZ">
-                                        <rect key="frame" x="0.0" y="0.0" width="88.5" height="40"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UPx-7Q-HoV">
+                                        <rect key="frame" x="0.0" y="0.0" width="30" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="IUF-U6-k33"/>
+                                            <constraint firstAttribute="height" constant="30" id="M9I-H0-JIt"/>
+                                        </constraints>
+                                    </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Member" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PH8-Q8-nF8">
-                                        <rect key="frame" x="98.5" y="0.0" width="88.5" height="40"/>
+                                        <rect key="frame" x="40" y="0.0" width="147" height="50"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="UPx-7Q-HoV" firstAttribute="centerY" secondItem="PH8-Q8-nF8" secondAttribute="centerY" id="QIE-O6-pA4"/>
+                                </constraints>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Price" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mo2-nQ-vGb">
-                                <rect key="frame" x="187" y="0.0" width="187" height="40"/>
+                                <rect key="frame" x="187" y="0.0" width="187" height="50"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -55,11 +59,11 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="involvedImage" destination="UPx-7Q-HoV" id="iQx-6I-1PL"/>
                 <outlet property="member" destination="PH8-Q8-nF8" id="qEV-CJ-2ax"/>
                 <outlet property="price" destination="mo2-nQ-vGb" id="xcc-hN-jZF"/>
-                <outlet property="type" destination="ZMI-TC-yBZ" id="QLi-um-Zhy"/>
             </connections>
-            <point key="canvasLocation" x="139" y="96"/>
+            <point key="canvasLocation" x="137.68115942028987" y="95.758928571428569"/>
         </tableViewCell>
     </objects>
 </document>
