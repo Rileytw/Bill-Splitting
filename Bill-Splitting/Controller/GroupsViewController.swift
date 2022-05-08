@@ -137,7 +137,7 @@ class GroupsViewController: UIViewController {
     func setSearchBar() {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
         searchView.addSubview(searchBar)
-        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "6BA8A9")
+        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "A0B9BF")
         searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
         searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
         searchBar.searchTextField.textColor = .styleBlue
