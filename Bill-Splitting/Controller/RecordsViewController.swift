@@ -114,8 +114,7 @@ class RecordsViewController: UIViewController {
             for index in 0..<self.itemData.count {
                 group.enter()
                 secondQueue.async(group: group) {
-                    ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemData[index].itemId) {
-                        [weak self] result in
+                    ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemData[index].itemId) { [weak self] result in
                         switch result {
                         case .success(let items):
                             self?.involvedItem += items
@@ -181,13 +180,14 @@ class RecordsViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
-        tableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear
