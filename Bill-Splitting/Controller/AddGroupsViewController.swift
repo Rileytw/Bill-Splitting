@@ -110,7 +110,7 @@ class AddGroupsViewController: UIViewController {
     @objc func pressAddGroupButton() {
         if nameTextField.text?.isEmpty == true {
             loseGroupInfoAlert(message: "尚未填寫群組名稱")
-        } else if typePickerView.textField.text == "" {
+        } else if typePickerView.textField.text == "" && isGroupExist == false {
             loseGroupInfoAlert(message: "尚未選擇群組類型")
         } else {
             addMembers()
@@ -214,6 +214,13 @@ class AddGroupsViewController: UIViewController {
     @objc func pressInviteFriendButton() {
         let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
         let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
+        if #available(iOS 15.0, *) {
+            if let sheet = inviteFriendViewController.sheetPresentationController {
+                sheet.detents = [.medium()]
+                sheet.preferredCornerRadius = 20
+            }
+        }
+
         self.present(inviteFriendViewController, animated: true, completion: nil)
     }
     
