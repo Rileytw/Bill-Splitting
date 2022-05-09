@@ -27,6 +27,7 @@
 		350A3377280468D000201E40 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3376280468D000201E40 /* UserManager.swift */; };
 		350A3379280469BB00201E40 /* UserObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3378280469BB00201E40 /* UserObject.swift */; };
 		350A337B2805060B00201E40 /* FriendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A337A2805060B00201E40 /* FriendManager.swift */; };
+		354691E128292FDF00C2174B /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354691E028292FDF00C2174B /* WebViewController.swift */; };
 		355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DA280DA0E10007C0CE /* SubscriptionObject.swift */; };
 		355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DC280DA19F0007C0CE /* SubscriptionManager.swift */; };
 		355090DF280DA5900007C0CE /* FirebaseCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DE280DA5900007C0CE /* FirebaseCollection.swift */; };
@@ -139,6 +140,7 @@
 		350A3376280468D000201E40 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		350A3378280469BB00201E40 /* UserObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserObject.swift; sourceTree = "<group>"; };
 		350A337A2805060B00201E40 /* FriendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendManager.swift; sourceTree = "<group>"; };
+		354691E028292FDF00C2174B /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		355090DA280DA0E10007C0CE /* SubscriptionObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionObject.swift; sourceTree = "<group>"; };
 		355090DC280DA19F0007C0CE /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		355090DE280DA5900007C0CE /* FirebaseCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollection.swift; sourceTree = "<group>"; };
@@ -331,6 +333,7 @@
 				35568A312816D20E00646B57 /* SignInViewController.swift */,
 				35568A332817800100646B57 /* SignUpViewController.swift */,
 				3576B4192822EA7A00CECE3F /* BlackListViewController.swift */,
+				354691E028292FDF00C2174B /* WebViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -605,6 +608,7 @@
 				355090EF28100FA80007C0CE /* RemindersViewController.swift in Sources */,
 				3576B42428261C6400CECE3F /* EditingView.swift in Sources */,
 				3593E1232811884900F3A31C /* ReminderManager.swift in Sources */,
+				354691E128292FDF00C2174B /* WebViewController.swift in Sources */,
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
 				355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */,
 				355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */,

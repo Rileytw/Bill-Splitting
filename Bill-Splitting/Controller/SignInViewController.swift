@@ -26,6 +26,10 @@ class SignInViewController: UIViewController {
     var thirdPartyId: String?
     var appleId: String?
     
+    var privacyButton = UIButton()
+    var eulaButton = UIButton()
+    let width = UIScreen.main.bounds.width
+    
     fileprivate var currentNonce: String?
     
     override func viewDidLoad() {
@@ -38,6 +42,8 @@ class SignInViewController: UIViewController {
         setAppleSignInButton()
         setSignUpButton()
         checkUserSignIn()
+        setPrivacyButton()
+        setEulaButton()
     }
     
     override func viewWillLayoutSubviews() {
@@ -377,6 +383,46 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         ProgressHUD.showFailure(text: "發生錯誤請稍後再試")
 
     }
+    
+    func setPrivacyButton() {
+            view.addSubview(privacyButton)
+            privacyButton.translatesAutoresizingMaskIntoConstraints = false
+            privacyButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
+            privacyButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (width - 260)/2 ).isActive = true
+            privacyButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+            privacyButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            privacyButton.setTitle("查看隱私權政策", for: .normal)
+            privacyButton.setTitleColor(.systemGray, for: .normal)
+            privacyButton.addTarget(self, action: #selector(pressPrivacyButton), for: .touchUpInside)
+        }
+        
+        @objc func pressPrivacyButton() {
+            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+            guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
+            webViewController.url = PolicyUrl.privacy.url
+            self.present(webViewController, animated: true, completion: nil)
+        }
+        
+        func setEulaButton() {
+            view.addSubview(eulaButton)
+            eulaButton.translatesAutoresizingMaskIntoConstraints = false
+            eulaButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
+            eulaButton.leadingAnchor.constraint(equalTo: privacyButton.trailingAnchor, constant: 0).isActive = true
+            eulaButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+            eulaButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            eulaButton.setTitle("& 用戶許可協議", for: .normal)
+            eulaButton.setTitleColor(.systemGray, for: .normal)
+            eulaButton.addTarget(self, action: #selector(pressEulaButton), for: .touchUpInside)
+        }
+        
+        @objc func pressEulaButton() {
+            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+            guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
+            webViewController.url = PolicyUrl.eula.url
+            self.present(webViewController, animated: true, completion: nil)
+        }
     
 }
 
