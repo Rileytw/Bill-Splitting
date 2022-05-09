@@ -107,8 +107,9 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         photoImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         
         photoImageView.contentMode = .scaleAspectFit
-        photoImageView.layer.borderColor = UIColor.greenWhite.cgColor
+        photoImageView.layer.borderColor = UIColor.selectedColor.cgColor
         photoImageView.layer.borderWidth = 1
+        photoImageView.layer.cornerRadius = 10
         
         if isItemExist == true {
             let image = itemData?.itemImage
@@ -187,10 +188,12 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         descriptionTextView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         descriptionTextView.layer.borderWidth = 1
-        descriptionTextView.layer.borderColor = UIColor.greenWhite.cgColor
+        descriptionTextView.layer.borderColor = UIColor.selectedColor.cgColor
         descriptionTextView.backgroundColor = .clear
         descriptionTextView.textColor = UIColor.greenWhite
         descriptionTextView.font = UIFont.systemFont(ofSize: 16)
+        descriptionTextView.layer.cornerRadius = 10
+        descriptionTextView.textContainerInset = UIEdgeInsets(top: 5, left: 5, bottom: 0, right: 0)
         
         if isItemExist == true {
             descriptionTextView.text = itemData?.itemDescription

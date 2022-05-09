@@ -17,6 +17,7 @@ class SignInViewController: UIViewController {
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
     var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
     
+    var appName = UIImageView()
     private var animationView = AnimationView()
     var accountTextField = UITextField()
     var passwordTextField = UITextField()
@@ -25,17 +26,24 @@ class SignInViewController: UIViewController {
     var thirdPartyId: String?
     var appleId: String?
     
+    var privacyButton = UIButton()
+    var eulaButton = UIButton()
+    let width = UIScreen.main.bounds.width
+    
     fileprivate var currentNonce: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        setAppName()
         setAccountTextField()
         setPasswordTextField()
         setLoginButton()
         setAppleSignInButton()
         setSignUpButton()
         checkUserSignIn()
+        setPrivacyButton()
+        setEulaButton()
     }
     
     override func viewWillLayoutSubviews() {
@@ -247,6 +255,18 @@ class SignInViewController: UIViewController {
         animationView.removeFromSuperview()
     }
     
+    func setAppName() {
+        view.addSubview(appName)
+        appName.translatesAutoresizingMaskIntoConstraints = false
+        appName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        appName.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        appName.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        appName.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        appName.contentMode = .scaleAspectFill
+        
+        appName.image = UIImage(named: "Launch")
+    }
+    
     func setAccountTextFieldConstraint() {
         accountTextField.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -150).isActive = true
         accountTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
@@ -363,6 +383,46 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         ProgressHUD.showFailure(text: "發生錯誤請稍後再試")
 
     }
+    
+    func setPrivacyButton() {
+            view.addSubview(privacyButton)
+            privacyButton.translatesAutoresizingMaskIntoConstraints = false
+            privacyButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
+            privacyButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (width - 260)/2 ).isActive = true
+            privacyButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+            privacyButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            privacyButton.setTitle("查看隱私權政策", for: .normal)
+            privacyButton.setTitleColor(.systemGray, for: .normal)
+            privacyButton.addTarget(self, action: #selector(pressPrivacyButton), for: .touchUpInside)
+        }
+        
+        @objc func pressPrivacyButton() {
+            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+            guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
+            webViewController.url = PolicyUrl.privacy.url
+            self.present(webViewController, animated: true, completion: nil)
+        }
+        
+        func setEulaButton() {
+            view.addSubview(eulaButton)
+            eulaButton.translatesAutoresizingMaskIntoConstraints = false
+            eulaButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
+            eulaButton.leadingAnchor.constraint(equalTo: privacyButton.trailingAnchor, constant: 0).isActive = true
+            eulaButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+            eulaButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            eulaButton.setTitle("& 用戶許可協議", for: .normal)
+            eulaButton.setTitleColor(.systemGray, for: .normal)
+            eulaButton.addTarget(self, action: #selector(pressEulaButton), for: .touchUpInside)
+        }
+        
+        @objc func pressEulaButton() {
+            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+            guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
+            webViewController.url = PolicyUrl.eula.url
+            self.present(webViewController, animated: true, completion: nil)
+        }
     
 }
 

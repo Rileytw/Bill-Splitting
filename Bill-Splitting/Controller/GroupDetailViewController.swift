@@ -219,6 +219,10 @@ extension GroupDetailViewController: UITableViewDataSource, UITableViewDelegate 
             memberCell.nameLabel.text = memberData[indexPath.row].userName
             memberCell.email.text = memberData[indexPath.row].userEmail
             
+            if memberData[indexPath.row].userId == groupData.creator {
+                memberCell.nameLabel.text = memberData[indexPath.row].userName + "（群組創建人）"
+            }
+            
             return memberCell
         }
     }

@@ -18,5 +18,6 @@ pod 'lottie-ios'
 pod 'Firebase/Core'
 pod 'Firebase/Auth'
 pod 'JGProgressHUD'
+pod 'Firebase/Crashlytics'
 
 end

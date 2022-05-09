@@ -110,7 +110,7 @@ class AddGroupsViewController: UIViewController {
     @objc func pressAddGroupButton() {
         if nameTextField.text?.isEmpty == true {
             loseGroupInfoAlert(message: "尚未填寫群組名稱")
-        } else if typePickerView.textField.text == "" {
+        } else if typePickerView.textField.text == "" && isGroupExist == false {
             loseGroupInfoAlert(message: "尚未選擇群組類型")
         } else {
             addMembers()
@@ -214,6 +214,13 @@ class AddGroupsViewController: UIViewController {
     @objc func pressInviteFriendButton() {
         let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
         let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
+        if #available(iOS 15.0, *) {
+            if let sheet = inviteFriendViewController.sheetPresentationController {
+                sheet.detents = [.medium()]
+                sheet.preferredCornerRadius = 20
+            }
+        }
+
         self.present(inviteFriendViewController, animated: true, completion: nil)
     }
     
@@ -318,13 +325,15 @@ class AddGroupsViewController: UIViewController {
         descriptionTextView.backgroundColor = .clear
         descriptionTextView.textColor = UIColor.greenWhite
         descriptionTextView.font = UIFont.systemFont(ofSize: 16)
+        descriptionTextView.layer.cornerRadius = 10
+        descriptionTextView.textContainerInset = UIEdgeInsets(top: 5, left: 5, bottom: 0, right: 0)
         
         let descriptionLabel = UILabel()
         descriptionLabel.text = "群組簡介"
         descriptionLabel.textColor = .greenWhite
         view.addSubview(descriptionLabel)
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 25).isActive = true
         NSLayoutConstraint(item: descriptionLabel,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         
         NSLayoutConstraint(item: descriptionLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true

@@ -229,21 +229,22 @@ class SpecificSettleIUpViewController: UIViewController {
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
                 nameLabel.text = "付款對象：\(userData.userName)"
-                nameLabel.textColor = UIColor.styleRed
+//                nameLabel.textColor = UIColor.styleRed
             } else {
                 nameLabel.text = "收款對象：\(userData.userName)"
-                nameLabel.textColor = UIColor.styleGreen
+//                nameLabel.textColor = UIColor.styleGreen
             }
         } else {
             if groupData?.creator == currentUserId {
                 nameLabel.text = "收款對象：\(userData.userName)"
-                nameLabel.textColor = UIColor.styleGreen
+//                nameLabel.textColor = UIColor.styleGreen
             } else {
                 nameLabel.text = "付款對象：\(userData.userName)"
-                nameLabel.textColor = UIColor.styleRed
+//                nameLabel.textColor = UIColor.styleRed
             }
         }
         nameLabel.font = nameLabel.font.withSize(20)
+        nameLabel.textColor = .greenWhite
     }
     
     func setPriceInfo() {
@@ -259,22 +260,23 @@ class SpecificSettleIUpViewController: UIViewController {
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
                 price.text = "付款金額：\(abs(memberExpense.allExpense)) 元"
-                price.textColor = UIColor.styleRed
+//                price.textColor = UIColor.styleRed
             } else {
                 price.text = "收款金額：\(abs(userExpense[0].allExpense)) 元"
-                price.textColor = UIColor.styleGreen
+//                price.textColor = UIColor.styleGreen
             }
 
         } else {
             if groupData?.creator == currentUserId {
                 price.text = "收款金額：\(abs(memberExpense.allExpense)) 元"
-                price.textColor = UIColor.styleGreen
+//                price.textColor = UIColor.styleGreen
             } else {
                 price.text = "付款金額：\(abs(userExpense[0].allExpense)) 元"
-                price.textColor = UIColor.styleRed
+//                price.textColor = UIColor.styleRed
             }
         }
         price.font = price.font.withSize(20)
+        price.textColor = .greenWhite
     }
 }
 
