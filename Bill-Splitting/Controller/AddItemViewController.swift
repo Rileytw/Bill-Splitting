@@ -52,6 +52,7 @@ class AddItemViewController: UIViewController {
     
     var itemImageString: String?
     var itemDescription: String?
+    var involvedTotalPrice: Double = 0
     
     var blackList = [String]()
     
@@ -212,16 +213,45 @@ class AddItemViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
-        if isItemExist == true {
-            deleteItem() {
-                addItem()
-            }
-        } else {
-            addItem()
-        }
-        
-        self.dismiss(animated: false, completion: nil)
-    }
+           checkInvolvedData()
+           if addItemView.itemNameTextField.text == "" ||
+               addItemView.priceTextField.text == "" ||
+               typePickerView.textField.text == "" ||
+               memberPickerView.textField.text == "" {
+               lossInfoAlert(message: "請確認是否填寫完整資訊")
+           } else if involvedExpenseData.isEmpty == true {
+               lossInfoAlert(message: "請確認是否選取參與人")
+           } else if typePickerView.textField.text == SplitType.percent.label && involvedTotalPrice != 100 {
+               lossInfoAlert(message: "請確認分帳比例是否正確")
+           } else if typePickerView.textField.text == SplitType.customize.label &&
+                       involvedTotalPrice != paidPrice {
+               lossInfoAlert(message: "請確認自訂金額是否正確")
+           } else {
+               if isItemExist == true {
+                   deleteItem() {
+                       addItem()
+                   }
+               } else {
+                   addItem()
+               }
+               
+               self.dismiss(animated: false, completion: nil)
+           }
+       }
+       
+       func checkInvolvedData() {
+           involvedTotalPrice = 0
+           for involvePrice in involvedExpenseData {
+               involvedTotalPrice += involvePrice.price
+           }
+       }
+       
+       func lossInfoAlert(message: String) {
+           let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
+           let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+           alertController.addAction(confirmAction)
+           present(alertController, animated: true, completion: nil)
+       }
     
     func addItem() {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
