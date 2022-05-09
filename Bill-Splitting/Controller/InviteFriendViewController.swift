@@ -55,6 +55,7 @@ class InviteFriendViewController: UIViewController {
         friendTextField.translatesAutoresizingMaskIntoConstraints = false
         setTextFieldConstraint()
         friendTextField.delegate = self
+        friendTextField.layer.cornerRadius = 10
     }
     
     func setSearchButton() {
