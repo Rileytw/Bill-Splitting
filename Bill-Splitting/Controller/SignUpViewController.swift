@@ -29,7 +29,7 @@ class SignUpViewController: UIViewController {
         setValidPasswordTextField()
         setSignUpButton()
         setDismissButton()
-    }
+        }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
