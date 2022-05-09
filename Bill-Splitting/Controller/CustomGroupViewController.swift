@@ -101,6 +101,8 @@ class CustomGroupViewController: UIViewController {
                     }
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
                 }
             }
         }
@@ -117,6 +119,8 @@ class CustomGroupViewController: UIViewController {
                         }
                     case .failure(let error):
                         print("Error decoding userData: \(error)")
+                        ProgressHUD.shared.view = self?.view ?? UIView()
+                        ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                     }
                 }
             }
@@ -267,6 +271,8 @@ class CustomGroupViewController: UIViewController {
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -283,6 +289,8 @@ class CustomGroupViewController: UIViewController {
                     semaphore.signal()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                     semaphore.signal()
                 }
             }
@@ -295,6 +303,8 @@ class CustomGroupViewController: UIViewController {
                     self?.involvedItem.append(items)
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
                 self?.removeAnimation()
             }
@@ -316,6 +326,8 @@ class CustomGroupViewController: UIViewController {
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -348,11 +360,15 @@ class CustomGroupViewController: UIViewController {
                                 self?.addSubscriptionItem()
                             case .failure(let error):
                                 print("Error decoding userData: \(error)")
+                                ProgressHUD.shared.view = self?.view ?? UIView()
+                                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                             }
                         }
                     }
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
             }
         }

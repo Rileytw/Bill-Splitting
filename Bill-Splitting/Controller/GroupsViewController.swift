@@ -104,6 +104,8 @@ class GroupsViewController: UIViewController {
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -116,6 +118,8 @@ class GroupsViewController: UIViewController {
                 self?.setFilterGroupData()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -130,6 +134,8 @@ class GroupsViewController: UIViewController {
                 print("success")
             case .failure(let error):
                 print("\(error.localizedDescription)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -353,6 +359,8 @@ extension GroupsViewController {
                 self?.revealBlockView()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }

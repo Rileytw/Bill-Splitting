@@ -96,6 +96,8 @@ class ItemDetailViewController: UIViewController {
                 self?.getItemExpense()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -113,6 +115,8 @@ class ItemDetailViewController: UIViewController {
                     self?.getPayUser()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
                 group.leave()
 
@@ -129,6 +133,8 @@ class ItemDetailViewController: UIViewController {
                     self?.getInvolvedUser()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
                 group.leave()
             }
