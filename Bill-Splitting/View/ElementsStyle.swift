@@ -16,11 +16,13 @@ class ElementsStyle {
         gradientLayer.startPoint = CGPoint(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint(x: 0, y: 1)
         gradientLayer.locations = [0.4, 0.8]
-        let darkBlueColor = UIColor.hexStringToUIColor(hex: "041C32").cgColor
+        let darkBlueColor = UIColor.hexStringToUIColor(hex: "031927").cgColor
+//        041C32
 //        272343
 //        1D4D4F
 //        let lightBlueColor = UIColor(red: 53/255, green: 115/255, blue: 118/255, alpha: 0.9).cgColor
-        let lightBlueColor = UIColor.hexStringToUIColor(hex: "357376").cgColor
+        let lightBlueColor = UIColor.hexStringToUIColor(hex: "031927").cgColor
+//        "357376"
 //        357376
         gradientLayer.colors = [darkBlueColor, lightBlueColor]
         view.layer.addSublayer(gradientLayer)
@@ -28,11 +30,13 @@ class ElementsStyle {
     
     static func styleButton(_ button: UIButton) {
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "FFCE45").cgColor
+        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "508AA8").cgColor
+//        FFCE45 (old)
         button.layer.cornerRadius = 10
         button.tintColor = UIColor.greenWhite
         button.setTitleColor(UIColor.styleBlue, for: .normal)
-        button.backgroundColor = UIColor.hexStringToUIColor(hex: "FFCE45")
+        button.backgroundColor = .selectedColor
+//        UIColor.hexStringToUIColor(hex: "FFCE45")
 //        32407B
 //        29A19C
 //        FFD36E
@@ -62,18 +66,30 @@ class ElementsStyle {
     
     static func styleSpecificButton(_ button: UIButton) {
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "29A19C").cgColor
-        button.layer.cornerRadius = 20
+        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "5EB1BF").cgColor
+//        29A19C
+        button.layer.cornerRadius = 18
         button.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
     }
     
     static func styleTextField(_ textfield: UITextField) {        
         let bottomLine = CALayer()
-        bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 1, width: textfield.frame.width, height: 1.0)
+        bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 2, width: textfield.frame.width, height: 1.0)
         bottomLine.backgroundColor = UIColor.selectedColor.cgColor
         textfield.borderStyle = UITextField.BorderStyle.none
         textfield.textColor = .greenWhite
         textfield.layer.addSublayer(bottomLine)
         textfield.layer.masksToBounds = true
     }
+    
+    static func styleView(_ view: UIView) {
+        view.backgroundColor =  UIColor(red: 29/255, green: 45/255, blue: 68/255, alpha: 0.8)
+//        29, 45, 68
+        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor.hexStringToUIColor(hex: "3E5C76").cgColor
+        view.layer.cornerRadius = 10
+//        view.tintColor = UIColor.greenWhite
+//        view.backgroundColor = UIColor.hexStringToUIColor(hex: "FFCE45")
+    }
+    
 }

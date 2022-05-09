@@ -48,6 +48,8 @@ class SubscribeViewController: UIViewController {
         }
     }
     
+    var blackList = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -59,6 +61,7 @@ class SubscribeViewController: UIViewController {
         setInvolvedMemberLabel()
         setTableView()
         setDismissButton()
+        detectBlackListUser()
     }
     
     override func viewWillLayoutSubviews() {
@@ -277,6 +280,12 @@ class SubscribeViewController: UIViewController {
     
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: memberData ?? [])
+        memberData = newUserData
     }
 }
 

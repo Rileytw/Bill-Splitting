@@ -230,6 +230,9 @@ PODS:
     - FirebaseAnalytics (= 6.9.0)
   - Firebase/CoreOnly (6.34.0):
     - FirebaseCore (= 6.10.4)
+  - Firebase/Crashlytics (6.34.0):
+    - Firebase/CoreOnly
+    - FirebaseCrashlytics (~> 4.6.2)
   - Firebase/Database (6.34.0):
     - Firebase/CoreOnly
     - FirebaseDatabase (~> 6.6.0)
@@ -262,6 +265,12 @@ PODS:
     - GoogleUtilities/Environment (~> 6.7)
     - GoogleUtilities/Logger (~> 6.7)
     - nanopb (~> 1.30906.0)
+  - FirebaseCrashlytics (4.6.2):
+    - FirebaseCore (~> 6.10)
+    - FirebaseInstallations (~> 1.6)
+    - GoogleDataTransport (~> 7.2)
+    - nanopb (~> 1.30906.0)
+    - PromisesObjC (~> 1.2)
   - FirebaseDatabase (6.6.0):
     - FirebaseCore (~> 6.10)
     - leveldb-library (~> 1.22)
@@ -340,6 +349,7 @@ PODS:
   - gRPC-Core/Interface (1.28.2)
   - GTMSessionFetcher/Core (1.7.1)
   - IQKeyboardManagerSwift (6.5.9)
+  - JGProgressHUD (2.2)
   - Kingfisher (7.2.0)
   - leveldb-library (1.22.1)
   - lottie-ios (3.3.0)
@@ -356,11 +366,13 @@ DEPENDENCIES:
   - Charts
   - Firebase/Auth
   - Firebase/Core
+  - Firebase/Crashlytics
   - Firebase/Database
   - Firebase/Firestore
   - Firebase/Storage
   - FirebaseFirestoreSwift
   - IQKeyboardManagerSwift
+  - JGProgressHUD
   - Kingfisher
   - lottie-ios
   - SwiftLint
@@ -375,6 +387,7 @@ SPEC REPOS:
     - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreDiagnostics
+    - FirebaseCrashlytics
     - FirebaseDatabase
     - FirebaseFirestore
     - FirebaseFirestoreSwift
@@ -387,6 +400,7 @@ SPEC REPOS:
     - gRPC-Core
     - GTMSessionFetcher
     - IQKeyboardManagerSwift
+    - JGProgressHUD
     - Kingfisher
     - leveldb-library
     - lottie-ios
@@ -404,6 +418,7 @@ SPEC CHECKSUMS:
   FirebaseAuth: c92d49ada7948d1a23466e3db17bc4c2039dddc3
   FirebaseCore: d3a978a3cfa3240bf7e4ba7d137fdf5b22b628ec
   FirebaseCoreDiagnostics: 770ac5958e1372ce67959ae4b4f31d8e127c3ac1
+  FirebaseCrashlytics: 1a747c9cc084a24dc6d9511c991db1cd078154eb
   FirebaseDatabase: 13a865a4b85897462b930eb683bda8f52583713f
   FirebaseFirestore: 9b2f1b9b9a6f2f0b6fb7484b9e32ab7e39243554
   FirebaseFirestoreSwift: 2c46dbc1156db97dc4f6dd798d4f5b57b9c7fab6
@@ -416,6 +431,7 @@ SPEC CHECKSUMS:
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
   GTMSessionFetcher: 4577a4cc914a5a07c40a8a0ad0acc22080418c2d
   IQKeyboardManagerSwift: 6e839c575c4aa1078d58a596e41244e77abe918f
+  JGProgressHUD: d83d7a981b85d11205e19ff8ad5bb9c40571c847
   Kingfisher: 3ac0b75b155cabc0e544877d1a4deea29feece92
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   lottie-ios: 6ac74dcc09904798f59b18cb3075c089d76be9ae
@@ -424,6 +440,6 @@ SPEC CHECKSUMS:
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftLint: d41cc46a2ae58ac6d9f26954bc89f1d72e71fdef
 
-PODFILE CHECKSUM: 67d7f2c214ff0c43d712e709cbbf0bdb7ad46514
+PODFILE CHECKSUM: 7cf6f0fe6b1a5dbf34e559a950fd7cf693d4d30c
 
 COCOAPODS: 1.11.3

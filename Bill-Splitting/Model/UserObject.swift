@@ -15,6 +15,8 @@ struct UserData: Codable {
     var userEmail: String
     var group: [String]?
     var payment: [Payment]?
+    var blackList: [String]?
+    var friends: [Friend]?
 }
 
 struct Payment: Codable {

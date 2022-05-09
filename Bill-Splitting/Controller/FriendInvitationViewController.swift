@@ -12,6 +12,7 @@ class FriendInvitationViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var currentUserName: String?
     let tableView = UITableView()
+    var noDataView = NoDataView(frame: .zero)
     
     var senderId: [String] = []
     var invitationUsers = [UserData]()
@@ -20,6 +21,7 @@ class FriendInvitationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        setNoDataView()
         setTableView()
     }
     
@@ -58,10 +60,15 @@ class FriendInvitationViewController: UIViewController {
                 UserManager.shared.fetchUserData(friendId: sender) { [weak self] result in
                     switch result {
                     case .success(let userData):
-                        self?.invitationUsers.append(userData)
-                        self?.tableView.reloadData()
+                        if let userData = userData {
+                            self?.invitationUsers.append(userData)
+                        }
                         print("userData:\(userData)")
                         print("invitationData: \(self?.invitationUsers)")
+                        self?.tableView.reloadData()
+                        if self?.invitationUsers.isEmpty == true {
+                            self?.noDataView.noDataLabel.isHidden = false
+                        }
                     case .failure(let error):
                         print("Error decoding userData: \(error)")
                     }
@@ -82,6 +89,16 @@ class FriendInvitationViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: InvitationTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: InvitationTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    func setNoDataView() {
+        self.view.addSubview(noDataView)
+        noDataView.noDataLabel.text = "目前沒有好友邀請"
+        noDataView.translatesAutoresizingMaskIntoConstraints = false
+        noDataView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25).isActive = true
+        noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }
 

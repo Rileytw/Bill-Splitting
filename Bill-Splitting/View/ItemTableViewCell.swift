@@ -21,6 +21,8 @@ class ItemTableViewCell: UITableViewCell {
     @IBOutlet var itemName: UILabel!
     @IBOutlet var paidDescription: UILabel!
     @IBOutlet var priceLabel: UILabel!
+    @IBOutlet weak var cellView: UIView!
+    @IBOutlet weak var colorView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -28,6 +30,10 @@ class ItemTableViewCell: UITableViewCell {
         createdTime.textColor = UIColor.greenWhite
         itemName.textColor = UIColor.greenWhite
         priceLabel.textColor = UIColor.greenWhite
+        
+        ElementsStyle.styleView(cellView)
+        colorView.backgroundColor = .styleBlue
+        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -45,5 +51,16 @@ class ItemTableViewCell: UITableViewCell {
         itemName.text = name
         paidDescription.text = description.rawValue
         priceLabel.text = price
+    }
+    
+    func setIcon(style: Int) {
+
+//        if style == 0 {
+//            colorView.backgroundColor = .styleGreen
+//        } else if style == 1 {
+//            colorView.backgroundColor = .styleRed
+//        } else {
+//            colorView.backgroundColor = .greenWhite
+//        }
     }
 }

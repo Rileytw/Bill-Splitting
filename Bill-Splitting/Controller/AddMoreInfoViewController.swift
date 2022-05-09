@@ -107,8 +107,9 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         photoImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         
         photoImageView.contentMode = .scaleAspectFit
-        photoImageView.layer.borderColor = UIColor.greenWhite.cgColor
+        photoImageView.layer.borderColor = UIColor.selectedColor.cgColor
         photoImageView.layer.borderWidth = 1
+        photoImageView.layer.cornerRadius = 10
         
         if isItemExist == true {
             let image = itemData?.itemImage
@@ -121,7 +122,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         completeButton.translatesAutoresizingMaskIntoConstraints = false
         completeButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
         completeButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        completeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        completeButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         completeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         
         completeButton.setTitle("儲存", for: .normal)
@@ -187,10 +188,12 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         descriptionTextView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         descriptionTextView.layer.borderWidth = 1
-        descriptionTextView.layer.borderColor = UIColor.greenWhite.cgColor
+        descriptionTextView.layer.borderColor = UIColor.selectedColor.cgColor
         descriptionTextView.backgroundColor = .clear
         descriptionTextView.textColor = UIColor.greenWhite
         descriptionTextView.font = UIFont.systemFont(ofSize: 16)
+        descriptionTextView.layer.cornerRadius = 10
+        descriptionTextView.textContainerInset = UIEdgeInsets(top: 5, left: 5, bottom: 0, right: 0)
         
         if isItemExist == true {
             descriptionTextView.text = itemData?.itemDescription
@@ -220,7 +223,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         addPhotoLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
         addPhotoLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         addPhotoLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        addPhotoLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        addPhotoLabel.heightAnchor.constraint(equalToConstant: 35).isActive = true
     
         addPhotoLabel.textColor = UIColor.greenWhite
         addPhotoLabel.text = "新增照片"

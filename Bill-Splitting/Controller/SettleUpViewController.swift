@@ -16,6 +16,8 @@ class SettleUpViewController: UIViewController {
     var memberExpense: [MemberExpense] = []
     var userData: [UserData] = []
     var expense: Double?
+    var blackList = [String]()
+    var leaveMemberData: [UserData] = []
     
     let tableView = UITableView()
     
@@ -25,7 +27,9 @@ class SettleUpViewController: UIViewController {
         navigationItem.title = "結算群組帳務"
         ElementsStyle.styleBackground(view)
         getCurrentUserName()
+        checkLeaveMember()
         getCreatorData()
+        detectBlackListUser()
         setTableView()
         removeCreatorData()
     }
@@ -51,7 +55,6 @@ class SettleUpViewController: UIViewController {
         tableView.register(UINib(nibName: String(describing: SettleUpTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: SettleUpTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.rowHeight = 60
         tableView.backgroundColor = UIColor.clear
     }
     
@@ -76,6 +79,29 @@ class SettleUpViewController: UIViewController {
     func getCreatorData() {
         for member in userData where member.userId == groupData?.creator {
             creator = member
+        }
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: userData)
+        userData = newUserData
+        
+        guard let creatorName = creator?.userName else { return }
+        for user in blackList {
+            if creator?.userId == user {
+                creator?.userName = creatorName + "（已封鎖）"
+            }
+        }
+    }
+    
+    func checkLeaveMember() {
+        if leaveMemberData.isEmpty == false {
+            for index in 0..<leaveMemberData.count {
+                leaveMemberData[index].userName = leaveMemberData[index].userName + "（已離開群組）"
+            }
+            
+            userData += leaveMemberData
         }
     }
 }

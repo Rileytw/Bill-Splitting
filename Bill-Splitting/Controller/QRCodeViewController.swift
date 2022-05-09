@@ -20,16 +20,16 @@ class QRCodeViewController: UIViewController {
     }
     
     func generateQRCode(qrString: String) -> UIImage {
-            let stringData = qrString.data(using: String.Encoding.utf8)
-            
-            let qrFilter = CIFilter(name: "CIQRCodeGenerator")
-            qrFilter?.setValue(stringData, forKey: "inputMessage")
-            qrFilter?.setValue("H", forKey: "inputCorrectionLevel")
-            let qrCIImage = qrFilter?.outputImage
-            guard let qrCIImage = qrCIImage else { return UIImage() }
-
-            let codeImage = UIImage(ciImage: qrCIImage)
-            return codeImage
+        let stringData = qrString.data(using: String.Encoding.utf8)
+        
+        let qrFilter = CIFilter(name: "CIQRCodeGenerator")
+        qrFilter?.setValue(stringData, forKey: "inputMessage")
+        qrFilter?.setValue("H", forKey: "inputCorrectionLevel")
+        let qrCIImage = qrFilter?.outputImage
+        guard let qrCIImage = qrCIImage else { return UIImage() }
+        
+        let codeImage = UIImage(ciImage: qrCIImage)
+        return codeImage
     }
     
     func setQRCodeView() {

@@ -11,6 +11,7 @@ class PaymentViewController: UIViewController {
 
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let addPaymentButton = UIButton()
+    var noDataView = NoDataView(frame: .zero)
     let tableView = UITableView()
     var userData: UserData?
     var userPayment: [Payment] = []
@@ -18,6 +19,7 @@ class PaymentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        setNoDataView()
         setTableView()
         setAddButton()
     }
@@ -78,16 +80,31 @@ class PaymentViewController: UIViewController {
         UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
             switch result {
             case .success(let userData):
-                guard let userPayment = userData.payment else { return }
-                self?.userData = userData
-                self?.userPayment = userPayment
-//                print("userData:\(userData)")
-//                print("userPayment:\(self?.userPayment)")
+//                guard let userPayment = userData?.payment else { return }
+//                self?.userData = userData
+//                self?.userPayment = userPayment
+//                self?.tableView.reloadData()
+                if let userPayment = userData?.payment {
+                    self?.userData = userData
+                    self?.userPayment = userPayment
+                } else {
+                    self?.noDataView.noDataLabel.isHidden = false
+                }
                 self?.tableView.reloadData()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
         }
+    }
+    
+    func setNoDataView() {
+        self.view.addSubview(noDataView)
+        noDataView.noDataLabel.text = "尚未設定付款方式喔！"
+        noDataView.translatesAutoresizingMaskIntoConstraints = false
+        noDataView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }
 

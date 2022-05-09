@@ -15,16 +15,17 @@ class GroupManager {
     static var shared = GroupManager()
     lazy var db = Firestore.firestore()
     
-    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String], createdTime: Double, completion: @escaping (String) -> Void) {
+    func addGroupData(name: String, description: String?, creator: String, type: Int, status: Int, member: [String], createdTime: Double, completion: @escaping (Result<String, Error>) -> Void) {
         let ref = db.collection("group").document()
         
         let groupData = GroupData(groupId: "\(ref.documentID)", groupName: name, groupDescription: description, creator: creator, type: type, status: status, member: member, createdTime: createdTime)
         
         do {
             try db.collection("group").document("\(ref.documentID)").setData(from: groupData)
-            completion("\(ref.documentID)")
+            completion(.success("\(ref.documentID)"))
         } catch {
             print(error)
+            completion(.failure(error))
         }
     }
     
@@ -85,13 +86,15 @@ class GroupManager {
         }
     }
     
-    func addMemberExpenseData(userId: String, allExpense: Double, groupId: String) {
+    func addMemberExpenseData(userId: String, allExpense: Double, groupId: String, completion: @escaping (Result<(), Error>) -> Void) {
         let expenseData = MemberExpense(userId: userId, allExpense: allExpense)
         
         do {
             try db.collection("group").document(groupId).collection("memberExpense").document(userId).setData(from: expenseData)
+            completion(.success(()))
         } catch {
             print(error)
+            completion(.failure(error))
         }
     }
     
@@ -105,8 +108,8 @@ class GroupManager {
     }
     
 // MARK: - addSnapshotListener can't listen to new documents
-    func fetchMemberExpense(groupId: String, userId: String, completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
-        db.collection("group").document(groupId).collection("memberExpense").addSnapshotListener { (querySnapshot, error) in
+    func fetchMemberExpense(groupId: String, members: [String], completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
+        db.collection("group").document(groupId).collection("memberExpense").whereField("userId", in: members).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -171,7 +174,7 @@ class GroupManager {
     }
     
     func updateGroupData(groupId: String, groupName: String, groupDescription: String, memberName: [String]?) {
-        let groupRef = db.collection(FireBaseCollection.group.rawValue).document(groupId)
+        let groupRef = db.collection(FirebaseCollection.group.rawValue).document(groupId)
         
         groupRef.updateData([
             "groupName": groupName,
@@ -191,6 +194,48 @@ class GroupManager {
             groupRef.updateData([
                 "member": FieldValue.arrayUnion([memberName[index]])
             ])
+        }
+    }
+    
+    func removeGroupMember(groupId: String, userId: String, completion: @escaping(Result<String, Error>) -> Void) {
+        let groupRef = db.collection(FirebaseCollection.group.rawValue).document(groupId)
+
+        groupRef.updateData([
+                "member": FieldValue.arrayRemove([userId])
+            ]) { err in
+                if let err = err {
+                    print("Error updating document: \(err)")
+                    completion(.failure(err))
+                } else {
+                    print("Document successfully updated")
+                    completion(.success("success"))
+                }
+            }
+
+        }
+    
+    func removeGroupExpense(groupId: String, userId: String, completion: @escaping(Result<String, Error>) -> Void) {
+        db.collection(FirebaseCollection.group.rawValue).document(groupId).collection("memberExpense").document(userId).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully removed!")
+                completion(.success("success"))
+            }
+        }
+    }
+    
+    func addLeaveMember(groupId: String, userId: String) {
+        let leaveMembersRef = db.collection(FirebaseCollection.group.rawValue).document(groupId)
+        leaveMembersRef.updateData([
+            "leaveMembers": FieldValue.arrayUnion([userId])
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+            }
         }
     }
 }

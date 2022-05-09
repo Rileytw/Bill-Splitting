@@ -38,23 +38,23 @@ private enum Tab {
     func tabBarItem() -> UITabBarItem {
         switch self {
         case .groups:
-            return UITabBarItem(title: "groups", image: UIImage(systemName: "person.3"),
+            return UITabBarItem(title: "我的群組", image: UIImage(systemName: "person.3"),
                                 selectedImage: UIImage(systemName: "person.3.fill")
             )
         case .reminders:
-            return UITabBarItem(title: "reminders", image: UIImage(systemName: "bell"),
+            return UITabBarItem(title: "設定提醒", image: UIImage(systemName: "bell"),
                                 selectedImage: UIImage(systemName: "bell.fill")
             )
         case .addGroups:
-            return UITabBarItem(title: "add groups", image: UIImage(systemName: "plus.square"),
+            return UITabBarItem(title: "新增群組", image: UIImage(systemName: "plus.square"),
                                 selectedImage: UIImage(systemName: "plus.square.fill")
             )
         case .records:
-            return UITabBarItem(title: "records", image: UIImage(systemName: "list.bullet.rectangle"),
+            return UITabBarItem(title: "近期紀錄", image: UIImage(systemName: "list.bullet.rectangle"),
                                 selectedImage: UIImage(systemName: "list.bullet.rectangle.fill")
             )
         case .profile:
-            return UITabBarItem(title: "profile", image: UIImage(systemName: "person"),
+            return UITabBarItem(title: "個人頁面", image: UIImage(systemName: "person"),
                                 selectedImage: UIImage(systemName: "person.fill")
             )
         }
@@ -63,15 +63,24 @@ private enum Tab {
 
 class TabBarViewController: UITabBarController {
     
-    private let tabs:[Tab] = [.groups, .reminders, .addGroups, .records, .profile]
+    private let tabs: [Tab] = [.groups, .reminders, .addGroups, .records, .profile]
     
     var allTabBatItem: UITabBarItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         viewControllers = tabs.map({ $0.viewController() })
         self.tabBar.tintColor = .selectedColor
         self.tabBar.barTintColor = .styleBlue
+        
+        if #available(iOS 15.0, *) {
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .styleBlue
+            
+            self.tabBar.standardAppearance = appearance
+            self.tabBar.scrollEdgeAppearance = appearance
+        }
     }
 }

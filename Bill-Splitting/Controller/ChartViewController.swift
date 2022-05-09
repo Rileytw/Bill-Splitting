@@ -21,6 +21,10 @@ class ChartViewController: UIViewController {
     var userData = [UserData]()
     var member = [UserData]()
     let height = UIScreen.main.bounds.height
+    var blackList = [String]()
+    var noDataChartsView = NoDataChartsView()
+    var mask = UIView()
+    let width = UIScreen.main.bounds.size.width
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,9 +35,11 @@ class ChartViewController: UIViewController {
         setDebtLabel()
         setDebtChart()
         getMemberData()
+        detectBlackListUser()
         detectCreditMember()
         detectDebtMember()
         setDismissButton()
+        detectData()
     }
     
     func getMemberData() {
@@ -68,10 +74,16 @@ class ChartViewController: UIViewController {
         }
     }
     
+    func detectData() {
+        if debtMember.isEmpty == true && creditMember.isEmpty == true {
+            revealBlockView()
+        }
+    }
+    
     func setCreditChart() {
         view.addSubview(creditChart)
         creditChart.translatesAutoresizingMaskIntoConstraints = false
-        creditChart.topAnchor.constraint(equalTo: creditLabel.bottomAnchor, constant: 20).isActive = true
+        creditChart.topAnchor.constraint(equalTo: creditLabel.bottomAnchor, constant: 10).isActive = true
         creditChart.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         creditChart.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         creditChart.heightAnchor.constraint(equalToConstant: height/2 - 100).isActive = true
@@ -81,7 +93,7 @@ class ChartViewController: UIViewController {
     func setDebtChart() {
         view.addSubview(debtChart)
         debtChart.translatesAutoresizingMaskIntoConstraints = false
-        debtChart.topAnchor.constraint(equalTo: debtLabel.bottomAnchor, constant: 20).isActive = true
+        debtChart.topAnchor.constraint(equalTo: debtLabel.bottomAnchor, constant: 10).isActive = true
         debtChart.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         debtChart.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         debtChart.heightAnchor.constraint(equalToConstant: height/2 - 100).isActive = true
@@ -91,7 +103,7 @@ class ChartViewController: UIViewController {
     func setCreditLabel() {
         view.addSubview(creditLabel)
         creditLabel.translatesAutoresizingMaskIntoConstraints = false
-        creditLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 40).isActive = true
+        creditLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
         creditLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         creditLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         creditLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -104,7 +116,7 @@ class ChartViewController: UIViewController {
     func setDebtLabel() {
         view.addSubview(debtLabel)
         debtLabel.translatesAutoresizingMaskIntoConstraints = false
-        debtLabel.topAnchor.constraint(equalTo: creditChart.bottomAnchor, constant: 20).isActive = true
+        debtLabel.topAnchor.constraint(equalTo: creditChart.bottomAnchor, constant: 10).isActive = true
         debtLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         debtLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         debtLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -128,6 +140,41 @@ class ChartViewController: UIViewController {
     }
     
     @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: userData ?? [])
+        userData = newUserData
+        
+        let newMemberData = UserManager.renameBlockedUser(blockList: blackList, userData: member)
+        member = newMemberData
+    }
+    
+    func revealBlockView() {
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.addSubview(mask)
+        
+        noDataChartsView = NoDataChartsView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 200))
+        noDataChartsView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+       
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.noDataChartsView.frame = CGRect(x: 0, y: self.height/2 - 100, width: self.width, height: 200)
+        }, completion: nil)
+        view.addSubview(noDataChartsView)
+
+        noDataChartsView.confirmButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+    }
+    
+    @objc func pressDismissButton() {
+        let subviewCount = self.view.subviews.count
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        }, completion: nil)
+        mask.removeFromSuperview()
         self.dismiss(animated: true, completion: nil)
     }
 }

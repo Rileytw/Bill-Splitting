@@ -52,6 +52,9 @@ class AddItemViewController: UIViewController {
     
     var itemImageString: String?
     var itemDescription: String?
+    var involvedTotalPrice: Double = 0
+    
+    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,12 +68,11 @@ class AddItemViewController: UIViewController {
         setInvolvedMembers()
         setTableView()
         setDismissButton()
+        detectBlackListUser()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-//        addMoreButton.layer.cornerRadius = 0.5 * addMoreButton.bounds.size.width
-//        addMoreButton.clipsToBounds = true
         ElementsStyle.styleTextField(addItemView.itemNameTextField)
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
@@ -94,7 +96,7 @@ class AddItemViewController: UIViewController {
     func setTypePickerView() {
         view.addSubview(typePickerView)
         typePickerView.translatesAutoresizingMaskIntoConstraints = false
-        typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 40).isActive = true
+        typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
         typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -109,7 +111,7 @@ class AddItemViewController: UIViewController {
     func setmemberPickerView() {
         view.addSubview(choosePaidMember)
         choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
-        choosePaidMember.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 40).isActive = true
+        choosePaidMember.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
         choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
         choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -121,11 +123,9 @@ class AddItemViewController: UIViewController {
         
         view.addSubview(memberPickerView)
         memberPickerView.translatesAutoresizingMaskIntoConstraints = false
-        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 40).isActive = true
+        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
         memberPickerView.leadingAnchor.constraint(equalTo: choosePaidMember.trailingAnchor, constant: 20).isActive = true
         memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
-//        typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
-//        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
         memberPickerView.pickerView.dataSource = self
@@ -146,7 +146,7 @@ class AddItemViewController: UIViewController {
         addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
         addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
         addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        addButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        addButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         ElementsStyle.styleSpecificButton(addButton)
         
         addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
@@ -157,7 +157,7 @@ class AddItemViewController: UIViewController {
         addMoreButton.translatesAutoresizingMaskIntoConstraints = false
         addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         addMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        addMoreButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
         addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
         addMoreButton.backgroundColor = .systemTeal
@@ -190,7 +190,7 @@ class AddItemViewController: UIViewController {
     func setInvolvedMembers() {
         view.addSubview(chooseInvolvedMember)
         chooseInvolvedMember.translatesAutoresizingMaskIntoConstraints = false
-        chooseInvolvedMember.topAnchor.constraint(equalTo: choosePaidMember.bottomAnchor, constant: 20).isActive = true
+        chooseInvolvedMember.topAnchor.constraint(equalTo: choosePaidMember.bottomAnchor, constant: 10).isActive = true
         chooseInvolvedMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         chooseInvolvedMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
         chooseInvolvedMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -201,7 +201,7 @@ class AddItemViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: chooseInvolvedMember.bottomAnchor, constant: 10).isActive = true
+        tableView.topAnchor.constraint(equalTo: chooseInvolvedMember.bottomAnchor, constant: 5).isActive = true
         tableView.bottomAnchor.constraint(equalTo: addMoreButton.topAnchor, constant: -10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
@@ -213,16 +213,45 @@ class AddItemViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
-        if isItemExist == true {
-            deleteItem() {
-                addItem()
-            }
-        } else {
-            addItem()
-        }
-        
-        self.dismiss(animated: false, completion: nil)
-    }
+           checkInvolvedData()
+           if addItemView.itemNameTextField.text == "" ||
+               addItemView.priceTextField.text == "" ||
+               typePickerView.textField.text == "" ||
+               memberPickerView.textField.text == "" {
+               lossInfoAlert(message: "請確認是否填寫完整資訊")
+           } else if involvedExpenseData.isEmpty == true {
+               lossInfoAlert(message: "請確認是否選取參與人")
+           } else if typePickerView.textField.text == SplitType.percent.label && involvedTotalPrice != 100 {
+               lossInfoAlert(message: "請確認分帳比例是否正確")
+           } else if typePickerView.textField.text == SplitType.customize.label &&
+                       involvedTotalPrice != paidPrice {
+               lossInfoAlert(message: "請確認自訂金額是否正確")
+           } else {
+               if isItemExist == true {
+                   deleteItem() {
+                       addItem()
+                   }
+               } else {
+                   addItem()
+               }
+               
+               self.dismiss(animated: false, completion: nil)
+           }
+       }
+       
+       func checkInvolvedData() {
+           involvedTotalPrice = 0
+           for involvePrice in involvedExpenseData {
+               involvedTotalPrice += involvePrice.price
+           }
+       }
+       
+       func lossInfoAlert(message: String) {
+           let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
+           let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+           alertController.addAction(confirmAction)
+           present(alertController, animated: true, completion: nil)
+       }
     
     func addItem() {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
@@ -323,7 +352,7 @@ class AddItemViewController: UIViewController {
     func setTypeLabel() {
         view.addSubview(typeLabel)
         typeLabel.translatesAutoresizingMaskIntoConstraints = false
-        typeLabel.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 40).isActive = true
+        typeLabel.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
         typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         typeLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
         typeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -346,6 +375,12 @@ class AddItemViewController: UIViewController {
     
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: memberData ?? [])
+        memberData = newUserData
     }
 }
 

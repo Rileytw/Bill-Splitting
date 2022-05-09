@@ -17,9 +17,8 @@ class SignInViewController: UIViewController {
     let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
     var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
     
+    var appName = UIImageView()
     private var animationView = AnimationView()
-    var accountLabel = UILabel()
-    var passwordLabel = UILabel()
     var accountTextField = UITextField()
     var passwordTextField = UITextField()
     var logInButton = UIButton()
@@ -27,19 +26,24 @@ class SignInViewController: UIViewController {
     var thirdPartyId: String?
     var appleId: String?
     
+    var privacyButton = UIButton()
+    var eulaButton = UIButton()
+    let width = UIScreen.main.bounds.width
+    
     fileprivate var currentNonce: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
-        setAccount()
+        setAppName()
         setAccountTextField()
-        setPassword()
         setPasswordTextField()
         setLoginButton()
         setAppleSignInButton()
         setSignUpButton()
         checkUserSignIn()
+        setPrivacyButton()
+        setEulaButton()
     }
     
     override func viewWillLayoutSubviews() {
@@ -73,36 +77,24 @@ class SignInViewController: UIViewController {
     
     func checkUserSignIn() {
         if Auth.auth().currentUser != nil {
-            enterFistPage()
+            enterFirstPage()
         }
     }
-    
-    func setAccount() {
-        view.addSubview(accountLabel)
-        accountLabel.translatesAutoresizingMaskIntoConstraints = false
-        setAccountLabelConstraint()
-        accountLabel.text = "帳號"
-        accountLabel.textColor = .greenWhite
-    }
-    
+
     func setAccountTextField() {
         view.addSubview(accountTextField)
         accountTextField.translatesAutoresizingMaskIntoConstraints = false
         setAccountTextFieldConstraint()
+        accountTextField.attributedPlaceholder = NSAttributedString(string: "輸入帳號",
+                                                                   attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
-    
-    func setPassword() {
-        view.addSubview(passwordLabel)
-        passwordLabel.translatesAutoresizingMaskIntoConstraints = false
-        setPassordLabelConstraint()
-        passwordLabel.text = "密碼"
-        passwordLabel.textColor = .greenWhite
-    }
-    
+
     func setPasswordTextField() {
         view.addSubview(passwordTextField)
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         setPasswordTextFieldConstraint()
+        passwordTextField.attributedPlaceholder = NSAttributedString(string: "輸入密碼",
+                                                                   attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
     
     func setLoginButton() {
@@ -117,10 +109,22 @@ class SignInViewController: UIViewController {
     }
     
     @objc func pressLogin() {
-        setAnimation()
+        checkUserInput()
+    }
+    
+    func signInWithFirebase() {
         AccountManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
-                                                password: passwordTextField.text ?? "") { [weak self] firebaseId in
-            self?.fetchUserData(userId: firebaseId, email: self?.accountTextField.text ?? "")
+                                                 password: passwordTextField.text ?? "") { [weak self] result in
+            switch result {
+            case .success(let firebaseId):
+                self?.fetchUserData(userId: firebaseId, email: self?.accountTextField.text ?? "")
+            case .failure(let error):
+                if let errorCode = AuthErrorCode(rawValue: error._code) {
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: errorCode.errorMessage)
+                    self?.removeAnimation()
+                }
+            }
         }
     }
     
@@ -129,7 +133,7 @@ class SignInViewController: UIViewController {
         UserManager.shared.fetchSignInUserData(userId: userId) { [weak self] result in
             switch result {
             case .success(let user):
-                print(user)
+//                print(user)
                 if user == nil {
                     self?.user.userId = userId
                     self?.user.userEmail = email
@@ -140,9 +144,11 @@ class SignInViewController: UIViewController {
                 self?.user.userId = user?.userId ?? ""
                 print("Login successed!")
                 AccountManager.shared.getCurrentUserInfo()
-                self?.enterFistPage()
+                self?.enterFirstPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "讀取資料失敗")
             }
         }
     }
@@ -162,7 +168,7 @@ class SignInViewController: UIViewController {
         self.present(signUpViewController, animated: true, completion: nil)
     }
     
-    func enterFistPage() {
+    func enterFirstPage() {
         let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
         view.window?.rootViewController = tabBarViewController
         view.window?.makeKeyAndVisible()
@@ -207,6 +213,28 @@ class SignInViewController: UIViewController {
         return hashString
     }
     
+    func checkUserInput() {
+        if accountTextField.text == "" {
+            inputAlert(title: "尚未輸入帳號",
+                       message: "請輸入帳號再進行登入")
+        } else if passwordTextField.text == "" {
+            inputAlert(title: "尚未輸入密碼",
+                       message: "請輸入密碼再進行登入")
+        } else {
+            setAnimation()
+            signInWithFirebase()
+        }
+    }
+    
+    func inputAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
     func setAnimation() {
         animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
@@ -222,52 +250,56 @@ class SignInViewController: UIViewController {
         animationView.play()
     }
     
-    func setPassordLabelConstraint() {
-        passwordLabel.topAnchor.constraint(equalTo: accountLabel.bottomAnchor, constant: 20).isActive = true
-        passwordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        passwordLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        passwordLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
     
-    func setAccountLabelConstraint() {
-        accountLabel.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -140).isActive = true
-        accountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        accountLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        accountLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    func setAppName() {
+        view.addSubview(appName)
+        appName.translatesAutoresizingMaskIntoConstraints = false
+        appName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        appName.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        appName.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        appName.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        appName.contentMode = .scaleAspectFill
+        
+        appName.image = UIImage(named: "Launch")
     }
     
     func setAccountTextFieldConstraint() {
         accountTextField.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -150).isActive = true
-        accountTextField.leadingAnchor.constraint(equalTo: accountLabel.trailingAnchor, constant: 20).isActive = true
+        accountTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
         accountTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         accountTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     func setPasswordTextFieldConstraint() {
         passwordTextField.topAnchor.constraint(equalTo: accountTextField.bottomAnchor, constant: 20).isActive = true
-        passwordTextField.leadingAnchor.constraint(equalTo: passwordLabel.trailingAnchor, constant: 20).isActive = true
+        passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
         passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         passwordTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        passwordTextField.isSecureTextEntry = true
     }
     
     func setLoginButtonConstraint() {
         logInButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 60).isActive = true
         logInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-        logInButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        logInButton.widthAnchor.constraint(equalToConstant: 250).isActive = true
         logInButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     func setAuthorizationButtonConstraint() {
         authorizationButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
         authorizationButton.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 40).isActive = true
-        authorizationButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        authorizationButton.widthAnchor.constraint(equalToConstant: 250).isActive = true
         authorizationButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     func setSignUpconstraint() {
         signUpButton.topAnchor.constraint(equalTo: authorizationButton.bottomAnchor, constant: 20).isActive = true
         signUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-        signUpButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        signUpButton.widthAnchor.constraint(equalToConstant: 250).isActive = true
         signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
 }
@@ -282,16 +314,20 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { return}
         let appCredential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
         self.appleId = credential.user
-        user.userName = "\(credential.fullName?.familyName ?? "")" + "\(credential.fullName?.givenName ?? "")"
+        user.userName = "\(credential.fullName?.givenName ?? "")"
         user.userEmail = "\(credential.email ?? "")"
 
         firebaseSignInWithApple(credential: appCredential)
     }
     
     func firebaseSignInWithApple(credential: AuthCredential) {
-        Auth.auth().signIn(with: credential) { authResult, error in
-            guard error == nil else { return }
-            self.getFirebaseUserInfo()
+        setAnimation()
+        Auth.auth().signIn(with: credential) { [weak self] authResult, error in
+            if error == nil {
+                self?.getFirebaseUserInfo()
+            } else {
+                self?.errorHandleWithAppleSignIn()
+            }
         }
     }
     
@@ -309,9 +345,11 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         UserManager.shared.addUserData(userData: user) { [weak self] result in
             switch result {
             case .success(let id):
-                self?.enterFistPage()
+                self?.enterFirstPage()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請重新登入")
             }
         }
     }
@@ -319,21 +357,73 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         switch (error) {
         case ASAuthorizationError.canceled:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         case ASAuthorizationError.failed:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         case ASAuthorizationError.invalidResponse:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         case ASAuthorizationError.notHandled:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         case ASAuthorizationError.unknown:
-            break
+            errorHandleWithAppleSignIn()
+//            break
         default:
             break
         }
         
         print("didCompleteWithError: \(error.localizedDescription)")
     }
+    
+    func errorHandleWithAppleSignIn() {
+        ProgressHUD.shared.view = self.view
+        ProgressHUD.showFailure(text: "發生錯誤請稍後再試")
+
+    }
+    
+    func setPrivacyButton() {
+            view.addSubview(privacyButton)
+            privacyButton.translatesAutoresizingMaskIntoConstraints = false
+            privacyButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
+            privacyButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (width - 260)/2 ).isActive = true
+            privacyButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+            privacyButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            privacyButton.setTitle("查看隱私權政策", for: .normal)
+            privacyButton.setTitleColor(.systemGray, for: .normal)
+            privacyButton.addTarget(self, action: #selector(pressPrivacyButton), for: .touchUpInside)
+        }
+        
+        @objc func pressPrivacyButton() {
+            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+            guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
+            webViewController.url = PolicyUrl.privacy.url
+            self.present(webViewController, animated: true, completion: nil)
+        }
+        
+        func setEulaButton() {
+            view.addSubview(eulaButton)
+            eulaButton.translatesAutoresizingMaskIntoConstraints = false
+            eulaButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
+            eulaButton.leadingAnchor.constraint(equalTo: privacyButton.trailingAnchor, constant: 0).isActive = true
+            eulaButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+            eulaButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            
+            eulaButton.setTitle("& 用戶許可協議", for: .normal)
+            eulaButton.setTitleColor(.systemGray, for: .normal)
+            eulaButton.addTarget(self, action: #selector(pressEulaButton), for: .touchUpInside)
+        }
+        
+        @objc func pressEulaButton() {
+            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+            guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
+            webViewController.url = PolicyUrl.eula.url
+            self.present(webViewController, animated: true, completion: nil)
+        }
+    
 }
 
 extension SignInViewController: ASAuthorizationControllerPresentationContextProviding {

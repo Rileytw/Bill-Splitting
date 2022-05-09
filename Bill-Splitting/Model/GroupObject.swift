@@ -19,6 +19,7 @@ struct GroupData: Codable {
     var status: Int
     var member: [String]
     var createdTime: Double
+    var leaveMembers: [String]?
 }
 
 struct MemberExpense: Codable {
@@ -45,6 +46,20 @@ enum GroupType {
             return "個人預付"
         case .multipleUsers:
             return "多人支付"
+        }
+    }
+}
+
+enum GroupStatus {
+    case active
+    case inActive
+    
+    var typeInt: Int {
+        switch self {
+        case .active:
+            return 0
+        case .inActive:
+            return 1
         }
     }
 }

@@ -11,6 +11,12 @@ class FriendListViewController: UIViewController {
 
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let tableView = UITableView()
+    var noDataView = NoDataView(frame: .zero)
+    let width = UIScreen.main.bounds.size.width
+    let height = UIScreen.main.bounds.size.height
+    var blockUserView = BlockUserView()
+    var mask = UIView()
+    var blockedUserId: String?
     
     var friends: [Friend]? {
         didSet {
@@ -22,21 +28,14 @@ class FriendListViewController: UIViewController {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         setInviteButton()
+        setNoDataView()
         setTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
-        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let friend):
-                self?.friends = friend
-//                print("userData: \(self.friends)")
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-            }
-        }
+        fetchFriends()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -64,6 +63,12 @@ class FriendListViewController: UIViewController {
     @objc func pressInviteFriendButton() {
         let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
         let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
+        if #available(iOS 15.0, *) {
+            if let sheet = inviteFriendViewController.sheetPresentationController {
+                sheet.detents = [.medium()]
+                sheet.preferredCornerRadius = 20
+            }
+        }
         self.present(inviteFriendViewController, animated: true, completion: nil)
     }
 
@@ -76,10 +81,23 @@ class FriendListViewController: UIViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.backgroundColor = .clear
         
-        tableView.register(UINib(nibName: String(describing: ProfileTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ProfileTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: FriendListTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: FriendListTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
-        
+    }
+    
+    func fetchFriends() {
+        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let friend):
+                self?.friends = friend
+                if friend.isEmpty == true {
+                    self?.noDataView.noDataLabel.isHidden = false
+                }
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+            }
+        }
     }
 }
 
@@ -90,15 +108,114 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: String(describing: ProfileTableViewCell.self),
+            withIdentifier: String(describing: FriendListTableViewCell.self),
             for: indexPath
         )
         
-        guard let profileCell = cell as? ProfileTableViewCell else { return cell }
+        guard let profileCell = cell as? FriendListTableViewCell else { return cell }
+        
         profileCell.createCell(userName: friends?[indexPath.row].userName ?? "",
                                userEmail: friends?[indexPath.row].userEmail ?? "")
+        profileCell.infoButton.addTarget(self, action: #selector(pressMoreInfo), for: .touchUpInside)
         
         return profileCell
     }
+    
+    @objc func pressMoreInfo(_ sender: UIButton) {
+        let point = sender.convert(CGPoint.zero, to: self.tableView)
         
+        if let indexPath = self.tableView.indexPathForRow(at: point) {
+            self.blockedUserId = friends?[indexPath.row].userId
+        }
+        
+        revealBlockView()
+    }
+    
+    func revealBlockView() {
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.addSubview(mask)
+        
+        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        blockUserView.buttonTitle = " 封鎖使用者"
+        blockUserView.content = "封鎖使用者後，並不會隱藏你們共享的群組，若有需要可在結清帳務後退出群組。"
+        blockUserView.blockUserButton.setImage(UIImage(systemName: "person.crop.circle.badge.exclam.fill"), for: .normal)
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
+        }, completion: nil)
+        view.addSubview(blockUserView)
+        
+        blockUserView.blockUserButton.addTarget(self, action: #selector(blockUserAlert), for: .touchUpInside)
+        
+        blockUserView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+    }
+    
+    @objc func pressDismissButton() {
+//        blockUserView.removeFromSuperview()
+        let subviewCount = self.view.subviews.count
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        }, completion: nil)
+        mask.removeFromSuperview()
+    }
+    
+    @objc func blockUserAlert() {
+        let alertController = UIAlertController(title: "請確認是否封鎖使用者", message: "封鎖後不可解除", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "封鎖", style: .destructive) { [weak self] _ in
+            print("封鎖\(self?.blockedUserId)")
+            self?.blockUser()
+            self?.addToBlackList()
+            
+            self?.pressDismissButton()
+            self?.navigationController?.popToRootViewController(animated: true)
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func blockUser() {
+        FriendManager.shared.removeFriend(userId: currentUserId, friendId: blockedUserId ?? "") { result in
+            switch result {
+            case .success:
+                print("remove friend successfully")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+        
+        FriendManager.shared.removeFriend(userId: blockedUserId ?? "", friendId: currentUserId) { result in
+            switch result {
+            case .success:
+                print("remove friend successfully")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func addToBlackList() {
+        FriendManager.shared.addBlockFriends(userId: currentUserId, blockedUser: blockedUserId ?? "") { result in
+            switch result {
+            case .success():
+                print("Add blackList successfully")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func setNoDataView() {
+        self.view.addSubview(noDataView)
+        noDataView.noDataLabel.text = "目前還沒有好友，快邀請好友加入吧！"
+        noDataView.translatesAutoresizingMaskIntoConstraints = false
+        noDataView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
+        noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
 }

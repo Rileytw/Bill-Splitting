@@ -15,7 +15,6 @@ class AddReminderViewController: UIViewController {
     let userLabel = UILabel()
     let userPicker = BasePickerViewInTextField(frame: .zero)
     let typeLabel = UILabel()
-    let typePicker = BasePickerViewInTextField(frame: .zero)
     let priceLabel = UILabel()
     let priceTextField = UITextField()
     let completeButton = UIButton()
@@ -28,6 +27,7 @@ class AddReminderViewController: UIViewController {
     var groups: [GroupData] = []
     var member: [UserData] = []
     var userData: [UserData] = []
+    var blackList = [String]()
     var remindTimeStamp: Double?
     var reminderData = Reminder(groupId: "",
                                 memberId: "",
@@ -42,6 +42,7 @@ class AddReminderViewController: UIViewController {
         ElementsStyle.styleBackground(view)
         getGroupData()
         getUserData()
+        fetchCurrentUserData()
         
         setGroup()
         setGroupPicker()
@@ -113,7 +114,7 @@ class AddReminderViewController: UIViewController {
     func setType() {
         view.addSubview(typeLabel)
         setTypeConstraint()
-        typeLabel.text = "選擇類型"
+        typeLabel.text = "提醒類型"
         typeLabel.textColor = .greenWhite
     }
     
@@ -128,8 +129,24 @@ class AddReminderViewController: UIViewController {
     }
     
     @objc func pressComplete() {
-        addReminder()
-        self.dismiss(animated: true, completion: nil)
+        
+        if groupPicker.textField.text == "" || userPicker.textField.text == "" {
+            loseInfoAlert(title: "資料不完整", message: "請確認是否已設定群組及提醒對象")
+        } else if creditButton.isSelected == false && debtButton.isSelected == false {
+            loseInfoAlert(title: "資料不完整", message: "請確認已選擇提醒類型")
+        } else {
+            addReminder()
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    func loseInfoAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
     
     func addReminder() {
@@ -187,6 +204,7 @@ class AddReminderViewController: UIViewController {
             switch result {
             case .success(let userData):
                 self?.userData = userData
+                self?.detectBlackListUser()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -227,6 +245,26 @@ class AddReminderViewController: UIViewController {
         let remindDate = remindTimeDatePicker.date
         remindTimeStamp = remindDate.timeIntervalSince1970
         reminderData.remindTime = remindTimeStamp ?? Date().timeIntervalSince1970
+    }
+    
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let currentUserData):
+                if currentUserData?.blackList != nil {
+                    self?.blackList = currentUserData?.blackList ?? []
+                }
+                print("success")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: userData)
+        userData = newUserData
     }
     
     func setReminderLabelConstraint() {
@@ -340,7 +378,12 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if pickerView == groupPicker.pickerView {
-            return groupPickerData[row]
+            if groupPickerData.isEmpty == false {
+                return groupPickerData[row]
+            } else {
+                return "目前暫無群組"
+            }
+            
         } else {
             return member[row].userName
         }
@@ -349,13 +392,31 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
         if pickerView == groupPicker.pickerView {
-            let groupMember = groups[row].member
-            selectedMember(membersId: groupMember)
-            reminderData.groupId = groups[row].groupId
-            return groupPicker.textField.text = groupPickerData[row]
+            if groupPickerData.isEmpty == false {
+                let groupMember = groups[row].member
+                selectedMember(membersId: groupMember)
+                reminderData.groupId = groups[row].groupId
+                return groupPicker.textField.text = groupPickerData[row]
+            } else {
+               pickGroupAlert(title: "目前沒有群組", message: "請先建立群組，才能建立提醒喔！")
+            }
+            
         } else {
-            reminderData.memberId = member[row].userId
-            return userPicker.textField.text = member[row].userName
+            if member.isEmpty == false {
+                reminderData.memberId = member[row].userId
+                return userPicker.textField.text = member[row].userName
+            } else {
+               pickGroupAlert(title: "請先選擇群組", message: "選擇群組後，才能選擇提醒對象喔！")
+            }
         }
+    }
+    
+    func pickGroupAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
 }

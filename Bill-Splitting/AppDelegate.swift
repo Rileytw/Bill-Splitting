@@ -73,4 +73,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 //    func applicationDidBecomeActive(_ application: UIApplication) {
 //        UIApplication.shared.applicationIconBadgeNumber = 0
 //    }
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+            let deviceOrientation = UIInterfaceOrientationMask.portrait
+            return deviceOrientation
+        }
 }

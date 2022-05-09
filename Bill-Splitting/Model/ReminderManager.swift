@@ -12,21 +12,20 @@ import FirebaseFirestore
 class ReminderManager {
     static var shared = ReminderManager()
     lazy var db = Firestore.firestore()
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
     
     func addReminderData(reminder: Reminder) {
-        let ref = db.collection(FireBaseCollection.reminder.rawValue).document()
+        let ref = db.collection(FirebaseCollection.reminder.rawValue).document()
         var reminder = reminder
         reminder.documentId = "\(ref.documentID)"
         do {
-            try db.collection(FireBaseCollection.reminder.rawValue).document("\(ref.documentID)").setData(from: reminder)
+            try db.collection(FirebaseCollection.reminder.rawValue).document("\(ref.documentID)").setData(from: reminder)
         } catch {
             print(error)
         }
     }
     
-    func fetchReminders(completion: @escaping (Result<[Reminder], Error>) -> Void) {
-        db.collection(FireBaseCollection.reminder.rawValue).whereField("creatorId", isEqualTo: self.currentUserId).order(by: "remindTime", descending: true).getDocuments() {
+    func fetchReminders(currentUser: String, completion: @escaping (Result<[Reminder], Error>) -> Void) {
+        db.collection(FirebaseCollection.reminder.rawValue).whereField("creatorId", isEqualTo: currentUser).order(by: "remindTime", descending: true).getDocuments() {
             (querySnapshot, error) in
             
             if let error = error {
@@ -51,7 +50,7 @@ class ReminderManager {
     }
     
     func updateReminderStatus(documentId: String) {
-        let reminderRef = db.collection(FireBaseCollection.reminder.rawValue).document(documentId)
+        let reminderRef = db.collection(FirebaseCollection.reminder.rawValue).document(documentId)
         
         reminderRef.updateData([
             "status": RemindStatus.inActive.statusInt
@@ -65,7 +64,7 @@ class ReminderManager {
     }
     
     func deleteReminder(documentId: String) {
-        db.collection(FireBaseCollection.reminder.rawValue).document(documentId).delete() { err in
+        db.collection(FirebaseCollection.reminder.rawValue).document(documentId).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")
             } else {

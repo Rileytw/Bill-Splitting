@@ -13,6 +13,7 @@ class RecordsViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     private var animationView = AnimationView()
     var tableView = UITableView()
+    var emptyLabel = UILabel()
     var groups: [GroupData] = []
     var itemData: [ItemData] = []
     var paidItem: [ExpenseInfo] = []
@@ -20,11 +21,13 @@ class RecordsViewController: UIViewController {
     var personalPaid: [ExpenseInfo] = []
     var personalInvolved: [ExpenseInfo] = []
     var allPersonalItem: [ExpenseInfo] = []
+    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         getGroupData()
+        setEmptyLabel()
         setTableView()
         setAnimation()
         navigationItem.title = "近期紀錄"
@@ -32,6 +35,7 @@ class RecordsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        fetchCurrentUserData()
 //        setAnimation()
 //        getGroupData()
     }
@@ -48,6 +52,11 @@ class RecordsViewController: UIViewController {
                 self?.groups = groups
                 // MARK: - Use group data to get item data from each group
                 self?.getGroupsItemExpense()
+                if groups.isEmpty == true {
+                    self?.emptyLabel.isHidden = false
+                } else {
+                    self?.emptyLabel.isHidden = true
+                }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -93,6 +102,7 @@ class RecordsViewController: UIViewController {
                             group.leave()
                         case .failure(let error):
                             print("Error decoding userData: \(error)")
+                            group.leave()
                         }
                     }
 
@@ -104,14 +114,14 @@ class RecordsViewController: UIViewController {
             for index in 0..<self.itemData.count {
                 group.enter()
                 secondQueue.async(group: group) {
-                    ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemData[index].itemId) {
-                        [weak self] result in
+                    ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemData[index].itemId) { [weak self] result in
                         switch result {
                         case .success(let items):
                             self?.involvedItem += items
                             group.leave()
                         case .failure(let error):
                             print("Error decoding userData: \(error)")
+                            group.leave()
                         }
                     }
                 }
@@ -128,10 +138,22 @@ class RecordsViewController: UIViewController {
             self.allPersonalItem = self.personalPaid + self.personalInvolved
             self.allPersonalItem.sort { $0.createdTime ?? 0 > $1.createdTime ?? 0 }
             self.allPersonalItem = Array(self.allPersonalItem.prefix(10))
-//            print("====all:\(self.allPersonalItem)")
-//            print("====allCount:\(self.allPersonalItem.count)")
             self.tableView.reloadData()
             self.removeAnimation()
+        }
+    }
+    
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let currentUserData):
+                if currentUserData?.blackList != nil {
+                    self?.blackList = currentUserData?.blackList ?? []
+                }
+                print("success")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
         }
     }
 
@@ -158,15 +180,30 @@ class RecordsViewController: UIViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
-        tableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear
+    }
+    
+    func setEmptyLabel() {
+        view.addSubview(emptyLabel)
+        emptyLabel.text = "目前暫無資料"
+        emptyLabel.textColor = .greenWhite
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25).isActive = true
+        emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        emptyLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        emptyLabel.isHidden = true
     }
 }
 
@@ -201,14 +238,16 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
             itemsCell.createItemCell(time: time,
                                      name: itemName ?? "",
                                      description: PaidDescription.paid,
-                                     price: "\(item.price)")
+                                     price: "$ " +  "\(item.price)")
             itemsCell.paidDescription.textColor = .styleGreen
+            itemsCell.setIcon(style: 0)
         } else {
             itemsCell.createItemCell(time: time,
                                      name: itemName ?? "",
                                      description: PaidDescription.involved,
-                                     price: "\(abs(item.price))")
+                                     price: "$ " + "\(abs(item.price))")
             itemsCell.paidDescription.textColor = .styleRed
+            itemsCell.setIcon(style: 1)
         }
       
         return itemsCell
@@ -227,6 +266,7 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         groupData = groups.filter { $0.groupId == personalItem?.groupId }
 //        print("peronalitem:\(personalItem)")
         customGroupViewController.groupData = groupData[0]
+        customGroupViewController.blackList = blackList
         self.show(customGroupViewController, sender: nil)
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class RemindersViewController: UIViewController {
     
@@ -21,19 +22,25 @@ class RemindersViewController: UIViewController {
     var reminderTitle: String?
     var reminderSubtitle: String?
     var remindBody: String?
+    var blackList = [String]()
     
     var tableView = UITableView()
+    var emptyLabel = UILabel()
+    private var animationView = AnimationView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        setEmptyLabel()
         setTableView()
         setAddButton()
-        navigationItem.title = "提醒"
+        navigationItem.title = "設定提醒"
+        setAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        fetchCurrentUserData()
         getReminders()
     }
     override func viewWillLayoutSubviews() {
@@ -89,12 +96,17 @@ class RemindersViewController: UIViewController {
     }
     
     func getReminders() {
-        ReminderManager.shared.fetchReminders { [weak self] result in
+        ReminderManager.shared.fetchReminders(currentUser: currentUserId) { [weak self] result in
             switch result {
             case .success(let reminders):
                 self?.allReminders = reminders
                 self?.reminders = reminders.filter { $0.status == RemindStatus.active.statusInt }
                 self?.fetchReminderInfo()
+                if self?.allReminders.isEmpty == true {
+                    self?.emptyLabel.isHidden = false
+                } else {
+                    self?.emptyLabel.isHidden = true
+                }
             case .failure(let error):
                 print("Error decoding reminders: \(error)")
             }
@@ -129,6 +141,7 @@ class RemindersViewController: UIViewController {
                 switch result {
                 case .success(let users):
                     self?.members = users
+                    self?.detectBlackListUser()
                     if self?.reminders.isEmpty == false {
                         for user in users where user.userId == self?.reminders[0].memberId {
                             self?.member = user
@@ -162,12 +175,34 @@ class RemindersViewController: UIViewController {
                 }
             }
             self.tableView.reloadData()
+            self.removeAnimation()
         }
+    }
+    
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let currentUserData):
+                if currentUserData?.blackList != nil {
+                    self?.blackList = currentUserData?.blackList ?? []
+                }
+                print("success")
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func detectBlackListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+                                                        userData: members)
+        members = newUserData
     }
     
     func setTableView() {
         view.addSubview(tableView)
         setTableViewConstraint()
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         tableView.register(UINib(nibName: String(describing: ReminderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ReminderTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
@@ -189,6 +224,39 @@ class RemindersViewController: UIViewController {
         addNotificationButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         addNotificationButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
         addNotificationButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    }
+    
+    func setEmptyLabel() {
+        view.addSubview(emptyLabel)
+        emptyLabel.text = "目前暫無資料"
+        emptyLabel.textColor = .greenWhite
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15).isActive = true
+        emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        emptyLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        emptyLabel.isHidden = true
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
