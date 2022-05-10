@@ -130,13 +130,15 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         let memberData = userData.filter { $0.userId == memberExpense.userId }
         
         if groupData?.creator == currentUserId {
+            let revealExpense = memberExpense.allExpense
             if memberExpense.allExpense > 0 {
-                settleUpCell.price.text = " $ \(memberExpense.allExpense)"
+                settleUpCell.price.text = " $ " + String(format: "%.2f", revealExpense)
                 settleUpCell.payerName.text = "\(currentUserName ?? "")"
                 settleUpCell.creditorName.text = "\(memberData[0].userName)"
                 
             } else {
-                settleUpCell.price.text = " $ \(abs(memberExpense.allExpense))"
+//                settleUpCell.price.text = " $ \(abs(memberExpense.allExpense))"
+                settleUpCell.price.text = " $ " + String(format: "%.2f", abs(revealExpense))
                 settleUpCell.creditorName.text = "\(currentUserName ?? "")"
                 settleUpCell.payerName.text = "\(memberData[0].userName)"
             }
@@ -144,9 +146,9 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
             if expense < 0 {
                 settleUpCell.payerName.text = "\(currentUserName ?? "")"
                 settleUpCell.creditorName.text = "\(creator?.userName ?? "")"
-                settleUpCell.price.text = " $ \(abs(expense))"
+                settleUpCell.price.text = " $ " + String(format: "%.2f", abs(expense))
             } else {
-                settleUpCell.price.text = " $ \(expense)"
+                settleUpCell.price.text = " $ " + String(format: "%.2f", expense)
                 settleUpCell.creditorName.text = "\(currentUserName ?? "")"
                 settleUpCell.payerName.text = "\(creator?.userName ?? "")"
             }

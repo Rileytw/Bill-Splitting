@@ -238,14 +238,14 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
             itemsCell.createItemCell(time: time,
                                      name: itemName ?? "",
                                      description: PaidDescription.paid,
-                                     price: "$ " +  "\(item.price)")
+                                     price: item.price)
             itemsCell.paidDescription.textColor = .styleGreen
             itemsCell.setIcon(style: 0)
         } else {
             itemsCell.createItemCell(time: time,
                                      name: itemName ?? "",
                                      description: PaidDescription.involved,
-                                     price: "$ " + "\(abs(item.price))")
+                                     price: abs(item.price))
             itemsCell.paidDescription.textColor = .styleRed
             itemsCell.setIcon(style: 1)
         }

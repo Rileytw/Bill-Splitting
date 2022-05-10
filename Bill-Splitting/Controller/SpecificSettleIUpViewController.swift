@@ -245,16 +245,17 @@ class SpecificSettleIUpViewController: UIViewController {
         price.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
-                price.text = "付款金額：\(abs(memberExpense.allExpense)) 元"
+                
+                price.text = "付款金額：" + String(format: "%.2f", abs(memberExpense.allExpense)) + " 元"
             } else {
-                price.text = "收款金額：\(abs(userExpense[0].allExpense)) 元"
+                price.text = "收款金額：" + String(format: "%.2f", abs(userExpense[0].allExpense)) + " 元"
             }
 
         } else {
             if groupData?.creator == currentUserId {
-                price.text = "收款金額：\(abs(memberExpense.allExpense)) 元"
+                price.text = "收款金額：" + String(format: "%.2f", abs(memberExpense.allExpense)) + " 元"
             } else {
-                price.text = "付款金額：\(abs(userExpense[0].allExpense)) 元"
+                price.text = "付款金額：" + String(format: "%.2f", abs(userExpense[0].allExpense)) + " 元"
             }
         }
         price.font = price.font.withSize(20)

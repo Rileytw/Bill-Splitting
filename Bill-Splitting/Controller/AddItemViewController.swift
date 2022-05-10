@@ -291,9 +291,10 @@ class AddItemViewController: UIViewController {
             for user in 0..<self.involvedExpenseData.count {
                 var involvedPrice: Double?
                 if self.typePickerView.textField.text == SplitType.equal.label {
-                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+//                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+                    involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
                 } else if self.typePickerView.textField.text == SplitType.percent.label {
-                    involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+                    involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
                 } else {
                     involvedPrice = self.involvedExpenseData[user].price
                 }
@@ -324,9 +325,11 @@ class AddItemViewController: UIViewController {
         for user in 0..<self.involvedExpenseData.count {
             var involvedPrice: Double?
             if self.typePickerView.textField.text == SplitType.equal.label {
-                involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+//                involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+                involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
             } else if self.typePickerView.textField.text == SplitType.percent.label {
-                involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+//                involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+                involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
             } else {
                 involvedPrice = self.involvedExpenseData[user].price
             }
@@ -450,7 +453,12 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
                 memberCell.equalLabel.isHidden = false
                 memberCell.percentLabel.text = "%"
                 memberCell.percentLabel.isHidden = false
-                memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
+//                memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
+                
+                let percent: Double = (100.00 / Double(selectedIndexs.count))
+                print("percent\(percent)")
+                memberCell.equalLabel.text = String(format: "%.2f", percent)
+//                String(format: "%.2f", currentRatio)
             } else {
                 cell.accessoryType = .none
                 memberCell.selectedButton.isSelected = false

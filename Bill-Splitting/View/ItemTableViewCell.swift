@@ -46,11 +46,16 @@ class ItemTableViewCell: UITableViewCell {
             }
     }
     
-    func createItemCell(time: String, name: String, description: PaidDescription, price: String) {
+    func createItemCell(time: String, name: String, description: PaidDescription, price: Double) {
         createdTime.text = time
         itemName.text = name
         paidDescription.text = description.rawValue
-        priceLabel.text = price
+//        priceLabel.text = price
+        if price != 0 {
+            priceLabel.text = "$" + String(format: "%.2f", price)
+        } else {
+            priceLabel.text = ""
+        }
     }
     
     func setIcon(style: Int) {
