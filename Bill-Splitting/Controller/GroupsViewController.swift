@@ -350,13 +350,18 @@ extension GroupsViewController {
             switch result {
             case .success(let expense):
                 let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
-                self?.personalExpense = personalExpense[0].allExpense
-                let allExpense = expense.map { $0.allExpense }
-                self?.memberExpense = 0
-                for member in allExpense {
-                    self?.memberExpense += abs(member)
+                if personalExpense.isEmpty == false {
+                    self?.personalExpense = personalExpense[0].allExpense
+                    let allExpense = expense.map { $0.allExpense }
+                    self?.memberExpense = 0
+                    for member in allExpense {
+                        self?.memberExpense += abs(member)
+                    }
+                    self?.revealBlockView()
+                } else {
+                    self?.getGroupData()
                 }
-                self?.revealBlockView()
+                
             case .failure(let error):
                 print("Error decoding userData: \(error)")
                 ProgressHUD.shared.view = self?.view ?? UIView()
@@ -433,7 +438,6 @@ extension GroupsViewController {
     func closeGroup() {
         if group?.creator == currentUserId {
             GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "")
-            self.navigationController?.popToRootViewController(animated: true)
         }
     }
     
