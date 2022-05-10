@@ -203,6 +203,7 @@ class SubscribeViewController: UIViewController {
         
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
+        addItemView.priceTextField.keyboardType = .numberPad
     }
     
     func setInvolvedMemberLabel() {

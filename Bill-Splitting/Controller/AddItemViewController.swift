@@ -87,6 +87,8 @@ class AddItemViewController: UIViewController {
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
         
+        addItemView.priceTextField.keyboardType = .numberPad
+        
         if isItemExist == true {
             addItemView.itemNameTextField.text = itemData?.itemName
             addItemView.priceTextField.text = String(itemData?.paidInfo?[0].price ?? 0)
