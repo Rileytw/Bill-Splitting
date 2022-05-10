@@ -77,7 +77,9 @@ class ItemDetailTableViewCell: UITableViewCell {
         let createdDate = dateFormatter.string(from: date)
         createdTime.text = createdDate
         
-        price.text = "金額：" + String(paidPrice)
+       
+//        price.text = "金額：" + String(paidPrice)
+        price.text = "金額：" + String(format: "%.2f", paidPrice)
         paidUser.text = paidMember
         descriptionTextView.text = description
         itemImage.getImage(image, placeHolder: nil)

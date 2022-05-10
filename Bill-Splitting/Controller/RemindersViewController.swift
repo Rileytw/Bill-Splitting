@@ -109,6 +109,8 @@ class RemindersViewController: UIViewController {
                 }
             case .failure(let error):
                 print("Error decoding reminders: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -129,6 +131,8 @@ class RemindersViewController: UIViewController {
                     }
                 case .failure(let error):
                     print("Error decoding groups: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
                 group.leave()
             }
@@ -149,6 +153,8 @@ class RemindersViewController: UIViewController {
                     }
                 case .failure(let error):
                     print("Error decoding users: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
                 group.leave()
             }
@@ -189,6 +195,8 @@ class RemindersViewController: UIViewController {
                 print("success")
             case .failure(let error):
                 print("\(error.localizedDescription)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }

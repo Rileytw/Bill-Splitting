@@ -41,9 +41,11 @@ class CustomGroupViewController: UIViewController {
     var expense: Double? {
         didSet {
             if expense ?? 0 >= 0 {
-                groupDetailView.personalFinalPaidLabel.text = "你的總支出為：\(expense ?? 0) 元"
+                let revealExpense = String(format: "%.2f", expense ?? 0)
+                groupDetailView.personalFinalPaidLabel.text = "你的總支出為：\(revealExpense) 元"
             } else {
-                groupDetailView.personalFinalPaidLabel.text = "你的總欠款為：\(abs(expense ?? 0)) 元"
+                let revealExpense = String(format: "%.2f", abs(expense ?? 0))
+                groupDetailView.personalFinalPaidLabel.text = "你的總欠款為：\(revealExpense) 元"
             }
         }
     }
@@ -67,6 +69,8 @@ class CustomGroupViewController: UIViewController {
         addMenu()
         setAnimation()
         navigationItem.title = "群組"
+        getItemData()
+        getMemberExpense()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -75,8 +79,8 @@ class CustomGroupViewController: UIViewController {
         userData.removeAll()
         leaveMemberData.removeAll()
         
-        getItemData()
-        getMemberExpense()
+//        getItemData()
+//        getMemberExpense()
         getLeaveMemberData()
     }
     
@@ -101,6 +105,8 @@ class CustomGroupViewController: UIViewController {
                     }
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
                 }
             }
         }
@@ -117,6 +123,8 @@ class CustomGroupViewController: UIViewController {
                         }
                     case .failure(let error):
                         print("Error decoding userData: \(error)")
+                        ProgressHUD.shared.view = self?.view ?? UIView()
+                        ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                     }
                 }
             }
@@ -267,6 +275,8 @@ class CustomGroupViewController: UIViewController {
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -283,6 +293,8 @@ class CustomGroupViewController: UIViewController {
                     semaphore.signal()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                     semaphore.signal()
                 }
             }
@@ -295,6 +307,8 @@ class CustomGroupViewController: UIViewController {
                     self?.involvedItem.append(items)
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
                 self?.removeAnimation()
             }
@@ -316,6 +330,8 @@ class CustomGroupViewController: UIViewController {
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -348,11 +364,15 @@ class CustomGroupViewController: UIViewController {
                                 self?.addSubscriptionItem()
                             case .failure(let error):
                                 print("Error decoding userData: \(error)")
+                                ProgressHUD.shared.view = self?.view ?? UIView()
+                                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                             }
                         }
                     }
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
             }
         }
@@ -512,36 +532,40 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         let time = dateFormatter.string(from: date)
         
         if paid?.userId == currentUserId {
+            let paidPrice = paid?.price ?? 0
+            let revealExpense = String(format: "%.2f", paidPrice)
             
             if item.itemName == "結帳" {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.settleUpInvolved,
-                                         price: "$\(paid?.price ?? 0)")
-                itemsCell.paidDescription.textColor = UIColor.styleGreen
+                                         price: paid?.price ?? 0)
+                itemsCell.paidDescription.textColor = UIColor.styleRed
                 itemsCell.setIcon(style: 0)
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.paid,
-                                         price: "$\(paid?.price ?? 0)")
+                                         price: paid?.price ?? 0)
                 itemsCell.paidDescription.textColor = UIColor.styleGreen
                 itemsCell.setIcon(style: 0)
             }
         } else {
+            let involvedPrice = involved?.price ?? 0
+            let revealExpense = String(format: "%.2f", involvedPrice)
             if involved?.userId == currentUserId {
                 if item.itemName == "結帳" {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,
                                              description: PaidDescription.settleUpPaid,
-                                             price: "$\(involved?.price ?? 0)")
-                    itemsCell.paidDescription.textColor = UIColor.styleRed
+                                             price: involved?.price ?? 0)
+                    itemsCell.paidDescription.textColor = UIColor.styleGreen
                     itemsCell.setIcon(style: 1)
                 } else {
                     itemsCell.createItemCell(time: time,
                                              name: item.itemName,
                                              description: PaidDescription.involved,
-                                             price: "$\(involved?.price ?? 0)")
+                                             price: involved?.price ?? 0)
                     itemsCell.paidDescription.textColor = UIColor.styleRed
                     itemsCell.setIcon(style: 1)
                 }
@@ -549,7 +573,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
                 itemsCell.createItemCell(time: time,
                                          name: item.itemName,
                                          description: PaidDescription.notInvolved,
-                                         price: "")
+                                         price: 0)
                 itemsCell.paidDescription.textColor = UIColor.greenWhite
                 itemsCell.setIcon(style: 2)
             }

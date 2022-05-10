@@ -8,7 +8,7 @@
 import UIKit
 
 class AddItemViewController: UIViewController {
-
+    
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
@@ -19,7 +19,7 @@ class AddItemViewController: UIViewController {
     let typeLabel = UILabel()
     let dismissButton = UIButton()
     
-    var groupData: GroupData? 
+    var groupData: GroupData?
     var memberId: [String]?
     var memberData: [UserData]? = [] {
         didSet {
@@ -87,12 +87,14 @@ class AddItemViewController: UIViewController {
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
         
+        addItemView.priceTextField.keyboardType = .numberPad
+        
         if isItemExist == true {
             addItemView.itemNameTextField.text = itemData?.itemName
             addItemView.priceTextField.text = String(itemData?.paidInfo?[0].price ?? 0)
         }
     }
-
+    
     func setTypePickerView() {
         view.addSubview(typePickerView)
         typePickerView.translatesAutoresizingMaskIntoConstraints = false
@@ -127,7 +129,7 @@ class AddItemViewController: UIViewController {
         memberPickerView.leadingAnchor.constraint(equalTo: choosePaidMember.trailingAnchor, constant: 20).isActive = true
         memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-
+        
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
         memberPickerView.pickerView.tag = 1
@@ -141,7 +143,7 @@ class AddItemViewController: UIViewController {
     func setAddButton() {
         view.addSubview(addButton)
         addButton.setTitle("完成", for: .normal)
-//        addButton.backgroundColor = .systemGray
+        //        addButton.backgroundColor = .systemGray
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
         addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
@@ -176,7 +178,7 @@ class AddItemViewController: UIViewController {
             addMoreInfoViewController.itemData = itemData
             addMoreInfoViewController.isItemExist = true
         }
-       
+        
         addMoreInfoViewController.urlData = { [weak self] urlString in
             self?.itemImageString = urlString
         }
@@ -213,45 +215,55 @@ class AddItemViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
-           checkInvolvedData()
-           if addItemView.itemNameTextField.text == "" ||
-               addItemView.priceTextField.text == "" ||
-               typePickerView.textField.text == "" ||
-               memberPickerView.textField.text == "" {
-               lossInfoAlert(message: "請確認是否填寫完整資訊")
-           } else if involvedExpenseData.isEmpty == true {
-               lossInfoAlert(message: "請確認是否選取參與人")
-           } else if typePickerView.textField.text == SplitType.percent.label && involvedTotalPrice != 100 {
-               lossInfoAlert(message: "請確認分帳比例是否正確")
-           } else if typePickerView.textField.text == SplitType.customize.label &&
-                       involvedTotalPrice != paidPrice {
-               lossInfoAlert(message: "請確認自訂金額是否正確")
-           } else {
-               if isItemExist == true {
-                   deleteItem() {
-                       addItem()
-                   }
-               } else {
-                   addItem()
-               }
-               
-               self.dismiss(animated: false, completion: nil)
-           }
-       }
-       
-       func checkInvolvedData() {
-           involvedTotalPrice = 0
-           for involvePrice in involvedExpenseData {
-               involvedTotalPrice += involvePrice.price
-           }
-       }
-       
-       func lossInfoAlert(message: String) {
-           let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
-           let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
-           alertController.addAction(confirmAction)
-           present(alertController, animated: true, completion: nil)
-       }
+        checkInvolvedData()
+        if addItemView.itemNameTextField.text == "" ||
+            addItemView.priceTextField.text == "" ||
+            typePickerView.textField.text == "" {
+            lossInfoAlert(message: "請確認是否填寫款項名稱、支出金額並選擇分款方式")
+        } else if memberPickerView.textField.text == "" && groupData?.type == GroupType.multipleUsers.typeInt {
+            lossInfoAlert(message: "請確認是否選取付款人")
+        } else if involvedExpenseData.isEmpty == true {
+            lossInfoAlert(message: "請確認是否選取參與人")
+        } else if typePickerView.textField.text == SplitType.percent.label && involvedTotalPrice != 100 {
+            lossInfoAlert(message: "請確認分帳比例是否正確")
+        } else if typePickerView.textField.text == SplitType.customize.label {
+            let userInputPaid = addItemView.priceTextField.text ?? ""
+            if let paidPrice = Double(userInputPaid) {
+                if involvedTotalPrice != paidPrice {
+                    lossInfoAlert(message: "請確認自訂金額是否正確")
+                } else {
+                    confirmAddItem()
+                }
+            }
+        } else {
+            confirmAddItem()
+        }
+    }
+    
+    func confirmAddItem() {
+        if isItemExist == true {
+            deleteItem() {
+                addItem()
+            }
+        } else {
+            addItem()
+        }
+        self.dismiss(animated: false, completion: nil)
+    }
+    
+    func checkInvolvedData() {
+        involvedTotalPrice = 0
+        for involvePrice in involvedExpenseData {
+            involvedTotalPrice += involvePrice.price
+        }
+    }
+    
+    func lossInfoAlert(message: String) {
+        let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
     
     func addItem() {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
@@ -275,13 +287,14 @@ class AddItemViewController: UIViewController {
                                            price: paidPrice ?? 0,
                                            itemId: itemId,
                                            createdTime: Double(NSDate().timeIntervalSince1970))
-
+            
             for user in 0..<self.involvedExpenseData.count {
                 var involvedPrice: Double?
                 if self.typePickerView.textField.text == SplitType.equal.label {
-                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+//                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+                    involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
                 } else if self.typePickerView.textField.text == SplitType.percent.label {
-                    involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+                    involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
                 } else {
                     involvedPrice = self.involvedExpenseData[user].price
                 }
@@ -312,9 +325,11 @@ class AddItemViewController: UIViewController {
         for user in 0..<self.involvedExpenseData.count {
             var involvedPrice: Double?
             if self.typePickerView.textField.text == SplitType.equal.label {
-                involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+//                involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
+                involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
             } else if self.typePickerView.textField.text == SplitType.percent.label {
-                involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+//                involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+                involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
             } else {
                 involvedPrice = self.involvedExpenseData[user].price
             }
@@ -438,7 +453,12 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
                 memberCell.equalLabel.isHidden = false
                 memberCell.percentLabel.text = "%"
                 memberCell.percentLabel.isHidden = false
-                memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
+//                memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
+                
+                let percent: Double = (100.00 / Double(selectedIndexs.count))
+                print("percent\(percent)")
+                memberCell.equalLabel.text = String(format: "%.2f", percent)
+//                String(format: "%.2f", currentRatio)
             } else {
                 cell.accessoryType = .none
                 memberCell.selectedButton.isSelected = false
@@ -472,7 +492,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
                 memberCell.percentLabel.isHidden = true
             }
             memberCell.equalLabel.isHidden = true
-//            memberCell.percentLabel.isHidden = true
+            //            memberCell.percentLabel.isHidden = true
         }
         
         memberCell.delegate = self
@@ -505,7 +525,7 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
         let name = cell.memberName.text
         let selectedUser = memberData?.filter { $0.userName == name }
         guard let id = selectedUser?[0].userId else { return }
-                
+        
         for index in 0..<involvedExpenseData.count {
             
             if involvedExpenseData[index].userId == id {

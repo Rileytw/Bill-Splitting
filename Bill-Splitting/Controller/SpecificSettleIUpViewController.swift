@@ -23,9 +23,6 @@ class SpecificSettleIUpViewController: UIViewController {
     var settleButton = UIButton()
     var tableView = UITableView()
     
-    typealias AddItemColsure = (String) -> Void
-    var addItemColsure: AddItemColsure?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -83,7 +80,6 @@ class SpecificSettleIUpViewController: UIViewController {
         
         settleButton.setTitle("已結清", for: .normal)
         ElementsStyle.styleSpecificButton(settleButton)
-//        settleButton.backgroundColor = .systemGray
         settleButton.addTarget(self, action: #selector(pressSettleUpButton), for: .touchUpInside)
     }
     
@@ -93,7 +89,6 @@ class SpecificSettleIUpViewController: UIViewController {
         if let groupViewController = self.navigationController?.viewControllers[1] {
             self.navigationController?.popToViewController(groupViewController, animated: true)
         }
-        addItemColsure?("id")
     }
     
     func addItem() {
@@ -114,11 +109,11 @@ class SpecificSettleIUpViewController: UIViewController {
             var creditorId: String?
             if self.groupData?.creator == self.currentUserId {
                 if expense <= 0 {
-                    paidUserId = self.currentUserId
-                    creditorId = memberId
-                } else {
                     paidUserId = memberId
                     creditorId = self.currentUserId
+                } else {
+                    paidUserId = self.currentUserId
+                    creditorId = memberId
                 }
                 
                 ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
@@ -132,11 +127,11 @@ class SpecificSettleIUpViewController: UIViewController {
                                                    createdTime: Double(NSDate().timeIntervalSince1970))
             } else {
                 if userExpense[0].allExpense <= 0 {
-                    paidUserId = self.currentUserId
-                    creditorId = memberId
-                } else {
-                    paidUserId = memberId
+                    paidUserId = self.userData?.userId
                     creditorId = self.currentUserId
+                } else {
+                    paidUserId = self.currentUserId
+                    creditorId = self.userData?.userId
                 }
                 
                 ItemManager.shared.addPaidInfo(paidUserId: creditorId ?? "",
@@ -149,7 +144,6 @@ class SpecificSettleIUpViewController: UIViewController {
                                                    itemId: itemId,
                                                    createdTime: Double(NSDate().timeIntervalSince1970))
             }
-            
             self.updatePersonalExpense()
         }
     }
@@ -189,7 +183,7 @@ class SpecificSettleIUpViewController: UIViewController {
         } else {
             if userExpense[0].allExpense <= 0 {
                 paidUserId = currentUserId
-                creditorId = memberId
+                creditorId = userData?.userId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: 0 - userExpense[0].allExpense,
                                                         groupId: groupId ?? "")
@@ -198,7 +192,7 @@ class SpecificSettleIUpViewController: UIViewController {
                                                         newExpense: userExpense[0].allExpense,
                                                         groupId: groupId ?? "")
             } else {
-                paidUserId = memberId
+                paidUserId = userData?.userId
                 creditorId = currentUserId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: userExpense[0].allExpense,
@@ -209,10 +203,6 @@ class SpecificSettleIUpViewController: UIViewController {
                                                         groupId: groupId ?? "")
             }
         }
-    }
-    
-    func addItem(closure: @escaping AddItemColsure) {
-        addItemColsure = closure
     }
     
     func setNameInfo() {
@@ -229,18 +219,14 @@ class SpecificSettleIUpViewController: UIViewController {
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
                 nameLabel.text = "付款對象：\(userData.userName)"
-//                nameLabel.textColor = UIColor.styleRed
             } else {
                 nameLabel.text = "收款對象：\(userData.userName)"
-//                nameLabel.textColor = UIColor.styleGreen
             }
         } else {
             if groupData?.creator == currentUserId {
                 nameLabel.text = "收款對象：\(userData.userName)"
-//                nameLabel.textColor = UIColor.styleGreen
             } else {
                 nameLabel.text = "付款對象：\(userData.userName)"
-//                nameLabel.textColor = UIColor.styleRed
             }
         }
         nameLabel.font = nameLabel.font.withSize(20)
@@ -259,20 +245,17 @@ class SpecificSettleIUpViewController: UIViewController {
         price.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
-                price.text = "付款金額：\(abs(memberExpense.allExpense)) 元"
-//                price.textColor = UIColor.styleRed
+                
+                price.text = "付款金額：" + String(format: "%.2f", abs(memberExpense.allExpense)) + " 元"
             } else {
-                price.text = "收款金額：\(abs(userExpense[0].allExpense)) 元"
-//                price.textColor = UIColor.styleGreen
+                price.text = "收款金額：" + String(format: "%.2f", abs(userExpense[0].allExpense)) + " 元"
             }
 
         } else {
             if groupData?.creator == currentUserId {
-                price.text = "收款金額：\(abs(memberExpense.allExpense)) 元"
-//                price.textColor = UIColor.styleGreen
+                price.text = "收款金額：" + String(format: "%.2f", abs(memberExpense.allExpense)) + " 元"
             } else {
-                price.text = "付款金額：\(abs(userExpense[0].allExpense)) 元"
-//                price.textColor = UIColor.styleRed
+                price.text = "付款金額：" + String(format: "%.2f", abs(userExpense[0].allExpense)) + " 元"
             }
         }
         price.font = price.font.withSize(20)

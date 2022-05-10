@@ -118,7 +118,7 @@
 
 /* Begin PBXFileReference section */
 		0619BB2CF09025753646E789 /* Pods-Bill-Splitting.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.debug.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.debug.xcconfig"; sourceTree = "<group>"; };
-		350A33402800450000201E40 /* Bill-Splitting.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bill-Splitting.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		350A33402800450000201E40 /* WeCount.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeCount.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		350A33432800450000201E40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		350A33452800450000201E40 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		350A33472800450000201E40 /* AddGroupsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroupsViewController.swift; sourceTree = "<group>"; };
@@ -273,7 +273,7 @@
 		350A33412800450000201E40 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				350A33402800450000201E40 /* Bill-Splitting.app */,
+				350A33402800450000201E40 /* WeCount.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -454,7 +454,7 @@
 			);
 			name = "Bill-Splitting";
 			productName = "Bill-Splitting";
-			productReference = 350A33402800450000201E40 /* Bill-Splitting.app */;
+			productReference = 350A33402800450000201E40 /* WeCount.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -845,6 +845,7 @@
 				DEVELOPMENT_TEAM = 96D753D9GJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Bill-Splitting/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WeCount;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Add photo for items";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Add photo for items";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -859,7 +860,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.lei.Bill-Splitting";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = WeCount;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -878,6 +879,7 @@
 				DEVELOPMENT_TEAM = 96D753D9GJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Bill-Splitting/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WeCount;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Add photo for items";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Add photo for items";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -892,7 +894,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.lei.Bill-Splitting";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = WeCount;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
