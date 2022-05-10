@@ -165,18 +165,22 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         let userExpense = self.memberExpense.filter { $0.userId == currentUserId}
         if groupData?.creator == currentUserId {
             specificSettleUpViewController.userData = memberData[0]
-            specificSettleUpViewController.memberExpense = memberExpense
-            specificSettleUpViewController.groupId = groupData?.groupId
-            specificSettleUpViewController.groupData = groupData
-            specificSettleUpViewController.userExpense = userExpense
+//            specificSettleUpViewController.memberExpense = memberExpense
+//            specificSettleUpViewController.groupId = groupData?.groupId
+//            specificSettleUpViewController.groupData = groupData
+//            specificSettleUpViewController.userExpense = userExpense
         } else {
             // MARK: - Bugs of not creator user
             specificSettleUpViewController.userData = creator
-            specificSettleUpViewController.memberExpense = memberExpense
-            specificSettleUpViewController.groupId = groupData?.groupId
-            specificSettleUpViewController.groupData = groupData
-            specificSettleUpViewController.userExpense = userExpense
+//            specificSettleUpViewController.memberExpense = memberExpense
+//            specificSettleUpViewController.groupId = groupData?.groupId
+//            specificSettleUpViewController.groupData = groupData
+//            specificSettleUpViewController.userExpense = userExpense
         }
+        specificSettleUpViewController.memberExpense = memberExpense
+        specificSettleUpViewController.groupId = groupData?.groupId
+        specificSettleUpViewController.groupData = groupData
+        specificSettleUpViewController.userExpense = userExpense
     
         self.show(specificSettleUpViewController, sender: nil)
     }

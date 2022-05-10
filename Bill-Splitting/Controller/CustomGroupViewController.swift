@@ -67,6 +67,8 @@ class CustomGroupViewController: UIViewController {
         addMenu()
         setAnimation()
         navigationItem.title = "群組"
+        getItemData()
+        getMemberExpense()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -75,8 +77,8 @@ class CustomGroupViewController: UIViewController {
         userData.removeAll()
         leaveMemberData.removeAll()
         
-        getItemData()
-        getMemberExpense()
+//        getItemData()
+//        getMemberExpense()
         getLeaveMemberData()
     }
     
@@ -534,7 +536,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
                                          name: item.itemName,
                                          description: PaidDescription.settleUpInvolved,
                                          price: "$\(paid?.price ?? 0)")
-                itemsCell.paidDescription.textColor = UIColor.styleGreen
+                itemsCell.paidDescription.textColor = UIColor.styleRed
                 itemsCell.setIcon(style: 0)
             } else {
                 itemsCell.createItemCell(time: time,
@@ -551,7 +553,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
                                              name: item.itemName,
                                              description: PaidDescription.settleUpPaid,
                                              price: "$\(involved?.price ?? 0)")
-                    itemsCell.paidDescription.textColor = UIColor.styleRed
+                    itemsCell.paidDescription.textColor = UIColor.styleGreen
                     itemsCell.setIcon(style: 1)
                 } else {
                     itemsCell.createItemCell(time: time,
