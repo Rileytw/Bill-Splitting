@@ -134,6 +134,8 @@ class AddReminderViewController: UIViewController {
             loseInfoAlert(title: "資料不完整", message: "請確認是否已設定群組及提醒對象")
         } else if creditButton.isSelected == false && debtButton.isSelected == false {
             loseInfoAlert(title: "資料不完整", message: "請確認已選擇提醒類型")
+        } else if reminderData.remindTime == 0 {
+            loseInfoAlert(title: "請確認提醒時間", message: "提醒時間需晚於現在時間")
         } else {
             addReminder()
             self.dismiss(animated: true, completion: nil)
@@ -237,6 +239,8 @@ class AddReminderViewController: UIViewController {
         remindTimeDatePicker.contentHorizontalAlignment = .right
         remindTimeDatePicker.overrideUserInterfaceStyle = .dark
         remindTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
+        let now = Date()
+        remindTimeDatePicker.minimumDate = now
     }
     
     @objc func datePickerChanged() {

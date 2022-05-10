@@ -118,6 +118,8 @@ class SubscribeViewController: UIViewController {
         startTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
 //        startTimeDatePicker.setValue(UIColor.greenWhite, forKeyPath: "textColor")
         startTimeDatePicker.overrideUserInterfaceStyle = .dark
+        let now = Date()
+        startTimeDatePicker.minimumDate = now
 
         view.addSubview(endTimeDatePicker)
         endTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
