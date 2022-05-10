@@ -36,6 +36,8 @@ class AddItemTableViewCell: UITableViewCell {
         equalLabel.textColor = UIColor.greenWhite
         priceTextField.textColor = UIColor.greenWhite
         ElementsStyle.styleTextField(priceTextField)
+        
+        priceTextField.keyboardType = .numberPad
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -53,3 +55,4 @@ extension AddItemTableViewCell: UITextFieldDelegate {
 protocol AddItemTableViewCellDelegate: AnyObject {
     func endEditing(_ cell: AddItemTableViewCell)
 }
+

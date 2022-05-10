@@ -88,6 +88,17 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         imagePickerAlertController.addAction(libraryAction)
         imagePickerAlertController.addAction(cancelAction)
         present(imagePickerAlertController, animated: true, completion: nil)
+        
+        // MARK: - code for iPad to avoid crash
+        imagePickerAlertController.popoverPresentationController?.sourceView = self.view
+        
+        let xOrigin = self.view.bounds.width / 2
+        
+        let popoverRect = CGRect(x: xOrigin, y: 0, width: 1, height: 1)
+        
+        imagePickerAlertController.popoverPresentationController?.sourceRect = popoverRect
+        
+        imagePickerAlertController.popoverPresentationController?.permittedArrowDirections = .up
     }
     
     internal func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {

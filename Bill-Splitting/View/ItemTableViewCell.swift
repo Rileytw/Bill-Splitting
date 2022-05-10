@@ -11,8 +11,8 @@ enum PaidDescription: String {
     case paid = "你已支付"
     case involved = "你應支付"
     case notInvolved = "你未參與"
-    case settleUpPaid = "已付款"
-    case settleUpInvolved = "已收款"
+    case settleUpPaid = "已收款"
+    case settleUpInvolved = "已付款"
 }
 
 class ItemTableViewCell: UITableViewCell {
@@ -46,11 +46,16 @@ class ItemTableViewCell: UITableViewCell {
             }
     }
     
-    func createItemCell(time: String, name: String, description: PaidDescription, price: String) {
+    func createItemCell(time: String, name: String, description: PaidDescription, price: Double) {
         createdTime.text = time
         itemName.text = name
         paidDescription.text = description.rawValue
-        priceLabel.text = price
+//        priceLabel.text = price
+        if price != 0 {
+            priceLabel.text = "$" + String(format: "%.2f", price)
+        } else {
+            priceLabel.text = ""
+        }
     }
     
     func setIcon(style: Int) {

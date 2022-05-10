@@ -96,6 +96,8 @@ class FriendListViewController: UIViewController {
                 }
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -179,32 +181,38 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func blockUser() {
-        FriendManager.shared.removeFriend(userId: currentUserId, friendId: blockedUserId ?? "") { result in
+        FriendManager.shared.removeFriend(userId: currentUserId, friendId: blockedUserId ?? "") { [weak self] result in
             switch result {
             case .success:
                 print("remove friend successfully")
             case .failure(let error):
                 print("\(error.localizedDescription)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
         
-        FriendManager.shared.removeFriend(userId: blockedUserId ?? "", friendId: currentUserId) { result in
+        FriendManager.shared.removeFriend(userId: blockedUserId ?? "", friendId: currentUserId) { [weak self] result in
             switch result {
             case .success:
                 print("remove friend successfully")
             case .failure(let error):
                 print("\(error.localizedDescription)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
     
     func addToBlackList() {
-        FriendManager.shared.addBlockFriends(userId: currentUserId, blockedUser: blockedUserId ?? "") { result in
+        FriendManager.shared.addBlockFriends(userId: currentUserId, blockedUser: blockedUserId ?? "") { [weak self] result in
             switch result {
             case .success():
                 print("Add blackList successfully")
             case .failure(let error):
                 print("\(error.localizedDescription)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料上傳發生錯誤，請稍後再試")
             }
         }
     }

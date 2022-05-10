@@ -41,6 +41,8 @@ class BlackListViewController: UIViewController {
                 self?.tableView.reloadData()
             case .failure(let error):
                 print("Error decoding users: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }

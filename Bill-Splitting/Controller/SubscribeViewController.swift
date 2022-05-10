@@ -40,6 +40,8 @@ class SubscribeViewController: UIViewController {
     var involvedPrice: Double?
     var involvedMemberName: [String] = []
     
+    var involvedTotalPrice: Double = 0
+    
     var groupData: GroupData?
     var memberId: [String]?
     var memberData: [UserData]? = [] {
@@ -116,6 +118,8 @@ class SubscribeViewController: UIViewController {
         startTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
 //        startTimeDatePicker.setValue(UIColor.greenWhite, forKeyPath: "textColor")
         startTimeDatePicker.overrideUserInterfaceStyle = .dark
+        let now = Date()
+        startTimeDatePicker.minimumDate = now
 
         view.addSubview(endTimeDatePicker)
         endTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
@@ -159,10 +163,37 @@ class SubscribeViewController: UIViewController {
     }
     
     @objc func pressCompleteButton() {
-        countSubscriptiontime()
-        updateSubscriptionData()
-        self.dismiss(animated: true, completion: nil)
+        checkInvolvedData()
+        
+        if cyclePicker.textField.text == "" ||
+            addItemView.itemNameTextField.text == "" ||
+            addItemView.priceTextField.text == "" {
+            lossInfoAlert(message: "請確認是否填寫完整資訊")
+        } else if involvedExpenseData.isEmpty == true {
+            lossInfoAlert(message: "請確認是否選取參與人")
+        } else if involvedTotalPrice != paidPrice {
+            lossInfoAlert(message: "請確認參與金額是否正確")
+        } else {
+            countSubscriptiontime()
+            updateSubscriptionData()
+            self.dismiss(animated: true, completion: nil)
+        }
     }
+
+    func checkInvolvedData() {
+        involvedTotalPrice = 0
+        for involvePrice in involvedExpenseData {
+            involvedTotalPrice += involvePrice.price
+        }
+    }
+    
+    func lossInfoAlert(message: String) {
+        let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     
     func setAddItemView() {
         view.addSubview(addItemView)
@@ -174,6 +205,7 @@ class SubscribeViewController: UIViewController {
         
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
+        addItemView.priceTextField.keyboardType = .numberPad
     }
     
     func setInvolvedMemberLabel() {

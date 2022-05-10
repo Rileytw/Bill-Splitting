@@ -56,6 +56,8 @@ class ProfileViewController: UIViewController {
                 self?.fetchFriends()
             case.failure(let error):
                 print(error.localizedDescription)
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -67,6 +69,8 @@ class ProfileViewController: UIViewController {
                 self?.currentUser?.friends = friend
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -99,6 +103,8 @@ class ProfileViewController: UIViewController {
                 backToSignInPage()
             } catch let error as NSError {
                 print(error.localizedDescription)
+                ProgressHUD.shared.view = view
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }

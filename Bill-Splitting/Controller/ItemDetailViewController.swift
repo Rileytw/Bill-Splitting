@@ -26,6 +26,8 @@ class ItemDetailViewController: UIViewController {
     var mask = UIView()
     let width = UIScreen.main.bounds.size.width
     let height = UIScreen.main.bounds.size.height
+    let photoView = UIView()
+    var image: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,6 +98,8 @@ class ItemDetailViewController: UIViewController {
                 self?.getItemExpense()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -113,6 +117,8 @@ class ItemDetailViewController: UIViewController {
                     self?.getPayUser()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
                 group.leave()
 
@@ -129,6 +135,8 @@ class ItemDetailViewController: UIViewController {
                     self?.getInvolvedUser()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
                 group.leave()
             }
@@ -328,6 +336,49 @@ class ItemDetailViewController: UIViewController {
         }, completion: nil)
         mask.removeFromSuperview()
     }
+    
+    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
+       
+        guard let tappedImage = tapGestureRecognizer.view as? UIImageView else { return }
+
+        addImageView(image: self.image ?? "")
+    }
+    
+    func addImageView(image: String) {
+        view.addSubview(photoView)
+        photoView.translatesAutoresizingMaskIntoConstraints = false
+        photoView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        photoView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        photoView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        photoView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        photoView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.9)
+        
+        let photoImage = UIImageView()
+        photoView.addSubview(photoImage)
+        photoImage.getImage(image)
+        photoImage.contentMode = .scaleAspectFit
+        photoImage.translatesAutoresizingMaskIntoConstraints = false
+        photoImage.centerXAnchor.constraint(equalTo: photoView.centerXAnchor).isActive = true
+        photoImage.centerYAnchor.constraint(equalTo: photoView.centerYAnchor).isActive = true
+        photoImage.widthAnchor.constraint(equalToConstant: width).isActive = true
+        photoImage.heightAnchor.constraint(equalToConstant: height - 200).isActive = true
+        
+        let dismissButton = UIButton()
+        photoView.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: photoView.topAnchor, constant: 10).isActive = true
+        dismissButton.rightAnchor.constraint(equalTo: photoView.rightAnchor, constant: -10).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = .greenWhite
+        
+        dismissButton.addTarget(self, action: #selector(dismissPhotoView), for: .touchUpInside)
+    }
+    
+    @objc func dismissPhotoView() {
+        photoView.removeFromSuperview()
+    }
 }
 
 extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
@@ -361,6 +412,13 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
                                         paidMember: paidUser[0].userName,
                                         description: item.itemDescription,
                                         image: item.itemImage)
+             
+             if item.itemImage != nil {
+                 self.image = item.itemImage
+                 let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+                 detailCell.itemImage.isUserInteractionEnabled = true
+                 detailCell.itemImage.addGestureRecognizer(tapGestureRecognizer)
+             }
             
             return detailCell
         } else {

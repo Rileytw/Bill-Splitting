@@ -115,6 +115,8 @@ class SignUpViewController: UIViewController {
                 self?.dismiss(animated: true, completion: nil)
             case .failure(let error):
                 print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
             self?.removeAnimation()
         }
