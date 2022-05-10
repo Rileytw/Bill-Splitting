@@ -34,16 +34,17 @@ class ItemTableViewCell: UITableViewCell {
         ElementsStyle.styleView(cellView)
         colorView.backgroundColor = .styleBlue
         
+        self.selectionStyle = UITableViewCell.SelectionStyle.none
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        if selected {
-                contentView.backgroundColor = UIColor.selectedColor
-            } else {
-                contentView.backgroundColor = UIColor.clear
-            }
+//        if selected {
+//                contentView.backgroundColor = UIColor.selectedColor
+//            } else {
+//                contentView.backgroundColor = UIColor.clear
+//            }
     }
     
     func createItemCell(time: String, name: String, description: PaidDescription, price: Double) {

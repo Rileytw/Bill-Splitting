@@ -594,7 +594,36 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         itemDetailViewController.personalExpense = expense
         
         self.show(itemDetailViewController, sender: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
         
+        let cell = tableView.cellForRow(at: indexPath)
+        UIView.animate(withDuration: 0.25) {
+            cell?.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        }
+    }
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath)
+        UIView.animate(withDuration: 0.25) {
+            cell?.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }
+    }
+    
+    private func animateTableView() {
+        let cells = itemTableView.visibleCells
+        let tableHeight: CGFloat = itemTableView.bounds.size.height
+        for (index, cell) in cells.enumerated() {
+            cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
+            UIView.animate(withDuration: 0.8,
+                           delay: 0.05 * Double(index),
+                           usingSpringWithDamping: 0.8,
+                           initialSpringVelocity: 0,
+                           options: [],
+                           animations: {
+                cell.transform = CGAffineTransform(translationX: 0, y: 0)
+            }, completion: nil)
+        }
     }
 }
 
