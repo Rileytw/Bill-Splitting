@@ -31,16 +31,16 @@ class CustomGroupViewController: UIViewController {
     var itemData: [ItemData] = []
     var item: ItemData?
     
-    var paidItem: [[ExpenseInfo]] = [] {
-        didSet {
-            itemTableView.reloadData()
-        }
-    }
-    var involvedItem: [[ExpenseInfo]] = [] {
-        didSet {
-            itemTableView.reloadData()
-        }
-    }
+    var paidItem: [[ExpenseInfo]] = [] //{
+//        didSet {
+//            itemTableView.reloadData()
+//        }
+//    }
+    var involvedItem: [[ExpenseInfo]] = []  //{
+//        didSet {
+//            itemTableView.reloadData()
+//        }
+//    }
     
     var subscriptInvolvedItem: [SubscriptionMember] = []
     
@@ -298,27 +298,64 @@ class CustomGroupViewController: UIViewController {
             }
         }
     }
+//
+//    func getItemDetail(itemId: String) {
+//        let semaphore = DispatchSemaphore(value: 0)
+//        let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
+//
+//        queue.async {
+//            ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) { [weak self] result in
+//                switch result {
+//                case .success(let items):
+//                    self?.paidItem.append(items)
+//                    semaphore.signal()
+//                case .failure(let error):
+//                    print("Error decoding userData: \(error)")
+//                    ProgressHUD.shared.view = self?.view ?? UIView()
+//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+//                    semaphore.signal()
+//                }
+//            }
+//
+//            semaphore.wait()
+//
+//            ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) { [weak self] result in
+//                switch result {
+//                case .success(let items):
+//                    self?.involvedItem.append(items)
+//                case .failure(let error):
+//                    print("Error decoding userData: \(error)")
+//                    ProgressHUD.shared.view = self?.view ?? UIView()
+//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+//                }
+//                self?.removeAnimation()
+//            }
+//        }
+//    }
     
     func getItemDetail(itemId: String) {
-        let semaphore = DispatchSemaphore(value: 0)
-        let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
+        let group = DispatchGroup()
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
         
-        queue.async {
+        firstQueue.async(group: group) {
             ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) { [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.paidItem.append(items)
-                    semaphore.signal()
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                     ProgressHUD.shared.view = self?.view ?? UIView()
                     ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-                    semaphore.signal()
+                    
                 }
+                group.leave()
             }
-            
-            semaphore.wait()
-            
+        }
+        
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        secondQueue.async(group: group) {
             ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) { [weak self] result in
                 switch result {
                 case .success(let items):
@@ -328,8 +365,14 @@ class CustomGroupViewController: UIViewController {
                     ProgressHUD.shared.view = self?.view ?? UIView()
                     ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
-                self?.removeAnimation()
+                group.leave()
             }
+            
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            self.itemTableView.reloadData()
+            self.removeAnimation()
         }
     }
 
