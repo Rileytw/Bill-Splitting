@@ -346,7 +346,7 @@ extension GroupsViewController {
     }
     
     func getMemberExpense(groupId: String, members: [String]) {
-        GroupManager.shared.fetchMemberExpense(groupId: groupId, members: members) { [weak self] result in
+        GroupManager.shared.fetchMemberExpenseForBlock(groupId: groupId, members: members) { [weak self] result in
             switch result {
             case .success(let expense):
                 let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
@@ -397,12 +397,17 @@ extension GroupsViewController {
     func leaveGroup() {
         let groupId = group?.groupId
         GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
-                                              userId: currentUserId) { result in
+                                              userId: currentUserId) { [weak self] result in
             switch result {
             case .success:
                 print("leave group")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showSuccess(text: "成功退出群組")
+                self?.getGroupData()
             case .failure:
                 print("remove group member failed")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "退出失敗，請稍後再試")
             }
         }
         

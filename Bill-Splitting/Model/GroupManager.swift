@@ -132,6 +132,32 @@ class GroupManager {
             }
         }
     }
+   
+    func fetchMemberExpenseForBlock(groupId: String, members: [String], completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
+        db.collection("group").document(groupId).collection("memberExpense").whereField("userId", in: members).getDocuments { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var memberExpense: [MemberExpense] = []
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let expense = try document.data(as: MemberExpense.self, decoder: Firestore.Decoder()) {
+                            memberExpense.append(expense)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                
+                completion(.success(memberExpense))
+            }
+        }
+    }
     
     func listenForItems(groupId: String, completion: @escaping () -> Void) {
         db.collection("item")
