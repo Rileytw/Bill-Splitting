@@ -846,8 +846,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Bill-Splitting/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = WeCount;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Add photo for items";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Add photo for items";
+				INFOPLIST_KEY_NSCameraUsageDescription = "開啟相機以拍攝款項相關照片：菜單、明細、商品照片。並透過相機掃描 QRCode 寄送好友邀請";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "上傳款項相關照片：菜單、明細、商品照片";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -880,8 +880,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Bill-Splitting/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = WeCount;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Add photo for items";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Add photo for items";
+				INFOPLIST_KEY_NSCameraUsageDescription = "開啟相機以拍攝款項相關照片：菜單、明細、商品照片。並透過相機掃描 QRCode 寄送好友邀請";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "上傳款項相關照片：菜單、明細、商品照片";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
