@@ -55,6 +55,32 @@ class GroupManager {
         }
     }
     
+    func fetchGroupsRealTime(userId: String, status: Int, completion: @escaping (Result<[GroupData], Error>) -> Void) {
+        db.collection("group").whereField("member", arrayContains: userId).whereField("status",
+                                                                                      isEqualTo: status).order(by: "createdTime",
+                                                                                                               descending: true).addSnapshotListener() { (querySnapshot, error) in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var groups = [GroupData]()
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let group = try document.data(as: GroupData.self, decoder: Firestore.Decoder()) {
+                            groups.append(group)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(groups))
+            }
+        }
+    }
+    
     func fetchPaidItemsExpense(itemId: String, userId: String, completion: @escaping ExpenseInfoResponse) {
         fetchItemsExpense(itemId: itemId, userId: userId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
     }
