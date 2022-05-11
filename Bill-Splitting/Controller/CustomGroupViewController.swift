@@ -322,7 +322,9 @@ class CustomGroupViewController: UIViewController {
             case .success(let expense):
                 self?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
-                self?.expense = personalExpense[0].allExpense
+                if personalExpense.isEmpty == false {
+                    self?.expense = personalExpense[0].allExpense
+                }
                 let allExpense = expense.map { $0.allExpense }
                 self?.allExpense = 0
                 for member in allExpense {

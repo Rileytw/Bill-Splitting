@@ -152,7 +152,15 @@ class GroupDetailViewController: UIViewController {
         }
         
         GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
-                                           userId: currentUserId)
+                                           userId: currentUserId) { result in
+            switch result {
+            case .success:
+                print("leave group")
+            case .failure:
+                print("remove member expense failed")
+            }
+            
+        }
     }
     
     func backToGroupsPage() {

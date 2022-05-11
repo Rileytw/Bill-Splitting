@@ -276,7 +276,7 @@ class ItemDetailViewController: UIViewController {
         let confirmAction = UIAlertAction(title: "退出群組", style: .destructive) { [weak self] _ in
             self?.detectUserExpense()
             self?.pressDismissButton()
-            self?.navigationController?.popToRootViewController(animated: true)
+//            self?.navigationController?.popToRootViewController(animated: true)
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel)
         
@@ -287,28 +287,73 @@ class ItemDetailViewController: UIViewController {
     
     func leaveGroup() {
         let groupId = groupData?.groupId
-        GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
-                                              userId: currentUserId) { result in
-            switch result {
-            case .success:
-                print("leave group")
-            case .failure:
-                print("remove group member failed")
+        var isLeaveGroup: Bool = false
+        
+        let group = DispatchGroup()
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        
+        firstQueue.async(group: group) {
+            GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
+                                                  userId: self.currentUserId) { result in
+                switch result {
+                case .success:
+                    print("leave group")
+                    isLeaveGroup = true
+                case .failure:
+                    print("remove group member failed")
+                    isLeaveGroup = false
+                }
+                group.leave()
+            }
+            
+        }
+        
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        secondQueue.async(group: group) {
+            GroupManager.shared.removeGroupExpense(groupId: groupId ?? "",
+                                                   userId: self.currentUserId) { result in
+                switch result {
+                case .success:
+                    print("leave group")
+                    isLeaveGroup = true
+                case .failure:
+                    print("remove member expense failed")
+                    isLeaveGroup = false
+                }
+                group.leave()
+            }
+           
+        }
+        
+        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        thirdQueue.async(group: group) {
+            GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
+                                               userId: self.currentUserId) { result in
+                switch result {
+                case .success:
+                    print("leave group")
+                    isLeaveGroup = true
+                case .failure:
+                    print("remove member expense failed")
+                    isLeaveGroup = false
+                }
+                group.leave()
             }
         }
         
-        GroupManager.shared.removeGroupExpense(groupId: groupId ?? "",
-                                               userId: currentUserId) { result in
-            switch result {
-            case .success:
-                print("leave group")
-            case .failure:
-                print("remove member expense failed")
+        group.notify(queue: DispatchQueue.main) {
+            if isLeaveGroup == true {
+                ProgressHUD.shared.view = self.view
+                ProgressHUD.showSuccess(text: "成功退出群組")
+                self.navigationController?.popToRootViewController(animated: true)
+            } else {
+                ProgressHUD.shared.view = self.view
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
-        
-        GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
-                                           userId: currentUserId)
     }
     
     func detectUserExpense() {

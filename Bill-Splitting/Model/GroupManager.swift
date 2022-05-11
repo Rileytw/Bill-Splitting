@@ -8,6 +8,8 @@
 import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
+import AVFoundation
+import Accelerate
 
 typealias ExpenseInfoResponse = (Result<[ExpenseInfo], Error>) -> Void
 
@@ -251,15 +253,17 @@ class GroupManager {
         }
     }
     
-    func addLeaveMember(groupId: String, userId: String) {
+    func addLeaveMember(groupId: String, userId: String, completion: @escaping (Result<(), Error>) -> Void) {
         let leaveMembersRef = db.collection(FirebaseCollection.group.rawValue).document(groupId)
         leaveMembersRef.updateData([
             "leaveMembers": FieldValue.arrayUnion([userId])
         ]) { err in
             if let err = err {
                 print("Error updating document: \(err)")
+                completion(.failure(err))
             } else {
                 print("Document successfully updated")
+                completion(.success(()))
             }
         }
     }
