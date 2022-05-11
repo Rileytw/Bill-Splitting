@@ -18,12 +18,18 @@ class CustomGroupViewController: UIViewController {
     private var animationView = AnimationView()
     var noDataView = NoDataView(frame: .zero)
     
+    var reportView = ReportView()
+    var mask = UIView()
+    let height = UIScreen.main.bounds.size.height
+    var reportContent: String?
+    
     var groupData: GroupData?
     
     var memberName: [String] = []
     var userData: [UserData] = []
     var leaveMemberData: [UserData] = []
     var itemData: [ItemData] = []
+    var item: ItemData?
     
     var paidItem: [[ExpenseInfo]] = [] {
         didSet {
@@ -199,6 +205,18 @@ class CustomGroupViewController: UIViewController {
         
         itemTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         itemTableView.backgroundColor = UIColor.clear
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
+        itemTableView.addGestureRecognizer(longPress)
+    }
+    
+    @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let touchPoint = sender.location(in: itemTableView)
+            if let indexPath = itemTableView.indexPathForRow(at: touchPoint) {
+                item = itemData[indexPath.row]
+                revealBlockView()
+            }
+        }
     }
     
     func pressClosedGroup() {
@@ -322,7 +340,9 @@ class CustomGroupViewController: UIViewController {
             case .success(let expense):
                 self?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
-                self?.expense = personalExpense[0].allExpense
+                if personalExpense.isEmpty == false {
+                    self?.expense = personalExpense[0].allExpense
+                }
                 let allExpense = expense.map { $0.allExpense }
                 self?.allExpense = 0
                 for member in allExpense {
@@ -594,7 +614,36 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         itemDetailViewController.personalExpense = expense
         
         self.show(itemDetailViewController, sender: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
         
+        let cell = tableView.cellForRow(at: indexPath)
+        UIView.animate(withDuration: 0.25) {
+            cell?.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        }
+    }
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath)
+        UIView.animate(withDuration: 0.25) {
+            cell?.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }
+    }
+    
+    private func animateTableView() {
+        let cells = itemTableView.visibleCells
+        let tableHeight: CGFloat = itemTableView.bounds.size.height
+        for (index, cell) in cells.enumerated() {
+            cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
+            UIView.animate(withDuration: 0.8,
+                           delay: 0.05 * Double(index),
+                           usingSpringWithDamping: 0.8,
+                           initialSpringVelocity: 0,
+                           options: [],
+                           animations: {
+                cell.transform = CGAffineTransform(translationX: 0, y: 0)
+            }, completion: nil)
+        }
     }
 }
 
@@ -639,5 +688,163 @@ extension CustomGroupViewController {
         noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+    
+    func revealBlockView() {
+        mask = UIView(frame: CGRect(x: 0, y: -0, width: width, height: height))
+        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.addSubview(mask)
+        
+        reportView = ReportView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        reportView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.reportView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
+        }, completion: nil)
+        view.addSubview(reportView)
+        
+        reportView.reportButton.addTarget(self, action: #selector(reportAlert), for: .touchUpInside)
+        
+        reportView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+    }
+    
+    @objc func reportAlert() {
+        let alertController = UIAlertController(title: "檢舉", message: "請輸入檢舉內容", preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.placeholder = "檢舉原因"
+        }
+        let reportAlert = UIAlertAction(title: "檢舉", style: .default) { [weak self] _ in
+            self?.reportContent = alertController.textFields?[0].text
+//            self?.leaveGroupAlert()
+            self?.report()
+        }
+        let cancelAlert = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alertController.addAction(cancelAlert)
+        alertController.addAction(reportAlert)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func report() {
+        let report = Report(groupId: groupData?.groupId ?? "",
+                            itemId: item?.itemId ?? "",
+                            reportContent: reportContent)
+        ReportManager.shared.updateReport(report: report) { [weak self] result in
+            switch result {
+            case .success():
+                self?.leaveGroupAlert()
+            case .failure(let err):
+                print("\(err.localizedDescription)")
+            }
+        }
+    }
+    
+    func leaveGroupAlert() {
+        let alertController = UIAlertController(title: "退出群組", message: "檢舉內容已回報。請確認是否退出群組，退出群組後，將無法查看群組內容。群組建立者離開群組後，群組將封存。", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "退出群組", style: .destructive) { [weak self] _ in
+            self?.detectUserExpense()
+            self?.pressDismissButton()
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel)
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func leaveGroup() {
+        let groupId = groupData?.groupId
+        var isLeaveGroup: Bool = false
+        
+        let group = DispatchGroup()
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        
+        firstQueue.async(group: group) {
+            GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
+                                                  userId: self.currentUserId) { result in
+                switch result {
+                case .success:
+                    print("leave group")
+                    isLeaveGroup = true
+                case .failure:
+                    print("remove group member failed")
+                    isLeaveGroup = false
+                }
+                group.leave()
+            }
+            
+        }
+        
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        secondQueue.async(group: group) {
+            GroupManager.shared.removeGroupExpense(groupId: groupId ?? "",
+                                                   userId: self.currentUserId) { result in
+                switch result {
+                case .success:
+                    print("leave group")
+                    isLeaveGroup = true
+                case .failure:
+                    print("remove member expense failed")
+                    isLeaveGroup = false
+                }
+                group.leave()
+            }
+           
+        }
+        
+        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        thirdQueue.async(group: group) {
+            GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
+                                               userId: self.currentUserId) { result in
+                switch result {
+                case .success:
+                    print("leave group")
+                    isLeaveGroup = true
+                case .failure:
+                    print("remove member expense failed")
+                    isLeaveGroup = false
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            if isLeaveGroup == true {
+                ProgressHUD.shared.view = self.view
+                ProgressHUD.showSuccess(text: "成功退出群組")
+                self.navigationController?.popToRootViewController(animated: true)
+            } else {
+                ProgressHUD.shared.view = self.view
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+            }
+        }
+    }
+    
+    func detectUserExpense() {
+        if expense == 0 {
+            leaveGroup()
+        } else {
+            rejectLeaveGroupAlert()
+        }
+    }
+    
+    func rejectLeaveGroupAlert() {
+        let alertController = UIAlertController(title: "無法退出群組",
+                                                message: "您在群組內還有債務關係，無法退出。請先結清帳務。",
+                                                preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc func pressDismissButton() {
+        let subviewCount = self.view.subviews.count
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        }, completion: nil)
+        mask.removeFromSuperview()
     }
 }
