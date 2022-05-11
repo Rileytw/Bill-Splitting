@@ -8,6 +8,8 @@
 import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
+import AVFoundation
+import Accelerate
 
 typealias ExpenseInfoResponse = (Result<[ExpenseInfo], Error>) -> Void
 
@@ -132,6 +134,32 @@ class GroupManager {
             }
         }
     }
+   
+    func fetchMemberExpenseForBlock(groupId: String, members: [String], completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
+        db.collection("group").document(groupId).collection("memberExpense").whereField("userId", in: members).getDocuments { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var memberExpense: [MemberExpense] = []
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let expense = try document.data(as: MemberExpense.self, decoder: Firestore.Decoder()) {
+                            memberExpense.append(expense)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                
+                completion(.success(memberExpense))
+            }
+        }
+    }
     
     func listenForItems(groupId: String, completion: @escaping () -> Void) {
         db.collection("item")
@@ -225,15 +253,17 @@ class GroupManager {
         }
     }
     
-    func addLeaveMember(groupId: String, userId: String) {
+    func addLeaveMember(groupId: String, userId: String, completion: @escaping (Result<(), Error>) -> Void) {
         let leaveMembersRef = db.collection(FirebaseCollection.group.rawValue).document(groupId)
         leaveMembersRef.updateData([
             "leaveMembers": FieldValue.arrayUnion([userId])
         ]) { err in
             if let err = err {
                 print("Error updating document: \(err)")
+                completion(.failure(err))
             } else {
                 print("Document successfully updated")
+                completion(.success(()))
             }
         }
     }

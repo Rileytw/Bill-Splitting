@@ -252,6 +252,7 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
       
         return itemsCell
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let customGroupViewController =
@@ -268,5 +269,35 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         customGroupViewController.groupData = groupData[0]
         customGroupViewController.blackList = blackList
         self.show(customGroupViewController, sender: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        
+        let cell = tableView.cellForRow(at: indexPath)
+        UIView.animate(withDuration: 0.25) {
+            cell?.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        }
+    }
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath)
+        UIView.animate(withDuration: 0.25) {
+            cell?.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }
+    }
+    
+    private func animateTableView() {
+        let cells = tableView.visibleCells
+        let tableHeight: CGFloat = tableView.bounds.size.height
+        for (index, cell) in cells.enumerated() {
+            cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
+            UIView.animate(withDuration: 0.8,
+                           delay: 0.05 * Double(index),
+                           usingSpringWithDamping: 0.8,
+                           initialSpringVelocity: 0,
+                           options: [],
+                           animations: {
+                cell.transform = CGAffineTransform(translationX: 0, y: 0)
+            }, completion: nil)
+        }
     }
 }

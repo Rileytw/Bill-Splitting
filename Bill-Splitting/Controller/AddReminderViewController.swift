@@ -37,6 +37,9 @@ class AddReminderViewController: UIViewController {
                                 status: 1,
                                 documentId: "")
     
+    typealias ReminderInfo = (String) -> Void
+    var reminderInfo: ReminderInfo?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -153,7 +156,17 @@ class AddReminderViewController: UIViewController {
     
     func addReminder() {
         reminderData.creatorId = currentUserId
-        ReminderManager.shared.addReminderData(reminder: reminderData)
+        ReminderManager.shared.addReminderData(reminder: reminderData) { [weak self] result in
+            switch result {
+            case .success:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showSuccess(text: "新增成功")
+                self?.reminderInfo?("reminder set successfully")
+            case .failure:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "新增失敗，請稍後再試")
+            }
+        }
     }
     
     func setButtons() {

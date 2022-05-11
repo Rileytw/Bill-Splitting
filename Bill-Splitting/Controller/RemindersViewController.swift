@@ -69,6 +69,10 @@ class RemindersViewController: UIViewController {
                 sheet.preferredCornerRadius = 20
             }
         }
+        
+        addReminderViewController.reminderInfo = { [weak self] _ in
+            self?.getReminders()
+        }
         self.present(addReminderViewController, animated: true, completion: nil)
     }
     
