@@ -20,6 +20,7 @@ class SettleUpTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         self.backgroundColor = UIColor.clear
+        self.selectionStyle = UITableViewCell.SelectionStyle.none
         payerName.textColor = UIColor.greenWhite
         creditorName.textColor = UIColor.greenWhite
         price.textColor = UIColor.greenWhite
@@ -31,12 +32,6 @@ class SettleUpTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        if selected {
-                contentView.backgroundColor = UIColor.selectedColor
-            } else {
-                contentView.backgroundColor = UIColor.clear
-            }
     }
     
 }
