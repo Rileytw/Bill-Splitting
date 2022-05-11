@@ -31,16 +31,9 @@ class CustomGroupViewController: UIViewController {
     var itemData: [ItemData] = []
     var item: ItemData?
     
-    var paidItem: [[ExpenseInfo]] = [] //{
-//        didSet {
-//            itemTableView.reloadData()
-//        }
-//    }
-    var involvedItem: [[ExpenseInfo]] = []  //{
-//        didSet {
-//            itemTableView.reloadData()
-//        }
-//    }
+    var paidItem: [[ExpenseInfo]] = []
+    var involvedItem: [[ExpenseInfo]] = []
+
     
     var subscriptInvolvedItem: [SubscriptionMember] = []
     
@@ -298,40 +291,6 @@ class CustomGroupViewController: UIViewController {
             }
         }
     }
-//
-//    func getItemDetail(itemId: String) {
-//        let semaphore = DispatchSemaphore(value: 0)
-//        let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
-//
-//        queue.async {
-//            ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) { [weak self] result in
-//                switch result {
-//                case .success(let items):
-//                    self?.paidItem.append(items)
-//                    semaphore.signal()
-//                case .failure(let error):
-//                    print("Error decoding userData: \(error)")
-//                    ProgressHUD.shared.view = self?.view ?? UIView()
-//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-//                    semaphore.signal()
-//                }
-//            }
-//
-//            semaphore.wait()
-//
-//            ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) { [weak self] result in
-//                switch result {
-//                case .success(let items):
-//                    self?.involvedItem.append(items)
-//                case .failure(let error):
-//                    print("Error decoding userData: \(error)")
-//                    ProgressHUD.shared.view = self?.view ?? UIView()
-//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-//                }
-//                self?.removeAnimation()
-//            }
-//        }
-//    }
     
     func getItemDetail(itemId: String) {
         let group = DispatchGroup()
@@ -403,7 +362,6 @@ class CustomGroupViewController: UIViewController {
         if groupData?.type == 0 && currentUserId != groupData?.creator {
             groupDetailView.addExpenseButton.isEnabled = false
             groupDetailView.addExpenseButton.isHidden = true
-//            closedGroupButton.isHidden = true
         }
     }
     
@@ -534,6 +492,10 @@ class CustomGroupViewController: UIViewController {
     }
     
     func setAnimation() {
+        mask.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        mask.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        view.addSubview(mask)
+
         animationView = .init(name: "simpleLoading")
         view.addSubview(animationView)
         animationView.translatesAutoresizingMaskIntoConstraints = false
@@ -549,6 +511,7 @@ class CustomGroupViewController: UIViewController {
     }
     
     func removeAnimation() {
+        mask.removeFromSuperview()
         animationView.stop()
         animationView.removeFromSuperview()
     }
