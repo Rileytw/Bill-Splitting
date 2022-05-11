@@ -50,13 +50,19 @@ class BasePickerViewInTextField: UIView {
     
     func setIcon() {
         icon.setImage(UIImage(systemName: "arrowtriangle.down.square"), for: .normal)
-        addSubview(icon)
-//        icon.frame = CGRect(x: width - 80, y: -20, width: 100, height: 100)
-        icon.translatesAutoresizingMaskIntoConstraints = false
-        icon.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
-        icon.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
-        icon.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        icon.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        icon.tintColor = UIColor.greenWhite
+        icon.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
+        
+        icon.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        icon.contentMode = .scaleAspectFit
+        icon.isUserInteractionEnabled = false
+        let padding: CGFloat = 2
+
+        let rightView = UIView(frame: CGRect(
+            x: 0, y: 0,
+            width: icon.frame.width + padding,
+            height: icon.frame.height))
+        rightView.addSubview(icon)
+        textField.rightView = rightView
+        textField.rightViewMode = .always
     }
 }

@@ -428,6 +428,8 @@ class ItemDetailViewController: UIViewController {
 
 extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
+        guard let item = item else { return 0 }
+
         return 2
     }
     
@@ -441,14 +443,20 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let item = item else { return UITableViewCell() }
+        guard let item = item else {
+            return UITableViewCell()
+            
+        }
         
          if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: String(describing: ItemDetailTableViewCell.self),
                 for: indexPath
             )
-            guard let detailCell = cell as? ItemDetailTableViewCell else { return cell }
+            guard let detailCell = cell as? ItemDetailTableViewCell else {
+                return cell
+                
+            }
             
              detailCell.createDetailCell(group: groupData?.groupName ?? "",
                                         item: item.itemName,
