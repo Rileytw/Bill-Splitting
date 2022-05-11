@@ -19,7 +19,7 @@
 		350A33622803DF4300201E40 /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350A33612803DF4300201E40 /* Profile.storyboard */; };
 		350A33642803EF5000201E40 /* Storyboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33632803EF5000201E40 /* Storyboard+Extension.swift */; };
 		350A33682803F65800201E40 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 350A33672803F65800201E40 /* GoogleService-Info.plist */; };
-		350A336A2804192C00201E40 /* BaseTexFieldView + PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33692804192C00201E40 /* BaseTexFieldView + PickerView.swift */; };
+		350A336A2804192C00201E40 /* BaseTextFieldView + PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33692804192C00201E40 /* BaseTextFieldView + PickerView.swift */; };
 		350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */; };
 		350A3370280445BF00201E40 /* AddGroupTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */; };
 		350A33732804638A00201E40 /* GroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A33722804638A00201E40 /* GroupManager.swift */; };
@@ -132,7 +132,7 @@
 		350A33612803DF4300201E40 /* Profile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
 		350A33632803EF5000201E40 /* Storyboard+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storyboard+Extension.swift"; sourceTree = "<group>"; };
 		350A33672803F65800201E40 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		350A33692804192C00201E40 /* BaseTexFieldView + PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseTexFieldView + PickerView.swift"; sourceTree = "<group>"; };
+		350A33692804192C00201E40 /* BaseTextFieldView + PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseTextFieldView + PickerView.swift"; sourceTree = "<group>"; };
 		350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroupTableViewCell.swift; sourceTree = "<group>"; };
 		350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddGroupTableViewCell.xib; sourceTree = "<group>"; };
 		350A33722804638A00201E40 /* GroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupManager.swift; sourceTree = "<group>"; };
@@ -352,7 +352,7 @@
 		350A336B2804193300201E40 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				350A33692804192C00201E40 /* BaseTexFieldView + PickerView.swift */,
+				350A33692804192C00201E40 /* BaseTextFieldView + PickerView.swift */,
 				3555072F281CE1D100FD2465 /* ElementsStyle.swift */,
 				350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */,
 				350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */,
@@ -682,7 +682,7 @@
 				355090E9280FAA690007C0CE /* AddMoreInfoViewController.swift in Sources */,
 				35FF63DA2805629B00508EAF /* InvitationTableViewCell.swift in Sources */,
 				355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */,
-				350A336A2804192C00201E40 /* BaseTexFieldView + PickerView.swift in Sources */,
+				350A336A2804192C00201E40 /* BaseTextFieldView + PickerView.swift in Sources */,
 				35D0EAD8281FB806001C9324 /* ProfileCollectionViewCell.swift in Sources */,
 				35568A182815282400646B57 /* PieChart.swift in Sources */,
 				35FF63E128066F8800508EAF /* GroupsView.swift in Sources */,
