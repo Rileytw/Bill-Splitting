@@ -13,7 +13,7 @@ import FirebaseStorage
 class ImageManager {
     static var shared = ImageManager()
     
-    func uploadImageToStorage(image: UIImage?, fileName: String?, completion: @escaping (String) -> Void) {
+    func uploadImageToStorage(image: UIImage?, fileName: String, completion: @escaping (String) -> Void) {
         let storageRef = Storage.storage().reference().child("ItemImages").child("\(fileName).png")
         
         if let uploadData = image?.pngData() {
@@ -30,6 +30,23 @@ class ImageManager {
                         print("Error: \(String(describing: error))")
                     }
                 }
+            }
+        }
+    }
+    
+    func deleteStorageImage(url: String, completion: @escaping (Result<(), Error>) -> Void) {
+        let storage = Storage.storage()
+        let url = url
+        let storageRef = storage.reference(forURL: url)
+
+        //Removes image from storage
+        storageRef.delete { error in
+            if let error = error {
+                print(error.localizedDescription)
+                completion(.failure(error))
+            } else {
+                // File deleted successfully
+                completion(.success(()))
             }
         }
     }

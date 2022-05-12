@@ -125,13 +125,21 @@ class GroupManager {
         }
     }
     
-    func updateMemberExpense(userId: String, newExpense: Double, groupId: String) {
+    func updateMemberExpense(userId: String, newExpense: Double, groupId: String, completion: @escaping (Result<(), Error>) -> Void) {
         let ref = db.collection("group").document()
         let memberExpenseRef = db.collection("group").document(groupId).collection("memberExpense").document(userId)
         
         memberExpenseRef.updateData([
             "allExpense": FieldValue.increment(newExpense)
-        ])
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
+            }
+        }
     }
     
 // MARK: - addSnapshotListener can't listen to new documents
