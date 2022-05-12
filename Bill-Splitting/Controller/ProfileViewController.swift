@@ -88,6 +88,8 @@ class ProfileViewController: UIViewController {
             case .success:
                 print("userName update successfully")
                 self?.getUserData()
+                self?.mask.removeFromSuperview()
+                self?.tabBarController?.tabBar.isHidden = false
             case .failure:
                 print("userName update failed")
                 ProgressHUD.shared.view = self?.view ?? UIView()
@@ -207,6 +209,14 @@ class ProfileViewController: UIViewController {
                 ProgressHUD.showSuccess(text: "帳號已刪除")
                 self?.updateUserName(newUserName: currentUserName + "帳號已刪除")
                 self?.backToSignInPage()
+//                do {
+//                    try Auth.auth().signOut()
+//                    self?.backToSignInPage()
+//                } catch let error as NSError {
+//                    print(error.localizedDescription)
+//                    ProgressHUD.shared.view = self?.view ?? UIView()
+//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+//                }
             case .failure:
                 self?.alertSignInAgain()
             }
