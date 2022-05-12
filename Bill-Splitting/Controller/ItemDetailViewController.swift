@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import Lottie
 class ItemDetailViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
@@ -23,6 +23,7 @@ class ItemDetailViewController: UIViewController {
     var reportContent: String?
     
     var reportView = ReportView()
+    private var animationView = AnimationView()
     var mask = UIView()
     let width = UIScreen.main.bounds.size.width
     let height = UIScreen.main.bounds.size.height
@@ -40,6 +41,7 @@ class ItemDetailViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setAnimation()
         getItemData(itemId: self.itemId ?? "")
         tabBarController?.tabBar.isHidden = true
     }
@@ -144,6 +146,7 @@ class ItemDetailViewController: UIViewController {
         }
         group.notify(queue: DispatchQueue.main) {
             self.tableView.reloadData()
+            self.removeAnimation()
         }
     }
     
@@ -478,6 +481,26 @@ class ItemDetailViewController: UIViewController {
     
     @objc func dismissPhotoView() {
         photoView.removeFromSuperview()
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
