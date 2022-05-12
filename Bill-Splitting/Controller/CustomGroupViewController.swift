@@ -447,13 +447,29 @@ class CustomGroupViewController: UIViewController {
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
                                            price: self.subsriptions[0].paidPrice ?? 0,
                                            itemId: itemId,
-                                           createdTime: self.subscriptionCreatedTime ?? 0)
+                                           createdTime: self.subscriptionCreatedTime ?? 0) {
+                result in
+                switch result{
+                case .success:
+                    print("success")
+                case .failure(let error):
+                    print(error)
+                }
+            }
             
             for user in 0..<self.subscriptInvolvedItem.count {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.subscriptInvolvedItem[user].involvedUser,
                                                    price: self.subscriptInvolvedItem[user].involvedPrice,
                                                    itemId: itemId,
-                                                   createdTime: self.subscriptionCreatedTime ?? 0)
+                                                   createdTime: self.subscriptionCreatedTime ?? 0) {
+                    result in
+                    switch result{
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
             }
             self.countPersonalExpense()
         }
@@ -464,12 +480,28 @@ class CustomGroupViewController: UIViewController {
         paidUserId = subsriptions[0].paidUser
         GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                 newExpense: self.subsriptions[0].paidPrice,
-                                                groupId: groupData?.groupId ?? "")
+                                                groupId: groupData?.groupId ?? "") {
+            result in
+            switch result{
+            case .success:
+                print("success")
+            case .failure(let error):
+                print(error)
+            }
+        }
         
         for user in 0..<self.subscriptInvolvedItem.count {
             GroupManager.shared.updateMemberExpense(userId: self.subscriptInvolvedItem[user].involvedUser,
                                                     newExpense: 0 - self.subscriptInvolvedItem[user].involvedPrice,
-                                                    groupId: groupData?.groupId ?? "")
+                                                    groupId: groupData?.groupId ?? "") {
+                result in
+                switch result{
+                case .success:
+                    print("success")
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
     }
     
