@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class AddItemViewController: UIViewController {
     
@@ -18,6 +19,11 @@ class AddItemViewController: UIViewController {
     let tableView = UITableView()
     let typeLabel = UILabel()
     let dismissButton = UIButton()
+    
+    let width = UIScreen.main.bounds.width
+    let height = UIScreen.main.bounds.height
+    private var animationView = AnimationView()
+    let mask = UIView()
     
     var groupData: GroupData?
     var memberId: [String]?
@@ -54,7 +60,12 @@ class AddItemViewController: UIViewController {
     var itemDescription: String?
     var involvedTotalPrice: Double = 0
     
+    var itemImage: UIImage?
+//    var imageUrl: String?
+    
     var blackList = [String]()
+    typealias EditItem = (String) -> Void
+    var editingItem: EditItem?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -186,6 +197,11 @@ class AddItemViewController: UIViewController {
             self?.itemDescription = itemDes
         }
         
+        addMoreInfoViewController.itemImage = { [weak self] photo in
+            self?.itemImage = photo
+            
+        }
+        
         self.present(addMoreInfoViewController, animated: true, completion: nil)
     }
     
@@ -233,22 +249,37 @@ class AddItemViewController: UIViewController {
                     lossInfoAlert(message: "請確認自訂金額是否正確")
                 } else {
                     confirmAddItem()
+                    setAnimation()
                 }
             }
         } else {
             confirmAddItem()
+            setAnimation() 
         }
+    }
+    
+    func getImageURL() {
+        
+        if let itemImage = itemImage {
+            let fileName = "\(currentUserId)" + "\(Date())"
+            ImageManager.shared.uploadImageToStorage(image: itemImage, fileName: fileName) { [weak self] urlString in
+                self?.itemImageString = urlString
+                self?.addItem()
+                
+            }
+        } else {
+            addItem()
+            
+        }
+        
     }
     
     func confirmAddItem() {
         if isItemExist == true {
-            deleteItem() {
-                addItem()
-            }
+            deleteItem()
         } else {
-            addItem()
+            getImageURL()
         }
-        self.dismiss(animated: false, completion: nil)
     }
     
     func checkInvolvedData() {
@@ -270,80 +301,151 @@ class AddItemViewController: UIViewController {
                                        itemName: addItemView.itemNameTextField.text ?? "",
                                        itemDescription: itemDescription,
                                        createdTime: Double(NSDate().timeIntervalSince1970),
-                                       itemImage: self.itemImageString) { itemId in
-            self.itemId = itemId
-            
-            var paidUserId: String?
-            if self.groupData?.type == 1 {
-                paidUserId = self.paidId
-            } else {
-                paidUserId = self.currentUserId
-            }
-            
-            self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
-            let paidPrice = self.paidPrice
-            
-            ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                           price: paidPrice ?? 0,
-                                           itemId: itemId,
-                                           createdTime: Double(NSDate().timeIntervalSince1970))
-            
-            for user in 0..<self.involvedExpenseData.count {
-                var involvedPrice: Double?
-                if self.typePickerView.textField.text == SplitType.equal.label {
-//                    involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
-                    involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
-                } else if self.typePickerView.textField.text == SplitType.percent.label {
-                    involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
-                } else {
-                    involvedPrice = self.involvedExpenseData[user].price
-                }
-                ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
-                                                   price: involvedPrice ?? 0,
-                                                   itemId: itemId,
-                                                   createdTime: Double(NSDate().timeIntervalSince1970))
-            }
-            self.countPersonalExpense()
+                                       itemImage: self.itemImageString) { [weak self] itemId in
+            self?.itemId = itemId
+            self?.allItemInfoUpload()
         }
     }
     
-    func countPersonalExpense() {
-        
+    func allItemInfoUpload() {
         var paidUserId: String?
         if self.groupData?.type == 1 {
             paidUserId = self.paidId
         } else {
-            paidUserId = currentUserId
+            paidUserId = self.currentUserId
         }
-        
+        self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
         let paidPrice = self.paidPrice
+        var isDataUploadSucces: Bool = false
         
-        GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
-                                                newExpense: self.paidPrice ?? 0,
-                                                groupId: groupData?.groupId ?? "")
-        
+        let group = DispatchGroup()
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+//       MARK: - Add Paid info for item in PaidCollection
+        firstQueue.async(group: group) {
+            ItemManager.shared.addPaidInfo(
+                paidUserId: paidUserId ?? "", price: paidPrice ?? 0, itemId: self.itemId ?? "",
+                createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                switch result {
+                case .success:
+                    print("success")
+                    isDataUploadSucces = true
+                    group.leave()
+                case .failure(let error):
+                    print(error)
+                    isDataUploadSucces = false
+                    group.leave()
+                }
+            }
+        }
+//    MARK: - Add Involved info for item in InvolvedCollection
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         for user in 0..<self.involvedExpenseData.count {
             var involvedPrice: Double?
             if self.typePickerView.textField.text == SplitType.equal.label {
-//                involvedPrice = (Double(100 / self.selectedIndexs.count)/100) * (paidPrice ?? 0)
                 involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
             } else if self.typePickerView.textField.text == SplitType.percent.label {
-//                involvedPrice = ((self.involvedExpenseData[user].price)/100) * (paidPrice ?? 0)
+                involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
+            } else {
+                involvedPrice = self.involvedExpenseData[user].price
+            }
+            group.enter()
+            secondQueue.async(group: group) {
+                ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
+                                                   price: involvedPrice ?? 0, itemId: self.itemId ?? "",
+                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                    switch result {
+                    case .success:
+                        print("succedd")
+                        isDataUploadSucces = true
+                        group.leave()
+                    case .failure(let error):
+                        print(error)
+                        isDataUploadSucces = false
+                        group.leave()
+                    }
+                }
+            }
+        }
+//    MARK: - Add Paid info for item in GroupCollection
+        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        thirdQueue.async(group: group) {
+            GroupManager.shared.updateMemberExpense(
+                userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.groupData?.groupId ?? "") { result in
+                switch result {
+                case .success:
+                    print("succedd")
+                    isDataUploadSucces = true
+                    group.leave()
+                case .failure(let error):
+                    print(error)
+                    isDataUploadSucces = false
+                    group.leave()
+                }
+            }
+        }
+        for user in 0..<self.involvedExpenseData.count {
+            var involvedPrice: Double?
+            if self.typePickerView.textField.text == SplitType.equal.label {
+                involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
+            } else if self.typePickerView.textField.text == SplitType.percent.label {
                 involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
             } else {
                 involvedPrice = self.involvedExpenseData[user].price
             }
             guard let involvedPrice = involvedPrice else { return }
-            GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
-                                                    newExpense: 0 - involvedPrice,
-                                                    groupId: groupData?.groupId ?? "")
+
+            // MARK: - Add Involved info for item in GroupCollection
+            let fourthQueue = DispatchQueue(label: "fourthQueue", qos: .default, attributes: .concurrent)
+            group.enter()
+            fourthQueue.async(group: group) {
+                GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
+                                                        newExpense: 0 - involvedPrice,
+                                                        groupId: self.groupData?.groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("succedd")
+                        isDataUploadSucces = true
+                        group.leave()
+                    case .failure(let error):
+                        print(error)
+                        isDataUploadSucces = false
+                        group.leave()
+                    }
+                }
+            }
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            if isDataUploadSucces == true {
+                self.removeAnimation()
+                ProgressHUD.shared.view = self.view ?? UIView()
+                ProgressHUD.showSuccess(text: "新增成功")
+                if self.isItemExist == true {
+                    self.editingItem?(self.itemId ?? "")
+                }
+                self.dismiss(animated: false, completion: nil)
+            } else {
+                self.removeAnimation()
+                ProgressHUD.shared.view = self.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                self.dismiss(animated: false, completion: nil)
+            }
         }
     }
     
-    func deleteItem(completion: () -> Void) {
+    func deleteItem() {
         reCountPersonalExpense()
-        ItemManager.shared.deleteItem(itemId: itemData?.itemId ?? "")
-        completion()
+        ItemManager.shared.deleteItem(itemId: itemData?.itemId ?? "") { [weak self] result in
+            switch result {
+            case .success:
+                print("success")
+                self?.getImageURL()
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func reCountPersonalExpense() {
@@ -353,14 +455,28 @@ class AddItemViewController: UIViewController {
         
         GroupManager.shared.updateMemberExpense(userId: paidUserId ,
                                                 newExpense: 0 - paidPrice,
-                                                groupId: groupData?.groupId ?? "")
+                                                groupId: groupData?.groupId ?? "") { result in
+            switch result {
+            case .success:
+                print("succedd")
+            case .failure(let error):
+                print("error")
+            }
+        }
         
         guard let involvedExpense = itemData?.involedInfo else { return }
         
         for user in 0..<involvedExpense.count {
             GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
                                                     newExpense: involvedExpense[user].price,
-                                                    groupId: groupData?.groupId ?? "")
+                                                    groupId: groupData?.groupId ?? "") { result in
+                switch result {
+                case .success:
+                    print("succedd")
+                case .failure(let error):
+                    print("error")
+                }
+            }
         }
     }
     
@@ -396,6 +512,26 @@ class AddItemViewController: UIViewController {
         let newUserData = UserManager.renameBlockedUser(blockList: blackList,
                                                         userData: memberData ?? [])
         memberData = newUserData
+    }
+    
+    func setAnimation() {
+        
+        mask.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        mask.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        
+        animationView = .init(name: "upload")
+        animationView.frame = CGRect(x: width/2 - 75, y: height/2 - 75, width: 150, height: 150)
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        view.addSubview(mask)
+        view.addSubview(animationView)
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        mask.removeFromSuperview()
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
