@@ -390,9 +390,9 @@ class CustomGroupViewController: UIViewController {
         let nowTime = Date().timeIntervalSince1970
         if (subsriptions.count != 0) && subsriptions[index].startTime <= nowTime {
             countSubscriptiontime(index: index)
-            subscriptionCreatedTime = subsriptions[index].startTime
+//            subscriptionCreatedTime = subsriptions[index].startTime
             SubscriptionManager.shared.updateSubscriptionData(documentId: subsriptions[index].doucmentId,
-                                                              newStartTime: subsriptions[index].startTime)
+                                                              newStartTime: subscriptionCreatedTime ?? 0)
             SubscriptionManager.shared.fetchSubscriptionInvolvedData(documentId: subsriptions[index].doucmentId) {
                 [weak self] result in
                 switch result {
@@ -420,22 +420,24 @@ class CustomGroupViewController: UIViewController {
         case 0 :
             let components = Calendar.current.dateComponents([.month], from: startDate, to: endDate)
             let month = components.month
-            if month ?? 0 > 1 {
+            if month ?? 0 > 0 {
                 var dateComponent = DateComponents()
                 dateComponent.month = 1
                 startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
-                subsriptions[index].startTime = startDate.timeIntervalSince1970
+                subscriptionCreatedTime = startDate.timeIntervalSince1970
+//                subscriptionCreatedTime = subsriptions[index].startTime
             } else {
                 SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[index].doucmentId)
             }
         case 1 :
             let components = Calendar.current.dateComponents([.year], from: startDate, to: endDate)
             let year = components.year
-            if year ?? 0 > 1 {
+            if year ?? 0 > 0 {
                 var dateComponent = DateComponents()
                 dateComponent.year = 1
                 startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
-                subsriptions[index].startTime = startDate.timeIntervalSince1970
+//                subsriptions[index].startTime = startDate.timeIntervalSince1970
+                subscriptionCreatedTime = startDate.timeIntervalSince1970
             } else {
                 SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[index].doucmentId)
             }
@@ -448,7 +450,7 @@ class CustomGroupViewController: UIViewController {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
                                        itemName: subsriptions[index].itemName,
                                        itemDescription: "",
-                                       createdTime: self.subscriptionCreatedTime ?? 0,
+                                       createdTime: subsriptions[index].startTime,
                                        itemImage: nil) { itemId in
             var paidUserId: String?
             paidUserId = self.subsriptions[index].paidUser
@@ -456,7 +458,7 @@ class CustomGroupViewController: UIViewController {
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
                                            price: self.subsriptions[index].paidPrice,
                                            itemId: itemId,
-                                           createdTime: self.subscriptionCreatedTime ?? 0) {
+                                           createdTime: self.subsriptions[index].startTime) {
                 result in
                 switch result{
                 case .success:
@@ -470,7 +472,7 @@ class CustomGroupViewController: UIViewController {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.subscriptInvolvedItem[user].involvedUser,
                                                    price: self.subscriptInvolvedItem[user].involvedPrice,
                                                    itemId: itemId,
-                                                   createdTime: self.subscriptionCreatedTime ?? 0) {
+                                                   createdTime: self.subsriptions[index].startTime) {
                     result in
                     switch result{
                     case .success:
