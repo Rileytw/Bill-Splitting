@@ -366,28 +366,15 @@ class CustomGroupViewController: UIViewController {
     }
     
     func detectSubscription() {
-        let nowTime = Date().timeIntervalSince1970
+//        let nowTime = Date().timeIntervalSince1970
         if groupData?.type == 0 {
             SubscriptionManager.shared.fetchSubscriptionData(groupId: groupData?.groupId ?? "") { [weak self] result  in
                 switch result {
                 case .success(let subscription):
                     self?.subsriptions = subscription
-                    if (self?.subsriptions.count != 0) && subscription[0].startTime <= nowTime {
-                        self?.countSubscriptiontime()
-                        self?.subscriptionCreatedTime = subscription[0].startTime
-                        SubscriptionManager.shared.updateSubscriptionData(documentId: subscription[0].doucmentId,
-                                                                          newStartTime: self?.subsriptions[0].startTime ?? 0)
-                        SubscriptionManager.shared.fetchSubscriptionInvolvedData(documentId: subscription[0].doucmentId) {
-                            [weak self] result in
-                            switch result {
-                            case .success(let subscriptionMember):
-                                self?.subscriptInvolvedItem = subscriptionMember
-                                self?.addSubscriptionItem()
-                            case .failure(let error):
-                                print("Error decoding userData: \(error)")
-                                ProgressHUD.shared.view = self?.view ?? UIView()
-                                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-                            }
+                    if subscription.count > 0 {
+                        for indexOfSubscription in 0..<subscription.count {
+                            self?.getSubscription(index: indexOfSubscription)
                         }
                     }
                 case .failure(let error):
@@ -399,15 +386,37 @@ class CustomGroupViewController: UIViewController {
         }
     }
     
-    func countSubscriptiontime() {
-        let startTime = subsriptions[0].startTime
-        let endTime = subsriptions[0].endTime
+    func getSubscription(index: Int) {
+        let nowTime = Date().timeIntervalSince1970
+        if (subsriptions.count != 0) && subsriptions[index].startTime <= nowTime {
+            countSubscriptiontime(index: index)
+            subscriptionCreatedTime = subsriptions[index].startTime
+            SubscriptionManager.shared.updateSubscriptionData(documentId: subsriptions[index].doucmentId,
+                                                              newStartTime: subsriptions[index].startTime)
+            SubscriptionManager.shared.fetchSubscriptionInvolvedData(documentId: subsriptions[index].doucmentId) {
+                [weak self] result in
+                switch result {
+                case .success(let subscriptionMember):
+                    self?.subscriptInvolvedItem = subscriptionMember
+                    self?.addSubscriptionItem(index: index)
+                case .failure(let error):
+                    print("Error decoding userData: \(error)")
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                }
+            }
+        }
+    }
+    
+    func countSubscriptiontime(index: Int) {
+        let startTime = subsriptions[index].startTime
+        let endTime = subsriptions[index].endTime
         let startTimeInterval = TimeInterval(startTime)
         let endTimeInterval = TimeInterval(endTime)
         var startDate = Date(timeIntervalSince1970: startTimeInterval)
         let endDate = Date(timeIntervalSince1970: endTimeInterval)
         
-        switch subsriptions[0].cycle {
+        switch subsriptions[index].cycle {
         case 0 :
             let components = Calendar.current.dateComponents([.month], from: startDate, to: endDate)
             let month = components.month
@@ -415,9 +424,9 @@ class CustomGroupViewController: UIViewController {
                 var dateComponent = DateComponents()
                 dateComponent.month = 1
                 startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
-                subsriptions[0].startTime = startDate.timeIntervalSince1970
+                subsriptions[index].startTime = startDate.timeIntervalSince1970
             } else {
-                SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[0].doucmentId)
+                SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[index].doucmentId)
             }
         case 1 :
             let components = Calendar.current.dateComponents([.year], from: startDate, to: endDate)
@@ -426,26 +435,26 @@ class CustomGroupViewController: UIViewController {
                 var dateComponent = DateComponents()
                 dateComponent.year = 1
                 startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
-                subsriptions[0].startTime = startDate.timeIntervalSince1970
+                subsriptions[index].startTime = startDate.timeIntervalSince1970
             } else {
-                SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[0].doucmentId)
+                SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[index].doucmentId)
             }
         default:
             return
         }
     }
     
-    func addSubscriptionItem() {
+    func addSubscriptionItem(index: Int) {
         ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
-                                       itemName: subsriptions[0].itemName ?? "",
+                                       itemName: subsriptions[index].itemName,
                                        itemDescription: "",
                                        createdTime: self.subscriptionCreatedTime ?? 0,
                                        itemImage: nil) { itemId in
             var paidUserId: String?
-            paidUserId = self.subsriptions[0].paidUser
+            paidUserId = self.subsriptions[index].paidUser
             
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                           price: self.subsriptions[0].paidPrice ?? 0,
+                                           price: self.subsriptions[index].paidPrice,
                                            itemId: itemId,
                                            createdTime: self.subscriptionCreatedTime ?? 0) {
                 result in
@@ -471,15 +480,15 @@ class CustomGroupViewController: UIViewController {
                     }
                 }
             }
-            self.countPersonalExpense()
+            self.countPersonalExpense(index: index)
         }
     }
     
-    func countPersonalExpense() {
+    func countPersonalExpense(index: Int) {
         var paidUserId: String?
-        paidUserId = subsriptions[0].paidUser
+        paidUserId = subsriptions[index].paidUser
         GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
-                                                newExpense: self.subsriptions[0].paidPrice,
+                                                newExpense: self.subsriptions[index].paidPrice,
                                                 groupId: groupData?.groupId ?? "") {
             result in
             switch result{
