@@ -49,6 +49,20 @@ class GroupsViewController: UIViewController {
         navigationItem.title = "我的群組"
         setSearchBar()
         setAnimation()
+        
+        
+        // Test
+        NetworkStatus.shared.startMonitoring()
+        
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+            }
+        }
+        
+
     }
     
     override func viewWillAppear(_ animated: Bool) {

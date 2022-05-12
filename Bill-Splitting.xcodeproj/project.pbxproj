@@ -27,6 +27,7 @@
 		350A3377280468D000201E40 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3376280468D000201E40 /* UserManager.swift */; };
 		350A3379280469BB00201E40 /* UserObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A3378280469BB00201E40 /* UserObject.swift */; };
 		350A337B2805060B00201E40 /* FriendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350A337A2805060B00201E40 /* FriendManager.swift */; };
+		35395CF3282CFC23005BE8F2 /* NetworkStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35395CF2282CFC23005BE8F2 /* NetworkStatus.swift */; };
 		354691E128292FDF00C2174B /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354691E028292FDF00C2174B /* WebViewController.swift */; };
 		355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DA280DA0E10007C0CE /* SubscriptionObject.swift */; };
 		355090DD280DA19F0007C0CE /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355090DC280DA19F0007C0CE /* SubscriptionManager.swift */; };
@@ -140,6 +141,7 @@
 		350A3376280468D000201E40 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		350A3378280469BB00201E40 /* UserObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserObject.swift; sourceTree = "<group>"; };
 		350A337A2805060B00201E40 /* FriendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendManager.swift; sourceTree = "<group>"; };
+		35395CF2282CFC23005BE8F2 /* NetworkStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStatus.swift; sourceTree = "<group>"; };
 		354691E028292FDF00C2174B /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		355090DA280DA0E10007C0CE /* SubscriptionObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionObject.swift; sourceTree = "<group>"; };
 		355090DC280DA19F0007C0CE /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
@@ -417,6 +419,7 @@
 				355507292817900500FD2465 /* AccountManager.swift */,
 				3576B41D2823AA3C00CECE3F /* RoportManager.swift */,
 				3576B41F2823AB5800CECE3F /* ReportObject.swift */,
+				35395CF2282CFC23005BE8F2 /* NetworkStatus.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -639,6 +642,7 @@
 				35568A102813D0BA00646B57 /* Kingfisher.swift in Sources */,
 				35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
+				35395CF3282CFC23005BE8F2 /* NetworkStatus.swift in Sources */,
 				3593E1322812E34100F3A31C /* ItemMemberTableViewCell.swift in Sources */,
 				3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */,
 				35D0EADF281FF49F001C9324 /* BaseViewController.swift in Sources */,
