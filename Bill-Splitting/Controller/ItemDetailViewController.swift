@@ -318,7 +318,7 @@ class ItemDetailViewController: UIViewController {
                             reportContent: reportContent)
         ReportManager.shared.updateReport(report: report) { [weak self] result in
             switch result {
-            case .success():
+            case .success:
                 self?.leaveGroupAlert()
             case .failure(let err):
                 print("\(err.localizedDescription)")
