@@ -119,7 +119,7 @@ class SubscribeViewController: UIViewController {
 //        startTimeDatePicker.setValue(UIColor.greenWhite, forKeyPath: "textColor")
         startTimeDatePicker.overrideUserInterfaceStyle = .dark
         let now = Date()
-//        startTimeDatePicker.minimumDate = now
+        startTimeDatePicker.minimumDate = now
 
         view.addSubview(endTimeDatePicker)
         endTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
@@ -135,7 +135,7 @@ class SubscribeViewController: UIViewController {
 //        endTimeDatePicker.tintColor = .greenWhite
         endTimeDatePicker.setValue(UIColor.greenWhite, forKeyPath: "textColor")
         endTimeDatePicker.overrideUserInterfaceStyle = .dark
-//        endTimeDatePicker.minimumDate = now
+        endTimeDatePicker.minimumDate = now
     }
     
     func setCyclePicker() {
