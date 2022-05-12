@@ -119,12 +119,26 @@ class SpecificSettleIUpViewController: UIViewController {
                 ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
                                                price: abs(expense),
                                                itemId: itemId,
-                                               createdTime: Double(NSDate().timeIntervalSince1970))
+                                               createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
                 
                 ItemManager.shared.addInvolvedInfo(involvedUserId: creditorId ?? "",
                                                    price: abs(expense),
                                                    itemId: itemId,
-                                                   createdTime: Double(NSDate().timeIntervalSince1970))
+                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
             } else {
                 if userExpense[0].allExpense <= 0 {
                     paidUserId = self.userData?.userId
@@ -137,12 +151,26 @@ class SpecificSettleIUpViewController: UIViewController {
                 ItemManager.shared.addPaidInfo(paidUserId: creditorId ?? "",
                                                price: abs(userExpense[0].allExpense),
                                                itemId: itemId,
-                                               createdTime: Double(NSDate().timeIntervalSince1970))
+                                               createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
                 
                 ItemManager.shared.addInvolvedInfo(involvedUserId: paidUserId ?? "",
                                                    price: abs(userExpense[0].allExpense),
                                                    itemId: itemId,
-                                                   createdTime: Double(NSDate().timeIntervalSince1970))
+                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
             }
             self.updatePersonalExpense()
         }
@@ -164,21 +192,49 @@ class SpecificSettleIUpViewController: UIViewController {
                 creditorId = memberId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: expense,
-                                                        groupId: groupId ?? "")
+                                                        groupId: groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
                 
                 GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
                                                         newExpense: 0 - expense,
-                                                        groupId: groupId ?? "")
+                                                        groupId: groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
             } else {
                 paidUserId = memberId
                 creditorId = currentUserId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: 0 - expense,
-                                                        groupId: groupId ?? "")
+                                                        groupId: groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
                 
                 GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
                                                         newExpense: expense,
-                                                        groupId: groupId ?? "")
+                                                        groupId: groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
             }
         } else {
             if userExpense[0].allExpense <= 0 {
@@ -186,21 +242,49 @@ class SpecificSettleIUpViewController: UIViewController {
                 creditorId = userData?.userId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: 0 - userExpense[0].allExpense,
-                                                        groupId: groupId ?? "")
+                                                        groupId: groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
                 
                 GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
                                                         newExpense: userExpense[0].allExpense,
-                                                        groupId: groupId ?? "")
+                                                        groupId: groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
             } else {
                 paidUserId = userData?.userId
                 creditorId = currentUserId
                 GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
                                                         newExpense: userExpense[0].allExpense,
-                                                        groupId: groupId ?? "")
+                                                        groupId: groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
                 
                 GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
                                                         newExpense: 0 - userExpense[0].allExpense,
-                                                        groupId: groupId ?? "")
+                                                        groupId: groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
             }
         }
     }

@@ -166,26 +166,52 @@ class RemindersViewController: UIViewController {
         
         group.notify(queue: DispatchQueue.main) {
             if self.reminders.isEmpty == false {
-                guard let member = self.member else { return }
-                let remindTimeInterval = self.reminders[0].remindTime - Date().timeIntervalSince1970
-                self.reminderTitle = self.group?.groupName
-                if self.reminders[0].type == RemindType.credit.intData {
-                    self.reminderSubtitle = RemindType.credit.textInfo
-                    self.remindBody = "記得向" + member.userName + "請款"
-                } else {
-                    self.reminderSubtitle = RemindType.debt.textInfo
-                    self.remindBody = "記得付錢給" + member.userName
+                for index in 0..<self.reminders.count {
+                    let remindTime = self.reminders[index].remindTime - Date().timeIntervalSince1970
+                    if remindTime < 0 {
+                        ReminderManager.shared.updateReminderStatus(documentId: self.reminders[index].documentId)
+                    }
                 }
-                self.notificationTime = self.reminders[0].remindTime - Date().timeIntervalSince1970
                 
-                if self.reminders.isEmpty == false && remindTimeInterval > 0 {
+                var activeReminder  = self.reminders.filter { ($0.remindTime - Date().timeIntervalSince1970) > 0 }
+                activeReminder.sort { $0.remindTime < $1.remindTime }
+                if activeReminder.isEmpty == false {
+                    var notifyGroup: GroupData?
+                    for group in self.reminderGroups where group.groupId == activeReminder[0].groupId {
+                        notifyGroup = group
+                    }
+                   
+                    var notifyMember: UserData?
+                    for user in self.members where user.userId == activeReminder[0].memberId {
+                        notifyMember = user
+                    }
+                    
+                    guard let memberName = notifyMember?.userName else { return }
+    //                let remindTimeInterval = activeReminder[0].remindTime - Date().timeIntervalSince1970
+                    self.reminderTitle = notifyGroup?.groupName
+                    
+                    if activeReminder[0].type == RemindType.credit.intData {
+                        self.reminderSubtitle = RemindType.credit.textInfo
+                        self.remindBody = "記得向" + memberName + "請款"
+                    } else {
+                        self.reminderSubtitle = RemindType.debt.textInfo
+                        self.remindBody = "記得付錢給" + memberName
+                    }
+                    self.notificationTime = activeReminder[0].remindTime - Date().timeIntervalSince1970
+                    
                     self.sendNotification()
-                    //  MARK: - Bug of reminders overlap when setting multiple reminders
-                    ReminderManager.shared.updateReminderStatus(documentId: self.reminders[0].documentId)
                 }
+
             }
             self.tableView.reloadData()
             self.removeAnimation()
+            
+            for index in 0..<self.reminders.count {
+                let remindTime = self.reminders[index].remindTime - Date().timeIntervalSince1970
+                if remindTime < 0 && self.reminders[index].status == RemindStatus.active.statusInt  {
+                    ReminderManager.shared.updateReminderStatus(documentId: self.reminders[index].documentId)
+                }
+            }
         }
     }
     

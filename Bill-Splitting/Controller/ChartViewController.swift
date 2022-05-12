@@ -145,7 +145,7 @@ class ChartViewController: UIViewController {
     
     func detectBlackListUser() {
         let newUserData = UserManager.renameBlockedUser(blockList: blackList,
-                                                        userData: userData ?? [])
+                                                        userData: userData)
         userData = newUserData
         
         let newMemberData = UserManager.renameBlockedUser(blockList: blackList, userData: member)
@@ -158,7 +158,7 @@ class ChartViewController: UIViewController {
         view.addSubview(mask)
         
         noDataChartsView = NoDataChartsView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 200))
-        noDataChartsView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        noDataChartsView.backgroundColor = .darkBlueColor
        
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
             self.noDataChartsView.frame = CGRect(x: 0, y: self.height/2 - 100, width: self.width, height: 200)

@@ -38,6 +38,8 @@ extension UIColor {
 //    BCD4DE
 //    "EFFFFB" (old)
     
+    static let darkBlueColor = UIColor.hexStringToUIColor(hex: "031927")
+    
     static let styleGreen = UIColor.hexStringToUIColor(hex: "16BAC5")
 //    A5CCD1
 //    05DFD7(old)

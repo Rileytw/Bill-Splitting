@@ -55,6 +55,32 @@ class GroupManager {
         }
     }
     
+    func fetchGroupsRealTime(userId: String, status: Int, completion: @escaping (Result<[GroupData], Error>) -> Void) {
+        db.collection("group").whereField("member", arrayContains: userId).whereField("status",
+                                                                                      isEqualTo: status).order(by: "createdTime",
+                                                                                                               descending: true).addSnapshotListener() { (querySnapshot, error) in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var groups = [GroupData]()
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let group = try document.data(as: GroupData.self, decoder: Firestore.Decoder()) {
+                            groups.append(group)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(groups))
+            }
+        }
+    }
+    
     func fetchPaidItemsExpense(itemId: String, userId: String, completion: @escaping ExpenseInfoResponse) {
         fetchItemsExpense(itemId: itemId, userId: userId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
     }
@@ -99,13 +125,21 @@ class GroupManager {
         }
     }
     
-    func updateMemberExpense(userId: String, newExpense: Double, groupId: String) {
+    func updateMemberExpense(userId: String, newExpense: Double, groupId: String, completion: @escaping (Result<(), Error>) -> Void) {
         let ref = db.collection("group").document()
         let memberExpenseRef = db.collection("group").document(groupId).collection("memberExpense").document(userId)
         
         memberExpenseRef.updateData([
             "allExpense": FieldValue.increment(newExpense)
-        ])
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+                completion(.failure(err))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
+            }
+        }
     }
     
 // MARK: - addSnapshotListener can't listen to new documents

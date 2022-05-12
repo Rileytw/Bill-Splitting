@@ -36,7 +36,8 @@ class NoDataChartsView: UIView {
         noDataLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 40).isActive = true
         noDataLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 40).isActive = true
         noDataLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -40).isActive = true
-        noDataLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        noDataLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        noDataLabel.numberOfLines = 2
     }
     
     func setConfirmButton() {
