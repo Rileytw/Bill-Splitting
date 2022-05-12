@@ -94,6 +94,7 @@ class AddGroupsViewController: UIViewController {
         super.viewWillDisappear(animated)
         friends.removeAll()
         newGroupFriends.removeAll()
+//        NetworkStatus.shared.stopMonitoring()
     }
     
     func setAddGroupButton() {

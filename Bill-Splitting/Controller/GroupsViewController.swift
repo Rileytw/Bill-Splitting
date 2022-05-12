@@ -49,7 +49,6 @@ class GroupsViewController: UIViewController {
         navigationItem.title = "我的群組"
         setSearchBar()
         setAnimation()
-        
         networkDetect()
     }
     
@@ -58,6 +57,11 @@ class GroupsViewController: UIViewController {
         getGroupData()
         getClosedGroupData()
         fetchCurrentUserData()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+//        NetworkStatus.shared.stopMonitoring()
     }
     
     func setSearchView() {

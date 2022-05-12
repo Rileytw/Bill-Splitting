@@ -64,6 +64,7 @@ class SubscribeViewController: UIViewController {
         setTableView()
         setDismissButton()
         detectBlackListUser()
+        networkDetect()
     }
     
     override func viewWillLayoutSubviews() {
@@ -164,21 +165,26 @@ class SubscribeViewController: UIViewController {
     }
     
     @objc func pressCompleteButton() {
-        checkInvolvedData()
-        paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
-        
-        if cyclePicker.textField.text == "" ||
-            addItemView.itemNameTextField.text == "" ||
-            addItemView.priceTextField.text == "" {
-            lossInfoAlert(message: "請確認是否填寫完整資訊")
-        } else if involvedExpenseData.isEmpty == true {
-            lossInfoAlert(message: "請確認是否選取參與人")
-        } else if involvedTotalPrice != paidPrice {
-            lossInfoAlert(message: "請確認參與金額是否正確")
+        if NetworkStatus.shared.isConnected == true {
+            checkInvolvedData()
+            paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
+            
+            if cyclePicker.textField.text == "" ||
+                addItemView.itemNameTextField.text == "" ||
+                addItemView.priceTextField.text == "" {
+                lossInfoAlert(message: "請確認是否填寫完整資訊")
+            } else if involvedExpenseData.isEmpty == true {
+                lossInfoAlert(message: "請確認是否選取參與人")
+            } else if involvedTotalPrice != paidPrice {
+                lossInfoAlert(message: "請確認參與金額是否正確")
+            } else {
+                countSubscriptiontime()
+                updateSubscriptionData()
+                self.dismiss(animated: true, completion: nil)
+            }
         } else {
-            countSubscriptiontime()
-            updateSubscriptionData()
-            self.dismiss(animated: true, completion: nil)
+            print("======== Cannot add groups")
+            networkConnectAlert()
         }
     }
 
@@ -320,6 +326,31 @@ class SubscribeViewController: UIViewController {
         let newUserData = UserManager.renameBlockedUser(blockList: blackList,
                                                         userData: memberData ?? [])
         memberData = newUserData
+    }
+    
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
+    }
+    
+    func networkConnectAlert() {
+        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
 }
 

@@ -18,7 +18,6 @@ class NetworkStatus {
         stopMonitoring()
     }
 
-    
     var monitor: NWPathMonitor?
     
     var isMonitoring: Bool = false
