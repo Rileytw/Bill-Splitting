@@ -80,6 +80,7 @@ class AddItemViewController: UIViewController {
         setTableView()
         setDismissButton()
         detectBlackListUser()
+        networkDetect()
     }
     
     override func viewWillLayoutSubviews() {
@@ -231,30 +232,35 @@ class AddItemViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
-        checkInvolvedData()
-        if addItemView.itemNameTextField.text == "" ||
-            addItemView.priceTextField.text == "" ||
-            typePickerView.textField.text == "" {
-            lossInfoAlert(message: "請確認是否填寫款項名稱、支出金額並選擇分款方式")
-        } else if memberPickerView.textField.text == "" && groupData?.type == GroupType.multipleUsers.typeInt {
-            lossInfoAlert(message: "請確認是否選取付款人")
-        } else if involvedExpenseData.isEmpty == true {
-            lossInfoAlert(message: "請確認是否選取參與人")
-        } else if typePickerView.textField.text == SplitType.percent.label && involvedTotalPrice != 100 {
-            lossInfoAlert(message: "請確認分帳比例是否正確")
-        } else if typePickerView.textField.text == SplitType.customize.label {
-            let userInputPaid = addItemView.priceTextField.text ?? ""
-            if let paidPrice = Double(userInputPaid) {
-                if involvedTotalPrice != paidPrice {
-                    lossInfoAlert(message: "請確認自訂金額是否正確")
-                } else {
-                    confirmAddItem()
-                    setAnimation()
+        if NetworkStatus.shared.isConnected == true {
+            checkInvolvedData()
+            if addItemView.itemNameTextField.text == "" ||
+                addItemView.priceTextField.text == "" ||
+                typePickerView.textField.text == "" {
+                lossInfoAlert(message: "請確認是否填寫款項名稱、支出金額並選擇分款方式")
+            } else if memberPickerView.textField.text == "" && groupData?.type == GroupType.multipleUsers.typeInt {
+                lossInfoAlert(message: "請確認是否選取付款人")
+            } else if involvedExpenseData.isEmpty == true {
+                lossInfoAlert(message: "請確認是否選取參與人")
+            } else if typePickerView.textField.text == SplitType.percent.label && involvedTotalPrice != 100 {
+                lossInfoAlert(message: "請確認分帳比例是否正確")
+            } else if typePickerView.textField.text == SplitType.customize.label {
+                let userInputPaid = addItemView.priceTextField.text ?? ""
+                if let paidPrice = Double(userInputPaid) {
+                    if involvedTotalPrice != paidPrice {
+                        lossInfoAlert(message: "請確認自訂金額是否正確")
+                    } else {
+                        confirmAddItem()
+                        setAnimation()
+                    }
                 }
+            } else {
+                confirmAddItem()
+                setAnimation()
             }
         } else {
-            confirmAddItem()
-            setAnimation() 
+            print("======== Cannot add groups")
+            networkConnectAlert()
         }
     }
     
@@ -478,6 +484,31 @@ class AddItemViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
+    }
+    
+    func networkConnectAlert() {
+        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     func setTypeLabel() {

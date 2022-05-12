@@ -49,6 +49,7 @@ class GroupsViewController: UIViewController {
         navigationItem.title = "我的群組"
         setSearchBar()
         setAnimation()
+        networkDetect()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,6 +57,11 @@ class GroupsViewController: UIViewController {
         getGroupData()
         getClosedGroupData()
         fetchCurrentUserData()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+//        NetworkStatus.shared.stopMonitoring()
     }
     
     func setSearchView() {
@@ -232,6 +238,23 @@ class GroupsViewController: UIViewController {
     func removeAnimation() {
         animationView.stop()
         animationView.removeFromSuperview()
+    }
+    
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
     }
 }
 

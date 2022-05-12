@@ -61,6 +61,7 @@ class AddGroupsViewController: UIViewController {
         setSearchBar()
         
         hideUnchagableGroupInfo()
+        networkDetect()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -93,6 +94,7 @@ class AddGroupsViewController: UIViewController {
         super.viewWillDisappear(animated)
         friends.removeAll()
         newGroupFriends.removeAll()
+//        NetworkStatus.shared.stopMonitoring()
     }
     
     func setAddGroupButton() {
@@ -115,15 +117,20 @@ class AddGroupsViewController: UIViewController {
         } else if typePickerView.textField.text == "" && isGroupExist == false {
             loseGroupInfoAlert(message: "尚未選擇群組類型")
         } else {
-            addMembers()
-            
-            if isGroupExist == true {
-                updateExistGroupData()
-                self.navigationController?.popToRootViewController(animated: true)
+            if NetworkStatus.shared.isConnected == true {
+                addMembers()
+                
+                if isGroupExist == true {
+                    updateExistGroupData()
+                    self.navigationController?.popToRootViewController(animated: true)
+                } else {
+                    uploadGroupData()
+                }
+                cleanData()
             } else {
-                uploadGroupData()
+                print("======== Cannot add groups")
+                networkConnectAlert()
             }
-            cleanData()
         }
     }
     
@@ -290,6 +297,31 @@ class AddGroupsViewController: UIViewController {
             filteredMembers = friends
         }
         tableView.reloadData()
+    }
+    
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
+    }
+    
+    func networkConnectAlert() {
+        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     func setTextField() {

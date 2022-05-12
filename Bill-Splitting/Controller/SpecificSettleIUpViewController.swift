@@ -29,6 +29,7 @@ class SpecificSettleIUpViewController: UIViewController {
         setUserInfo()
         setSettleUpButton()
         setTableView()
+        networkDetect()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,10 +85,15 @@ class SpecificSettleIUpViewController: UIViewController {
     }
     
     @objc func pressSettleUpButton() {
-        addItem()
-        
-        if let groupViewController = self.navigationController?.viewControllers[1] {
-            self.navigationController?.popToViewController(groupViewController, animated: true)
+        if NetworkStatus.shared.isConnected == true {
+            addItem()
+            
+            if let groupViewController = self.navigationController?.viewControllers[1] {
+                self.navigationController?.popToViewController(groupViewController, animated: true)
+            }
+        } else {
+            print("======== Cannot add groups")
+            networkConnectAlert()
         }
     }
     
@@ -344,6 +350,31 @@ class SpecificSettleIUpViewController: UIViewController {
         }
         price.font = price.font.withSize(20)
         price.textColor = .greenWhite
+    }
+    
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
+    }
+    
+    func networkConnectAlert() {
+        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
 }
 
