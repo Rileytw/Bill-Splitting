@@ -50,19 +50,7 @@ class GroupsViewController: UIViewController {
         setSearchBar()
         setAnimation()
         
-        
-        // Test
-        NetworkStatus.shared.startMonitoring()
-        
-        NetworkStatus.shared.netStatusChangeHandler = {
-            if NetworkStatus.shared.isConnected == true {
-                print("connected")
-            } else {
-                print("Not connected")
-            }
-        }
-        
-
+        networkDetect()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -246,6 +234,23 @@ class GroupsViewController: UIViewController {
     func removeAnimation() {
         animationView.stop()
         animationView.removeFromSuperview()
+    }
+    
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
     }
 }
 
