@@ -54,7 +54,7 @@ class GroupDetailViewController: UIViewController {
     @objc func detectUserExpense() {
         if personalExpense == 0 && groupData?.creator != currentUserId {
             leaveGroupAlert()
-        } else if memberExpense == 0 && groupData?.creator == currentUserId{
+        } else if memberExpense == 0 && groupData?.creator == currentUserId {
             creatorLeaveAlert()
         } else {
             rejectLeaveGroupAlert()

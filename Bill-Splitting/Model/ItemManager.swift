@@ -110,38 +110,42 @@ class ItemManager {
         }
     }
     
-    func addPaidInfo(paidUserId: String, price: Double, itemId: String, createdTime: Double) {
+    func addPaidInfo(paidUserId: String, price: Double, itemId: String, createdTime: Double, completion: @escaping (Result<(), Error>) -> Void) {
         addItemExpenseInfo(typeUserId: paidUserId,
                            collection: ItemExpenseType.paidInfo,
                            price: price,
                            itemId: itemId,
-                           createdTime: createdTime)
+                           createdTime: createdTime, completion: completion)
     }
     
-    func addInvolvedInfo(involvedUserId: String, price: Double, itemId: String, createdTime: Double) {
+    func addInvolvedInfo(involvedUserId: String, price: Double, itemId: String, createdTime: Double, completion: @escaping (Result<(), Error>) -> Void) {
         addItemExpenseInfo(typeUserId: involvedUserId,
                            collection: ItemExpenseType.involvedInfo,
                            price: price,
                            itemId: itemId,
-                           createdTime: createdTime)
+                           createdTime: createdTime, completion: completion)
     }
     
-    private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double, itemId: String, createdTime: Double) {
+    private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double, itemId: String, createdTime: Double, completion: @escaping (Result<(), Error>) -> Void) {
         let involvedInfo = ExpenseInfo(userId: typeUserId, price: price, createdTime: createdTime, itemId: itemId)
         
         do {
             try db.collection("item").document(itemId).collection(collection.rawValue).document().setData(from: involvedInfo)
+            completion(.success(()))
         } catch {
             print(error)
+            completion(.failure(error))
         }
     }
     
-    func deleteItem(itemId: String) {
+    func deleteItem(itemId: String, completion: @escaping (Result<(), Error>) -> Void) {
         db.collection(FirebaseCollection.item.rawValue).document(itemId).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")
+                completion(.failure(err))
             } else {
                 print("Document successfully removed!")
+                completion(.success(()))
             }
         }
     }

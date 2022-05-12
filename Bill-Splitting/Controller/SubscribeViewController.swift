@@ -135,6 +135,7 @@ class SubscribeViewController: UIViewController {
 //        endTimeDatePicker.tintColor = .greenWhite
         endTimeDatePicker.setValue(UIColor.greenWhite, forKeyPath: "textColor")
         endTimeDatePicker.overrideUserInterfaceStyle = .dark
+        endTimeDatePicker.minimumDate = now
     }
     
     func setCyclePicker() {
@@ -164,6 +165,7 @@ class SubscribeViewController: UIViewController {
     
     @objc func pressCompleteButton() {
         checkInvolvedData()
+        paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
         
         if cyclePicker.textField.text == "" ||
             addItemView.itemNameTextField.text == "" ||

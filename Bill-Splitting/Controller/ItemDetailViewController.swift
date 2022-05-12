@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import Lottie
 class ItemDetailViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
@@ -23,6 +23,7 @@ class ItemDetailViewController: UIViewController {
     var reportContent: String?
     
     var reportView = ReportView()
+    private var animationView = AnimationView()
     var mask = UIView()
     let width = UIScreen.main.bounds.size.width
     let height = UIScreen.main.bounds.size.height
@@ -35,11 +36,13 @@ class ItemDetailViewController: UIViewController {
         addMenu()
         setTableView()
         detectBlackListUser()
+//        getItemData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        getItemData()
+        setAnimation()
+        getItemData(itemId: self.itemId ?? "")
         tabBarController?.tabBar.isHidden = true
     }
     
@@ -90,8 +93,8 @@ class ItemDetailViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10).isActive = true
     }
     
-    func getItemData() {
-        ItemManager.shared.fetchItem(itemId: self.itemId ?? "") { [weak self] result in
+    func getItemData(itemId: String) {
+        ItemManager.shared.fetchItem(itemId: itemId) { [weak self] result in
             switch result {
             case .success(let items):
                 self?.item = items
@@ -110,7 +113,7 @@ class ItemDetailViewController: UIViewController {
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         group.enter()
         firstQueue.async(group: group) {
-            ItemManager.shared.fetchPaidItemsExpense(itemId: self.itemId ?? "") { [weak self] result in
+            ItemManager.shared.fetchPaidItemsExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.item?.paidInfo = items
@@ -128,7 +131,7 @@ class ItemDetailViewController: UIViewController {
         let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         group.enter()
         secondQueue.async(group: group) {
-            ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemId ?? "") { [weak self] result in
+            ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.item?.involedInfo = items
@@ -143,6 +146,7 @@ class ItemDetailViewController: UIViewController {
         }
         group.notify(queue: DispatchQueue.main) {
             self.tableView.reloadData()
+            self.removeAnimation()
         }
     }
     
@@ -180,25 +184,79 @@ class ItemDetailViewController: UIViewController {
     }
     
     func deleteItem() {
-        countPersonalExpense()
-        ItemManager.shared.deleteItem(itemId: itemId ?? "")
-    }
-    
-    func countPersonalExpense() {
         guard let paidUserId = item?.paidInfo?[0].userId,
               let paidPrice = item?.paidInfo?[0].price
         else { return }
+        var isItemDeleteSucces: Bool = false
         
-        GroupManager.shared.updateMemberExpense(userId: paidUserId ,
-                                                newExpense: 0 - paidPrice,
-                                                groupId: groupData?.groupId ?? "")
+        let group = DispatchGroup()
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        firstQueue.async(group: group) {
+            GroupManager.shared.updateMemberExpense(userId: paidUserId ,
+                                                    newExpense: 0 - paidPrice,
+                                                    groupId: self.groupData?.groupId ?? "") { result in
+                switch result {
+                case .success:
+                    print("success")
+                    isItemDeleteSucces = true
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    isItemDeleteSucces = false
+                }
+                group.leave()
+            }
+        }
         
         guard let involvedExpense = item?.involedInfo else { return }
         
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+        
         for user in 0..<involvedExpense.count {
-            GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
-                                                    newExpense: involvedExpense[user].price,
-                                                    groupId: groupData?.groupId ?? "")
+            group.enter()
+            secondQueue.async(group: group) {
+                GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
+                                                        newExpense: involvedExpense[user].price,
+                                                        groupId: self.groupData?.groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("success")
+                        isItemDeleteSucces = true
+                        group.leave()
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                        isItemDeleteSucces = false
+                        group.leave()
+                    }
+                }
+            }
+        }
+        
+        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
+        group.enter()
+        thirdQueue.async(group: group) {
+            ItemManager.shared.deleteItem(itemId: self.itemId ?? "") { result in
+                switch result {
+                case .success:
+                    print("success")
+                    isItemDeleteSucces = true
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    isItemDeleteSucces = false
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            if isItemDeleteSucces == true {
+                ProgressHUD.shared.view = self.view ?? UIView()
+                ProgressHUD.showSuccess(text: "移除成功")
+                self.navigationController?.popViewController(animated: true)
+            } else {
+                ProgressHUD.shared.view = self.view ?? UIView()
+                ProgressHUD.showFailure(text: "移除失敗，請稍後再試")
+            }
         }
     }
     
@@ -214,7 +272,7 @@ class ItemDetailViewController: UIViewController {
                                                 preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
             self?.deleteItem()
-            self?.navigationController?.popViewController(animated: true)
+//            self?.navigationController?.popViewController(animated: true)
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         
@@ -263,7 +321,7 @@ class ItemDetailViewController: UIViewController {
                             reportContent: reportContent)
         ReportManager.shared.updateReport(report: report) { [weak self] result in
             switch result {
-            case .success():
+            case .success:
                 self?.leaveGroupAlert()
             case .failure(let err):
                 print("\(err.localizedDescription)")
@@ -424,10 +482,32 @@ class ItemDetailViewController: UIViewController {
     @objc func dismissPhotoView() {
         photoView.removeFromSuperview()
     }
+    
+    func setAnimation() {
+        animationView = .init(name: "simpleLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
+    }
 }
 
 extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
+        guard let item = item else { return 0 }
+
         return 2
     }
     
@@ -441,14 +521,20 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let item = item else { return UITableViewCell() }
+        guard let item = item else {
+            return UITableViewCell()
+            
+        }
         
          if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: String(describing: ItemDetailTableViewCell.self),
                 for: indexPath
             )
-            guard let detailCell = cell as? ItemDetailTableViewCell else { return cell }
+            guard let detailCell = cell as? ItemDetailTableViewCell else {
+                return cell
+                
+            }
             
              detailCell.createDetailCell(group: groupData?.groupName ?? "",
                                         item: item.itemName,
@@ -492,6 +578,9 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
                 addItemViewController.groupData = self.groupData
                 addItemViewController.itemData = self.item
                 addItemViewController.isItemExist = true
+                addItemViewController.editingItem = { [weak self] newItemId in
+                    self?.getItemData(itemId: newItemId)
+                }
                 self.present(addItemViewController, animated: true, completion: nil)
             }
            

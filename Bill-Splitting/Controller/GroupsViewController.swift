@@ -92,7 +92,7 @@ class GroupsViewController: UIViewController {
     }
     
     func getGroupData() {
-        GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
+        GroupManager.shared.fetchGroupsRealTime(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
@@ -111,7 +111,7 @@ class GroupsViewController: UIViewController {
     }
     
     func getClosedGroupData() {
-        GroupManager.shared.fetchGroups(userId: currentUserId, status: 1) { [weak self] result in
+        GroupManager.shared.fetchGroupsRealTime(userId: currentUserId, status: 1) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.closedGroups = groups
@@ -358,10 +358,7 @@ extension GroupsViewController {
                         self?.memberExpense += abs(member)
                     }
                     self?.revealBlockView()
-                } else {
-                    self?.getGroupData()
                 }
-                
             case .failure(let error):
                 print("Error decoding userData: \(error)")
                 ProgressHUD.shared.view = self?.view ?? UIView()

@@ -24,6 +24,8 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     let height = UIScreen.main.bounds.height
     private var animationView = AnimationView()
     
+//    weak var delegate: MoreInfoDelegate?
+    
     var isItemExist: Bool = false
     var itemData: ItemData?
     
@@ -32,6 +34,9 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     typealias Description = (String) -> Void
     var itemDescription: Description?
+    
+    typealias ImageData = (UIImage) -> Void
+    var itemImage: ImageData?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -149,10 +154,14 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
                 self.urlData?(itemData?.itemImage ?? "")
                 self.dismiss(animated: true, completion: nil)
             } else {
-                getImageURL()
+//                getImageURL()
+                itemImage?(self.selectedImage ?? UIImage())
+                self.dismiss(animated: true, completion: nil)
             }
         } else if selectedImage != nil && isItemExist == false {
-            getImageURL()
+//            getImageURL()
+            itemImage?(self.selectedImage ?? UIImage())
+            self.dismiss(animated: true, completion: nil)
         } else {
             self.dismiss(animated: true, completion: nil)
         }
@@ -172,14 +181,6 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         animationView.play()
     }
     
-    func getImageURL() {
-        guard let selectedImage = selectedImage else { return }
-        let fileName = "\(currentUserId)" + "\(Date())"
-        ImageManager.shared.uploadImageToStorage(image: selectedImage, fileName: fileName) { [weak self] urlString in
-            self?.urlData?(urlString)
-            self?.dismiss(animated: true, completion: nil)
-        }
-    }
     
     func setDescription() {
         view.addSubview(descriptionLabek)
