@@ -145,6 +145,7 @@ class SpecificSettleIUpViewController: UIViewController {
                         print(error)
                     }
                 }
+                
             } else {
                 if userExpense[0].allExpense <= 0 {
                     paidUserId = self.userData?.userId
@@ -179,6 +180,7 @@ class SpecificSettleIUpViewController: UIViewController {
                 }
             }
             self.updatePersonalExpense()
+            self.addItemNotification()
         }
     }
     
@@ -291,6 +293,19 @@ class SpecificSettleIUpViewController: UIViewController {
                         print(error)
                     }
                 }
+            }
+        }
+        
+       
+    }
+    
+    func addItemNotification() {
+        ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
+            switch result {
+            case .success:
+                print("uplaod notification collection successfully")
+            case .failure(let error):
+                print(error.localizedDescription)
             }
         }
     }

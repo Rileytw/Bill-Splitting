@@ -70,7 +70,7 @@ class RecordsViewController: UIViewController {
         
         queue.async {
             for groupData in self.groups {
-                ItemManager.shared.fetchGroupItemData(groupId: groupData.groupId) { [weak self] result in
+                ItemManager.shared.listenGroupItemData(groupId: groupData.groupId) { [weak self] result in
                     switch result {
                     case .success(let items):
                         self?.itemData += items
@@ -256,7 +256,7 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                                          name: itemName ?? "",
                                          description: PaidDescription.settleUpPaid,
                                          price: abs(item.price))
-                itemsCell.paidDescription.textColor = .styleGreeng
+                itemsCell.paidDescription.textColor = .styleGreen
                 itemsCell.setIcon(style: 1)
             } else {
                 itemsCell.createItemCell(time: time,
@@ -266,13 +266,6 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                 itemsCell.paidDescription.textColor = .styleRed
                 itemsCell.setIcon(style: 1)
             }
-            
-//            itemsCell.createItemCell(time: time,
-//                                     name: itemName ?? "",
-//                                     description: PaidDescription.involved,
-//                                     price: abs(item.price))
-//            itemsCell.paidDescription.textColor = .styleRed
-//            itemsCell.setIcon(style: 1)
         }
       
         return itemsCell

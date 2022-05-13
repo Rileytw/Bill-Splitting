@@ -329,10 +329,9 @@ class AddItemViewController: UIViewController {
         let group = DispatchGroup()
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         group.enter()
-//       MARK: - Add Paid info for item in PaidCollection
+
         firstQueue.async(group: group) {
-            ItemManager.shared.addPaidInfo(
-                paidUserId: paidUserId ?? "", price: paidPrice ?? 0, itemId: self.itemId ?? "",
+            ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "", price: paidPrice ?? 0, itemId: self.itemId ?? "",
                 createdTime: Double(NSDate().timeIntervalSince1970)) { result in
                 switch result {
                 case .success:
@@ -346,7 +345,7 @@ class AddItemViewController: UIViewController {
                 }
             }
         }
-//    MARK: - Add Involved info for item in InvolvedCollection
+
         let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         for user in 0..<self.involvedExpenseData.count {
             var involvedPrice: Double?
@@ -360,8 +359,7 @@ class AddItemViewController: UIViewController {
             group.enter()
             secondQueue.async(group: group) {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
-                                                   price: involvedPrice ?? 0, itemId: self.itemId ?? "",
-                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                                                   price: involvedPrice ?? 0, itemId: self.itemId ?? "", createdTime: Double(NSDate().timeIntervalSince1970)) { result in
                     switch result {
                     case .success:
                         print("succedd")
@@ -375,12 +373,11 @@ class AddItemViewController: UIViewController {
                 }
             }
         }
-//    MARK: - Add Paid info for item in GroupCollection
+
         let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
         group.enter()
         thirdQueue.async(group: group) {
-            GroupManager.shared.updateMemberExpense(
-                userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.groupData?.groupId ?? "") { result in
+            GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.groupData?.groupId ?? "") { result in
                 switch result {
                 case .success:
                     print("succedd")
@@ -404,13 +401,11 @@ class AddItemViewController: UIViewController {
             }
             guard let involvedPrice = involvedPrice else { return }
 
-            // MARK: - Add Involved info for item in GroupCollection
             let fourthQueue = DispatchQueue(label: "fourthQueue", qos: .default, attributes: .concurrent)
             group.enter()
             fourthQueue.async(group: group) {
                 GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
-                                                        newExpense: 0 - involvedPrice,
-                                                        groupId: self.groupData?.groupId ?? "") { result in
+                                                        newExpense: 0 - involvedPrice, groupId: self.groupData?.groupId ?? "") { result in
                     switch result {
                     case .success:
                         print("succedd")
@@ -432,6 +427,15 @@ class AddItemViewController: UIViewController {
                 ProgressHUD.showSuccess(text: "新增成功")
                 if self.isItemExist == true {
                     self.editingItem?(self.itemId ?? "")
+                }
+                
+                ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("uplaod notification collection successfully")
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
                 }
                 self.dismiss(animated: false, completion: nil)
             } else {

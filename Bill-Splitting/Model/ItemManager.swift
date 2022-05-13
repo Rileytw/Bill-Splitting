@@ -33,7 +33,7 @@ class ItemManager {
         }
     }
     
-    func fetchGroupItemData(groupId: String, completion: @escaping ItemDataResponse) {
+    func listenGroupItemData(groupId: String, completion: @escaping ItemDataResponse) {
         db.collection("item").whereField("groupId", isEqualTo: groupId).order(by: "createdTime", descending: true).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
@@ -56,6 +56,56 @@ class ItemManager {
                 completion(.success(items))
             }
         }
+    }
+    
+    func fetchGroupItemData(groupId: String, completion: @escaping ItemDataResponse) {
+        db.collection("item").whereField("groupId", isEqualTo: groupId).order(by: "createdTime", descending: true).getDocuments { (querySnapshot, error) in
+            
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                
+                var items = [ItemData]()
+                
+                for document in querySnapshot!.documents {
+                    
+                    do {
+                        if let item = try document.data(as: ItemData.self, decoder: Firestore.Decoder()) {
+                            items.append(item)
+                        }
+                    } catch {
+                        
+                        completion(.failure(error))
+                    }
+                }
+                completion(.success(items))
+            }
+        }
+    }
+    
+    func listenForItems(itemId: String, completion: @escaping () -> Void) {
+        db.collection("item").document(itemId)
+            .collection("involvedInfo")
+            .whereField("itemId", isEqualTo: itemId)
+            .addSnapshotListener { querySnapshot, error in
+                guard let snapshot = querySnapshot else {
+                    print("Error retreiving snapshots \(error!)")
+                    return
+                }
+                snapshot.documentChanges.forEach { diff in
+                    if (diff.type == .added) {
+                        print("New: \(diff.document.data())")
+                        completion()
+                        
+                    }
+                    if (diff.type == .modified) {
+                        print("Modified: \(diff.document.data())")
+                    }
+                    if (diff.type == .removed) {
+                        print("Removed: \(diff.document.data())")
+                    }
+                }
+            }
     }
     
     func fetchItem(itemId: String, completion: @escaping (Result<ItemData, Error>) -> Void) {
@@ -94,7 +144,7 @@ class ItemManager {
             } else {
                 
                 var involvedItems: [ExpenseInfo] = []
-                
+
                 for document in querySnapshot!.documents {
                     
                     do {
@@ -148,5 +198,32 @@ class ItemManager {
                 completion(.success(()))
             }
         }
+    }
+    
+    func addNotify(grpupId: String, completion: @escaping (Result<(), Error>) -> Void) {
+        let ref = db.collection("notification")
+        ref.addDocument(data:[
+                   "groupId": grpupId
+               ]) { err in
+                   if let err = err {
+                       print("Error updating document: \(err)")
+                       completion(.failure(err))
+                   } else {
+                       print("Document successfully updated")
+                completion(.success(()))
+            }
+        }
+    }
+    
+    func listenForNotification(groupId: String, completion: @escaping () -> Void) {
+        db.collection("notification").whereField("groupId", isEqualTo: groupId)
+            .addSnapshotListener { querySnapshot, error in
+                guard let snapshot = querySnapshot else {
+                    print("Error retreiving snapshots \(error?.localizedDescription)")
+                    return
+                }
+                print("groupId: \(snapshot.documents.map { $0.data() })")
+                completion()
+            }
     }
 }
