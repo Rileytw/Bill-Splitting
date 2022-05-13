@@ -118,6 +118,7 @@ class AddItemViewController: UIViewController {
         
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
+        typePickerView.textField.delegate = self
         
         typePickerView.pickerView.tag = 0
     }
@@ -144,6 +145,7 @@ class AddItemViewController: UIViewController {
         
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
+        memberPickerView.textField.delegate = self
         memberPickerView.pickerView.tag = 1
         
         if groupData?.type == 0 {
@@ -697,6 +699,22 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
             
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
+            }
+        }
+    }
+}
+
+extension AddItemViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == typePickerView.textField {
+            if textField.text?.isEmpty == true {
+                typePickerView.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(typePickerView.pickerView, didSelectRow: 0, inComponent: 0)
+            }
+        } else if textField == memberPickerView.textField {
+            if textField.text?.isEmpty == true {
+                memberPickerView.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(memberPickerView.pickerView, didSelectRow: 0, inComponent: 0)
             }
         }
     }

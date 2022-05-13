@@ -398,6 +398,7 @@ class AddGroupsViewController: UIViewController {
         typePickerView.pickerViewData = pickerViewData
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
+        typePickerView.textField.delegate = self
         
 //        if isGroupExist == true {
 //            typePickerView.isHidden = true
@@ -565,5 +566,14 @@ extension AddGroupsViewController: UISearchBarDelegate {
         searchBar.text = ""
         searchBar.resignFirstResponder()
         setFilterFriendsData()
+    }
+}
+
+extension AddGroupsViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.text?.isEmpty == true {
+            typePickerView.pickerView.selectRow(0, inComponent: 0, animated: true)
+            self.pickerView(typePickerView.pickerView, didSelectRow: 0, inComponent: 0)
+        }
     }
 }

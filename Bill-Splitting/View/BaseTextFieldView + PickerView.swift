@@ -12,6 +12,7 @@ class BasePickerViewInTextField: UIView {
     let pickerView = UIPickerView()
     let width = UIScreen.main.bounds.width
     var icon = UIButton()
+//    var icon = UIImageView()
     var pickerViewData: [String] = [""]
     
     override init(frame: CGRect) {
@@ -49,20 +50,13 @@ class BasePickerViewInTextField: UIView {
     }
     
     func setIcon() {
-        icon.setImage(UIImage(systemName: "arrowtriangle.down.square"), for: .normal)
+        icon.setBackgroundImage(UIImage(named: "arrowDown"), for: .normal)
         icon.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
         
-        icon.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-        icon.contentMode = .scaleAspectFit
+        icon.frame = CGRect(x: 0, y: 0, width: 10, height: 10)
         icon.isUserInteractionEnabled = false
-        let padding: CGFloat = 2
-
-        let rightView = UIView(frame: CGRect(
-            x: 0, y: 0,
-            width: icon.frame.width + padding,
-            height: icon.frame.height))
-        rightView.addSubview(icon)
-        textField.rightView = rightView
+        
+        textField.rightView = icon
         textField.rightViewMode = .always
     }
 }

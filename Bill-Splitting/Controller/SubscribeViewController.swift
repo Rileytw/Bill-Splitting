@@ -149,6 +149,7 @@ class SubscribeViewController: UIViewController {
         
         cyclePicker.pickerView.dataSource = self
         cyclePicker.pickerView.delegate = self
+        cyclePicker.textField.delegate = self
     }
     
     func setCompleteButton() {
@@ -435,6 +436,15 @@ extension SubscribeViewController: AddItemTableViewCellDelegate {
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
             }
+        }
+    }
+}
+
+extension SubscribeViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.text?.isEmpty == true {
+            cyclePicker.pickerView.selectRow(0, inComponent: 0, animated: true)
+            self.pickerView(cyclePicker.pickerView, didSelectRow: 0, inComponent: 0)
         }
     }
 }

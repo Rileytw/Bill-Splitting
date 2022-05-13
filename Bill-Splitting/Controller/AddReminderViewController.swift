@@ -97,6 +97,7 @@ class AddReminderViewController: UIViewController {
         
         groupPicker.pickerView.dataSource = self
         groupPicker.pickerView.delegate = self
+        groupPicker.textField.delegate = self
     }
     
     func setUser() {
@@ -112,6 +113,7 @@ class AddReminderViewController: UIViewController {
         
         userPicker.pickerView.dataSource = self
         userPicker.pickerView.delegate = self
+        userPicker.textField.delegate = self
     }
     
     func setType() {
@@ -431,9 +433,25 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     func pickGroupAlert(title: String, message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
         alertController.addAction(defaultAction)
         
         present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension AddReminderViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == groupPicker.textField {
+            if textField.text?.isEmpty == true {
+                groupPicker.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(groupPicker.pickerView, didSelectRow: 0, inComponent: 0)
+            }
+        } else if textField == userPicker.textField {
+            if textField.text?.isEmpty == true {
+                userPicker.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(userPicker.pickerView, didSelectRow: 0, inComponent: 0)
+            }
+        }
     }
 }
