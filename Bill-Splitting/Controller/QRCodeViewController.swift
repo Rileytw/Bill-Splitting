@@ -24,10 +24,10 @@ class QRCodeViewController: UIViewController {
         
         let qrFilter = CIFilter(name: "CIQRCodeGenerator")
         qrFilter?.setValue(stringData, forKey: "inputMessage")
-        qrFilter?.setValue("H", forKey: "inputCorrectionLevel")
+        qrFilter?.setValue("M", forKey: "inputCorrectionLevel")
         let qrCIImage = qrFilter?.outputImage
-        guard let qrCIImage = qrCIImage else { return UIImage() }
         
+        guard let qrCIImage = qrCIImage else { return UIImage() }
         let codeImage = UIImage(ciImage: qrCIImage)
         return codeImage
     }
@@ -37,8 +37,9 @@ class QRCodeViewController: UIViewController {
         qrCodeView.translatesAutoresizingMaskIntoConstraints = false
         qrCodeView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50).isActive = true
         qrCodeView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        qrCodeView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        qrCodeView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        qrCodeView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        qrCodeView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        qrCodeView.layer.magnificationFilter = CALayerContentsFilter.nearest
         
         qrCodeView.image = generateQRCode(qrString: AccountManager.shared.currentUser.currentUserEmail)
     }
