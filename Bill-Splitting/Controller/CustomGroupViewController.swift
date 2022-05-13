@@ -540,7 +540,7 @@ class CustomGroupViewController: UIViewController {
         mask.backgroundColor = UIColor.black.withAlphaComponent(0.2)
         view.addSubview(mask)
 
-        animationView = .init(name: "simpleLoading")
+        animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
         animationView.translatesAutoresizingMaskIntoConstraints = false
         animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
