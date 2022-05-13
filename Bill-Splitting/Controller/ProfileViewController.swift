@@ -210,7 +210,7 @@ class ProfileViewController: UIViewController {
                 print("Account successfully deleted ")
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showSuccess(text: "帳號已刪除")
-                self?.updateUserName(newUserName: currentUserName + "帳號已刪除")
+                self?.updateUserName(newUserName: currentUserName + "（帳號已刪除）")
                 self?.backToSignInPage()
             case .failure:
                 self?.alertSignInAgain()
