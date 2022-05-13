@@ -11,10 +11,10 @@ import FirebaseAuth
 
 class AccountManager {
     static var shared = AccountManager()
-    var currentUser: CurrentUser = {
+    var currentUser: CurrentUser {
         let user = CurrentUser(currentUserId: Auth.auth().currentUser?.uid ?? "", currentUserEmail: Auth.auth().currentUser?.email ?? "")
         return user
-    }()
+    }
 //    var currentUser = CurrentUser(currentUserId: Auth.auth().currentUser?.uid ?? "", currentUserEmail: Auth.auth().currentUser?.email ?? "")
 //    var currentUser = CurrentUser(currentUserId: "", currentUserEmail: "")
     
@@ -63,8 +63,8 @@ class AccountManager {
         if let user = currentUser {
             let uid = user.uid
             let email = user.email
-            self.currentUser.currentUserId = uid
-            self.currentUser.currentUserEmail = email ?? ""
+//            self.currentUser.currentUserId = uid
+//            self.currentUser.currentUserEmail = email ?? ""
         }
     }
 }
