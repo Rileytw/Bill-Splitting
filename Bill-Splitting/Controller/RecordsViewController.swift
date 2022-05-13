@@ -26,7 +26,7 @@ class RecordsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
-        getGroupData()
+//        getGroupData()
         setEmptyLabel()
         setTableView()
         setAnimation()
@@ -37,7 +37,7 @@ class RecordsViewController: UIViewController {
         super.viewWillAppear(animated)
         fetchCurrentUserData()
 //        setAnimation()
-//        getGroupData()
+        getGroupData()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
