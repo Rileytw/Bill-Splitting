@@ -155,6 +155,7 @@ class CustomGroupViewController: UIViewController {
             addItemViewController.memberData = userData
             addItemViewController.groupData = groupData
             addItemViewController.blackList = blackList
+            addItemViewController.modalPresentationStyle = .fullScreen
             self.present(addItemViewController, animated: true, completion: nil)
         } else {
             addItemAlert()

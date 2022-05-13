@@ -157,7 +157,7 @@ class AddItemViewController: UIViewController {
         addButton.setTitle("完成", for: .normal)
         //        addButton.backgroundColor = .systemGray
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
         addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         addButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -525,7 +525,7 @@ class AddItemViewController: UIViewController {
     func setDismissButton() {
         view.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        dismissButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
         dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
