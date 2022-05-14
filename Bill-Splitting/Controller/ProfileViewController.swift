@@ -478,7 +478,7 @@ extension ProfileViewController {
         profileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         profileView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        profileView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+        profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
     
     func setAnimation() {
