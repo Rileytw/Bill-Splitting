@@ -391,12 +391,18 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
             cell.backgroundColor = nil
+            UIView.animate(withDuration: 0.2) {
+                cell.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            }
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
             cell.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
+            UIView.animate(withDuration: 0.2) {
+                cell.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }
         }
     }
 }
@@ -449,10 +455,11 @@ extension ProfileViewController {
         userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 5).isActive = true
         userEmail.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
         userEmail.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        userEmail.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        userEmail.heightAnchor.constraint(equalToConstant: 40).isActive = true
         userEmail.textColor = .greenWhite
         userEmail.lineBreakMode = NSLineBreakMode.byWordWrapping
         userEmail.numberOfLines = 0
+        userEmail.font = userEmail.font.withSize(18)
     }
     
     func setProfileImage() {
