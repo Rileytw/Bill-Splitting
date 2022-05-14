@@ -278,7 +278,7 @@ class RemindersViewController: UIViewController {
     }
     
     func setAnimation() {
-        animationView = .init(name: "simpleLoading")
+        animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
         animationView.translatesAutoresizingMaskIntoConstraints = false
         animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true

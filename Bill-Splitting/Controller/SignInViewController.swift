@@ -314,7 +314,7 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { return}
         let appCredential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
         self.appleId = credential.user
-        user.userName = "\(credential.fullName?.givenName ?? "")"
+        user.userName = "\(credential.fullName?.givenName ?? "請輸入使用者名稱")"
         user.userEmail = "\(credential.email ?? "")"
         
         firebaseSignInWithApple(credential: appCredential)

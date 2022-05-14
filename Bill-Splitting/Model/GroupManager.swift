@@ -195,31 +195,6 @@ class GroupManager {
         }
     }
     
-    func listenForItems(groupId: String, completion: @escaping () -> Void) {
-        db.collection("item")
-            .whereField("groupId", isEqualTo: groupId)
-            .addSnapshotListener { querySnapshot, error in
-                guard let snapshot = querySnapshot else {
-                    print("Error retreiving snapshots \(error!)")
-                    return
-                }
-                snapshot.documentChanges.forEach { diff in
-                    if (diff.type == .added) {
-                        print("New: \(diff.document.data())")
-                        completion()
-                        
-                    }
-                    if (diff.type == .modified) {
-                        print("Modified: \(diff.document.data())")
-                    }
-                    if (diff.type == .removed) {
-                        print("Removed: \(diff.document.data())")
-                    }
-                }
-                
-            }
-    }
-    
     func updateGroupStatus(groupId: String) {
         let groupRef = db.collection("group").document(groupId)
         

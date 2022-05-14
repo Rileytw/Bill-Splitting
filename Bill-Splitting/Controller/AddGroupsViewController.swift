@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 struct FriendSearchModel {
     var friendList: Friend
@@ -18,6 +19,8 @@ class AddGroupsViewController: UIViewController {
     var nameTextField = UITextField()
     let descriptionTextView = UITextView()
     var searchView = UIView()
+    var mask = UIView()
+    private var animationView = AnimationView()
     
     let fullScreenSize = UIScreen.main.bounds.size
     
@@ -25,11 +28,11 @@ class AddGroupsViewController: UIViewController {
     var typePickerView = BasePickerViewInTextField(frame: .zero)
     var pickerViewData = [GroupType.multipleUsers.typeName, GroupType.personal.typeName]
     
-    var friendList: [Friend] = [] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    var friendList: [Friend] = [] //{
+//        didSet {
+//            tableView.reloadData()
+//        }
+//    }
     
     let tableView = UITableView(frame: .zero, style: .plain)
     var searchController: UISearchController!
@@ -62,28 +65,32 @@ class AddGroupsViewController: UIViewController {
         
         hideUnchagableGroupInfo()
         networkDetect()
+        setAnimation()
+        listenFriendData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let friend):
-                self?.friendList = friend
-                if self?.isGroupExist == true {
-                    self?.selectedNewMember()
-                }
-                for index in 0..<friend.count {
-                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
-                    self?.friends.append(friendModel)
-                }
-                self?.setFilterFriendsData()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-            }
-        }
+//        listenFriendData()
+//        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
+//            switch result {
+//            case .success(let friend):
+//                self?.friendList.removeAll()
+//                self?.friendList = friend
+//                if self?.isGroupExist == true {
+//                    self?.selectedNewMember()
+//                }
+//                for index in 0..<friend.count {
+//                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
+//                    self?.friends.append(friendModel)
+//                }
+//                self?.setFilterFriendsData()
+//            case .failure(let error):
+//                print("Error decoding userData: \(error)")
+//                ProgressHUD.shared.view = self?.view ?? UIView()
+//                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+//            }
+//        }
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -130,6 +137,28 @@ class AddGroupsViewController: UIViewController {
             } else {
                 print("======== Cannot add groups")
                 networkConnectAlert()
+            }
+        }
+    }
+    
+    func listenFriendData() {
+        UserManager.shared.listenFriendData(userId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let friend):
+                self?.friendList.removeAll()
+                self?.friendList = friend
+                if self?.isGroupExist == true {
+                    self?.selectedNewMember()
+                }
+                for index in 0..<friend.count {
+                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
+                    self?.friends.append(friendModel)
+                }
+                self?.setFilterFriendsData()
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -297,6 +326,7 @@ class AddGroupsViewController: UIViewController {
             filteredMembers = friends
         }
         tableView.reloadData()
+        removeAnimation()
     }
     
     func networkDetect() {
@@ -398,6 +428,7 @@ class AddGroupsViewController: UIViewController {
         typePickerView.pickerViewData = pickerViewData
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
+        typePickerView.textField.delegate = self
         
 //        if isGroupExist == true {
 //            typePickerView.isHidden = true
@@ -460,6 +491,26 @@ class AddGroupsViewController: UIViewController {
         searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         searchView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         searchView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "accountLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
@@ -565,5 +616,14 @@ extension AddGroupsViewController: UISearchBarDelegate {
         searchBar.text = ""
         searchBar.resignFirstResponder()
         setFilterFriendsData()
+    }
+}
+
+extension AddGroupsViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.text?.isEmpty == true {
+            typePickerView.pickerView.selectRow(0, inComponent: 0, animated: true)
+            self.pickerView(typePickerView.pickerView, didSelectRow: 0, inComponent: 0)
+        }
     }
 }

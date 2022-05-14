@@ -88,12 +88,17 @@ class ProfileViewController: UIViewController {
             case .success:
                 print("userName update successfully")
                 self?.getUserData()
+                self?.pressDismissButton()
             case .failure:
                 print("userName update failed")
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: "資料修改失敗，請稍後再試")
             }
         }
+    }
+    
+    func updateUserNameInFriendList(friendId: String, newName: String) {
+        FriendManager.shared.updateFriendNewName(friendId: friendId, currentUserId: currentUserId, currentUserName: newName)
     }
     
     func logOut() {
@@ -205,7 +210,7 @@ class ProfileViewController: UIViewController {
                 print("Account successfully deleted ")
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showSuccess(text: "帳號已刪除")
-                self?.updateUserName(newUserName: currentUserName + "帳號已刪除")
+                self?.updateUserName(newUserName: currentUserName + "（帳號已刪除）")
                 self?.backToSignInPage()
             case .failure:
                 self?.alertSignInAgain()
@@ -489,6 +494,54 @@ extension ProfileViewController {
     }
 }
 
+extension ProfileViewController {
+    @objc func revealBlockView() {
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.addSubview(mask)
+        
+        editingView = EditingView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        editingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        editingView.buttonTitle = "完成"
+//        editingView.completeButton.setImage(UIImage(systemName: "pencil"), for: .normal)
+        editingView.textField.text = currentUser?.userName ?? ""
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.editingView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 400, width: UIScreen.main.bounds.size.width, height: 400)
+        }, completion: nil)
+        view.addSubview(editingView)
+        editingView.completeButton.addTarget(self, action: #selector(checkUserNameEmpty), for: .touchUpInside)
+        editingView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+        
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    @objc func checkUserNameEmpty() {
+        if editingView.textField.text == "" {
+            let alertController = UIAlertController(title: "請填寫使用者名稱", message: "使用這名稱不可空白", preferredStyle: .alert)
+            let cancelAlert = UIAlertAction(title: "確認", style: .default, handler: nil)
+            alertController.addAction(cancelAlert)
+            present(alertController, animated: true, completion: nil)
+        } else {
+            let newName = editingView.textField.text ?? ""
+            updateUserName(newUserName: newName)
+            if let friends = currentUser?.friends {
+                for friend in friends {
+                    updateUserNameInFriendList(friendId: friend.userId, newName: newName)
+                }
+            }
+        }
+    }
+    
+    @objc func pressDismissButton() {
+        let subviewCount = self.view.subviews.count
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        }, completion: nil)
+        mask.removeFromSuperview()
+        self.tabBarController?.tabBar.isHidden = false
+    }
+}
+
 enum ProfileList {
     case qrCode
     case payment
@@ -538,49 +591,5 @@ enum ProfileList {
         case .deleteAccount:
             return UIImage(systemName: "person.crop.circle.fill.badge.xmark") ?? UIImage()
         }
-    }
-}
-
-extension ProfileViewController {
-    @objc func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
-        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.addSubview(mask)
-        
-        editingView = EditingView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
-        editingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
-        editingView.buttonTitle = "完成"
-//        editingView.completeButton.setImage(UIImage(systemName: "pencil"), for: .normal)
-        editingView.textField.text = currentUser?.userName ?? ""
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.editingView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 400, width: UIScreen.main.bounds.size.width, height: 400)
-        }, completion: nil)
-        view.addSubview(editingView)
-        editingView.completeButton.addTarget(self, action: #selector(checkUserNameEmpty), for: .touchUpInside)
-        editingView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
-        
-        self.tabBarController?.tabBar.isHidden = true
-    }
-    
-    @objc func checkUserNameEmpty() {
-        if editingView.textField.text == "" {
-            let alertController = UIAlertController(title: "請填寫使用者名稱", message: "使用這名稱不可空白", preferredStyle: .alert)
-            let cancelAlert = UIAlertAction(title: "確認", style: .default, handler: nil)
-            alertController.addAction(cancelAlert)
-            present(alertController, animated: true, completion: nil)
-        } else {
-            let newName = editingView.textField.text ?? ""
-            updateUserName(newUserName: newName )
-        }
-    }
-    
-    @objc func pressDismissButton() {
-        let subviewCount = self.view.subviews.count
-        
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
-        }, completion: nil)
-        mask.removeFromSuperview()
-        self.tabBarController?.tabBar.isHidden = false
     }
 }

@@ -26,7 +26,7 @@ class RecordsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
-        getGroupData()
+//        getGroupData()
         setEmptyLabel()
         setTableView()
         setAnimation()
@@ -37,7 +37,7 @@ class RecordsViewController: UIViewController {
         super.viewWillAppear(animated)
         fetchCurrentUserData()
 //        setAnimation()
-//        getGroupData()
+        getGroupData()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -70,7 +70,7 @@ class RecordsViewController: UIViewController {
         
         queue.async {
             for groupData in self.groups {
-                ItemManager.shared.fetchGroupItemData(groupId: groupData.groupId) { [weak self] result in
+                ItemManager.shared.listenGroupItemData(groupId: groupData.groupId) { [weak self] result in
                     switch result {
                     case .success(let items):
                         self?.itemData += items
@@ -158,7 +158,7 @@ class RecordsViewController: UIViewController {
     }
 
     func setAnimation() {
-        animationView = .init(name: "simpleLoading")
+        animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
         animationView.translatesAutoresizingMaskIntoConstraints = false
         animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
@@ -235,19 +235,37 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         if item.price > 0 {
-            itemsCell.createItemCell(time: time,
-                                     name: itemName ?? "",
-                                     description: PaidDescription.paid,
-                                     price: item.price)
-            itemsCell.paidDescription.textColor = .styleGreen
-            itemsCell.setIcon(style: 0)
+            if itemName == "結帳" {
+                itemsCell.createItemCell(time: time,
+                                         name: itemName ?? "",
+                                         description: PaidDescription.settleUpInvolved,
+                                         price: item.price)
+                itemsCell.paidDescription.textColor = .styleRed
+                itemsCell.setIcon(style: 0)
+            } else {
+                itemsCell.createItemCell(time: time,
+                                         name: itemName ?? "",
+                                         description: PaidDescription.paid,
+                                         price: item.price)
+                itemsCell.paidDescription.textColor = .styleGreen
+                itemsCell.setIcon(style: 0)
+            }
         } else {
-            itemsCell.createItemCell(time: time,
-                                     name: itemName ?? "",
-                                     description: PaidDescription.involved,
-                                     price: abs(item.price))
-            itemsCell.paidDescription.textColor = .styleRed
-            itemsCell.setIcon(style: 1)
+            if itemName == "結帳" {
+                itemsCell.createItemCell(time: time,
+                                         name: itemName ?? "",
+                                         description: PaidDescription.settleUpPaid,
+                                         price: abs(item.price))
+                itemsCell.paidDescription.textColor = .styleGreen
+                itemsCell.setIcon(style: 1)
+            } else {
+                itemsCell.createItemCell(time: time,
+                                         name: itemName ?? "",
+                                         description: PaidDescription.involved,
+                                         price: abs(item.price))
+                itemsCell.paidDescription.textColor = .styleRed
+                itemsCell.setIcon(style: 1)
+            }
         }
       
         return itemsCell
