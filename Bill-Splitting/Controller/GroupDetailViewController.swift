@@ -35,7 +35,7 @@ class GroupDetailViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         setTableViewConstraint()
         tableView.register(UINib(nibName: String(describing: GroupDetailTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: GroupDetailTableViewCell.self))
-        tableView.register(UINib(nibName: String(describing: InvitationTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: InvitationTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: FriendListTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: FriendListTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear
@@ -210,13 +210,12 @@ extension GroupDetailViewController: UITableViewDataSource, UITableViewDelegate 
             return detailCell
         } else {
             let cell = tableView.dequeueReusableCell(
-                withIdentifier: String(describing: InvitationTableViewCell.self),
+                withIdentifier: String(describing: FriendListTableViewCell.self),
                 for: indexPath
             )
-            guard let memberCell = cell as? InvitationTableViewCell else { return cell }
+            guard let memberCell = cell as? FriendListTableViewCell else { return cell }
             
-            memberCell.agreeButton.isHidden = true
-            memberCell.disagreeButton.isHidden = true
+            memberCell.infoButton.isHidden = true
             
             var memberData = [UserData]()
             
@@ -224,11 +223,11 @@ extension GroupDetailViewController: UITableViewDataSource, UITableViewDelegate 
                 memberData += userData.filter { $0.userId == groupData.member[index] }
             }
             
-            memberCell.nameLabel.text = memberData[indexPath.row].userName
+            memberCell.profileItemName.text = memberData[indexPath.row].userName
             memberCell.email.text = memberData[indexPath.row].userEmail
             
             if memberData[indexPath.row].userId == groupData.creator {
-                memberCell.nameLabel.text = memberData[indexPath.row].userName + "（群組創建人）"
+                memberCell.profileItemName.text = memberData[indexPath.row].userName + "（群組創建人）"
             }
             
             return memberCell
@@ -238,7 +237,7 @@ extension GroupDetailViewController: UITableViewDataSource, UITableViewDelegate 
 
 extension GroupDetailViewController {
     func setTableViewConstraint() {
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: leaveGroupButton.topAnchor, constant: -5).isActive = true
