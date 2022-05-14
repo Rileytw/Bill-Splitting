@@ -42,6 +42,21 @@ class UserManager {
             }
         }
     }
+   
+    func listenFriendData(userId: String, completion: @escaping () -> Void) {
+        db.collection(FirebaseCollection.user.rawValue).document(userId).collection("friend").addSnapshotListener() { querySnapshot, error in
+            guard let snapshot = querySnapshot else {
+                print("Error retreiving snapshots \(error!)")
+                return
+            }
+            snapshot.documentChanges.forEach { diff in
+                if (diff.type == .added) {
+                    print("New: \(diff.document.data())")
+                    completion()
+                }
+            }
+        }
+    }
     
     //    Use friendId to get user's name in user collection (Using in friendInvitation)
     func fetchUserData(friendId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
@@ -113,6 +128,24 @@ class UserManager {
             }
         }
     }
+    
+    func deleteUserPayment(userId: String, paymentName: String?, account: String?, link: String?, completion: @escaping (Result<(), Error>) -> Void) {
+        
+        let replyDictionary = ["paymentName": paymentName, "paymentAccount": account, "paymentLink": link ]
+        
+        db.collection(FirebaseCollection.user.rawValue).document(userId).updateData([
+            "payment": FieldValue.arrayRemove([replyDictionary])
+        ]) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
+                completion(.failure(error))
+            } else {
+                print("Document successfully updated")
+                completion(.success(()))
+            }
+        }
+    }
+    
 
 //   MARK: - Change getDocuments to addSnapshotListener
     func fetchSignInUserData(userId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
@@ -206,4 +239,6 @@ class UserManager {
         }
        return blockedUserData
     }
+    
+    
 }

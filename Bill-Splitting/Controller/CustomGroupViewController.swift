@@ -34,6 +34,7 @@ class CustomGroupViewController: UIViewController {
     var paidItem: [[ExpenseInfo]] = []
     var involvedItem: [[ExpenseInfo]] = []
 
+    var indexOfItem: Int = -1
     
     var subscriptInvolvedItem: [SubscriptionMember] = []
     
@@ -70,6 +71,7 @@ class CustomGroupViewController: UIViewController {
         navigationItem.title = "群組"
         getItemData()
         getMemberExpense()
+        listenToNewItem()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -155,6 +157,7 @@ class CustomGroupViewController: UIViewController {
             addItemViewController.memberData = userData
             addItemViewController.groupData = groupData
             addItemViewController.blackList = blackList
+            addItemViewController.modalPresentationStyle = .fullScreen
             self.present(addItemViewController, animated: true, completion: nil)
         } else {
             addItemAlert()
@@ -270,6 +273,82 @@ class CustomGroupViewController: UIViewController {
         self.present(subscribeViewController, animated: true, completion: nil)
     }
     
+//    func getItemData() {
+//        ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") { [weak self] result in
+//            switch result {
+//            case .success(let items):
+//                if items.isEmpty == true {
+//                    self?.removeAnimation()
+//                    self?.noDataView.noDataLabel.isHidden = false
+//                } else {
+//                    self?.noDataView.noDataLabel.isHidden = true
+//                }
+//                self?.itemData = items
+//                items.forEach { item in
+//                    self?.getItemDetail(itemId: item.itemId)
+//                }
+//            case .failure(let error):
+//                print("Error decoding userData: \(error)")
+//                ProgressHUD.shared.view = self?.view ?? UIView()
+//                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+//            }
+//        }
+//    }
+//
+//    func getItemDetail(itemId: String) {
+//        let group = DispatchGroup()
+//        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+//
+//        group.enter()
+//
+//        firstQueue.async(group: group) {
+//            ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) { [weak self] result in
+//                switch result {
+//                case .success(let items):
+//                    self?.paidItem.append(items)
+//                case .failure(let error):
+//                    print("Error decoding userData: \(error)")
+//                    ProgressHUD.shared.view = self?.view ?? UIView()
+//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+//
+//                }
+//                group.leave()
+//            }
+//        }
+//
+//        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+//        group.enter()
+//        secondQueue.async(group: group) {
+//            ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) { [weak self] result in
+//                switch result {
+//                case .success(let items):
+//                    self?.involvedItem.append(items)
+//                case .failure(let error):
+//                    print("Error decoding userData: \(error)")
+//                    ProgressHUD.shared.view = self?.view ?? UIView()
+//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+//                }
+//                group.leave()
+//            }
+//
+//        }
+//
+//        group.notify(queue: DispatchQueue.main) {
+////            self.paidItem.sort { $0.map { $0.createdTime }[0]! > $1.map { $0.createdTime }[0]! }
+////            self.involvedItem.sort { $0.map { $0.createdTime }[0]! > $1.map { $0.createdTime }[0]! }
+//
+//            self.itemTableView.reloadData()
+//            self.removeAnimation()
+//        }
+//    }
+    
+    func listenToNewItem() {
+        ItemManager.shared.listenForNotification(groupId: groupData?.groupId ?? "") { [weak self]  in
+            self?.getItemData()
+        }
+    }
+//
+//    MARK: - Change new way to get data
     func getItemData() {
         ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") { [weak self] result in
             switch result {
@@ -281,9 +360,9 @@ class CustomGroupViewController: UIViewController {
                     self?.noDataView.noDataLabel.isHidden = true
                 }
                 self?.itemData = items
-                items.forEach { item in
-                    self?.getItemDetail(itemId: item.itemId)
-                }
+                
+                self?.getItemDetail()
+
             case .failure(let error):
                 print("Error decoding userData: \(error)")
                 ProgressHUD.shared.view = self?.view ?? UIView()
@@ -292,49 +371,56 @@ class CustomGroupViewController: UIViewController {
         }
     }
     
-    func getItemDetail(itemId: String) {
+    func getItemDetail() {
         let group = DispatchGroup()
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        group.enter()
         
-        firstQueue.async(group: group) {
-            ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) { [weak self] result in
-                switch result {
-                case .success(let items):
-                    self?.paidItem.append(items)
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-                    
-                }
-                group.leave()
-            }
-        }
-        
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        secondQueue.async(group: group) {
-            ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) { [weak self] result in
-                switch result {
-                case .success(let items):
-                    self?.involvedItem.append(items)
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-                }
-                group.leave()
-            }
+        for item in self.itemData {
+            group.enter()
             
+            firstQueue.async(group: group) {
+                ItemManager.shared.fetchPaidItemsExpense(itemId: item.itemId) { [weak self] result in
+                    switch result {
+                    case .success(let items):
+                        self?.paidItem.append(items)
+                    case .failure(let error):
+                        print("Error decoding userData: \(error)")
+                        ProgressHUD.shared.view = self?.view ?? UIView()
+                        ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                        
+                    }
+                    group.leave()
+                }
+            }
         }
+       
+        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         
+        for  item in self.itemData {
+            group.enter()
+            secondQueue.async(group: group) {
+                ItemManager.shared.fetchInvolvedItemsExpense(itemId: item.itemId) { [weak self] result in
+                    switch result {
+                    case .success(let items):
+                        self?.involvedItem.append(items)
+                    case .failure(let error):
+                        print("Error decoding userData: \(error)")
+                        ProgressHUD.shared.view = self?.view ?? UIView()
+                        ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                    }
+                    group.leave()
+                }
+            }
+        }
+ 
         group.notify(queue: DispatchQueue.main) {
+//            self.paidItem.sort { $0.map { $0.createdTime }[0]! > $1.map { $0.createdTime }[0]! }
+//            self.involvedItem.sort { $0.map { $0.createdTime }[0]! > $1.map { $0.createdTime }[0]! }
+            
             self.itemTableView.reloadData()
             self.removeAnimation()
         }
     }
-
 // MARK: - Bugs of new user get into groups, can't fetch data
     func getMemberExpense() {
         GroupManager.shared.fetchMemberExpense(groupId: groupData?.groupId ?? "", members: groupData?.member ?? []) { [weak self] result in
@@ -539,7 +625,7 @@ class CustomGroupViewController: UIViewController {
         mask.backgroundColor = UIColor.black.withAlphaComponent(0.2)
         view.addSubview(mask)
 
-        animationView = .init(name: "simpleLoading")
+        animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
         animationView.translatesAutoresizingMaskIntoConstraints = false
         animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true

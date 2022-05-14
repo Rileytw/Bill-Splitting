@@ -16,6 +16,7 @@ class SettleUpTableViewCell: UITableViewCell {
     @IBOutlet weak var paidLabel: UILabel!
     @IBOutlet weak var creditLabel: UILabel!
     @IBOutlet weak var priceLabel: UILabel!
+    @IBOutlet weak var cellView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -28,10 +29,15 @@ class SettleUpTableViewCell: UITableViewCell {
         paidLabel.textColor = .greenWhite
         creditLabel.textColor = .greenWhite
         priceLabel.textColor = .greenWhite
+        setCellView()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+    }
+    
+    func setCellView() {
+        ElementsStyle.styleView(cellView)
     }
     
 }

@@ -15,6 +15,7 @@ class PaymentViewController: UIViewController {
     let tableView = UITableView()
     var userData: UserData?
     var userPayment: [Payment] = []
+    var specificPayment: Payment? = Payment(paymentName: "", paymentAccount: "", paymentLink: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +88,7 @@ class PaymentViewController: UIViewController {
                 if let userPayment = userData?.payment {
                     self?.userData = userData
                     self?.userPayment = userPayment
+                    self?.noDataView.noDataLabel.isHidden = true
                 } else {
                     self?.noDataView.noDataLabel.isHidden = false
                 }
@@ -108,6 +110,41 @@ class PaymentViewController: UIViewController {
         noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
+    
+    func alertDeleteItem() {
+        let alertController = UIAlertController(title: "刪除付款方式",
+                                                message: "刪除後無法復原，請確認是否刪除",
+                                                preferredStyle: .alert)
+        let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
+            self?.deletePayment()
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func deletePayment() {
+        UserManager.shared.deleteUserPayment(
+            userId: currentUserId,
+            paymentName: self.specificPayment?.paymentName,
+            account: self.specificPayment?.paymentAccount,
+            link: self.specificPayment?.paymentLink) { [weak self] result in
+            switch result {
+            case .success:
+                print("delete")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showSuccess(text: "刪除成功")
+
+            case .failure(let error):
+                print(error.localizedDescription)
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "刪除失敗，請稍後再試")
+
+            }
+        }
+    }
 }
 
 extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
@@ -128,5 +165,28 @@ extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
                                       link: userPayment[indexPath.row].paymentLink ?? "")
 
         return paymentCell
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+    -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
+            // delete the item here
+//            ReminderManager.shared.deleteReminder(documentId: self.allReminders[indexPath.row].documentId)
+//            self.allReminders.remove(at: indexPath.row)
+//            self.tableView.deleteRows(at: [indexPath], with: .fade)
+//            completionHandler(true)
+            self?.specificPayment?.paymentName = self?.userPayment[indexPath.row].paymentName
+            self?.specificPayment?.paymentAccount = self?.userPayment[indexPath.row].paymentAccount
+            self?.specificPayment?.paymentLink = self?.userPayment[indexPath.row].paymentLink
+            self?.alertDeleteItem()
+        }
+        deleteAction.image = UIImage(systemName: "trash")
+        deleteAction.backgroundColor = .systemRed
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
     }
 }

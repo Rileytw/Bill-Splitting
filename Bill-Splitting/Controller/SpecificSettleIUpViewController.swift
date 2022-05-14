@@ -29,6 +29,7 @@ class SpecificSettleIUpViewController: UIViewController {
         setUserInfo()
         setSettleUpButton()
         setTableView()
+        networkDetect()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,9 +48,9 @@ class SpecificSettleIUpViewController: UIViewController {
         
         view.addSubview(account)
         account.translatesAutoresizingMaskIntoConstraints = false
-        account.topAnchor.constraint(equalTo: price.topAnchor, constant: 60).isActive = true
-        account.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        account.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
+        account.topAnchor.constraint(equalTo: price.topAnchor, constant: 40).isActive = true
+        account.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        account.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         account.heightAnchor.constraint(equalToConstant: 40).isActive = true
         account.text = "帳戶資訊"
         account.font = price.font.withSize(20)
@@ -60,8 +61,8 @@ class SpecificSettleIUpViewController: UIViewController {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: account.bottomAnchor, constant: 10).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
         tableView.bottomAnchor.constraint(equalTo: settleButton.topAnchor, constant: -10).isActive = true
         
         tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
@@ -73,21 +74,26 @@ class SpecificSettleIUpViewController: UIViewController {
     func setSettleUpButton() {
         view.addSubview(settleButton)
         settleButton.translatesAutoresizingMaskIntoConstraints = false
-        settleButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
+        settleButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
         settleButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         settleButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         settleButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
-        settleButton.setTitle("已結清", for: .normal)
+        settleButton.setTitle("確認結清", for: .normal)
         ElementsStyle.styleSpecificButton(settleButton)
         settleButton.addTarget(self, action: #selector(pressSettleUpButton), for: .touchUpInside)
     }
     
     @objc func pressSettleUpButton() {
-        addItem()
-        
-        if let groupViewController = self.navigationController?.viewControllers[1] {
-            self.navigationController?.popToViewController(groupViewController, animated: true)
+        if NetworkStatus.shared.isConnected == true {
+            addItem()
+            
+            if let groupViewController = self.navigationController?.viewControllers[1] {
+                self.navigationController?.popToViewController(groupViewController, animated: true)
+            }
+        } else {
+            print("======== Cannot add groups")
+            networkConnectAlert()
         }
     }
     
@@ -139,6 +145,7 @@ class SpecificSettleIUpViewController: UIViewController {
                         print(error)
                     }
                 }
+                
             } else {
                 if userExpense[0].allExpense <= 0 {
                     paidUserId = self.userData?.userId
@@ -173,6 +180,7 @@ class SpecificSettleIUpViewController: UIViewController {
                 }
             }
             self.updatePersonalExpense()
+            self.addItemNotification()
         }
     }
     
@@ -287,6 +295,19 @@ class SpecificSettleIUpViewController: UIViewController {
                 }
             }
         }
+        
+       
+    }
+    
+    func addItemNotification() {
+        ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
+            switch result {
+            case .success:
+                print("uplaod notification collection successfully")
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func setNameInfo() {
@@ -296,9 +317,9 @@ class SpecificSettleIUpViewController: UIViewController {
         
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
-        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        nameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        nameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
@@ -323,9 +344,9 @@ class SpecificSettleIUpViewController: UIViewController {
         
         view.addSubview(price)
         price.translatesAutoresizingMaskIntoConstraints = false
-        price.topAnchor.constraint(equalTo: nameLabel.topAnchor, constant: 60).isActive = true
-        price.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        price.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
+        price.topAnchor.constraint(equalTo: nameLabel.topAnchor, constant: 40).isActive = true
+        price.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        price.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         price.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
@@ -344,6 +365,31 @@ class SpecificSettleIUpViewController: UIViewController {
         }
         price.font = price.font.withSize(20)
         price.textColor = .greenWhite
+    }
+    
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
+    }
+    
+    func networkConnectAlert() {
+        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
 }
 

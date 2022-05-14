@@ -87,7 +87,7 @@ class ItemDetailViewController: UIViewController {
     
     func setTableViewConstraint() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10).isActive = true
@@ -444,7 +444,13 @@ class ItemDetailViewController: UIViewController {
        
         guard let tappedImage = tapGestureRecognizer.view as? UIImageView else { return }
 
-        addImageView(image: self.image ?? "")
+//        addImageView(image: self.image ?? "")
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let itemImageViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemImageViewController.self)) as? ItemImageViewController else { return }
+        itemImageViewController.image = image
+        itemImageViewController.modalPresentationStyle = .fullScreen
+        self.present(itemImageViewController, animated: true, completion: nil)
+        
     }
     
     func addImageView(image: String) {
@@ -484,7 +490,7 @@ class ItemDetailViewController: UIViewController {
     }
     
     func setAnimation() {
-        animationView = .init(name: "simpleLoading")
+        animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
         animationView.translatesAutoresizingMaskIntoConstraints = false
         animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true

@@ -54,14 +54,14 @@ class AddItemView: UIView {
     func setTextField() {
         addSubview(itemNameTextField)
         itemNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        itemNameTextField.centerYAnchor.constraint(equalTo: itemName.centerYAnchor, constant: -5).isActive = true
+        itemNameTextField.centerYAnchor.constraint(equalTo: itemName.centerYAnchor, constant: 0).isActive = true
         itemNameTextField.leadingAnchor.constraint(equalTo: itemName.trailingAnchor, constant: 10).isActive = true
         itemNameTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2 + 20).isActive = true
         itemNameTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         addSubview(priceTextField)
         priceTextField.translatesAutoresizingMaskIntoConstraints = false
-        priceTextField.centerYAnchor.constraint(equalTo: priceLabel.centerYAnchor, constant: -5).isActive = true
+        priceTextField.centerYAnchor.constraint(equalTo: priceLabel.centerYAnchor, constant: 0).isActive = true
         priceTextField.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 10).isActive = true
         priceTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/2 + 20).isActive = true
         priceTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true

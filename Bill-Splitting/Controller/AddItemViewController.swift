@@ -80,6 +80,7 @@ class AddItemViewController: UIViewController {
         setTableView()
         setDismissButton()
         detectBlackListUser()
+        networkDetect()
     }
     
     override func viewWillLayoutSubviews() {
@@ -117,6 +118,7 @@ class AddItemViewController: UIViewController {
         
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
+        typePickerView.textField.delegate = self
         
         typePickerView.pickerView.tag = 0
     }
@@ -143,6 +145,7 @@ class AddItemViewController: UIViewController {
         
         memberPickerView.pickerView.dataSource = self
         memberPickerView.pickerView.delegate = self
+        memberPickerView.textField.delegate = self
         memberPickerView.pickerView.tag = 1
         
         if groupData?.type == 0 {
@@ -156,9 +159,9 @@ class AddItemViewController: UIViewController {
         addButton.setTitle("完成", for: .normal)
         //        addButton.backgroundColor = .systemGray
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
         addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
         addButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         ElementsStyle.styleSpecificButton(addButton)
         
@@ -168,14 +171,14 @@ class AddItemViewController: UIViewController {
     func setAddMoreButton() {
         view.addSubview(addMoreButton)
         addMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
-        addMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        addMoreButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
+        addMoreButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
         addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
         addMoreButton.backgroundColor = .systemTeal
         addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
-        addMoreButton.setTitle(" 更多資訊", for: .normal)
+        addMoreButton.setTitle("新增照片及說明", for: .normal)
         addMoreButton.tintColor = .white
         addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(addMoreButton)
@@ -231,30 +234,35 @@ class AddItemViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
-        checkInvolvedData()
-        if addItemView.itemNameTextField.text == "" ||
-            addItemView.priceTextField.text == "" ||
-            typePickerView.textField.text == "" {
-            lossInfoAlert(message: "請確認是否填寫款項名稱、支出金額並選擇分款方式")
-        } else if memberPickerView.textField.text == "" && groupData?.type == GroupType.multipleUsers.typeInt {
-            lossInfoAlert(message: "請確認是否選取付款人")
-        } else if involvedExpenseData.isEmpty == true {
-            lossInfoAlert(message: "請確認是否選取參與人")
-        } else if typePickerView.textField.text == SplitType.percent.label && involvedTotalPrice != 100 {
-            lossInfoAlert(message: "請確認分帳比例是否正確")
-        } else if typePickerView.textField.text == SplitType.customize.label {
-            let userInputPaid = addItemView.priceTextField.text ?? ""
-            if let paidPrice = Double(userInputPaid) {
-                if involvedTotalPrice != paidPrice {
-                    lossInfoAlert(message: "請確認自訂金額是否正確")
-                } else {
-                    confirmAddItem()
-                    setAnimation()
+        if NetworkStatus.shared.isConnected == true {
+            checkInvolvedData()
+            if addItemView.itemNameTextField.text == "" ||
+                addItemView.priceTextField.text == "" ||
+                typePickerView.textField.text == "" {
+                lossInfoAlert(message: "請確認是否填寫款項名稱、支出金額並選擇分款方式")
+            } else if memberPickerView.textField.text == "" && groupData?.type == GroupType.multipleUsers.typeInt {
+                lossInfoAlert(message: "請確認是否選取付款人")
+            } else if involvedExpenseData.isEmpty == true {
+                lossInfoAlert(message: "請確認是否選取參與人")
+            } else if typePickerView.textField.text == SplitType.percent.label && involvedTotalPrice != 100 {
+                lossInfoAlert(message: "請確認分帳比例是否正確")
+            } else if typePickerView.textField.text == SplitType.customize.label {
+                let userInputPaid = addItemView.priceTextField.text ?? ""
+                if let paidPrice = Double(userInputPaid) {
+                    if involvedTotalPrice != paidPrice {
+                        lossInfoAlert(message: "請確認自訂金額是否正確")
+                    } else {
+                        confirmAddItem()
+                        setAnimation()
+                    }
                 }
+            } else {
+                confirmAddItem()
+                setAnimation()
             }
         } else {
-            confirmAddItem()
-            setAnimation() 
+            print("======== Cannot add groups")
+            networkConnectAlert()
         }
     }
     
@@ -321,10 +329,9 @@ class AddItemViewController: UIViewController {
         let group = DispatchGroup()
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         group.enter()
-//       MARK: - Add Paid info for item in PaidCollection
+
         firstQueue.async(group: group) {
-            ItemManager.shared.addPaidInfo(
-                paidUserId: paidUserId ?? "", price: paidPrice ?? 0, itemId: self.itemId ?? "",
+            ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "", price: paidPrice ?? 0, itemId: self.itemId ?? "",
                 createdTime: Double(NSDate().timeIntervalSince1970)) { result in
                 switch result {
                 case .success:
@@ -338,7 +345,7 @@ class AddItemViewController: UIViewController {
                 }
             }
         }
-//    MARK: - Add Involved info for item in InvolvedCollection
+
         let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         for user in 0..<self.involvedExpenseData.count {
             var involvedPrice: Double?
@@ -352,8 +359,7 @@ class AddItemViewController: UIViewController {
             group.enter()
             secondQueue.async(group: group) {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
-                                                   price: involvedPrice ?? 0, itemId: self.itemId ?? "",
-                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                                                   price: involvedPrice ?? 0, itemId: self.itemId ?? "", createdTime: Double(NSDate().timeIntervalSince1970)) { result in
                     switch result {
                     case .success:
                         print("succedd")
@@ -367,12 +373,11 @@ class AddItemViewController: UIViewController {
                 }
             }
         }
-//    MARK: - Add Paid info for item in GroupCollection
+
         let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
         group.enter()
         thirdQueue.async(group: group) {
-            GroupManager.shared.updateMemberExpense(
-                userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.groupData?.groupId ?? "") { result in
+            GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.groupData?.groupId ?? "") { result in
                 switch result {
                 case .success:
                     print("succedd")
@@ -396,13 +401,11 @@ class AddItemViewController: UIViewController {
             }
             guard let involvedPrice = involvedPrice else { return }
 
-            // MARK: - Add Involved info for item in GroupCollection
             let fourthQueue = DispatchQueue(label: "fourthQueue", qos: .default, attributes: .concurrent)
             group.enter()
             fourthQueue.async(group: group) {
                 GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
-                                                        newExpense: 0 - involvedPrice,
-                                                        groupId: self.groupData?.groupId ?? "") { result in
+                                                        newExpense: 0 - involvedPrice, groupId: self.groupData?.groupId ?? "") { result in
                     switch result {
                     case .success:
                         print("succedd")
@@ -424,6 +427,15 @@ class AddItemViewController: UIViewController {
                 ProgressHUD.showSuccess(text: "新增成功")
                 if self.isItemExist == true {
                     self.editingItem?(self.itemId ?? "")
+                }
+                
+                ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("uplaod notification collection successfully")
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
                 }
                 self.dismiss(animated: false, completion: nil)
             } else {
@@ -480,6 +492,31 @@ class AddItemViewController: UIViewController {
         }
     }
     
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
+    }
+    
+    func networkConnectAlert() {
+        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     func setTypeLabel() {
         view.addSubview(typeLabel)
         typeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -494,10 +531,10 @@ class AddItemViewController: UIViewController {
     func setDismissButton() {
         view.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
-        dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
+        dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = UIColor.greenWhite
@@ -666,6 +703,22 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
             
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
+            }
+        }
+    }
+}
+
+extension AddItemViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == typePickerView.textField {
+            if textField.text?.isEmpty == true {
+                typePickerView.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(typePickerView.pickerView, didSelectRow: 0, inComponent: 0)
+            }
+        } else if textField == memberPickerView.textField {
+            if textField.text?.isEmpty == true {
+                memberPickerView.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(memberPickerView.pickerView, didSelectRow: 0, inComponent: 0)
             }
         }
     }

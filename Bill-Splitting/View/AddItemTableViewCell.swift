@@ -32,6 +32,7 @@ class AddItemTableViewCell: UITableViewCell {
         self.backgroundColor = .clear
         memberName.textColor = UIColor.greenWhite
         selectedButton.tintColor = UIColor.greenWhite
+        selectedButton.isUserInteractionEnabled = false
         percentLabel.textColor = UIColor.greenWhite
         equalLabel.textColor = UIColor.greenWhite
         priceTextField.textColor = UIColor.greenWhite

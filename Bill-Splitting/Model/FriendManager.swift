@@ -203,4 +203,18 @@ class FriendManager {
             }
         }
     }
+    
+    func updateFriendNewName(friendId: String, currentUserId: String, currentUserName: String) {
+        let groupRef = db.collection(FirebaseCollection.user.rawValue).document(friendId).collection("friend").document(currentUserId)
+        
+        groupRef.updateData([
+            "userName": currentUserName
+        ]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+            } else {
+                print("Document successfully updated")
+            }
+        }
+    }
 }

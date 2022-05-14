@@ -266,19 +266,19 @@ class RemindersViewController: UIViewController {
     
     func setEmptyLabel() {
         view.addSubview(emptyLabel)
-        emptyLabel.text = "目前暫無資料"
+        emptyLabel.text = "目前暫無資料，點擊右下 + 新增提醒"
         emptyLabel.textColor = .greenWhite
         emptyLabel.translatesAutoresizingMaskIntoConstraints = false
         emptyLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15).isActive = true
         emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        emptyLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        emptyLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
         emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         emptyLabel.isHidden = true
     }
     
     func setAnimation() {
-        animationView = .init(name: "simpleLoading")
+        animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
         animationView.translatesAutoresizingMaskIntoConstraints = false
         animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true

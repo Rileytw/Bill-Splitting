@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 struct FriendSearchModel {
     var friendList: Friend
@@ -18,12 +19,15 @@ class AddGroupsViewController: UIViewController {
     var nameTextField = UITextField()
     let descriptionTextView = UITextView()
     var searchView = UIView()
+    var mask = UIView()
+    private var animationView = AnimationView()
     
     let fullScreenSize = UIScreen.main.bounds.size
     
     let typeLabel = UILabel()
     var typePickerView = BasePickerViewInTextField(frame: .zero)
     var pickerViewData = [GroupType.multipleUsers.typeName, GroupType.personal.typeName]
+    var selectMemberLabel = UILabel()
     
     var friendList: [Friend] = [] {
         didSet {
@@ -55,34 +59,41 @@ class AddGroupsViewController: UIViewController {
         setTextFieldOfPickerView()
         setAddGroupButton()
         setInviteButton()
+        setSelectMamberLabel()
         setSearchView()
         setTableView()
         navigationItem.title = "新增群組"
         setSearchBar()
         
         hideUnchagableGroupInfo()
+        networkDetect()
+        setAnimation()
+//        listenFriendData()
+        listenNewFriends()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let friend):
-                self?.friendList = friend
-                if self?.isGroupExist == true {
-                    self?.selectedNewMember()
-                }
-                for index in 0..<friend.count {
-                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
-                    self?.friends.append(friendModel)
-                }
-                self?.setFilterFriendsData()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-            }
-        }
+        fetchFriendData()
+//        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
+//            switch result {
+//            case .success(let friend):
+//                self?.friendList.removeAll()
+//                self?.friendList = friend
+//                if self?.isGroupExist == true {
+//                    self?.selectedNewMember()
+//                }
+//                for index in 0..<friend.count {
+//                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
+//                    self?.friends.append(friendModel)
+//                }
+//                self?.setFilterFriendsData()
+//            case .failure(let error):
+//                print("Error decoding userData: \(error)")
+//                ProgressHUD.shared.view = self?.view ?? UIView()
+//                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+//            }
+//        }
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -93,6 +104,7 @@ class AddGroupsViewController: UIViewController {
         super.viewWillDisappear(animated)
         friends.removeAll()
         newGroupFriends.removeAll()
+//        NetworkStatus.shared.stopMonitoring()
     }
     
     func setAddGroupButton() {
@@ -115,15 +127,49 @@ class AddGroupsViewController: UIViewController {
         } else if typePickerView.textField.text == "" && isGroupExist == false {
             loseGroupInfoAlert(message: "尚未選擇群組類型")
         } else {
-            addMembers()
-            
-            if isGroupExist == true {
-                updateExistGroupData()
-                self.navigationController?.popToRootViewController(animated: true)
+            if NetworkStatus.shared.isConnected == true {
+                addMembers()
+                
+                if isGroupExist == true {
+                    updateExistGroupData()
+                    self.navigationController?.popToRootViewController(animated: true)
+                } else {
+                    uploadGroupData()
+                }
+                cleanData()
             } else {
-                uploadGroupData()
+                print("======== Cannot add groups")
+                networkConnectAlert()
             }
-            cleanData()
+        }
+    }
+    
+    func fetchFriendData() {
+        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let friend):
+                self?.friendList.removeAll()
+                self?.friends.removeAll()
+                self?.friendList = friend
+                if self?.isGroupExist == true {
+                    self?.selectedNewMember()
+                }
+                for index in 0..<friend.count {
+                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
+                    self?.friends.append(friendModel)
+                }
+                self?.setFilterFriendsData()
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+            }
+        }
+    }
+    
+    func listenNewFriends() {
+        UserManager.shared.listenFriendData(userId: currentUserId) { [weak self]  in
+            self?.fetchFriendData()
         }
     }
     
@@ -254,7 +300,7 @@ class AddGroupsViewController: UIViewController {
     }
     
     func setSearchBar() {
-        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 50))
         searchView.addSubview(searchBar)
         searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "A0B9BF")
         searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
@@ -290,12 +336,38 @@ class AddGroupsViewController: UIViewController {
             filteredMembers = friends
         }
         tableView.reloadData()
+        removeAnimation()
+    }
+    
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = {
+            if NetworkStatus.shared.isConnected == true {
+                print("connected")
+            } else {
+                print("Not connected")
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        ProgressHUD.shared.view = self.view
+                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                    }
+                }
+            }
+        }
+    }
+    
+    func networkConnectAlert() {
+        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     func setTextField() {
         self.view.addSubview(nameTextField)
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 16).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameTextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
@@ -305,7 +377,7 @@ class AddGroupsViewController: UIViewController {
         nameLabel.textColor = .greenWhite
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 16).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
@@ -318,7 +390,7 @@ class AddGroupsViewController: UIViewController {
     func setTextView() {
         self.view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .bottom, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: descriptionTextView, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .bottom, multiplier: 1, constant: 16).isActive = true
         NSLayoutConstraint(item: descriptionTextView,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
         NSLayoutConstraint(item: descriptionTextView, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 60).isActive = true
@@ -349,7 +421,7 @@ class AddGroupsViewController: UIViewController {
     func setTextFieldOfPickerView() {
         view.addSubview(typeLabel)
         typeLabel.translatesAutoresizingMaskIntoConstraints = false
-        typeLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
+        typeLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 16).isActive = true
         typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         typeLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
         typeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -359,18 +431,31 @@ class AddGroupsViewController: UIViewController {
         view.addSubview(typePickerView)
         typePickerView.translatesAutoresizingMaskIntoConstraints = false
         typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        typePickerView.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
+        typePickerView.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 16).isActive = true
         typePickerView.widthAnchor.constraint(equalTo: descriptionTextView.widthAnchor).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         
         typePickerView.pickerViewData = pickerViewData
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
+        typePickerView.textField.delegate = self
         
 //        if isGroupExist == true {
 //            typePickerView.isHidden = true
 //            typeLabel.isHidden = true
 //        }
+    }
+    
+    func setSelectMamberLabel() {
+        view.addSubview(selectMemberLabel)
+        selectMemberLabel.translatesAutoresizingMaskIntoConstraints = false
+        selectMemberLabel.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 16).isActive = true
+        selectMemberLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        selectMemberLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        selectMemberLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        selectMemberLabel.text = "選擇參與群組成員"
+        selectMemberLabel.textColor = .greenWhite
     }
     
     func setTableView() {
@@ -395,7 +480,7 @@ class AddGroupsViewController: UIViewController {
         view.addSubview(inviteFriendButton)
         inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
         inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        inviteFriendButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         inviteFriendButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
         inviteFriendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         
@@ -424,10 +509,30 @@ class AddGroupsViewController: UIViewController {
     
     
     func setSearchViewConstraint() {
-        searchView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 10).isActive = true
+        searchView.topAnchor.constraint(equalTo: selectMemberLabel.bottomAnchor, constant: 8).isActive = true
         searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         searchView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        searchView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        searchView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    func setAnimation() {
+        animationView = .init(name: "accountLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
 }
 
@@ -533,5 +638,14 @@ extension AddGroupsViewController: UISearchBarDelegate {
         searchBar.text = ""
         searchBar.resignFirstResponder()
         setFilterFriendsData()
+    }
+}
+
+extension AddGroupsViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.text?.isEmpty == true {
+            typePickerView.pickerView.selectRow(0, inComponent: 0, animated: true)
+            self.pickerView(typePickerView.pickerView, didSelectRow: 0, inComponent: 0)
+        }
     }
 }

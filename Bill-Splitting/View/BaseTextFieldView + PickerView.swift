@@ -12,6 +12,7 @@ class BasePickerViewInTextField: UIView {
     let pickerView = UIPickerView()
     let width = UIScreen.main.bounds.width
     var icon = UIButton()
+//    var icon = UIImageView()
     var pickerViewData: [String] = [""]
     
     override init(frame: CGRect) {
@@ -49,20 +50,24 @@ class BasePickerViewInTextField: UIView {
     }
     
     func setIcon() {
-        icon.setImage(UIImage(systemName: "arrowtriangle.down.square"), for: .normal)
-        icon.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
+//        icon.setBackgroundImage(UIImage(named: "arrowDown"), for: .normal)
+//        icon.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
+//
+//        icon.frame = CGRect(x: 0, y: 0, width: 10, height: 10)
+//        icon.isUserInteractionEnabled = false
+//
+//        textField.rightView = icon
+//        textField.rightViewMode = .always
         
-        icon.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-        icon.contentMode = .scaleAspectFit
+        icon.setImage(UIImage(systemName: "arrowtriangle.down.square"), for: .normal)
         icon.isUserInteractionEnabled = false
-        let padding: CGFloat = 2
+        addSubview(icon)
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        icon.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
+        icon.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
+        icon.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        icon.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        icon.tintColor = UIColor.greenWhite
 
-        let rightView = UIView(frame: CGRect(
-            x: 0, y: 0,
-            width: icon.frame.width + padding,
-            height: icon.frame.height))
-        rightView.addSubview(icon)
-        textField.rightView = rightView
-        textField.rightViewMode = .always
     }
 }

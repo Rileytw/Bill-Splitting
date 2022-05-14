@@ -97,6 +97,7 @@ class AddReminderViewController: UIViewController {
         
         groupPicker.pickerView.dataSource = self
         groupPicker.pickerView.delegate = self
+        groupPicker.textField.delegate = self
     }
     
     func setUser() {
@@ -112,6 +113,7 @@ class AddReminderViewController: UIViewController {
         
         userPicker.pickerView.dataSource = self
         userPicker.pickerView.delegate = self
+        userPicker.textField.delegate = self
     }
     
     func setType() {
@@ -175,22 +177,27 @@ class AddReminderViewController: UIViewController {
         setButtonsConstraint()
         creditButton.setTitle("收款", for: .normal)
         creditButton.titleLabel?.font = creditButton.titleLabel?.font.withSize(14)
-        creditButton.backgroundColor = .styleLightBlue
+//        creditButton.backgroundColor = .styleLightBlue
         creditButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
-        creditButton.setTitleColor(.styleBlue, for: .normal)
-        
+//        creditButton.setTitleColor(.styleBlue, for: .normal)
+        ElementsStyle.styleNotSelectedButton(creditButton)
+//        creditButton.backgroundColor = .clear
+//        creditButton.setTitleColor(.greenWhite, for: .normal)
+//
         debtButton.setTitle("付款", for: .normal)
-        debtButton.backgroundColor = .styleYellow
+//        debtButton.backgroundColor = .styleYellow
         debtButton.titleLabel?.font = debtButton.titleLabel?.font.withSize(14)
         debtButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
-        debtButton.setTitleColor(.styleBlue, for: .normal)
-        
+//        debtButton.setTitleColor(.styleBlue, for: .normal)
+        ElementsStyle.styleNotSelectedButton(debtButton)
+//        debtButton.backgroundColor = .clear
+//        debtButton.setTitleColor(.greenWhite, for: .normal)
     }
     
     @objc func pressTypeButton(_ sender: UIButton) {
         if sender.isSelected == false {
-            sender.layer.borderColor = UIColor.greenWhite.cgColor
-            sender.layer.borderWidth = 1
+//            sender.layer.borderColor = UIColor.greenWhite.cgColor
+//            sender.layer.borderWidth = 1
             ElementsStyle.styleSelectedButton(sender)
             sender.isSelected = true
             
@@ -208,7 +215,7 @@ class AddReminderViewController: UIViewController {
         for button in buttonArray {
             if button.isSelected && button !== sender {
                 button.isSelected = false
-                button.layer.borderWidth = 0
+//                button.layer.borderWidth = 0
                 ElementsStyle.styleNotSelectedButton(button)
             }
         }
@@ -304,7 +311,7 @@ class AddReminderViewController: UIViewController {
         groupLabel.translatesAutoresizingMaskIntoConstraints = false
         groupLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
         groupLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        groupLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        groupLabel.widthAnchor.constraint(equalToConstant: 120).isActive = true
         groupLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
@@ -312,7 +319,7 @@ class AddReminderViewController: UIViewController {
         groupPicker.translatesAutoresizingMaskIntoConstraints = false
         groupPicker.centerYAnchor.constraint(equalTo: groupLabel.centerYAnchor, constant: 0).isActive = true
         groupPicker.leftAnchor.constraint(equalTo: groupLabel.rightAnchor, constant: 30).isActive = true
-        groupPicker.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        groupPicker.widthAnchor.constraint(equalToConstant: 160).isActive = true
         groupPicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
@@ -320,7 +327,7 @@ class AddReminderViewController: UIViewController {
         userLabel.translatesAutoresizingMaskIntoConstraints = false
         userLabel.topAnchor.constraint(equalTo: groupLabel.bottomAnchor, constant: 20).isActive = true
         userLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        userLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        userLabel.widthAnchor.constraint(equalToConstant: 120).isActive = true
         userLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
@@ -328,7 +335,7 @@ class AddReminderViewController: UIViewController {
         userPicker.translatesAutoresizingMaskIntoConstraints = false
         userPicker.centerYAnchor.constraint(equalTo: userLabel.centerYAnchor, constant: 0).isActive = true
         userPicker.leftAnchor.constraint(equalTo: userLabel.rightAnchor, constant: 30).isActive = true
-        userPicker.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        userPicker.widthAnchor.constraint(equalToConstant: 160).isActive = true
         userPicker.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
@@ -336,7 +343,7 @@ class AddReminderViewController: UIViewController {
         typeLabel.translatesAutoresizingMaskIntoConstraints = false
         typeLabel.topAnchor.constraint(equalTo: userLabel.bottomAnchor, constant: 20).isActive = true
         typeLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        typeLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        typeLabel.widthAnchor.constraint(equalToConstant: 120).isActive = true
         typeLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
@@ -344,20 +351,20 @@ class AddReminderViewController: UIViewController {
         creditButton.translatesAutoresizingMaskIntoConstraints = false
         creditButton.centerYAnchor.constraint(equalTo: typeLabel.centerYAnchor, constant: 0).isActive = true
         creditButton.leadingAnchor.constraint(equalTo: userPicker.leadingAnchor, constant: 0).isActive = true
-        creditButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        creditButton.widthAnchor.constraint(equalToConstant: 75).isActive = true
         creditButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         debtButton.translatesAutoresizingMaskIntoConstraints = false
         debtButton.centerYAnchor.constraint(equalTo: typeLabel.centerYAnchor, constant: 0).isActive = true
         debtButton.leadingAnchor.constraint(equalTo: creditButton.trailingAnchor, constant: 10).isActive = true
-        debtButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        debtButton.widthAnchor.constraint(equalToConstant: 75).isActive = true
         debtButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
     func setCompleteButtonConstraint() {
-        completeButton.topAnchor.constraint(equalTo: typeLabel.bottomAnchor, constant: 100).isActive = true
+        completeButton.topAnchor.constraint(equalTo: reminderLabel.bottomAnchor, constant: 20).isActive = true
         completeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
-        completeButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        completeButton.widthAnchor.constraint(equalToConstant: 160).isActive = true
         completeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
@@ -431,9 +438,25 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     func pickGroupAlert(title: String, message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
         alertController.addAction(defaultAction)
         
         present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension AddReminderViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == groupPicker.textField {
+            if textField.text?.isEmpty == true {
+                groupPicker.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(groupPicker.pickerView, didSelectRow: 0, inComponent: 0)
+            }
+        } else if textField == userPicker.textField {
+            if textField.text?.isEmpty == true {
+                userPicker.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(userPicker.pickerView, didSelectRow: 0, inComponent: 0)
+            }
+        }
     }
 }
