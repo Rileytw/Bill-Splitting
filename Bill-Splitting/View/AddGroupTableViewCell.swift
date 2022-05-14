@@ -28,6 +28,7 @@ class AddGroupTableViewCell: UITableViewCell {
         self.backgroundColor = .clear
         friendNameLabel.textColor = .greenWhite
         selectedButton.tintColor = .selectedColor
+        selectedButton.isUserInteractionEnabled = false
         friendImage.image = UIImage(named: "profile")
     }
 

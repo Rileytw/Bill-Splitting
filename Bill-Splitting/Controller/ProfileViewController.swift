@@ -391,12 +391,18 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
             cell.backgroundColor = nil
+            UIView.animate(withDuration: 0.2) {
+                cell.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            }
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
             cell.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
+            UIView.animate(withDuration: 0.2) {
+                cell.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }
         }
     }
 }
@@ -437,22 +443,24 @@ extension ProfileViewController {
         
         profileView.addSubview(userName)
         userName.translatesAutoresizingMaskIntoConstraints = false
-        userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
+        userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 30).isActive = true
         userName.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
         userName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
         userName.textColor = .greenWhite
         userName.font = userName.font.withSize(20)
         
         profileView.addSubview(userEmail)
         userEmail.translatesAutoresizingMaskIntoConstraints = false
-        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 5).isActive = true
+        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 10).isActive = true
         userEmail.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
         userEmail.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        userEmail.heightAnchor.constraint(equalToConstant: 60).isActive = true
+//        userEmail.heightAnchor.constraint(equalToConstant: 40).isActive = true
         userEmail.textColor = .greenWhite
-        userEmail.lineBreakMode = NSLineBreakMode.byWordWrapping
-        userEmail.numberOfLines = 0
+//        userEmail.lineBreakMode = NSLineBreakMode.byWordWrapping
+//        userEmail.numberOfLines = 0
+        userEmail.font = userEmail.font.withSize(18)
+        userEmail.adjustsFontSizeToFitWidth = true
     }
     
     func setProfileImage() {
@@ -470,7 +478,7 @@ extension ProfileViewController {
         profileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         profileView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        profileView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+        profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
     
     func setAnimation() {

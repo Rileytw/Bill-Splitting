@@ -32,7 +32,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if #available(iOS 15, *) {
             UINavigationBar.appearance().tintColor = UIColor.greenWhite
             UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.greenWhite]
-            
+//            UINavigationBar.appearance().barTintColor = .styleBlue
+//            UINavigationBar.appearance().isTranslucent = false
+//            
             UITabBar.appearance().barTintColor = .styleBlue
 //            let appearance = UITabBarAppearance()
 //            appearance.configureWithOpaqueBackground()
@@ -44,7 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             UINavigationBar.appearance().tintColor = UIColor.greenWhite
             UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.greenWhite]
             UINavigationBar.appearance().isTranslucent = false
-
         }
         
         return true

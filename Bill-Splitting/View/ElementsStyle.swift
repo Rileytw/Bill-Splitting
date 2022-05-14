@@ -46,22 +46,38 @@ class ElementsStyle {
     }
     
     static func styleSelectedButton(_ button: UIButton) {
-        button.layer.shadowOffset = CGSize.init(width: 0, height: 0)
-        button.layer.shadowOpacity = 0.8
-        button.layer.shadowRadius = 8
-//        button.layer.shadowColor = UIColor(red: 111/255, green: 223/255, blue: 223/255, alpha: 0.9).cgColor
-        button.layer.shadowColor = UIColor(red: 255/255, green: 238/255, blue: 173/255, alpha: 0.8).cgColor
-//        rgb(236, 179, 101)
-//        rgb(255, 238, 173)
-        button.layer.shadowPath = UIBezierPath(rect: button.bounds).cgPath
+//        button.layer.shadowOffset = CGSize.init(width: 0, height: 0)
+//        button.layer.shadowOpacity = 0.8
+//        button.layer.shadowRadius = 8
+////        button.layer.shadowColor = UIColor(red: 111/255, green: 223/255, blue: 223/255, alpha: 0.9).cgColor
+//        button.layer.shadowColor = UIColor(red: 255/255, green: 238/255, blue: 173/255, alpha: 0.8).cgColor
+////        rgb(236, 179, 101)
+////        rgb(255, 238, 173)
+//        button.layer.shadowPath = UIBezierPath(rect: button.bounds).cgPath
+        
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "508AA8").cgColor
+//        FFCE45 (old)
+        button.layer.cornerRadius = 10
+//        button.tintColor = UIColor.greenWhite
+        button.setTitleColor(UIColor.greenWhite, for: .normal)
+        button.backgroundColor = .selectedColor
     }
     
     static func styleNotSelectedButton(_ button: UIButton) {
-        button.layer.shadowOffset = CGSize.init(width: 0, height: 0)
-        button.layer.shadowOpacity = 0
-        button.layer.shadowRadius = 0
-        button.layer.shadowColor = CGColor.init(srgbRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
-        button.layer.shadowPath = UIBezierPath(rect: button.bounds).cgPath
+//        button.layer.shadowOffset = CGSize.init(width: 0, height: 0)
+//        button.layer.shadowOpacity = 0
+//        button.layer.shadowRadius = 0
+//        button.layer.shadowColor = CGColor.init(srgbRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
+//        button.layer.shadowPath = UIBezierPath(rect: button.bounds).cgPath
+        
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.hexStringToUIColor(hex: "508AA8").cgColor
+//        FFCE45 (old)
+        button.layer.cornerRadius = 10
+//        button.tintColor = UIColor.greenWhite
+        button.setTitleColor(UIColor.greenWhite, for: .normal)
+        button.backgroundColor = .clear
     }
     
     static func styleSpecificButton(_ button: UIButton) {
@@ -74,7 +90,7 @@ class ElementsStyle {
     
     static func styleTextField(_ textfield: UITextField) {        
         let bottomLine = CALayer()
-        bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 2, width: textfield.frame.width, height: 1.0)
+        bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 3, width: textfield.frame.width, height: 1.0)
         bottomLine.backgroundColor = UIColor.selectedColor.cgColor
         textfield.borderStyle = UITextField.BorderStyle.none
         textfield.textColor = .greenWhite

@@ -16,6 +16,7 @@ class GroupDetailTableViewCell: UITableViewCell {
     @IBOutlet var groupType: UILabel!
     @IBOutlet var type: UILabel!
     @IBOutlet var groupMember: UILabel!
+    @IBOutlet weak var cellView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -31,12 +32,17 @@ class GroupDetailTableViewCell: UITableViewCell {
         name.textColor = .greenWhite
         type.textColor = .greenWhite
         descriptionContent.textColor = .greenWhite
+        setCellView()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    func setCellView() {
+        ElementsStyle.styleView(cellView)
     }
     
     func createDetailCell(groupName: String, content: String?, groupType: Int) {

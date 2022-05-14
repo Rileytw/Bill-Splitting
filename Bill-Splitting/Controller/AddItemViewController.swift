@@ -159,9 +159,9 @@ class AddItemViewController: UIViewController {
         addButton.setTitle("完成", for: .normal)
         //        addButton.backgroundColor = .systemGray
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
         addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
         addButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         ElementsStyle.styleSpecificButton(addButton)
         
@@ -171,14 +171,14 @@ class AddItemViewController: UIViewController {
     func setAddMoreButton() {
         view.addSubview(addMoreButton)
         addMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
-        addMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        addMoreButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
+        addMoreButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
         addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
         addMoreButton.backgroundColor = .systemTeal
         addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
-        addMoreButton.setTitle(" 更多資訊", for: .normal)
+        addMoreButton.setTitle("新增照片及說明", for: .normal)
         addMoreButton.tintColor = .white
         addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(addMoreButton)
@@ -531,10 +531,10 @@ class AddItemViewController: UIViewController {
     func setDismissButton() {
         view.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        dismissButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
-        dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
+        dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = UIColor.greenWhite

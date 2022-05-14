@@ -40,10 +40,12 @@ class RecordsViewController: UIViewController {
         getGroupData()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
 //        animationView.stop()
+        cleanData()
     }
+    
     // MARK: - Get groups data first
     func getGroupData() {
         GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
@@ -157,6 +159,17 @@ class RecordsViewController: UIViewController {
         }
     }
 
+    func cleanData() {
+        groups.removeAll()
+        itemData.removeAll()
+        paidItem.removeAll()
+        involvedItem.removeAll()
+        personalPaid.removeAll()
+        personalInvolved.removeAll()
+        allPersonalItem.removeAll()
+        blackList.removeAll()
+    }
+    
     func setAnimation() {
         animationView = .init(name: "accountLoading")
         view.addSubview(animationView)

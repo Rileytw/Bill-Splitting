@@ -42,9 +42,13 @@ class AddPaymentViewController: UIViewController {
         addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         addItemView.itemName.text = "收款方式"
-        addItemView.itemNameTextField.placeholder = " 如：銀行(台新、國泰）、LinePay"
-        addItemView.priceLabel.text = "帳戶號碼"
-        addItemView.priceTextField.placeholder = "(XXX)00000000XXX000"
+//        addItemView.itemNameTextField.placeholder = " 如：銀行(台新、國泰）、LinePay"
+        addItemView.itemNameTextField.attributedPlaceholder = NSAttributedString(string: "如：銀行(台新、國泰）、LinePay",
+                                                                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+        addItemView.priceLabel.text = "帳戶"
+//        addItemView.priceTextField.placeholder = "(XXX)00000000XXX000"
+        addItemView.priceTextField.attributedPlaceholder = NSAttributedString(string: "(XXX)00000000XXX000",
+                                                                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
     
     func setLink() {
@@ -69,6 +73,8 @@ class AddPaymentViewController: UIViewController {
         linkTextView.backgroundColor = .clear
         linkTextView.textColor = UIColor.greenWhite
         linkTextView.font = UIFont.systemFont(ofSize: 16)
+        linkTextView.layer.cornerRadius = 10
+        linkTextView.textContainerInset = UIEdgeInsets(top: 5, left: 5, bottom: 0, right: 0)
     }
     
     func setSaveButton() {
@@ -90,8 +96,14 @@ class AddPaymentViewController: UIViewController {
         account = addItemView.priceTextField.text
         link = linkTextView.text
         
-        UserManager.shared.addPaymentData(paymentName: paymentName, account: account, link: link)
-        dismiss(animated: true, completion: nil)
+        if addItemView.itemNameTextField.text == "" {
+            loseInfoAlert(message: "請填寫收款方式")
+        } else if addItemView.priceTextField.text == "" {
+            loseInfoAlert(message: "請填寫帳戶")
+        } else {
+            UserManager.shared.addPaymentData(paymentName: paymentName, account: account, link: link)
+            dismiss(animated: true, completion: nil)
+        }
     }
     
     func setDismissButton() {
@@ -110,5 +122,13 @@ class AddPaymentViewController: UIViewController {
     
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    
+    func loseInfoAlert(message: String) {
+        let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
     }
 }

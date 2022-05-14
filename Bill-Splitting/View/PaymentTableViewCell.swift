@@ -11,6 +11,7 @@ class PaymentTableViewCell: UITableViewCell, UITextViewDelegate {
 
     @IBOutlet var paymentName: UILabel!
     @IBOutlet var accountTextView: UITextView!
+    @IBOutlet weak var cellView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -19,11 +20,17 @@ class PaymentTableViewCell: UITableViewCell, UITextViewDelegate {
         paymentName.textColor = UIColor.greenWhite
         accountTextView.backgroundColor = .clear
         accountTextView.textColor = .greenWhite
+        setCellView()
+        self.selectionStyle = UITableViewCell.SelectionStyle.none
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
+    }
+    
+    func setCellView() {
+        ElementsStyle.styleView(cellView)
     }
     
     func createPaymentCell(payment: String, accountName: String, link: String) {

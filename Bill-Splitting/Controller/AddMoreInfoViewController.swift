@@ -57,7 +57,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         addPhotoButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
         addPhotoButton.leftAnchor.constraint(equalTo: addPhotoLabel.rightAnchor, constant: 20).isActive = true
         addPhotoButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        addPhotoButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        addPhotoButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
         addPhotoButton.setImage(UIImage(systemName: "camera"), for: .normal)
         addPhotoButton.setTitle("上傳", for: .normal)
@@ -235,7 +235,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         addPhotoLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
         addPhotoLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         addPhotoLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        addPhotoLabel.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        addPhotoLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
     
         addPhotoLabel.textColor = UIColor.greenWhite
         addPhotoLabel.text = "新增照片"
