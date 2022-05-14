@@ -29,11 +29,11 @@ class AddGroupsViewController: UIViewController {
     var pickerViewData = [GroupType.multipleUsers.typeName, GroupType.personal.typeName]
     var selectMemberLabel = UILabel()
     
-    var friendList: [Friend] = [] //{
-//        didSet {
-//            tableView.reloadData()
-//        }
-//    }
+    var friendList: [Friend] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     let tableView = UITableView(frame: .zero, style: .plain)
     var searchController: UISearchController!
@@ -68,12 +68,13 @@ class AddGroupsViewController: UIViewController {
         hideUnchagableGroupInfo()
         networkDetect()
         setAnimation()
-        listenFriendData()
+//        listenFriendData()
+        listenNewFriends()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        listenFriendData()
+        fetchFriendData()
 //        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
 //            switch result {
 //            case .success(let friend):
@@ -143,11 +144,12 @@ class AddGroupsViewController: UIViewController {
         }
     }
     
-    func listenFriendData() {
-        UserManager.shared.listenFriendData(userId: currentUserId) { [weak self] result in
+    func fetchFriendData() {
+        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let friend):
                 self?.friendList.removeAll()
+                self?.friends.removeAll()
                 self?.friendList = friend
                 if self?.isGroupExist == true {
                     self?.selectedNewMember()
@@ -162,6 +164,12 @@ class AddGroupsViewController: UIViewController {
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
+        }
+    }
+    
+    func listenNewFriends() {
+        UserManager.shared.listenFriendData(userId: currentUserId) { [weak self]  in
+            self?.fetchFriendData()
         }
     }
     
