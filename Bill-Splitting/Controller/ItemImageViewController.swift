@@ -10,7 +10,7 @@ import UIKit
 class ItemImageViewController: UIViewController {
 
     let width = UIScreen.main.bounds.size.width
-    let height = UIScreen.main.bounds.size.height
+//    let height = UIScreen.main.bounds.size.height
     var photoView = UIView()
     var photoImage = UIImageView()
     let dismissButton = UIButton()
@@ -28,9 +28,27 @@ class ItemImageViewController: UIViewController {
     func addImageView(image: String) {
         view.addSubview(photoImage)
         photoImage.getImage(image)
-        photoImage.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+        photoImage.frame = CGRect(x: 0, y: 0, width: width, height: width)
         photoImage.center = view.center
         photoImage.contentMode = .scaleAspectFit
+        photoImage.isUserInteractionEnabled = true
+        
+        addGesture()
+    }
+    
+    func addGesture() {
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(didPinch(_:)))
+        photoImage.addGestureRecognizer(pinchGesture)
+    }
+    
+    @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
+        if gesture.state == .changed {
+            let scale = gesture.scale
+            print(scale)
+//            let frame = photoImage.frame
+            photoImage.frame = CGRect(x: 0, y: 0, width: width * scale, height: width * scale)
+            photoImage.center = view.center
+        }
     }
     
     func setDismissButton() {
@@ -49,4 +67,5 @@ class ItemImageViewController: UIViewController {
     @objc func dismissPhotoView() {
         self.dismiss(animated: true, completion: nil)
     }
+    
 }
