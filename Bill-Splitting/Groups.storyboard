@@ -12,7 +12,7 @@
         <!--Groups View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController storyboardIdentifier="GroupsViewController" id="Y6W-OH-hqX" customClass="GroupsViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="GroupsViewController" id="Y6W-OH-hqX" customClass="GroupsViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -28,7 +28,7 @@
         <!--Group Detail View Controller-->
         <scene sceneID="ObO-lL-tHk">
             <objects>
-                <viewController storyboardIdentifier="GroupDetailViewController" id="vEJ-BN-8cx" customClass="GroupDetailViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="GroupDetailViewController" id="vEJ-BN-8cx" customClass="GroupDetailViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="nXu-Xx-OYG">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -40,10 +40,25 @@
             </objects>
             <point key="canvasLocation" x="1968" y="-848"/>
         </scene>
+        <!--Item Image View Controller-->
+        <scene sceneID="M7q-L8-ymm">
+            <objects>
+                <viewController storyboardIdentifier="ItemImageViewController" id="svE-3a-2Ng" customClass="ItemImageViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="JAI-3Y-I6O">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="eHX-8H-JDs"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DmG-3J-HiS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2996" y="-1566"/>
+        </scene>
         <!--Item Detail View Controller-->
         <scene sceneID="95X-GJ-mfj">
             <objects>
-                <viewController storyboardIdentifier="ItemDetailViewController" id="t9r-A3-Gwk" customClass="ItemDetailViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ItemDetailViewController" id="t9r-A3-Gwk" customClass="ItemDetailViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="BCU-FY-dTY">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -58,7 +73,7 @@
         <!--Custom Group View Controller-->
         <scene sceneID="a1y-Aa-5S2">
             <objects>
-                <viewController storyboardIdentifier="CustomGroupViewController" id="Q05-BR-7k7" customClass="CustomGroupViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CustomGroupViewController" id="Q05-BR-7k7" customClass="CustomGroupViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aL8-17-wRK">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -73,7 +88,7 @@
         <!--Add Item View Controller-->
         <scene sceneID="JbW-zg-xvc">
             <objects>
-                <viewController storyboardIdentifier="AddItemViewController" id="UhO-1S-Pi8" customClass="AddItemViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AddItemViewController" id="UhO-1S-Pi8" customClass="AddItemViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5g6-Ah-md1">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -88,7 +103,7 @@
         <!--Subscribe View Controller-->
         <scene sceneID="x72-17-zVh">
             <objects>
-                <viewController storyboardIdentifier="SubscribeViewController" id="mBu-QX-hpc" customClass="SubscribeViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SubscribeViewController" id="mBu-QX-hpc" customClass="SubscribeViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="qEn-RC-rpQ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -103,7 +118,7 @@
         <!--Add More Info View Controller-->
         <scene sceneID="ac4-nz-XDd">
             <objects>
-                <viewController storyboardIdentifier="AddMoreInfoViewController" id="3V8-M1-tuu" customClass="AddMoreInfoViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AddMoreInfoViewController" id="3V8-M1-tuu" customClass="AddMoreInfoViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="08g-WG-y82">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -118,7 +133,7 @@
         <!--Settle Up View Controller-->
         <scene sceneID="CMP-Nd-ClA">
             <objects>
-                <viewController storyboardIdentifier="SettleUpViewController" id="nBy-Es-S9y" customClass="SettleUpViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SettleUpViewController" id="nBy-Es-S9y" customClass="SettleUpViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Jkc-LB-FM0">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -133,7 +148,7 @@
         <!--Chart View Controller-->
         <scene sceneID="Xsr-yC-ZzJ">
             <objects>
-                <viewController storyboardIdentifier="ChartViewController" id="sYr-8W-aFz" customClass="ChartViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChartViewController" id="sYr-8W-aFz" customClass="ChartViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dw5-8t-2Lv">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -148,7 +163,7 @@
         <!--Specific SettleI Up View Controller-->
         <scene sceneID="17F-TI-E23">
             <objects>
-                <viewController storyboardIdentifier="SpecificSettleIUpViewController" id="iWf-96-fQY" customClass="SpecificSettleIUpViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SpecificSettleIUpViewController" id="iWf-96-fQY" customClass="SpecificSettleIUpViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="79W-DD-n1S">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

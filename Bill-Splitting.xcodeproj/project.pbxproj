@@ -82,6 +82,7 @@
 		3593E12F2812C69800F3A31C /* ItemDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3593E12D2812C69800F3A31C /* ItemDetailTableViewCell.xib */; };
 		3593E1322812E34100F3A31C /* ItemMemberTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1302812E34100F3A31C /* ItemMemberTableViewCell.swift */; };
 		3593E1332812E34100F3A31C /* ItemMemberTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */; };
+		35CC139B2830198B00432CAB /* ItemImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC139A2830198B00432CAB /* ItemImageViewController.swift */; };
 		35D0EAD8281FB806001C9324 /* ProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */; };
 		35D0EAD9281FB806001C9324 /* ProfileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */; };
 		35D0EADC281FC7BF001C9324 /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */; };
@@ -197,6 +198,7 @@
 		3593E12D2812C69800F3A31C /* ItemDetailTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ItemDetailTableViewCell.xib; sourceTree = "<group>"; };
 		3593E1302812E34100F3A31C /* ItemMemberTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemMemberTableViewCell.swift; sourceTree = "<group>"; };
 		3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ItemMemberTableViewCell.xib; sourceTree = "<group>"; };
+		35CC139A2830198B00432CAB /* ItemImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemImageViewController.swift; sourceTree = "<group>"; };
 		35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCollectionViewCell.swift; sourceTree = "<group>"; };
 		35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileCollectionViewCell.xib; sourceTree = "<group>"; };
 		35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
@@ -323,6 +325,7 @@
 				35FF63EC2806AAD000508EAF /* CustomGroupViewController.swift */,
 				35568A1128145DA000646B57 /* GroupDetailViewController.swift */,
 				3593E12A2812C44200F3A31C /* ItemDetailViewController.swift */,
+				35CC139A2830198B00432CAB /* ItemImageViewController.swift */,
 				35FF63F02807B22400508EAF /* AddItemViewController.swift */,
 				355090E8280FAA690007C0CE /* AddMoreInfoViewController.swift */,
 				35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */,
@@ -634,6 +637,7 @@
 				354691E128292FDF00C2174B /* WebViewController.swift in Sources */,
 				35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */,
 				355090EB280FBBB10007C0CE /* ImageManager.swift in Sources */,
+				35CC139B2830198B00432CAB /* ItemImageViewController.swift in Sources */,
 				355090DB280DA0E10007C0CE /* SubscriptionObject.swift in Sources */,
 				35568A342817800100646B57 /* SignUpViewController.swift in Sources */,
 				3593E12E2812C69800F3A31C /* ItemDetailTableViewCell.swift in Sources */,
