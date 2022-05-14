@@ -172,13 +172,13 @@ class AddItemViewController: UIViewController {
         view.addSubview(addMoreButton)
         addMoreButton.translatesAutoresizingMaskIntoConstraints = false
         addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
-        addMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        addMoreButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        addMoreButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
         addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
         addMoreButton.backgroundColor = .systemTeal
         addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
-        addMoreButton.setTitle(" 更多資訊", for: .normal)
+        addMoreButton.setTitle("新增照片及說明", for: .normal)
         addMoreButton.tintColor = .white
         addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(addMoreButton)
