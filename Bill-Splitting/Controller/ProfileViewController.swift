@@ -443,23 +443,24 @@ extension ProfileViewController {
         
         profileView.addSubview(userName)
         userName.translatesAutoresizingMaskIntoConstraints = false
-        userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 20).isActive = true
+        userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 30).isActive = true
         userName.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
         userName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
         userName.textColor = .greenWhite
         userName.font = userName.font.withSize(20)
         
         profileView.addSubview(userEmail)
         userEmail.translatesAutoresizingMaskIntoConstraints = false
-        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 5).isActive = true
+        userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 10).isActive = true
         userEmail.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
         userEmail.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        userEmail.heightAnchor.constraint(equalToConstant: 40).isActive = true
+//        userEmail.heightAnchor.constraint(equalToConstant: 40).isActive = true
         userEmail.textColor = .greenWhite
-        userEmail.lineBreakMode = NSLineBreakMode.byWordWrapping
-        userEmail.numberOfLines = 0
+//        userEmail.lineBreakMode = NSLineBreakMode.byWordWrapping
+//        userEmail.numberOfLines = 0
         userEmail.font = userEmail.font.withSize(18)
+        userEmail.adjustsFontSizeToFitWidth = true
     }
     
     func setProfileImage() {
