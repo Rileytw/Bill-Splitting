@@ -7,55 +7,38 @@
 
 import UIKit
 
-class ItemImageViewController: UIViewController {
+class ItemImageViewController: UIViewController, UIScrollViewDelegate {
 
     let width = UIScreen.main.bounds.size.width
-//    let height = UIScreen.main.bounds.size.height
+    let height = UIScreen.main.bounds.size.height
+    var scrollImage: UIScrollView = UIScrollView()
     var photoView = UIView()
     var photoImage = UIImageView()
     let dismissButton = UIButton()
     var image: String?
     
-    private let size = 200
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.9)
-        addImageView(image: image ?? "")
+       
+        setScrollView()
         setDismissButton()
     }
 
     func addImageView(image: String) {
-        view.addSubview(photoImage)
+        scrollImage.addSubview(photoImage)
         photoImage.getImage(image)
-        photoImage.frame = CGRect(x: 0, y: 0, width: width, height: width)
+        photoImage.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         photoImage.center = view.center
         photoImage.contentMode = .scaleAspectFit
         photoImage.isUserInteractionEnabled = true
-        
-        addGesture()
-    }
-    
-    func addGesture() {
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(didPinch(_:)))
-        photoImage.addGestureRecognizer(pinchGesture)
-    }
-    
-    @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
-        if gesture.state == .changed {
-            let scale = gesture.scale
-            print(scale)
-//            let frame = photoImage.frame
-            photoImage.frame = CGRect(x: 0, y: 0, width: width * scale, height: width * scale)
-            photoImage.center = view.center
-        }
     }
     
     func setDismissButton() {
         view.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
-        dismissButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
+        dismissButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
+        dismissButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8).isActive = true
         dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
         dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
@@ -68,4 +51,24 @@ class ItemImageViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    func setScrollView() {
+   
+        scrollImage.delegate = self
+        scrollImage.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        scrollImage.alwaysBounceVertical = false
+        scrollImage.alwaysBounceHorizontal = false
+        scrollImage.showsVerticalScrollIndicator = true
+        scrollImage.flashScrollIndicators()
+        
+        scrollImage.minimumZoomScale = 1.0
+        scrollImage.maximumZoomScale = 6.0
+        
+        view.addSubview(scrollImage)
+
+        addImageView(image: image ?? "")
+    }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return self.photoImage
+    }
 }

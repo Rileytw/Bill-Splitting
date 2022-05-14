@@ -448,6 +448,7 @@ class ItemDetailViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let itemImageViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemImageViewController.self)) as? ItemImageViewController else { return }
         itemImageViewController.image = image
+        itemImageViewController.modalPresentationStyle = .fullScreen
         self.present(itemImageViewController, animated: true, completion: nil)
         
     }
