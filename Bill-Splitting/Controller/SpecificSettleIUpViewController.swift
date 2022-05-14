@@ -48,9 +48,9 @@ class SpecificSettleIUpViewController: UIViewController {
         
         view.addSubview(account)
         account.translatesAutoresizingMaskIntoConstraints = false
-        account.topAnchor.constraint(equalTo: price.topAnchor, constant: 60).isActive = true
-        account.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        account.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
+        account.topAnchor.constraint(equalTo: price.topAnchor, constant: 40).isActive = true
+        account.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        account.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         account.heightAnchor.constraint(equalToConstant: 40).isActive = true
         account.text = "帳戶資訊"
         account.font = price.font.withSize(20)
@@ -61,8 +61,8 @@ class SpecificSettleIUpViewController: UIViewController {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: account.bottomAnchor, constant: 10).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
         tableView.bottomAnchor.constraint(equalTo: settleButton.topAnchor, constant: -10).isActive = true
         
         tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
@@ -74,12 +74,12 @@ class SpecificSettleIUpViewController: UIViewController {
     func setSettleUpButton() {
         view.addSubview(settleButton)
         settleButton.translatesAutoresizingMaskIntoConstraints = false
-        settleButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100).isActive = true
+        settleButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
         settleButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         settleButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         settleButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
-        settleButton.setTitle("已結清", for: .normal)
+        settleButton.setTitle("確認結清", for: .normal)
         ElementsStyle.styleSpecificButton(settleButton)
         settleButton.addTarget(self, action: #selector(pressSettleUpButton), for: .touchUpInside)
     }
@@ -317,9 +317,9 @@ class SpecificSettleIUpViewController: UIViewController {
         
         view.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
-        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        nameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        nameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
@@ -344,9 +344,9 @@ class SpecificSettleIUpViewController: UIViewController {
         
         view.addSubview(price)
         price.translatesAutoresizingMaskIntoConstraints = false
-        price.topAnchor.constraint(equalTo: nameLabel.topAnchor, constant: 60).isActive = true
-        price.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        price.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
+        price.topAnchor.constraint(equalTo: nameLabel.topAnchor, constant: 40).isActive = true
+        price.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        price.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         price.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
