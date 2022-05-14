@@ -444,7 +444,13 @@ class ItemDetailViewController: UIViewController {
        
         guard let tappedImage = tapGestureRecognizer.view as? UIImageView else { return }
 
-        addImageView(image: self.image ?? "")
+//        addImageView(image: self.image ?? "")
+        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        guard let itemImageViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemImageViewController.self)) as? ItemImageViewController else { return }
+        itemImageViewController.image = image
+        itemImageViewController.modalPresentationStyle = .fullScreen
+        self.present(itemImageViewController, animated: true, completion: nil)
+        
     }
     
     func addImageView(image: String) {
