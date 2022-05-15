@@ -69,7 +69,7 @@ class CustomGroupViewController: UIViewController {
         addMenu()
         setAnimation()
         navigationItem.title = "群組"
-        getItemData()
+//        getItemData()
         getMemberExpense()
         listenToNewItem()
     }
@@ -80,7 +80,7 @@ class CustomGroupViewController: UIViewController {
         userData.removeAll()
         leaveMemberData.removeAll()
         
-//        getItemData()
+        getItemData()
 //        getMemberExpense()
         getLeaveMemberData()
     }
