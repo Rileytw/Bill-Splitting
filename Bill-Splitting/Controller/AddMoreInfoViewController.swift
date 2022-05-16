@@ -15,7 +15,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     var addPhotoButton = UIButton()
     var addPhotoLabel = UILabel()
     var completeButton = UIButton()
-    var descriptionLabek = UILabel()
+    var descriptionLabel = UILabel()
     let dismissButton = UIButton()
     var descriptionTextView = UITextView()
     let imagePickerController = UIImagePickerController()
@@ -183,18 +183,18 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     
     func setDescription() {
-        view.addSubview(descriptionLabek)
-        descriptionLabek.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabek.topAnchor.constraint(equalTo: completeButton.bottomAnchor, constant: 20).isActive = true
-        descriptionLabek.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        descriptionLabek.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        descriptionLabek.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        descriptionLabek.text = "詳細說明"
-        descriptionLabek.textColor = UIColor.greenWhite
+        view.addSubview(descriptionLabel)
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        descriptionLabel.topAnchor.constraint(equalTo: completeButton.bottomAnchor, constant: 20).isActive = true
+        descriptionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        descriptionLabel.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        descriptionLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        descriptionLabel.text = "詳細說明"
+        descriptionLabel.textColor = UIColor.greenWhite
         
         view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        descriptionTextView.topAnchor.constraint(equalTo: descriptionLabek.bottomAnchor, constant: 20).isActive = true
+        descriptionTextView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20).isActive = true
         descriptionTextView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         descriptionTextView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         descriptionTextView.heightAnchor.constraint(equalToConstant: 100).isActive = true

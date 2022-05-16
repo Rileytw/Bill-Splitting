@@ -168,8 +168,10 @@ class AddGroupsViewController: UIViewController {
     }
     
     func listenNewFriends() {
-        UserManager.shared.listenFriendData(userId: currentUserId) { [weak self]  in
-            self?.fetchFriendData()
+        if isGroupExist == false {
+            UserManager.shared.listenFriendData(userId: currentUserId) { [weak self]  in
+                self?.fetchFriendData()
+            }
         }
     }
     

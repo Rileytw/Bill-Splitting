@@ -56,6 +56,9 @@ class InviteFriendViewController: UIViewController {
         setTextFieldConstraint()
         friendTextField.delegate = self
         friendTextField.layer.cornerRadius = 10
+        friendTextField.attributedPlaceholder = NSAttributedString(
+            string: "輸入 email 搜尋",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
     
     func setSearchButton() {
@@ -111,10 +114,12 @@ class InviteFriendViewController: UIViewController {
         let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
         guard let scanQRCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ScanQRCodeViewController.self)) as? ScanQRCodeViewController else { return }
         
+        self.present(scanQRCodeViewController, animated: true, completion: nil)
+        
         scanQRCodeViewController.qrCodeContent = { [weak self] qrCode in
             self?.searchFriend(userEmail: qrCode)
         }
-        self.present(scanQRCodeViewController, animated: true, completion: nil)
+//        self.present(scanQRCodeViewController, animated: true, completion: nil)
     }
     
     @objc func pressSearchButton() {

@@ -23,13 +23,16 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="付款人：" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Civ-m2-tdf">
-                        <rect key="frame" x="20" y="20" width="69.5" height="29"/>
+                        <rect key="frame" x="20" y="20" width="69.5" height="20.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QaI-YP-5At">
-                        <rect key="frame" x="99.5" y="24.5" width="41.5" height="20.5"/>
+                        <rect key="frame" x="99.5" y="20" width="200" height="20.5"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="200" id="q8M-Pb-8VR"/>
+                        </constraints>
                         <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -41,7 +44,10 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ofa-vT-a4L">
-                        <rect key="frame" x="99.5" y="69" width="41.5" height="20.5"/>
+                        <rect key="frame" x="99.5" y="69" width="200" height="20.5"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="200" id="syy-nG-tAV"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -70,17 +76,17 @@
                 <constraints>
                     <constraint firstItem="UqD-Pl-9Lf" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="5" id="156-2P-B6E"/>
                     <constraint firstItem="Civ-m2-tdf" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="7nn-t1-r4e"/>
-                    <constraint firstItem="CqQ-eK-CY9" firstAttribute="top" secondItem="Civ-m2-tdf" secondAttribute="bottom" constant="20" id="AYv-bV-635"/>
+                    <constraint firstItem="CqQ-eK-CY9" firstAttribute="top" secondItem="QaI-YP-5At" secondAttribute="bottom" constant="28.5" id="AYv-bV-635"/>
                     <constraint firstItem="QaI-YP-5At" firstAttribute="leading" secondItem="Civ-m2-tdf" secondAttribute="trailing" constant="10" id="CUc-GP-haR"/>
                     <constraint firstItem="JlL-is-alH" firstAttribute="top" secondItem="CqQ-eK-CY9" secondAttribute="bottom" constant="20" id="Gij-r3-tn6"/>
                     <constraint firstItem="7WF-3i-C1F" firstAttribute="centerY" secondItem="Sdz-JD-hl0" secondAttribute="centerY" id="KmM-6v-x3v"/>
                     <constraint firstItem="ofa-vT-a4L" firstAttribute="leading" secondItem="CqQ-eK-CY9" secondAttribute="trailing" constant="10" id="Olw-i9-YBY"/>
                     <constraint firstAttribute="bottom" secondItem="UqD-Pl-9Lf" secondAttribute="bottom" constant="5" id="SB4-mY-puG"/>
                     <constraint firstItem="CqQ-eK-CY9" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="SCO-fx-3Y8"/>
+                    <constraint firstItem="QaI-YP-5At" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="Sfk-01-qAl"/>
                     <constraint firstItem="ofa-vT-a4L" firstAttribute="centerY" secondItem="CqQ-eK-CY9" secondAttribute="centerY" id="XFG-ps-l2A"/>
                     <constraint firstItem="Sdz-JD-hl0" firstAttribute="centerY" secondItem="JlL-is-alH" secondAttribute="centerY" id="Yas-2v-vKJ"/>
                     <constraint firstItem="Sdz-JD-hl0" firstAttribute="leading" secondItem="JlL-is-alH" secondAttribute="trailing" constant="5" id="aUx-10-Y0v"/>
-                    <constraint firstItem="QaI-YP-5At" firstAttribute="centerY" secondItem="Civ-m2-tdf" secondAttribute="centerY" id="ahQ-gg-hWs"/>
                     <constraint firstItem="UqD-Pl-9Lf" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="b80-4M-3dm"/>
                     <constraint firstItem="Civ-m2-tdf" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="h0d-Md-OzX"/>
                     <constraint firstAttribute="bottom" secondItem="JlL-is-alH" secondAttribute="bottom" constant="20" id="hfL-fK-4DC"/>

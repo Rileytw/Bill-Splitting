@@ -530,12 +530,13 @@ extension GroupsViewController {
     
     func setEmptyLabel() {
         view.addSubview(emptyLabel)
-        emptyLabel.text = "目前暫無資料，前往【新增群組】建立自己的群組吧！"
+        emptyLabel.text = "目前暫無資料，前往【新增群組】建立群組吧！"
+        emptyLabel.adjustsFontSizeToFitWidth = true
         emptyLabel.textColor = .greenWhite
         emptyLabel.translatesAutoresizingMaskIntoConstraints = false
         emptyLabel.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 5).isActive = true
         emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        emptyLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+        emptyLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         emptyLabel.isHidden = true

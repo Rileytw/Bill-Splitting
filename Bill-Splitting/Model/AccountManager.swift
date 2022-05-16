@@ -18,7 +18,7 @@ class AccountManager {
 //    var currentUser = CurrentUser(currentUserId: Auth.auth().currentUser?.uid ?? "", currentUserEmail: Auth.auth().currentUser?.email ?? "")
 //    var currentUser = CurrentUser(currentUserId: "", currentUserEmail: "")
     
-    func signUpWithFireBase(email: String, password: String, completion: @escaping (Result<(String), Error>) -> Void) {
+    func signUpWithFireBase(email: String, password: String, completion: @escaping (Result<(SignUpAuth), Error>) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             
             if let error = error {
@@ -27,7 +27,8 @@ class AccountManager {
             }
             
             if let user = result?.user {
-                completion(.success("\(user.uid)"))
+                let userAuth = SignUpAuth(userId: user.uid, userEmail: user.email ?? "")
+                completion(.success(userAuth))
             }
         }
     }
@@ -88,4 +89,9 @@ extension AuthErrorCode {
             return "發生錯誤，請稍後再試"
         }
     }
+}
+
+struct SignUpAuth {
+    var userId: String
+    var userEmail: String
 }

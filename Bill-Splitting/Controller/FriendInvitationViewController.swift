@@ -56,6 +56,11 @@ class FriendInvitationViewController: UIViewController {
         getSenderData() { [weak self] senderIdList in
             print("senderList:\(senderIdList.count)")
             self?.senderId = senderIdList
+            if self?.senderId.isEmpty == true {
+                self?.noDataView.noDataLabel.isHidden = false
+            } else {
+                self?.noDataView.noDataLabel.isHidden = true
+            }
             
             self?.senderId.forEach {
                 sender in
@@ -68,9 +73,6 @@ class FriendInvitationViewController: UIViewController {
                         print("userData:\(userData)")
                         print("invitationData: \(self?.invitationUsers)")
                         self?.tableView.reloadData()
-                        if self?.invitationUsers.isEmpty == true {
-                            self?.noDataView.noDataLabel.isHidden = false
-                        }
                     case .failure(let error):
                         print("Error decoding userData: \(error)")
                         ProgressHUD.shared.view = self?.view ?? UIView()
@@ -103,6 +105,7 @@ class FriendInvitationViewController: UIViewController {
         noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+//        noDataView.noDataLabel.isHidden = false
     }
 }
 
