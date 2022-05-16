@@ -69,7 +69,7 @@ class CustomGroupViewController: UIViewController {
         addMenu()
         setAnimation()
         navigationItem.title = "群組"
-        getItemData()
+//        getItemData()
         getMemberExpense()
         listenToNewItem()
     }
@@ -80,7 +80,7 @@ class CustomGroupViewController: UIViewController {
         userData.removeAll()
         leaveMemberData.removeAll()
         
-//        getItemData()
+        getItemData()
 //        getMemberExpense()
         getLeaveMemberData()
     }
@@ -537,15 +537,14 @@ class CustomGroupViewController: UIViewController {
                                        itemName: subsriptions[index].itemName,
                                        itemDescription: "",
                                        createdTime: subsriptions[index].startTime,
-                                       itemImage: nil) { itemId in
+                                       itemImage: nil) { [weak self] itemId in
             var paidUserId: String?
-            paidUserId = self.subsriptions[index].paidUser
+            paidUserId = self?.subsriptions[index].paidUser
             
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                           price: self.subsriptions[index].paidPrice,
+                                           price: self?.subsriptions[index].paidPrice ?? 0,
                                            itemId: itemId,
-                                           createdTime: self.subsriptions[index].startTime) {
-                result in
+                                           createdTime: self?.subsriptions[index].startTime ?? 0) { result in
                 switch result{
                 case .success:
                     print("success")
@@ -554,21 +553,21 @@ class CustomGroupViewController: UIViewController {
                 }
             }
             
-            for user in 0..<self.subscriptInvolvedItem.count {
-                ItemManager.shared.addInvolvedInfo(involvedUserId: self.subscriptInvolvedItem[user].involvedUser,
-                                                   price: self.subscriptInvolvedItem[user].involvedPrice,
+            for user in 0..<(self?.subscriptInvolvedItem.count ?? 0) {
+                ItemManager.shared.addInvolvedInfo(involvedUserId: self?.subscriptInvolvedItem[user].involvedUser ?? "",
+                                                   price: self?.subscriptInvolvedItem[user].involvedPrice ?? 0,
                                                    itemId: itemId,
-                                                   createdTime: self.subsriptions[index].startTime) {
-                    result in
+                                                   createdTime: self?.subsriptions[index].startTime ?? 0) { [weak self] result in
                     switch result{
                     case .success:
                         print("success")
+                        self?.getItemData()
                     case .failure(let error):
                         print(error)
                     }
                 }
             }
-            self.countPersonalExpense(index: index)
+            self?.countPersonalExpense(index: index)
         }
     }
     

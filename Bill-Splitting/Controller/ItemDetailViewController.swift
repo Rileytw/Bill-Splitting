@@ -49,6 +49,7 @@ class ItemDetailViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
+        removeAnimation()
     }
     
     func addMenu() {
@@ -252,6 +253,16 @@ class ItemDetailViewController: UIViewController {
             if isItemDeleteSucces == true {
                 ProgressHUD.shared.view = self.view ?? UIView()
                 ProgressHUD.showSuccess(text: "移除成功")
+                
+                ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
+                    switch result {
+                    case .success:
+                        print("uplaod notification collection successfully")
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
+                
                 self.navigationController?.popViewController(animated: true)
             } else {
                 ProgressHUD.shared.view = self.view ?? UIView()
@@ -271,6 +282,7 @@ class ItemDetailViewController: UIViewController {
                                                 message: "刪除後無法復原，請確認是否刪除款項",
                                                 preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
+            self?.setAnimation()
             self?.deleteItem()
 //            self?.navigationController?.popViewController(animated: true)
         }

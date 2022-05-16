@@ -37,18 +37,19 @@ class GroupDetailView: UIView {
     }
     
     func setGroupNameLabel() {
-        groupName.frame = CGRect(x: 10, y: 10, width: width, height: 30)
+        groupName.frame = CGRect(x: 10, y: 10, width: width - 10, height: 30)
         addSubview(groupName)
         groupName.textColor = .greenWhite
         groupName.font = UIFont.boldSystemFont(ofSize: 20.0)
+        groupName.adjustsFontSizeToFitWidth = true
     }
     
     func setLabel() {
-        personalFinalPaidLabel.frame = CGRect(x: 10, y: 40, width: width, height: 40)
-//        personalFinalPaidLabel.font = personalFinalPaidLabel.font.withSize(24)
+        personalFinalPaidLabel.frame = CGRect(x: 10, y: 40, width: width - 10, height: 40)
         addSubview(personalFinalPaidLabel)
         personalFinalPaidLabel.textColor = UIColor.greenWhite
         personalFinalPaidLabel.font = UIFont.boldSystemFont(ofSize: 24.0)
+        personalFinalPaidLabel.adjustsFontSizeToFitWidth = true
     }
     
     func setAddExpenseButton() {

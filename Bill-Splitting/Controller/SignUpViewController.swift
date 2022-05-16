@@ -92,8 +92,8 @@ class SignUpViewController: UIViewController {
             switch result {
             case .success(let firebaseId):
                 self?.userData.userName = self?.userNameTextField.text ?? ""
-                self?.userData.userEmail = self?.emailTextField.text ?? ""
-                self?.userData.userId = firebaseId
+                self?.userData.userEmail = firebaseId.userEmail
+                self?.userData.userId = firebaseId.userId
                 self?.uploadUserData()
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showSuccess(text: "註冊成功")

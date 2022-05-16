@@ -193,6 +193,14 @@ class AddItemViewController: UIViewController {
             addMoreInfoViewController.isItemExist = true
         }
         
+        if itemImage != nil {
+            addMoreInfoViewController.photoImageView.image = itemImage
+        }
+        
+        if itemDescription != nil {
+            addMoreInfoViewController.descriptionTextView.text = itemDescription
+        }
+        
         addMoreInfoViewController.urlData = { [weak self] urlString in
             self?.itemImageString = urlString
         }
