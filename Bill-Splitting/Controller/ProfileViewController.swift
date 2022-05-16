@@ -455,10 +455,7 @@ extension ProfileViewController {
         userEmail.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 10).isActive = true
         userEmail.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
         userEmail.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-//        userEmail.heightAnchor.constraint(equalToConstant: 40).isActive = true
         userEmail.textColor = .greenWhite
-//        userEmail.lineBreakMode = NSLineBreakMode.byWordWrapping
-//        userEmail.numberOfLines = 0
         userEmail.font = userEmail.font.withSize(18)
         userEmail.adjustsFontSizeToFitWidth = true
     }
@@ -511,7 +508,6 @@ extension ProfileViewController {
         editingView = EditingView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
         editingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
         editingView.buttonTitle = "完成"
-//        editingView.completeButton.setImage(UIImage(systemName: "pencil"), for: .normal)
         editingView.textField.text = currentUser?.userName ?? ""
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
             self.editingView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 400, width: UIScreen.main.bounds.size.width, height: 400)
