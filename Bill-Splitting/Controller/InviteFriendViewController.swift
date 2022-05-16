@@ -56,6 +56,9 @@ class InviteFriendViewController: UIViewController {
         setTextFieldConstraint()
         friendTextField.delegate = self
         friendTextField.layer.cornerRadius = 10
+        friendTextField.attributedPlaceholder = NSAttributedString(
+            string: "輸入 email 搜尋",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
     
     func setSearchButton() {
