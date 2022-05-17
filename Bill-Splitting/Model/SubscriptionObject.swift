@@ -23,3 +23,17 @@ struct SubscriptionMember: Codable {
     var involvedUser: String
     var involvedPrice: Double
 }
+
+enum Cycle: String {
+    case month = "每月"
+    case year = "每年"
+    
+    var typeInt: Int {
+        switch self {
+        case .month:
+            return 0
+        case .year:
+            return 1
+        }
+    }    
+}

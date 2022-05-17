@@ -9,12 +9,6 @@ import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-
-enum Cycle: String {
-    case month = "每月"
-    case year = "每年"
-}
-
 class SubscriptionManager {
     static var shared = SubscriptionManager()
     lazy var db = Firestore.firestore()
