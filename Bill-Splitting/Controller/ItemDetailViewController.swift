@@ -114,7 +114,7 @@ class ItemDetailViewController: UIViewController {
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         group.enter()
         firstQueue.async(group: group) {
-            ItemManager.shared.fetchPaidItemsExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
+            ItemManager.shared.fetchPaidItemExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.item?.paidInfo = items
@@ -132,7 +132,7 @@ class ItemDetailViewController: UIViewController {
         let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         group.enter()
         secondQueue.async(group: group) {
-            ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
+            ItemManager.shared.fetchInvolvedItemExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.item?.involedInfo = items

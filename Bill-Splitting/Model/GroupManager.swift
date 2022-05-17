@@ -195,7 +195,7 @@ class GroupManager {
         }
     }
     
-    func updateGroupStatus(groupId: String) {
+    func updateGroupStatus(groupId: String, comletion: @escaping (Result<(), Error>) -> Void) {
         let groupRef = db.collection("group").document(groupId)
         
         groupRef.updateData([
@@ -203,8 +203,10 @@ class GroupManager {
         ]) { err in
             if let err = err {
                 print("Error updating document: \(err)")
+                comletion(.failure(err))
             } else {
                 print("Document successfully updated")
+                comletion(.success(()))
             }
         }
     }

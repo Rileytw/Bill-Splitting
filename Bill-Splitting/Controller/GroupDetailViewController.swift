@@ -175,7 +175,17 @@ class GroupDetailViewController: UIViewController {
     
     func closeGroup() {
         if groupData?.creator == currentUserId {
-            GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "")
+            // MARK: - Add ProgressHUD when refactor, need to check situation
+            GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "") { [weak self] result in
+                   switch result {
+                   case .success:
+//                       ProgressHUD.shared.view = self?.view ?? UIView()
+                       ProgressHUD.showSuccess(text: "成功封存群組")
+                   case .failure:
+//                       ProgressHUD.shared.view = self?.view ?? UIView()
+                       ProgressHUD.showFailure(text: "封存群組失敗，請稍後再試")
+                   }
+            }
             self.navigationController?.popToRootViewController(animated: true)
         }
     }

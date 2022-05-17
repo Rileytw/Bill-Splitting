@@ -97,7 +97,7 @@ class RecordsViewController: UIViewController {
             for item in self.itemData {
                 group.enter()
                 firstQueue.async(group: group) {
-                    ItemManager.shared.fetchPaidItemsExpense(itemId: item.itemId) { [weak self] result in
+                    ItemManager.shared.fetchPaidItemExpense(itemId: item.itemId) { [weak self] result in
                         switch result {
                         case .success(let items):
                             self?.paidItem += items
@@ -116,7 +116,7 @@ class RecordsViewController: UIViewController {
             for index in 0..<self.itemData.count {
                 group.enter()
                 secondQueue.async(group: group) {
-                    ItemManager.shared.fetchInvolvedItemsExpense(itemId: self.itemData[index].itemId) { [weak self] result in
+                    ItemManager.shared.fetchInvolvedItemExpense(itemId: self.itemData[index].itemId) { [weak self] result in
                         switch result {
                         case .success(let items):
                             self?.involvedItem += items
