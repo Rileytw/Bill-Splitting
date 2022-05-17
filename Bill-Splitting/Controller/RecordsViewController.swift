@@ -297,8 +297,8 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         
         groupData = groups.filter { $0.groupId == personalItem?.groupId }
 //        print("peronalitem:\(personalItem)")
-        customGroupViewController.groupData = groupData[0]
-        customGroupViewController.blackList = blackList
+        customGroupViewController.group = groupData[0]
+        customGroupViewController.blockList = blackList
         self.show(customGroupViewController, sender: nil)
     }
     

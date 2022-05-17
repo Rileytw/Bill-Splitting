@@ -291,8 +291,8 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let customGroupViewController =
                 storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
-        customGroupViewController.groupData = filteredGroups[indexPath.row]
-        customGroupViewController.blackList = blackList
+        customGroupViewController.group = filteredGroups[indexPath.row]
+        customGroupViewController.blockList = blackList
         self.show(customGroupViewController, sender: nil)
     }
     
