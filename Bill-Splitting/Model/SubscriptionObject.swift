@@ -16,6 +16,7 @@ struct Subscription: Codable {
     var paidUser: String
     var paidPrice: Double
     var cycle: Int
+    var subscriptionMember: [SubscriptionMember]?
 }
 
 struct SubscriptionMember: Codable {
