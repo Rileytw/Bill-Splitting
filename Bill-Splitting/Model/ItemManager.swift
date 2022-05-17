@@ -128,15 +128,15 @@ class ItemManager {
         }
     }
     
-    func fetchPaidItemsExpense(itemId: String, completion: @escaping ExpenseInfoResponse) {
-        fetchItemsExpense(itemId: itemId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
+    func fetchPaidItemExpense(itemId: String, completion: @escaping ExpenseInfoResponse) {
+        fetchItemExpense(itemId: itemId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
     }
 
-    func fetchInvolvedItemsExpense(itemId: String, completion: @escaping ExpenseInfoResponse) {
-        fetchItemsExpense(itemId: itemId, collection: ItemExpenseType.involvedInfo.rawValue, completion: completion)
+    func fetchInvolvedItemExpense(itemId: String, completion: @escaping ExpenseInfoResponse) {
+        fetchItemExpense(itemId: itemId, collection: ItemExpenseType.involvedInfo.rawValue, completion: completion)
     }
     
-    private func fetchItemsExpense(itemId: String, collection: String, completion: @escaping ExpenseInfoResponse) {
+    private func fetchItemExpense(itemId: String, collection: String, completion: @escaping ExpenseInfoResponse) {
         db.collection("item").document(itemId).collection(collection).order(by: "createdTime", descending: true).getDocuments() { (querySnapshot, error) in
             
             if let error = error {
@@ -156,6 +156,43 @@ class ItemManager {
                     }
                 }
                 completion(.success(involvedItems))
+            }
+        }
+    }
+    
+    func fetchPaidItemsExpense(itemsId: [String], completion: @escaping (Result<[[ExpenseInfo]], Error>) -> Void) {
+        fetchItemsExpense(itemsId: itemsId, collection: ItemExpenseType.involvedInfo.rawValue, completion: completion)
+    }
+    
+    func fetchInvolvedItemsExpense(itemsId: [String], completion: @escaping (Result<[[ExpenseInfo]], Error>) -> Void) {
+        fetchItemsExpense(itemsId: itemsId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
+    }
+
+
+    private func fetchItemsExpense(itemsId: [String], collection: String, completion: @escaping (Result<[[ExpenseInfo]], Error>) -> Void) {
+        var items: [[ExpenseInfo]] = []
+        for item in itemsId {
+            db.collection("item").document(item).collection(collection).order(by: "createdTime", descending: true).getDocuments() { (querySnapshot, error) in
+                
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    
+                    var involvedItems: [ExpenseInfo] = []
+                    
+                    for document in querySnapshot!.documents {
+                        
+                        do {
+                            if let item = try document.data(as: ExpenseInfo.self, decoder: Firestore.Decoder()) {
+                                involvedItems.append(item)
+                            }
+                        } catch {
+                            completion(.failure(error))
+                        }
+                    }
+                    items.append(involvedItems)
+                    completion(.success(items))
+                }
             }
         }
     }

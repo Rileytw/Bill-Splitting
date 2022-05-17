@@ -24,22 +24,20 @@ class CustomGroupViewController: BaseViewController {
     var reportView = ReportView()
     var reportContent: String?
     var reportItem: ItemData?
-
-    var subscriptInvolvedItem: [SubscriptionMember] = []
     
-    var expense: Double? {
+    var personalExpense: Double? {
         didSet {
-            if expense ?? 0 >= 0 {
-                let revealExpense = String(format: "%.2f", expense ?? 0)
+            if personalExpense ?? 0 >= 0 {
+                let revealExpense = String(format: "%.2f", personalExpense ?? 0)
                 groupDetailView.personalFinalPaidLabel.text = "你的總支出為：\(revealExpense) 元"
             } else {
-                let revealExpense = String(format: "%.2f", abs(expense ?? 0))
+                let revealExpense = String(format: "%.2f", abs(personalExpense ?? 0))
                 groupDetailView.personalFinalPaidLabel.text = "你的總欠款為：\(revealExpense) 元"
             }
         }
     }
     
-    var allExpense: Double = 0
+    var membersExpense: Double = 0
     
     var subsriptions: [Subscription] = []
     var subscriptionCreatedTime: Double?
@@ -65,15 +63,10 @@ class CustomGroupViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
-        users.removeAll()
+        getUserData()
         
         getItemData()
         getLeaveMemberData()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        getUserData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -83,18 +76,14 @@ class CustomGroupViewController: BaseViewController {
     
 // MARK: - Method
     func getUserData() {
-        group?.member.forEach { member in
-            UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
-                switch result {
-                case .success(let userData):
-                    self?.group?.member.append(userData?.userName ?? "")
-                    if let userData = userData {
-                        self?.users.append(userData)
-                    }
-                case .failure:
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
-                }
+        users.removeAll()
+        UserManager.shared.fetchMembersData(membersId: group?.member ?? []) { [weak self] result in
+            switch result {
+            case .success(let users):
+                self?.users = users
+            case .failure:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -102,17 +91,13 @@ class CustomGroupViewController: BaseViewController {
     func getLeaveMemberData() {
         group?.leaveMemberData = []
         if group?.leaveMembers != nil {
-            group?.leaveMembers?.forEach { member in
-                UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
-                    switch result {
-                    case .success(let userData):
-                        if let userData = userData {
-                            self?.group?.leaveMemberData?.append(userData)
-                        }
-                    case .failure:
-                        ProgressHUD.shared.view = self?.view ?? UIView()
-                        ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-                    }
+            UserManager.shared.fetchMembersData(membersId: group?.leaveMembers ?? []) {  [weak self] result in
+                switch result {
+                case .success(let userData):
+                    self?.group?.leaveMemberData = userData
+                case .failure:
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
             }
         }
@@ -128,13 +113,15 @@ class CustomGroupViewController: BaseViewController {
         groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
         
         groupDetailView.personalFinalPaidLabel.text = "你的總支出為："
-        detectParticipantUser()
+        hideAddItemButton()
     }
     
     @objc func pressAddItem() {
         if group?.status == GroupStatus.active.typeInt {
             let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-            guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
+            guard let addItemViewController = storyBoard.instantiateViewController(
+                withIdentifier: String(describing: AddItemViewController.self)
+            ) as? AddItemViewController else { return }
             addItemViewController.memberId = group?.member
             addItemViewController.memberData = users
             addItemViewController.groupData = group
@@ -148,8 +135,9 @@ class CustomGroupViewController: BaseViewController {
     
     @objc func pressChartButton() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let chartViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ChartViewController.self)) as? ChartViewController else { return }
-//        chartViewController.memberExpense = memberExpense
+        guard let chartViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: ChartViewController.self)
+        ) as? ChartViewController else { return }
         chartViewController.memberExpense = group?.memberExpense ?? []
         chartViewController.userData = users
         chartViewController.blackList = blockList
@@ -159,12 +147,14 @@ class CustomGroupViewController: BaseViewController {
     
     @objc func pressSettleUp() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let settleUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SettleUpViewController.self)) as? SettleUpViewController else { return }
+        guard let settleUpViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: SettleUpViewController.self)
+        ) as? SettleUpViewController else { return }
         
         settleUpViewController.groupData = group
         settleUpViewController.memberExpense = group?.memberExpense ?? []
         settleUpViewController.userData = users
-        settleUpViewController.expense = expense
+        settleUpViewController.expense = personalExpense
         settleUpViewController.blackList = blockList
         settleUpViewController.leaveMemberData = group?.leaveMemberData ?? []
         self.show(settleUpViewController, sender: nil)
@@ -174,7 +164,9 @@ class CustomGroupViewController: BaseViewController {
         self.view.addSubview(itemTableView)
         setTableViewConstraint()
         
-        itemTableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
+        itemTableView.register(
+            UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil),
+            forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         itemTableView.dataSource = self
         itemTableView.delegate = self
         
@@ -195,7 +187,16 @@ class CustomGroupViewController: BaseViewController {
     }
     
     func pressClosedGroup() {
-        GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "")
+        GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "") { [weak self] result in
+            switch result {
+            case .success:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showSuccess(text: "成功封存群組")
+            case .failure:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "封存群組失敗，請稍後再試")
+            }
+        }
         self.navigationController?.popToRootViewController(animated: true)
     }
     
@@ -211,7 +212,7 @@ class CustomGroupViewController: BaseViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-    func disableCloseGroup() {
+    func disableCloseGroupButton() {
         let alertController = UIAlertController(title: "群組已封存", message: "不可重複封存群組", preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
 
@@ -222,27 +223,21 @@ class CustomGroupViewController: BaseViewController {
     func setSubscribeButton() {
         view.addSubview(subscribeButton)
         setSubscribeButtonConstraint()
-        
-        if group?.type == GroupType.multipleUsers.typeInt {
-            subscribeButton.isHidden = true
-        } else if group?.type == GroupType.personal.typeInt && group?.creator != currentUserId {
-            subscribeButton.isHidden = true
-        } else {
-            subscribeButton.isHidden = false
-        }
-        
         subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
         subscribeButton.setTitle("設定週期", for: .normal)
         subscribeButton.tintColor = .greenWhite
         subscribeButton.setTitleColor(.greenWhite, for: .normal)
         subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(subscribeButton)
+        hideSubscribeButton()
     }
     
     @objc func pressSubscribe() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let subscribeViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: SubscribeViewController.self)) as? SubscribeViewController else { return }
+                storyBoard.instantiateViewController(
+                    withIdentifier: String(describing: SubscribeViewController.self)
+                ) as? SubscribeViewController else { return }
         subscribeViewController.memberId = group?.member
         subscribeViewController.memberData = users
         subscribeViewController.groupData = group
@@ -255,23 +250,17 @@ class CustomGroupViewController: BaseViewController {
             self?.getItemData()
         }
     }
-// MARK: - Change new way to get data
+    
     func getItemData() {
         ItemManager.shared.fetchGroupItemData(groupId: group?.groupId ?? "") { [weak self] result in
             switch result {
             case .success(let items):
-                if items.isEmpty == true {
-                    self?.removeAnimation()
-                    self?.noDataView.noDataLabel.isHidden = false
-                } else {
-                    self?.noDataView.noDataLabel.isHidden = true
-                }
+                self?.hideNoDataLabel(items)
                 self?.items = items
                 
                 self?.getItemDetail()
 
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+            case .failure:
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
             }
@@ -286,10 +275,9 @@ class CustomGroupViewController: BaseViewController {
             group.enter()
             
             firstQueue.async(group: group) {
-                ItemManager.shared.fetchPaidItemsExpense(itemId: item.itemId) { [weak self] result in
+                ItemManager.shared.fetchPaidItemExpense(itemId: item.itemId) { [weak self] result in
                     switch result {
                     case .success(let items):
-//                        self?.paidItems.append(items)
                         self?.items[index].paidInfo = items
                     case .failure:
                         ProgressHUD.shared.view = self?.view ?? UIView()
@@ -306,10 +294,9 @@ class CustomGroupViewController: BaseViewController {
         for (index, item) in self.items.enumerated() {
             group.enter()
             secondQueue.async(group: group) {
-                ItemManager.shared.fetchInvolvedItemsExpense(itemId: item.itemId) { [weak self] result in
+                ItemManager.shared.fetchInvolvedItemExpense(itemId: item.itemId) { [weak self] result in
                     switch result {
                     case .success(let items):
-//                        self?.involvedItems.append(items)
                         self?.items[index].involedInfo = items
                     case .failure:
                         ProgressHUD.shared.view = self?.view ?? UIView()
@@ -328,23 +315,17 @@ class CustomGroupViewController: BaseViewController {
             self.removeAnimation()
         }
     }
-// MARK: - Bugs of new user get into groups, can't fetch data
+    
     func getMemberExpense() {
         group?.memberExpense = []
-        GroupManager.shared.fetchMemberExpense(groupId: group?.groupId ?? "", members: group?.member ?? []) { [weak self] result in
+        GroupManager.shared.fetchMemberExpense(
+            groupId: group?.groupId ?? "",
+            members: group?.member ?? []
+        ) { [weak self] result in
             switch result {
             case .success(let expense):
-//                self?.memberExpense = expense
                 self?.group?.memberExpense = expense
-                let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
-                if personalExpense.isEmpty == false {
-                    self?.expense = personalExpense[0].allExpense
-                }
-                let allExpense = expense.map { $0.allExpense }
-                self?.allExpense = 0
-                for member in allExpense {
-                    self?.allExpense += abs(member)
-                }
+                self?.getExpense(expense)
             case .failure:
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
@@ -352,7 +333,19 @@ class CustomGroupViewController: BaseViewController {
         }
     }
     
-    func detectParticipantUser() {
+    fileprivate func getExpense(_ expense: ([MemberExpense])) {
+        let userExpense = expense.filter { $0.userId == (self.currentUserId) }
+        if userExpense.isEmpty == false {
+            self.personalExpense = userExpense[0].allExpense
+        }
+        let allExpense = expense.map { $0.allExpense }
+        self.membersExpense = 0
+        for member in allExpense {
+            self.membersExpense += abs(member)
+        }
+    }
+    
+    func hideAddItemButton() {
         if group?.type == GroupType.personal.typeInt && currentUserId != group?.creator {
             groupDetailView.addExpenseButton.isEnabled = false
             groupDetailView.addExpenseButton.isHidden = true
@@ -360,7 +353,6 @@ class CustomGroupViewController: BaseViewController {
     }
     
     func detectSubscription() {
-//        let nowTime = Date().timeIntervalSince1970
         if group?.type == GroupType.personal.typeInt {
             SubscriptionManager.shared.fetchSubscriptionData(groupId: group?.groupId ?? "") { [weak self] result  in
                 switch result {
@@ -383,14 +375,15 @@ class CustomGroupViewController: BaseViewController {
         let nowTime = Date().timeIntervalSince1970
         if (subsriptions.count != 0) && subsriptions[index].startTime <= nowTime {
             countSubscriptiontime(index: index)
-//            subscriptionCreatedTime = subsriptions[index].startTime
-            SubscriptionManager.shared.updateSubscriptionData(documentId: subsriptions[index].doucmentId,
-                                                              newStartTime: subscriptionCreatedTime ?? 0)
-            SubscriptionManager.shared.fetchSubscriptionInvolvedData(documentId: subsriptions[index].doucmentId) {
-                [weak self] result in
+            SubscriptionManager.shared.updateSubscriptionData(
+                documentId: subsriptions[index].doucmentId,
+                newStartTime: subscriptionCreatedTime ?? 0)
+            SubscriptionManager.shared.fetchSubscriptionInvolvedData(
+                documentId: subsriptions[index].doucmentId) { [weak self] result in
                 switch result {
                 case .success(let subscriptionMember):
-                    self?.subscriptInvolvedItem = subscriptionMember
+//                    self?.subscriptInvolvedItem = subscriptionMember
+                    self?.subsriptions[index].subscriptionMember = subscriptionMember
                     self?.addSubscriptionItem(index: index)
                 case .failure:
                     ProgressHUD.shared.view = self?.view ?? UIView()
@@ -457,9 +450,10 @@ class CustomGroupViewController: BaseViewController {
                 }
             }
             
-            for user in 0..<(self?.subscriptInvolvedItem.count ?? 0) {
-                ItemManager.shared.addInvolvedInfo(involvedUserId: self?.subscriptInvolvedItem[user].involvedUser ?? "",
-                                                   price: self?.subscriptInvolvedItem[user].involvedPrice ?? 0,
+            var subscriptInvolvedItem = self?.subsriptions[index].subscriptionMember
+            for user in 0..<(subscriptInvolvedItem?.count ?? 0) {
+                ItemManager.shared.addInvolvedInfo(involvedUserId: subscriptInvolvedItem?[user].involvedUser ?? "",
+                                                   price: subscriptInvolvedItem?[user].involvedPrice ?? 0,
                                                    itemId: itemId,
                                                    createdTime: self?.subsriptions[index].startTime ?? 0) { [weak self] result in
                     switch result {
@@ -488,9 +482,10 @@ class CustomGroupViewController: BaseViewController {
             }
         }
         
-        for user in 0..<self.subscriptInvolvedItem.count {
-            GroupManager.shared.updateMemberExpense(userId: self.subscriptInvolvedItem[user].involvedUser,
-                                                    newExpense: 0 - self.subscriptInvolvedItem[user].involvedPrice,
+        var subscriptInvolvedItem = self.subsriptions[index].subscriptionMember
+        for user in 0..<(subscriptInvolvedItem?.count ?? 0) {
+            GroupManager.shared.updateMemberExpense(userId: subscriptInvolvedItem?[user].involvedUser ?? "",
+                                                    newExpense: 0 - (subscriptInvolvedItem?[user].involvedPrice ?? 0),
                                                     groupId: group?.groupId ?? "") { result in
                 switch result {
                 case .success:
@@ -624,7 +619,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         itemDetailViewController.groupData = group
         itemDetailViewController.leaveMemberData = group?.leaveMemberData ?? []
         itemDetailViewController.blackList = blockList
-        itemDetailViewController.personalExpense = expense
+        itemDetailViewController.personalExpense = personalExpense
         
         self.show(itemDetailViewController, sender: nil)
     }
@@ -654,17 +649,16 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
                 guard let detailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: GroupDetailViewController.self)) as? GroupDetailViewController else { return }
                 detailViewController.groupData = self.group
                 detailViewController.userData = self.users
-                detailViewController.personalExpense = self.expense
+                detailViewController.personalExpense = self.personalExpense
                 detailViewController.blackList = self.blockList
-                detailViewController.memberExpense = self.allExpense 
+                detailViewController.memberExpense = self.membersExpense 
 
                 self.show(detailViewController, sender: nil)
             }
             
             let closeAction = UIAction(title: "封存群組", image: UIImage(systemName: "eye.slash")) { [weak self] action in
-                
                 if self?.group?.status == GroupStatus.inActive.typeInt {
-                    self?.disableCloseGroup()
+                    self?.disableCloseGroupButton()
                 } else {
                     self?.confirmCloseGroupAlert()
                 }
@@ -677,26 +671,23 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
 }
 
 extension CustomGroupViewController {
+    
     func setNoDataView() {
         self.view.addSubview(noDataView)
         noDataView.noDataLabel.text = "群組內尚未新增款項"
-        noDataView.translatesAutoresizingMaskIntoConstraints = false
-        noDataView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
-        noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        setNoDataViewConstraint()
     }
     
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: -0, width: UIScreen.width, height: UIScreen.height))
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         view.addSubview(mask)
         
-        reportView = ReportView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.width, height: 300))
+        reportView = ReportView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
         reportView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
         
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.reportView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.width, height: 300)
+            self.reportView.frame = CGRect(x: 0, y: UIScreen.height - 300, width: UIScreen.width, height: 300)
         }, completion: nil)
         view.addSubview(reportView)
         
@@ -761,10 +752,8 @@ extension CustomGroupViewController {
                                                   userId: self.currentUserId) { result in
                 switch result {
                 case .success:
-                    print("leave group")
                     isLeaveGroup = true
                 case .failure:
-                    print("remove group member failed")
                     isLeaveGroup = false
                 }
                 group.leave()
@@ -779,10 +768,8 @@ extension CustomGroupViewController {
                                                    userId: self.currentUserId) { result in
                 switch result {
                 case .success:
-                    print("leave group")
                     isLeaveGroup = true
                 case .failure:
-                    print("remove member expense failed")
                     isLeaveGroup = false
                 }
                 group.leave()
@@ -797,10 +784,8 @@ extension CustomGroupViewController {
                                                userId: self.currentUserId) { result in
                 switch result {
                 case .success:
-                    print("leave group")
                     isLeaveGroup = true
                 case .failure:
-                    print("remove member expense failed")
                     isLeaveGroup = false
                 }
                 group.leave()
@@ -820,7 +805,7 @@ extension CustomGroupViewController {
     }
     
     func detectUserExpense() {
-        if expense == 0 {
+        if personalExpense == 0 {
             leaveGroup()
         } else {
             rejectLeaveGroupAlert()
@@ -847,6 +832,25 @@ extension CustomGroupViewController {
 }
 
 extension CustomGroupViewController {
+    fileprivate func hideNoDataLabel(_ items: ([ItemData])) {
+        if items.isEmpty == true {
+            removeAnimation()
+            noDataView.noDataLabel.isHidden = false
+        } else {
+            noDataView.noDataLabel.isHidden = true
+        }
+    }
+    
+    fileprivate func hideSubscribeButton() {
+        if group?.type == GroupType.multipleUsers.typeInt {
+            subscribeButton.isHidden = true
+        } else if group?.type == GroupType.personal.typeInt && group?.creator != currentUserId {
+            subscribeButton.isHidden = true
+        } else {
+            subscribeButton.isHidden = false
+        }
+    }
+    
     fileprivate func setGroupDetailViewConstraint() {
         groupDetailView.translatesAutoresizingMaskIntoConstraints = false
         groupDetailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
@@ -869,5 +873,13 @@ extension CustomGroupViewController {
         subscribeButton.widthAnchor.constraint(equalToConstant: UIScreen.width/3 - 10).isActive = true
         subscribeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+    }
+    
+    fileprivate func setNoDataViewConstraint() {
+        noDataView.translatesAutoresizingMaskIntoConstraints = false
+        noDataView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
+        noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }   
