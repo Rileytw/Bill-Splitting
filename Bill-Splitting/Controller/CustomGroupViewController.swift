@@ -16,22 +16,15 @@ class CustomGroupViewController: BaseViewController {
     let subscribeButton = UIButton()
     var noDataView = NoDataView(frame: .zero)
     
-    var reportView = ReportView()
-    var reportContent: String?
-    
     var group: GroupData?
     
-    var memberName: [String] = []
-    var userData: [UserData] = []
-    var leaveMemberData: [UserData] = []
-    var itemData: [ItemData] = []
-    var item: ItemData?
+    var users: [UserData] = []
+    var items: [ItemData] = []
     
-    var paidItem: [[ExpenseInfo]] = []
-    var involvedItem: [[ExpenseInfo]] = []
+    var reportView = ReportView()
+    var reportContent: String?
+    var reportItem: ItemData?
 
-//    var indexOfItem: Int = -1
-    
     var subscriptInvolvedItem: [SubscriptionMember] = []
     
     var expense: Double? {
@@ -46,7 +39,6 @@ class CustomGroupViewController: BaseViewController {
         }
     }
     
-    var memberExpense: [MemberExpense] = []
     var allExpense: Double = 0
     
     var subsriptions: [Subscription] = []
@@ -73,8 +65,7 @@ class CustomGroupViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
-        userData.removeAll()
-        leaveMemberData.removeAll()
+        users.removeAll()
         
         getItemData()
         getLeaveMemberData()
@@ -96,12 +87,11 @@ class CustomGroupViewController: BaseViewController {
             UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
                 switch result {
                 case .success(let userData):
-                    self?.memberName.append(userData?.userName ?? "")
+                    self?.group?.member.append(userData?.userName ?? "")
                     if let userData = userData {
-                        self?.userData.append(userData)
+                        self?.users.append(userData)
                     }
-                case .failure(let error):
-//                    print("Error decoding userData: \(error)")
+                case .failure:
                     ProgressHUD.shared.view = self?.view ?? UIView()
                     ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
                 }
@@ -110,16 +100,16 @@ class CustomGroupViewController: BaseViewController {
     }
     
     func getLeaveMemberData() {
+        group?.leaveMemberData = []
         if group?.leaveMembers != nil {
             group?.leaveMembers?.forEach { member in
                 UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
                     switch result {
                     case .success(let userData):
                         if let userData = userData {
-                            self?.leaveMemberData.append(userData)
+                            self?.group?.leaveMemberData?.append(userData)
                         }
-                    case .failure(let error):
-//                        print("Error decoding userData: \(error)")
+                    case .failure:
                         ProgressHUD.shared.view = self?.view ?? UIView()
                         ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                     }
@@ -146,7 +136,7 @@ class CustomGroupViewController: BaseViewController {
             let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
             guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
             addItemViewController.memberId = group?.member
-            addItemViewController.memberData = userData
+            addItemViewController.memberData = users
             addItemViewController.groupData = group
             addItemViewController.blackList = blockList
             addItemViewController.modalPresentationStyle = .fullScreen
@@ -159,8 +149,9 @@ class CustomGroupViewController: BaseViewController {
     @objc func pressChartButton() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let chartViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ChartViewController.self)) as? ChartViewController else { return }
-        chartViewController.memberExpense = memberExpense
-        chartViewController.userData = userData
+//        chartViewController.memberExpense = memberExpense
+        chartViewController.memberExpense = group?.memberExpense ?? []
+        chartViewController.userData = users
         chartViewController.blackList = blockList
         chartViewController.modalPresentationStyle = .fullScreen
         self.present(chartViewController, animated: true, completion: nil)
@@ -171,11 +162,11 @@ class CustomGroupViewController: BaseViewController {
         guard let settleUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SettleUpViewController.self)) as? SettleUpViewController else { return }
         
         settleUpViewController.groupData = group
-        settleUpViewController.memberExpense = memberExpense
-        settleUpViewController.userData = userData
+        settleUpViewController.memberExpense = group?.memberExpense ?? []
+        settleUpViewController.userData = users
         settleUpViewController.expense = expense
         settleUpViewController.blackList = blockList
-        settleUpViewController.leaveMemberData = leaveMemberData
+        settleUpViewController.leaveMemberData = group?.leaveMemberData ?? []
         self.show(settleUpViewController, sender: nil)
     }
     
@@ -197,7 +188,7 @@ class CustomGroupViewController: BaseViewController {
         if sender.state == .began {
             let touchPoint = sender.location(in: itemTableView)
             if let indexPath = itemTableView.indexPathForRow(at: touchPoint) {
-                item = itemData[indexPath.row]
+                reportItem = items[indexPath.row]
                 revealBlockView()
             }
         }
@@ -253,14 +244,14 @@ class CustomGroupViewController: BaseViewController {
         guard let subscribeViewController =
                 storyBoard.instantiateViewController(withIdentifier: String(describing: SubscribeViewController.self)) as? SubscribeViewController else { return }
         subscribeViewController.memberId = group?.member
-        subscribeViewController.memberData = userData
+        subscribeViewController.memberData = users
         subscribeViewController.groupData = group
         subscribeViewController.blackList = blockList
         self.present(subscribeViewController, animated: true, completion: nil)
     }
     
     func listenToNewItem() {
-        ItemManager.shared.listenForNotification(groupId: group?.groupId ?? "") { [weak self]  in
+        ItemManager.shared.listenForNotification(groupId: group?.groupId ?? "") { [weak self] in
             self?.getItemData()
         }
     }
@@ -275,7 +266,7 @@ class CustomGroupViewController: BaseViewController {
                 } else {
                     self?.noDataView.noDataLabel.isHidden = true
                 }
-                self?.itemData = items
+                self?.items = items
                 
                 self?.getItemDetail()
 
@@ -291,16 +282,16 @@ class CustomGroupViewController: BaseViewController {
         let group = DispatchGroup()
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         
-        for item in self.itemData {
+        for (index, item) in self.items.enumerated() {
             group.enter()
             
             firstQueue.async(group: group) {
                 ItemManager.shared.fetchPaidItemsExpense(itemId: item.itemId) { [weak self] result in
                     switch result {
                     case .success(let items):
-                        self?.paidItem.append(items)
-                    case .failure(let error):
-//                        print("Error decoding userData: \(error)")
+//                        self?.paidItems.append(items)
+                        self?.items[index].paidInfo = items
+                    case .failure:
                         ProgressHUD.shared.view = self?.view ?? UIView()
                         ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                         
@@ -312,15 +303,15 @@ class CustomGroupViewController: BaseViewController {
        
         let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         
-        for  item in self.itemData {
+        for (index, item) in self.items.enumerated() {
             group.enter()
             secondQueue.async(group: group) {
                 ItemManager.shared.fetchInvolvedItemsExpense(itemId: item.itemId) { [weak self] result in
                     switch result {
                     case .success(let items):
-                        self?.involvedItem.append(items)
-                    case .failure(let error):
-//                        print("Error decoding userData: \(error)")
+//                        self?.involvedItems.append(items)
+                        self?.items[index].involedInfo = items
+                    case .failure:
                         ProgressHUD.shared.view = self?.view ?? UIView()
                         ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                     }
@@ -339,10 +330,12 @@ class CustomGroupViewController: BaseViewController {
     }
 // MARK: - Bugs of new user get into groups, can't fetch data
     func getMemberExpense() {
+        group?.memberExpense = []
         GroupManager.shared.fetchMemberExpense(groupId: group?.groupId ?? "", members: group?.member ?? []) { [weak self] result in
             switch result {
             case .success(let expense):
-                self?.memberExpense = expense
+//                self?.memberExpense = expense
+                self?.group?.memberExpense = expense
                 let personalExpense = expense.filter { $0.userId == (self?.currentUserId ?? "") }
                 if personalExpense.isEmpty == false {
                     self?.expense = personalExpense[0].allExpense
@@ -352,8 +345,7 @@ class CustomGroupViewController: BaseViewController {
                 for member in allExpense {
                     self?.allExpense += abs(member)
                 }
-            case .failure(let error):
-//                print("Error decoding userData: \(error)")
+            case .failure:
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
@@ -379,8 +371,7 @@ class CustomGroupViewController: BaseViewController {
                             self?.getSubscription(index: indexOfSubscription)
                         }
                     }
-                case .failure(let error):
-//                    print("Error decoding userData: \(error)")
+                case .failure:
                     ProgressHUD.shared.view = self?.view ?? UIView()
                     ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
@@ -401,8 +392,7 @@ class CustomGroupViewController: BaseViewController {
                 case .success(let subscriptionMember):
                     self?.subscriptInvolvedItem = subscriptionMember
                     self?.addSubscriptionItem(index: index)
-                case .failure(let error):
-//                    print("Error decoding userData: \(error)")
+                case .failure:
                     ProgressHUD.shared.view = self?.view ?? UIView()
                     ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
                 }
@@ -474,7 +464,6 @@ class CustomGroupViewController: BaseViewController {
                                                    createdTime: self?.subsriptions[index].startTime ?? 0) { [weak self] result in
                     switch result {
                     case .success:
-                        print("success")
                         self?.getItemData()
                     case .failure(let error):
                         print(error)
@@ -534,7 +523,7 @@ class CustomGroupViewController: BaseViewController {
 
 extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemData.count
+        return items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -545,19 +534,22 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
         
-        let item = itemData[indexPath.row]
+        let item = items[indexPath.row]
         var paid: ExpenseInfo?
-        for index in 0..<paidItem.count {
-            if paidItem[index][0].itemId == item.itemId {
-                paid = paidItem[index][0]
+
+        for index in 0..<items.count {
+            if items[index].paidInfo?[0].itemId == item.itemId {
+                paid = items[index].paidInfo?[0]
                 break
             }
         }
+        
         var involves = [ExpenseInfo]()
         var involved: ExpenseInfo?
-        for index in 0..<involvedItem.count {
-            involves = involvedItem[index]
-            for involve in  0..<involves.count {
+        
+        for index in 0..<items.count {
+            involves = items[index].involedInfo ?? []
+            for  involve in 0..<involves.count {
                 if involves[involve].itemId == item.itemId && involves[involve].userId == currentUserId {
                     involved = involves[involve]
                     break
@@ -626,11 +618,11 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let itemDetailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemDetailViewController.self)) as? ItemDetailViewController else { return }
         
-        let item = itemData[indexPath.row]
+        let item = items[indexPath.row]
         itemDetailViewController.itemId = item.itemId
-        itemDetailViewController.userData = userData
+        itemDetailViewController.userData = users
         itemDetailViewController.groupData = group
-        itemDetailViewController.leaveMemberData = leaveMemberData
+        itemDetailViewController.leaveMemberData = group?.leaveMemberData ?? []
         itemDetailViewController.blackList = blockList
         itemDetailViewController.personalExpense = expense
         
@@ -661,7 +653,7 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
                 let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
                 guard let detailViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: GroupDetailViewController.self)) as? GroupDetailViewController else { return }
                 detailViewController.groupData = self.group
-                detailViewController.userData = self.userData
+                detailViewController.userData = self.users
                 detailViewController.personalExpense = self.expense
                 detailViewController.blackList = self.blockList
                 detailViewController.memberExpense = self.allExpense 
@@ -731,7 +723,7 @@ extension CustomGroupViewController {
     
     func report() {
         let report = Report(groupId: group?.groupId ?? "",
-                            itemId: item?.itemId ?? "",
+                            itemId: reportItem?.itemId ?? "",
                             reportContent: reportContent)
         ReportManager.shared.updateReport(report: report) { [weak self] result in
             switch result {
