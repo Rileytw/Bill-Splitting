@@ -6,22 +6,41 @@
 //
 
 import UIKit
+import Lottie
 
 class BaseViewController: UIViewController {
 
+    private var animationView = AnimationView()
+    var mask = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        UINavigationBar.appearance().backgroundColor = .black // backgorund color with gradient
-        // or
-        UINavigationBar.appearance().barTintColor = .greenWhite  // solid color
+    }
+    
+    func setAnimation() {
+        mask.frame = CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height)
+        mask.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        view.addSubview(mask)
+
+        animationView = .init(name: "accountLoading")
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
-//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.greenWhite]
-//        self.navigationController?.navigationBar.tintColor = UIColor.greenWhite
-            
-        UIBarButtonItem.appearance().tintColor = .magenta
-        UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.greenWhite]
-        UITabBar.appearance().barTintColor = .yellow
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 0.75
+        animationView.play()
+    }
+    
+    func removeAnimation() {
+        mask.removeFromSuperview()
+        animationView.stop()
+        animationView.removeFromSuperview()
     }
     
 }
