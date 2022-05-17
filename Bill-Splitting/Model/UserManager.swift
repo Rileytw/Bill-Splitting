@@ -92,6 +92,43 @@ class UserManager {
         }
     }
     
+    func fetchMembersData(membersId: [String], completion: @escaping (Result<[UserData], Error>) -> Void) {
+        var users: [UserData] = []
+        var userData: UserData?
+        
+        for member in membersId {
+            
+            db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: member).getDocuments { (querySnapshot, error) in
+                
+                if let error = error {
+                    
+                    completion(.failure(error))
+                } else {
+                    
+                    for document in querySnapshot!.documents {
+                        
+                        do {
+                            if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                                userData = user
+                                if let userData = userData {
+                                    users.append(userData)
+                                    completion(.success(users))
+                                }
+                            }
+                        } catch {
+                            
+                            completion(.failure(error))
+                            return
+                        }
+                    }
+                }
+            }
+          
+        }
+        
+    }
+    
+    
     func fetchUsersData(completion: @escaping (Result<[UserData], Error>) -> Void) {
         db.collection(FirebaseCollection.user.rawValue).getDocuments() { (querySnapshot, error) in
             
