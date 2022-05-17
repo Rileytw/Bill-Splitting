@@ -6,21 +6,17 @@
 //
 
 import UIKit
-import Lottie
 
-class CustomGroupViewController: UIViewController {
+class CustomGroupViewController: BaseViewController {
     
+//  MARK: - Property
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
     let subscribeButton = UIButton()
-    let width = UIScreen.main.bounds.width
-    private var animationView = AnimationView()
     var noDataView = NoDataView(frame: .zero)
     
     var reportView = ReportView()
-    var mask = UIView()
-    let height = UIScreen.main.bounds.size.height
     var reportContent: String?
     
     var groupData: GroupData?
@@ -58,6 +54,7 @@ class CustomGroupViewController: UIViewController {
     
     var blackList = [String]()
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -69,7 +66,6 @@ class CustomGroupViewController: UIViewController {
         addMenu()
         setAnimation()
         navigationItem.title = "群組"
-//        getItemData()
         getMemberExpense()
         listenToNewItem()
     }
@@ -81,7 +77,6 @@ class CustomGroupViewController: UIViewController {
         leaveMemberData.removeAll()
         
         getItemData()
-//        getMemberExpense()
         getLeaveMemberData()
     }
     
@@ -95,6 +90,7 @@ class CustomGroupViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
+// MARK: - Method
     func getUserData() {
         groupData?.member.forEach { member in
             UserManager.shared.fetchUserData(friendId: member) { [weak self] result in
@@ -132,13 +128,10 @@ class CustomGroupViewController: UIViewController {
         }
     }
     
+   
     func setGroupDetailView() {
-        groupDetailView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(groupDetailView)
-        groupDetailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
-        groupDetailView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        groupDetailView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        groupDetailView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        setGroupDetailViewConstraint()
         
         groupDetailView.groupName.text = groupData?.groupName ?? ""
         groupDetailView.addExpenseButton.addTarget(self, action: #selector(pressAddItem), for: .touchUpInside)
@@ -189,11 +182,7 @@ class CustomGroupViewController: UIViewController {
     
     func setItemTableView() {
         self.view.addSubview(itemTableView)
-        itemTableView.translatesAutoresizingMaskIntoConstraints = false
-        itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
-        itemTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50).isActive = true
-        itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        setTableViewConstraint()
         
         itemTableView.register(UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
         itemTableView.dataSource = self
@@ -242,11 +231,7 @@ class CustomGroupViewController: UIViewController {
     
     func setSubscribeButton() {
         view.addSubview(subscribeButton)
-        subscribeButton.translatesAutoresizingMaskIntoConstraints = false
-        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5).isActive = true
-        subscribeButton.widthAnchor.constraint(equalToConstant: width/3 - 10).isActive = true
-        subscribeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        setSubscribeButtonConstraint()
         
         if groupData?.type == 1 {
             subscribeButton.isHidden = true
@@ -273,81 +258,13 @@ class CustomGroupViewController: UIViewController {
         self.present(subscribeViewController, animated: true, completion: nil)
     }
     
-//    func getItemData() {
-//        ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") { [weak self] result in
-//            switch result {
-//            case .success(let items):
-//                if items.isEmpty == true {
-//                    self?.removeAnimation()
-//                    self?.noDataView.noDataLabel.isHidden = false
-//                } else {
-//                    self?.noDataView.noDataLabel.isHidden = true
-//                }
-//                self?.itemData = items
-//                items.forEach { item in
-//                    self?.getItemDetail(itemId: item.itemId)
-//                }
-//            case .failure(let error):
-//                print("Error decoding userData: \(error)")
-//                ProgressHUD.shared.view = self?.view ?? UIView()
-//                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-//            }
-//        }
-//    }
-//
-//    func getItemDetail(itemId: String) {
-//        let group = DispatchGroup()
-//        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-//
-//        group.enter()
-//
-//        firstQueue.async(group: group) {
-//            ItemManager.shared.fetchPaidItemsExpense(itemId: itemId) { [weak self] result in
-//                switch result {
-//                case .success(let items):
-//                    self?.paidItem.append(items)
-//                case .failure(let error):
-//                    print("Error decoding userData: \(error)")
-//                    ProgressHUD.shared.view = self?.view ?? UIView()
-//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-//
-//                }
-//                group.leave()
-//            }
-//        }
-//
-//        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-//        group.enter()
-//        secondQueue.async(group: group) {
-//            ItemManager.shared.fetchInvolvedItemsExpense(itemId: itemId) { [weak self] result in
-//                switch result {
-//                case .success(let items):
-//                    self?.involvedItem.append(items)
-//                case .failure(let error):
-//                    print("Error decoding userData: \(error)")
-//                    ProgressHUD.shared.view = self?.view ?? UIView()
-//                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-//                }
-//                group.leave()
-//            }
-//
-//        }
-//
-//        group.notify(queue: DispatchQueue.main) {
-////            self.paidItem.sort { $0.map { $0.createdTime }[0]! > $1.map { $0.createdTime }[0]! }
-////            self.involvedItem.sort { $0.map { $0.createdTime }[0]! > $1.map { $0.createdTime }[0]! }
-//
-//            self.itemTableView.reloadData()
-//            self.removeAnimation()
-//        }
-//    }
+
     
     func listenToNewItem() {
         ItemManager.shared.listenForNotification(groupId: groupData?.groupId ?? "") { [weak self]  in
             self?.getItemData()
         }
     }
-//
 //    MARK: - Change new way to get data
     func getItemData() {
         ItemManager.shared.fetchGroupItemData(groupId: groupData?.groupId ?? "") { [weak self] result in
@@ -618,31 +535,6 @@ class CustomGroupViewController: UIViewController {
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
     }
-    
-    func setAnimation() {
-        mask.frame = CGRect(x: 0, y: 0, width: width, height: height)
-        mask.backgroundColor = UIColor.black.withAlphaComponent(0.2)
-        view.addSubview(mask)
-
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        mask.removeFromSuperview()
-        animationView.stop()
-        animationView.removeFromSuperview()
-    }
 }
 
 extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate {
@@ -825,7 +717,7 @@ extension CustomGroupViewController {
     }
     
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: -0, width: width, height: height))
+        mask = UIView(frame: CGRect(x: 0, y: -0, width: UIScreen.width, height: UIScreen.height))
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         view.addSubview(mask)
         
@@ -982,3 +874,29 @@ extension CustomGroupViewController {
         mask.removeFromSuperview()
     }
 }
+
+extension CustomGroupViewController {
+    fileprivate func setGroupDetailViewConstraint() {
+        groupDetailView.translatesAutoresizingMaskIntoConstraints = false
+        groupDetailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
+        groupDetailView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        groupDetailView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        groupDetailView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+    }
+    
+    fileprivate func setTableViewConstraint() {
+        itemTableView.translatesAutoresizingMaskIntoConstraints = false
+        itemTableView.topAnchor.constraint(equalTo: groupDetailView.bottomAnchor, constant: 10).isActive = true
+        itemTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50).isActive = true
+        itemTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        itemTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+    
+    fileprivate func setSubscribeButtonConstraint() {
+        subscribeButton.translatesAutoresizingMaskIntoConstraints = false
+        subscribeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5).isActive = true
+        subscribeButton.widthAnchor.constraint(equalToConstant: UIScreen.width/3 - 10).isActive = true
+        subscribeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+    }
+}   
