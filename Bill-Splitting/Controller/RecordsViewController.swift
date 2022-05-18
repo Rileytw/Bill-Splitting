@@ -254,14 +254,14 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                                          description: PaidDescription.settleUpInvolved,
                                          price: item.price)
                 itemsCell.paidDescription.textColor = .styleRed
-                itemsCell.setIcon(style: 0)
+//                itemsCell.setIcon(style: 0)
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: itemName ?? "",
                                          description: PaidDescription.paid,
                                          price: item.price)
                 itemsCell.paidDescription.textColor = .styleGreen
-                itemsCell.setIcon(style: 0)
+//                itemsCell.setIcon(style: 0)
             }
         } else {
             if itemName == "結帳" {
@@ -270,14 +270,14 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                                          description: PaidDescription.settleUpPaid,
                                          price: abs(item.price))
                 itemsCell.paidDescription.textColor = .styleGreen
-                itemsCell.setIcon(style: 1)
+//                itemsCell.setIcon(style: 1)
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: itemName ?? "",
                                          description: PaidDescription.involved,
                                          price: abs(item.price))
                 itemsCell.paidDescription.textColor = .styleRed
-                itemsCell.setIcon(style: 1)
+//                itemsCell.setIcon(style: 1)
             }
         }
       
