@@ -18,6 +18,9 @@ class AddItemViewController: BaseViewController {
     let tableView = UITableView()
     let typeLabel = UILabel()
     let dismissButton = UIButton()
+    var choosePaidMember = UILabel()
+    var chooseInvolvedMember = UILabel()
+    var addMoreButton = UIButton()
     
     var group: GroupData?
     
@@ -28,9 +31,6 @@ class AddItemViewController: BaseViewController {
     var paidPrice: Double?
     var involvedExpenseData: [ExpenseInfo] = []
     var involvedPrice: Double?
-    var choosePaidMember = UILabel()
-    var chooseInvolvedMember = UILabel()
-    var addMoreButton = UIButton()
     
     var isItemExist: Bool = false
     var itemData: ItemData?
@@ -49,7 +49,6 @@ class AddItemViewController: BaseViewController {
     var involvedTotalPrice: Double = 0
     
     var itemImage: UIImage?
-//    var imageUrl: String?
     
     var blockList = [String]()
     typealias EditItem = (String) -> Void
@@ -77,13 +76,17 @@ class AddItemViewController: BaseViewController {
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
     
-    func setAddItemView() {
-        view.addSubview(addItemView)
+    fileprivate func setAddItemViewConstaint() {
         addItemView.translatesAutoresizingMaskIntoConstraints = false
         addItemView.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 10).isActive = true
         addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+    }
+    
+    func setAddItemView() {
+        view.addSubview(addItemView)
+        setAddItemViewConstaint()
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
         
@@ -95,13 +98,17 @@ class AddItemViewController: BaseViewController {
         }
     }
     
-    func setTypePickerView() {
-        view.addSubview(typePickerView)
+    fileprivate func setPickerViewConstraint() {
         typePickerView.translatesAutoresizingMaskIntoConstraints = false
         typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
         typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
         typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setTypePickerView() {
+        view.addSubview(typePickerView)
+        setPickerViewConstraint()
         typePickerView.pickerViewData = typePickerViewData
         
         typePickerView.pickerView.dataSource = self
@@ -111,13 +118,17 @@ class AddItemViewController: BaseViewController {
         typePickerView.pickerView.tag = 0
     }
     
-    func setmemberPickerView() {
-        view.addSubview(choosePaidMember)
+    fileprivate func setMemberPickerViewConstraint() {
         choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
         choosePaidMember.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
         choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
         choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setmemberPickerView() {
+        view.addSubview(choosePaidMember)
+        setMemberPickerViewConstraint()
         choosePaidMember.text = "選擇付款人"
         choosePaidMember.textColor = UIColor.greenWhite
         if group?.type == 0 {
@@ -174,7 +185,9 @@ class AddItemViewController: BaseViewController {
     
     @objc func pressAddMore() {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let addMoreInfoViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddMoreInfoViewController.self)) as? AddMoreInfoViewController else { return }
+        guard let addMoreInfoViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: AddMoreInfoViewController.self)
+        ) as? AddMoreInfoViewController else { return }
         
         if isItemExist == true {
             addMoreInfoViewController.itemData = itemData
@@ -257,7 +270,6 @@ class AddItemViewController: BaseViewController {
                 setAnimation()
             }
         } else {
-            print("======== Cannot add groups")
             networkConnectAlert()
         }
     }
@@ -331,7 +343,6 @@ class AddItemViewController: BaseViewController {
                 createdTime: Double(NSDate().timeIntervalSince1970)) { result in
                 switch result {
                 case .success:
-                    print("success")
                     isDataUploadSucces = true
                     group.leave()
                 case .failure(let error):
@@ -358,7 +369,6 @@ class AddItemViewController: BaseViewController {
                                                    price: involvedPrice ?? 0, itemId: self.itemId ?? "", createdTime: Double(NSDate().timeIntervalSince1970)) { result in
                     switch result {
                     case .success:
-                        print("succedd")
                         isDataUploadSucces = true
                         group.leave()
                     case .failure(let error):
@@ -376,7 +386,6 @@ class AddItemViewController: BaseViewController {
             GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.group?.groupId ?? "") { result in
                 switch result {
                 case .success:
-                    print("succedd")
                     isDataUploadSucces = true
                     group.leave()
                 case .failure(let error):
@@ -404,7 +413,6 @@ class AddItemViewController: BaseViewController {
                                                         newExpense: 0 - involvedPrice, groupId: self.group?.groupId ?? "") { result in
                     switch result {
                     case .success:
-                        print("succedd")
                         isDataUploadSucces = true
                         group.leave()
                     case .failure(let error):
