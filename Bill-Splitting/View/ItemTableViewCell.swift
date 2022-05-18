@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 enum PaidDescription: String {
     case paid = "你已支付"
@@ -13,6 +14,12 @@ enum PaidDescription: String {
     case notInvolved = "你未參與"
     case settleUpPaid = "已收款"
     case settleUpInvolved = "已付款"
+}
+
+enum InvolvedType {
+    case paid
+    case involved
+    case notInvolved
 }
 
 class ItemTableViewCell: UITableViewCell {
@@ -39,19 +46,12 @@ class ItemTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-//        if selected {
-//                contentView.backgroundColor = UIColor.selectedColor
-//            } else {
-//                contentView.backgroundColor = UIColor.clear
-//            }
     }
     
     func createItemCell(time: String, name: String, description: PaidDescription, price: Double) {
         createdTime.text = time
         itemName.text = name
         paidDescription.text = description.rawValue
-//        priceLabel.text = price
         if price != 0 {
             priceLabel.text = "$" + String(format: "%.2f", price)
         } else {
@@ -59,14 +59,41 @@ class ItemTableViewCell: UITableViewCell {
         }
     }
     
-    func setIcon(style: Int) {
-
-//        if style == 0 {
-//            colorView.backgroundColor = .styleGreen
-//        } else if style == 1 {
-//            colorView.backgroundColor = .styleRed
-//        } else {
-//            colorView.backgroundColor = .greenWhite
-//        }
+    func mapItemCell(item: ItemData,
+                     time: String,
+                     paidPrice: Double,
+                     involvedPrice: Double,
+                     involvedType: InvolvedType) {
+        switch involvedType {
+        case .paid:
+            if item.itemName == "結帳" {
+                createItemCell(time: time, name: item.itemName,
+                               description: PaidDescription.settleUpInvolved, price: paidPrice)
+                paidDescription.textColor = .styleRed
+            } else {
+                createItemCell(time: time, name: item.itemName, description: PaidDescription.paid, price: paidPrice)
+                paidDescription.textColor = .styleGreen
+            }
+        case .involved:
+            if item.itemName == "結帳" {
+                createItemCell(time: time,
+                                         name: item.itemName,
+                                         description: PaidDescription.settleUpPaid,
+                                         price: involvedPrice)
+                paidDescription.textColor = .styleGreen
+            } else {
+                createItemCell(time: time,
+                                         name: item.itemName,
+                                         description: PaidDescription.involved,
+                                         price: involvedPrice)
+                paidDescription.textColor = .styleRed
+            }
+        case .notInvolved:
+            createItemCell(time: time,
+                                     name: item.itemName,
+                                     description: PaidDescription.notInvolved,
+                                     price: 0)
+            paidDescription.textColor = .greenWhite
+        }
     }
 }
