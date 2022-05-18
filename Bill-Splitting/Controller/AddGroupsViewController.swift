@@ -6,23 +6,18 @@
 //
 
 import UIKit
-import Lottie
 
 struct FriendSearchModel {
     var friendList: Friend
     var isSelected: Bool
 }
 
-class AddGroupsViewController: UIViewController {
-    
+class AddGroupsViewController: BaseViewController {
+// MARK: - Property
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var nameTextField = UITextField()
     let descriptionTextView = UITextView()
     var searchView = UIView()
-    var mask = UIView()
-    private var animationView = AnimationView()
-    
-    let fullScreenSize = UIScreen.main.bounds.size
     
     let typeLabel = UILabel()
     var typePickerView = BasePickerViewInTextField(frame: .zero)
@@ -36,7 +31,6 @@ class AddGroupsViewController: UIViewController {
     }
     
     let tableView = UITableView(frame: .zero, style: .plain)
-    var searchController: UISearchController!
     
     let inviteFriendButton = UIButton()
     let addGroupButton = UIButton()
@@ -44,13 +38,11 @@ class AddGroupsViewController: UIViewController {
     var member: [String] = []
     
     var isGroupExist: Bool = false
-    var groupData: GroupData?
-    var newGroupMember = [Friend]()
+    var group: GroupData?
     var filteredMembers: [FriendSearchModel] = []
-    
     var friends: [FriendSearchModel] = []
-    var newGroupFriends: [FriendSearchModel] = []
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -68,45 +60,19 @@ class AddGroupsViewController: UIViewController {
         hideUnchagableGroupInfo()
         networkDetect()
         setAnimation()
-//        listenFriendData()
         listenNewFriends()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchFriendData()
-//        UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
-//            switch result {
-//            case .success(let friend):
-//                self?.friendList.removeAll()
-//                self?.friendList = friend
-//                if self?.isGroupExist == true {
-//                    self?.selectedNewMember()
-//                }
-//                for index in 0..<friend.count {
-//                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
-//                    self?.friends.append(friendModel)
-//                }
-//                self?.setFilterFriendsData()
-//            case .failure(let error):
-//                print("Error decoding userData: \(error)")
-//                ProgressHUD.shared.view = self?.view ?? UIView()
-//                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-//            }
-//        }
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         ElementsStyle.styleTextField(nameTextField)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        friends.removeAll()
-        newGroupFriends.removeAll()
-//        NetworkStatus.shared.stopMonitoring()
-    }
-    
+// MARK: - Method
     func setAddGroupButton() {
         var buttonName: String
         if isGroupExist == true {
@@ -129,7 +95,6 @@ class AddGroupsViewController: UIViewController {
         } else {
             if NetworkStatus.shared.isConnected == true {
                 addMembers()
-                
                 if isGroupExist == true {
                     updateExistGroupData()
                     self.navigationController?.popToRootViewController(animated: true)
@@ -138,7 +103,6 @@ class AddGroupsViewController: UIViewController {
                 }
                 cleanData()
             } else {
-                print("======== Cannot add groups")
                 networkConnectAlert()
             }
         }
@@ -151,18 +115,10 @@ class AddGroupsViewController: UIViewController {
                 self?.friendList.removeAll()
                 self?.friends.removeAll()
                 self?.friendList = friend
-                if self?.isGroupExist == true {
-                    self?.selectedNewMember()
-                }
-                for index in 0..<friend.count {
-                    let friendModel = FriendSearchModel(friendList: friend[index], isSelected: false)
-                    self?.friends.append(friendModel)
-                }
+                self?.selectedNewMember()
                 self?.setFilterFriendsData()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+            case .failure:
+                self?.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -176,32 +132,29 @@ class AddGroupsViewController: UIViewController {
     }
     
     func addMembers() {
-        if isGroupExist == true {
-            let selectedMember = newGroupFriends.filter { $0.isSelected == true }
-            member = selectedMember.map { $0.friendList.userId }
-        } else {
-            let selectedMember = friends.filter { $0.isSelected == true }
-            member = selectedMember.map { $0.friendList.userId }
-        }
+        let selectedMember = friends.filter { $0.isSelected == true }
+        member = selectedMember.map { $0.friendList.userId }
     }
     
     func updateExistGroupData() {
-        guard let groupId = groupData?.groupId else { return }
+        guard let groupId = group?.groupId else { return }
         GroupManager.shared.updateGroupData(groupId: groupId,
                                             groupName: nameTextField.text ?? "",
                                             groupDescription: descriptionTextView.text,
                                             memberName: member)
-        self.member.forEach { member in
+        updateMemberExpense(groupId)
+    }
+    
+    fileprivate func updateMemberExpense(_ groupId: (String)) {
+        member.forEach { member in
             GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId) { [weak self] result in
                 switch result {
                 case .success:
                     if member == self?.member.last {
-                        ProgressHUD.shared.view = self?.view ?? UIView()
-                        ProgressHUD.showSuccess(text: "已新增群組")
+                        self?.showSuccess(text: "已新增群組")
                     }
                 case .failure:
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                    self?.showFailure(text: "發生錯誤，請稍後再試")
                 }
             }
         }
@@ -212,39 +165,24 @@ class AddGroupsViewController: UIViewController {
         
         var type: Int?
         if typePickerView.textField.text == GroupType.personal.typeName {
-            type = 0
+            type = GroupType.personal.typeInt
         } else {
-            type = 1
+            type = GroupType.multipleUsers.typeInt
         }
         
-        GroupManager.shared.addGroupData(name: nameTextField.text ?? "",
-                                         description: descriptionTextView.text,
-                                         creator: currentUserId,
-                                         type: type ?? 0,
-                                         status: 0,
-                                         member: self.member,
-                                         createdTime: Double(NSDate().timeIntervalSince1970)) {
-           [weak self] result in
+        GroupManager.shared.addGroupData(
+            name: nameTextField.text ?? "",
+            description: descriptionTextView.text,
+            creator: currentUserId,
+            type: type ?? 0,
+            status: 0,
+            member: self.member,
+            createdTime: Double(NSDate().timeIntervalSince1970)) { [weak self] result in
             switch result {
             case .success(let groupId):
-                self?.member.forEach { member in
-                    GroupManager.shared.addMemberExpenseData(userId: member, allExpense: 0, groupId: groupId) {
-                        [weak self] result in
-                        switch result {
-                        case .success:
-                            if member == self?.member.last {
-                                ProgressHUD.shared.view = self?.view ?? UIView()
-                                ProgressHUD.showSuccess(text: "已新增群組")
-                            }
-                        case .failure(let error):
-                            ProgressHUD.shared.view = self?.view ?? UIView()
-                            ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-                        }
-                    }
-                }
-            case .failure(let error):
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                self?.updateMemberExpense(groupId)
+            case .failure:
+                self?.showFailure(text: "發生錯誤，請稍後再試")
             }
         }
     }
@@ -263,51 +201,49 @@ class AddGroupsViewController: UIViewController {
     
     @objc func pressInviteFriendButton() {
         let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
-        let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
+        let inviteFriendViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: InviteFriendViewController.self))
         if #available(iOS 15.0, *) {
             if let sheet = inviteFriendViewController.sheetPresentationController {
                 sheet.detents = [.medium()]
                 sheet.preferredCornerRadius = 20
             }
         }
-
         self.present(inviteFriendViewController, animated: true, completion: nil)
     }
     
     func loseGroupInfoAlert(message: String) {
-        let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
-        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
-        alertController.addAction(confirmAction)
-        present(alertController, animated: true, completion: nil)
+        confirmAlert(title: "請填寫完整資訊", message: message)
     }
     
     func selectedNewMember() {
-        guard let groupMember = groupData?.member else {
-            return
-        }
-        newGroupMember = friendList
-        for member in 0..<friendList.count {
-            for index in 0..<groupMember.count {
-                if friendList[member].userId == groupMember[index] {
-                    newGroupMember.remove(at: newGroupMember.firstIndex(of: friendList[member])!)
+        var newGroupMember = friendList
+        if isGroupExist == true {
+            guard let groupMember = group?.member else { return }
+            for member in 0..<friendList.count {
+                for index in 0..<groupMember.count {
+                    if friendList[member].userId == groupMember[index] {
+                        newGroupMember.remove(at: newGroupMember.firstIndex(of: friendList[member])!)
+                    }
                 }
             }
+            friendList = newGroupMember
+            for index in 0..<newGroupMember.count {
+                let friendModel = FriendSearchModel(friendList: newGroupMember[index], isSelected: false)
+                filteredMembers.append(friendModel)
+            }
         }
-        for index in 0..<newGroupMember.count {
-            let friendModel = FriendSearchModel(friendList: newGroupMember[index], isSelected: false)
-            newGroupFriends.append(friendModel)
+        for index in 0..<friendList.count {
+            let friendModel = FriendSearchModel(friendList: friendList[index], isSelected: false)
+            friends.append(friendModel)
         }
         setFilterFriendsData()
-        tableView.reloadData()
     }
     
     func setSearchBar() {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 50))
         searchView.addSubview(searchBar)
-        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "A0B9BF")
-        searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
-        searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
-        searchBar.searchTextField.textColor = .styleBlue
+        ElementsStyle.styleSearchBar(searchBar)
         searchBar.delegate = self
         searchBar.showsCancelButton = true
         guard let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton else { return }
@@ -318,25 +254,15 @@ class AddGroupsViewController: UIViewController {
         if searchTerm.isEmpty {
             setFilterFriendsData()
         } else {
-            if isGroupExist == true {
-                filteredMembers = newGroupFriends.filter {
-                    $0.friendList.userName.localizedCaseInsensitiveContains(searchTerm)
-                }
-            } else {
-                filteredMembers = friends.filter {
-                    $0.friendList.userName.localizedCaseInsensitiveContains(searchTerm)
-                }
+            filteredMembers = friends.filter {
+                $0.friendList.userName.localizedCaseInsensitiveContains(searchTerm)
             }
             tableView.reloadData()
         }
     }
     
     func setFilterFriendsData() {
-        if isGroupExist == true {
-            filteredMembers = newGroupFriends
-        } else {
-            filteredMembers = friends
-        }
+        filteredMembers = friends
         tableView.reloadData()
         removeAnimation()
     }
@@ -344,14 +270,10 @@ class AddGroupsViewController: UIViewController {
     func networkDetect() {
         NetworkStatus.shared.startMonitoring()
         NetworkStatus.shared.netStatusChangeHandler = {
-            if NetworkStatus.shared.isConnected == true {
-                print("connected")
-            } else {
-                print("Not connected")
+            if NetworkStatus.shared.isConnected == false {
                 if !Thread.isMainThread {
                     DispatchQueue.main.async {
-                        ProgressHUD.shared.view = self.view
-                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                        self.showFailure(text: "網路未連線，請連線後再試")
                     }
                 }
             }
@@ -359,11 +281,7 @@ class AddGroupsViewController: UIViewController {
     }
     
     func networkConnectAlert() {
-        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
-
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
+        confirmAlert(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。")
     }
     
     func setTextField() {
@@ -383,10 +301,6 @@ class AddGroupsViewController: UIViewController {
         NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
-        
-//        if isGroupExist == true {
-//            nameTextField.text = groupData?.groupName
-//        }
     }
     
     func setTextView() {
@@ -396,13 +310,7 @@ class AddGroupsViewController: UIViewController {
         NSLayoutConstraint(item: descriptionTextView,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: (UIScreen.main.bounds.width)/3).isActive = true
         NSLayoutConstraint(item: descriptionTextView, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 60).isActive = true
-        descriptionTextView.layer.borderWidth = 1
-        descriptionTextView.layer.borderColor = UIColor.selectedColor.cgColor
-        descriptionTextView.backgroundColor = .clear
-        descriptionTextView.textColor = UIColor.greenWhite
-        descriptionTextView.font = UIFont.systemFont(ofSize: 16)
-        descriptionTextView.layer.cornerRadius = 10
-        descriptionTextView.textContainerInset = UIEdgeInsets(top: 5, left: 5, bottom: 0, right: 0)
+        ElementsStyle.styleTextView(descriptionTextView)
         
         let descriptionLabel = UILabel()
         descriptionLabel.text = "群組簡介"
@@ -411,13 +319,8 @@ class AddGroupsViewController: UIViewController {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: nameTextField, attribute: .top, multiplier: 1, constant: 25).isActive = true
         NSLayoutConstraint(item: descriptionLabel,attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
-        
         NSLayoutConstraint(item: descriptionLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
         NSLayoutConstraint(item: descriptionLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 100).isActive = true
-        
-//        if isGroupExist == true {
-//            descriptionTextView.text = groupData?.groupDescription
-//        }
     }
     
     func setTextFieldOfPickerView() {
@@ -441,11 +344,6 @@ class AddGroupsViewController: UIViewController {
         typePickerView.pickerView.dataSource = self
         typePickerView.pickerView.delegate = self
         typePickerView.textField.delegate = self
-        
-//        if isGroupExist == true {
-//            typePickerView.isHidden = true
-//            typeLabel.isHidden = true
-//        }
     }
     
     func setSelectMamberLabel() {
@@ -476,8 +374,6 @@ class AddGroupsViewController: UIViewController {
     func setInviteButton() {
         inviteFriendButton.setTitle("邀請好友", for: .normal)
         inviteFriendButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        inviteFriendButton.tintColor = .greenWhite
-        inviteFriendButton.setTitleColor(.greenWhite, for: .normal)
         ElementsStyle.styleSpecificButton(inviteFriendButton)
         view.addSubview(inviteFriendButton)
         inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
@@ -491,13 +387,13 @@ class AddGroupsViewController: UIViewController {
     
     func hideUnchagableGroupInfo() {
         if isGroupExist == true {
-            nameTextField.text = groupData?.groupName
-            descriptionTextView.text = groupData?.groupDescription
+            nameTextField.text = group?.groupName
+            descriptionTextView.text = group?.groupDescription
             
             typePickerView.isHidden = true
             typeLabel.isHidden = true
             
-            if groupData?.creator != currentUserId {
+            if group?.creator != currentUserId {
                 tableView.isHidden = true
             }
         }
@@ -509,32 +405,11 @@ class AddGroupsViewController: UIViewController {
         setSearchViewConstraint()
     }
     
-    
     func setSearchViewConstraint() {
         searchView.topAnchor.constraint(equalTo: selectMemberLabel.bottomAnchor, constant: 8).isActive = true
         searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         searchView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         searchView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-    }
-    
-    func setAnimation() {
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        animationView.stop()
-        animationView.removeFromSuperview()
     }
 }
 
@@ -580,10 +455,8 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
         addGroupsCell.friendNameLabel.text = filteredMembers[indexPath.row].friendList.userName
         
         if filteredMembers[indexPath.row].isSelected == true {
-//            cell.accessoryType = .checkmark
             addGroupsCell.selectedButton.isSelected = true
         } else {
-//            cell.accessoryType = .none
             addGroupsCell.selectedButton.isSelected = false
         }
         
@@ -592,18 +465,9 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         filteredMembers[indexPath.row].isSelected.toggle()
-        
-        if isGroupExist == true {
-            for index in 0..<newGroupFriends.count {
-                if newGroupFriends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
-                    newGroupFriends[index].isSelected.toggle()
-                }
-            }
-        } else {
-            for index in 0..<friends.count {
-                if friends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
-                    friends[index].isSelected.toggle()
-                }
+        for index in 0..<friends.count {
+            if friends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
+                friends[index].isSelected.toggle()
             }
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -611,18 +475,9 @@ extension AddGroupsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         filteredMembers[indexPath.row].isSelected.toggle()
-        
-        if isGroupExist == true {
-            for index in 0..<newGroupFriends.count {
-                if newGroupFriends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
-                    newGroupFriends[index].isSelected.toggle()
-                }
-            }
-        } else {
-            for index in 0..<friends.count {
-                if friends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
-                    friends[index].isSelected.toggle()
-                }
+        for index in 0..<friends.count {
+            if friends[index].friendList.userId == filteredMembers[indexPath.row].friendList.userId {
+                friends[index].isSelected.toggle()
             }
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
