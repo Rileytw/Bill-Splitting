@@ -86,6 +86,8 @@ class ElementsStyle {
 //        29A19C
         button.layer.cornerRadius = 18
         button.backgroundColor = UIColor(red: 227/255, green: 246/255, blue: 245/255, alpha: 0.5)
+        button.tintColor = .greenWhite
+        button.setTitleColor(.greenWhite, for: .normal)
     }
     
     static func styleTextField(_ textfield: UITextField) {        
