@@ -25,11 +25,7 @@ class BaseViewController: UIViewController {
 
         animationView = .init(name: "accountLoading")
         view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        setAnimationConstraint()
         
         animationView.contentMode = .scaleAspectFit
         animationView.loopMode = .loop
@@ -37,10 +33,36 @@ class BaseViewController: UIViewController {
         animationView.play()
     }
     
+    fileprivate func setAnimationConstraint() {
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+    }
+    
     func removeAnimation() {
         mask.removeFromSuperview()
         animationView.stop()
         animationView.removeFromSuperview()
     }
+ 
+    func showFailure(text: String) {
+        ProgressHUD.shared.view = self.view
+        ProgressHUD.showFailure(text: text)
+    }
     
+    func showSuccess(text: String) {
+        ProgressHUD.shared.view = self.view
+        ProgressHUD.showSuccess(text: text)
+    }
+    
+    func confirmAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title,
+                                                message: message,
+                                                preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
 }
