@@ -12,12 +12,9 @@ class SettleUpViewController: UIViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var currentUserName: String?
     var creator: UserData?
-    var groupData: GroupData?
-    var memberExpense: [MemberExpense] = []
-    var userData: [UserData] = []
+    var group: GroupData?
     var expense: Double?
-    var blackList = [String]()
-    var leaveMemberData: [UserData] = []
+    var blockList = [String]()
     
     let tableView = UITableView()
     
@@ -29,7 +26,7 @@ class SettleUpViewController: UIViewController {
         getCurrentUserName()
         checkLeaveMember()
         getCreatorData()
-        detectBlackListUser()
+        detectBlockListUser()
         setTableView()
         removeCreatorData()
     }
@@ -59,8 +56,10 @@ class SettleUpViewController: UIViewController {
     }
     
     func removeCreatorData() {
-        if groupData?.creator == currentUserId {
-            memberExpense = memberExpense.filter { $0.userId != currentUserId }
+        if let memberExpense = group?.memberExpense {
+            if group?.creator == currentUserId {
+                group?.memberExpense = memberExpense.filter { $0.userId != currentUserId }
+            }
         }
     }
     
@@ -79,18 +78,20 @@ class SettleUpViewController: UIViewController {
     }
     
     func getCreatorData() {
-        for member in userData where member.userId == groupData?.creator {
-            creator = member
+        if let userData = group?.memberData {
+            for member in userData where member.userId == group?.creator {
+                creator = member
+            }
         }
     }
     
-    func detectBlackListUser() {
-        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
-                                                        userData: userData)
-        userData = newUserData
+    func detectBlockListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList,
+                                                        userData: group?.memberData ?? [])
+        group?.memberData = newUserData
         
         guard let creatorName = creator?.userName else { return }
-        for user in blackList {
+        for user in blockList {
             if creator?.userId == user {
                 creator?.userName = creatorName + "（已封鎖）"
             }
@@ -98,20 +99,22 @@ class SettleUpViewController: UIViewController {
     }
     
     func checkLeaveMember() {
-        if leaveMemberData.isEmpty == false {
-            for index in 0..<leaveMemberData.count {
-                leaveMemberData[index].userName = leaveMemberData[index].userName + "（已離開群組）"
+        if let leaveMemberData = group?.leaveMemberData {
+            if leaveMemberData.isEmpty == false {
+                for index in 0..<leaveMemberData.count {
+                    group?.leaveMemberData?[index].userName = leaveMemberData[index].userName + "（已離開群組）"
+                }
+                
+                group?.memberData! += leaveMemberData
             }
-            
-            userData += leaveMemberData
         }
     }
 }
 
 extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if groupData?.creator == currentUserId {
-            return memberExpense.count
+        if group?.creator == currentUserId {
+            return group?.memberExpense?.count ?? 0
         } else {
             return 1
         }
@@ -126,21 +129,21 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         guard let settleUpCell = cell as? SettleUpTableViewCell,
               let expense = expense
         else { return cell }
-        let memberExpense = memberExpense[indexPath.row]
-        let memberData = userData.filter { $0.userId == memberExpense.userId }
+        let memberExpense = group?.memberExpense?[indexPath.row]
+        let memberData = group?.memberData?.filter { $0.userId == memberExpense?.userId }
         
-        if groupData?.creator == currentUserId {
-            let revealExpense = memberExpense.allExpense
-            if memberExpense.allExpense > 0 {
-                settleUpCell.price.text = " $ " + String(format: "%.2f", revealExpense)
-                settleUpCell.payerName.text = "\(currentUserName ?? "")"
-                settleUpCell.creditorName.text = "\(memberData[0].userName)"
-                
-            } else {
-//                settleUpCell.price.text = " $ \(abs(memberExpense.allExpense))"
-                settleUpCell.price.text = " $ " + String(format: "%.2f", abs(revealExpense))
-                settleUpCell.creditorName.text = "\(currentUserName ?? "")"
-                settleUpCell.payerName.text = "\(memberData[0].userName)"
+        if group?.creator == currentUserId {
+            if let revealExpense = memberExpense?.allExpense {
+                if (memberExpense?.allExpense ?? 0) > 0 {
+                    settleUpCell.price.text = " $ " + String(format: "%.2f", revealExpense)
+                    settleUpCell.payerName.text = "\(currentUserName ?? "")"
+                    settleUpCell.creditorName.text = "\(memberData?[0].userName ?? "")"
+                    
+                } else {
+                    settleUpCell.price.text = " $ " + String(format: "%.2f", abs(revealExpense))
+                    settleUpCell.creditorName.text = "\(currentUserName ?? "")"
+                    settleUpCell.payerName.text = "\(memberData?[0].userName ?? "")"
+                }
             }
         } else {
             if expense < 0 {
@@ -159,30 +162,23 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
-        guard let specificSettleUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SpecificSettleIUpViewController.self))
-                as? SpecificSettleIUpViewController else { return }
+        guard let specificSettleUpViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: SpecificSettleIUpViewController.self)
+        ) as? SpecificSettleIUpViewController else { return }
         
-        let memberExpense = memberExpense[indexPath.row]
-        let memberData = userData.filter { $0.userId == memberExpense.userId }
-        let userExpense = self.memberExpense.filter { $0.userId == currentUserId}
-        if groupData?.creator == currentUserId {
-            specificSettleUpViewController.userData = memberData[0]
-//            specificSettleUpViewController.memberExpense = memberExpense
-//            specificSettleUpViewController.groupId = groupData?.groupId
-//            specificSettleUpViewController.groupData = groupData
-//            specificSettleUpViewController.userExpense = userExpense
+        let memberExpense = group?.memberExpense?[indexPath.row]
+        let memberData = group?.memberData?.filter { $0.userId == memberExpense?.userId }
+        let userExpense = group?.memberExpense?.filter { $0.userId == currentUserId}
+        if group?.creator == currentUserId {
+            specificSettleUpViewController.userData = memberData?[0]
         } else {
             // MARK: - Bugs of not creator user
             specificSettleUpViewController.userData = creator
-//            specificSettleUpViewController.memberExpense = memberExpense
-//            specificSettleUpViewController.groupId = groupData?.groupId
-//            specificSettleUpViewController.groupData = groupData
-//            specificSettleUpViewController.userExpense = userExpense
         }
         specificSettleUpViewController.memberExpense = memberExpense
-        specificSettleUpViewController.groupId = groupData?.groupId
-        specificSettleUpViewController.groupData = groupData
-        specificSettleUpViewController.userExpense = userExpense
+        specificSettleUpViewController.groupId = group?.groupId
+        specificSettleUpViewController.groupData = group
+        specificSettleUpViewController.userExpense = userExpense ?? []
     
         self.show(specificSettleUpViewController, sender: nil)
     }

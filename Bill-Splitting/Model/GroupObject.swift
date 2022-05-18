@@ -22,6 +22,7 @@ struct GroupData: Codable {
     var leaveMembers: [String]?
     var leaveMemberData: [UserData]?
     var memberExpense: [MemberExpense]?
+    var memberData: [UserData]?
 }
 
 struct MemberExpense: Codable {

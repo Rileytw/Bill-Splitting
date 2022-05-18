@@ -591,9 +591,9 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
             let editAction = UIAction(title: "編輯", image: UIImage(systemName: "pencil")) { action in
                 let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
                 guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
-                addItemViewController.memberId = self.groupData?.member
-                addItemViewController.memberData = self.userData
-                addItemViewController.groupData = self.groupData
+//                addItemViewController.memberId = self.groupData?.member
+//                addItemViewController.memberData = self.userData
+                addItemViewController.group = self.groupData
                 addItemViewController.itemData = self.item
                 addItemViewController.isItemExist = true
                 addItemViewController.editingItem = { [weak self] newItemId in

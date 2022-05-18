@@ -6,9 +6,8 @@
 //
 
 import UIKit
-import Lottie
 
-class AddItemViewController: UIViewController {
+class AddItemViewController: BaseViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     let addItemView = AddItemView(frame: .zero)
@@ -20,18 +19,7 @@ class AddItemViewController: UIViewController {
     let typeLabel = UILabel()
     let dismissButton = UIButton()
     
-    let width = UIScreen.main.bounds.width
-    let height = UIScreen.main.bounds.height
-    private var animationView = AnimationView()
-    let mask = UIView()
-    
-    var groupData: GroupData?
-    var memberId: [String]?
-    var memberData: [UserData]? = [] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    var group: GroupData?
     
     var itemId: String?
     var paidItem: [[ExpenseInfo]] = []
@@ -63,7 +51,7 @@ class AddItemViewController: UIViewController {
     var itemImage: UIImage?
 //    var imageUrl: String?
     
-    var blackList = [String]()
+    var blockList = [String]()
     typealias EditItem = (String) -> Void
     var editingItem: EditItem?
     
@@ -132,7 +120,7 @@ class AddItemViewController: UIViewController {
         choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
         choosePaidMember.text = "選擇付款人"
         choosePaidMember.textColor = UIColor.greenWhite
-        if groupData?.type == 0 {
+        if group?.type == 0 {
             choosePaidMember.isHidden = true
         }
         
@@ -148,7 +136,7 @@ class AddItemViewController: UIViewController {
         memberPickerView.textField.delegate = self
         memberPickerView.pickerView.tag = 1
         
-        if groupData?.type == 0 {
+        if group?.type == 0 {
             memberPickerView.isHidden = true
             memberPickerView.heightAnchor.constraint(equalToConstant: 0).isActive = true
         }
@@ -248,7 +236,7 @@ class AddItemViewController: UIViewController {
                 addItemView.priceTextField.text == "" ||
                 typePickerView.textField.text == "" {
                 lossInfoAlert(message: "請確認是否填寫款項名稱、支出金額並選擇分款方式")
-            } else if memberPickerView.textField.text == "" && groupData?.type == GroupType.multipleUsers.typeInt {
+            } else if memberPickerView.textField.text == "" && group?.type == GroupType.multipleUsers.typeInt {
                 lossInfoAlert(message: "請確認是否選取付款人")
             } else if involvedExpenseData.isEmpty == true {
                 lossInfoAlert(message: "請確認是否選取參與人")
@@ -313,7 +301,7 @@ class AddItemViewController: UIViewController {
     }
     
     func addItem() {
-        ItemManager.shared.addItemData(groupId: groupData?.groupId ?? "",
+        ItemManager.shared.addItemData(groupId: group?.groupId ?? "",
                                        itemName: addItemView.itemNameTextField.text ?? "",
                                        itemDescription: itemDescription,
                                        createdTime: Double(NSDate().timeIntervalSince1970),
@@ -325,7 +313,7 @@ class AddItemViewController: UIViewController {
     
     func allItemInfoUpload() {
         var paidUserId: String?
-        if self.groupData?.type == 1 {
+        if self.group?.type == 1 {
             paidUserId = self.paidId
         } else {
             paidUserId = self.currentUserId
@@ -385,7 +373,7 @@ class AddItemViewController: UIViewController {
         let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
         group.enter()
         thirdQueue.async(group: group) {
-            GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.groupData?.groupId ?? "") { result in
+            GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.group?.groupId ?? "") { result in
                 switch result {
                 case .success:
                     print("succedd")
@@ -413,7 +401,7 @@ class AddItemViewController: UIViewController {
             group.enter()
             fourthQueue.async(group: group) {
                 GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
-                                                        newExpense: 0 - involvedPrice, groupId: self.groupData?.groupId ?? "") { result in
+                                                        newExpense: 0 - involvedPrice, groupId: self.group?.groupId ?? "") { result in
                     switch result {
                     case .success:
                         print("succedd")
@@ -437,7 +425,7 @@ class AddItemViewController: UIViewController {
                     self.editingItem?(self.itemId ?? "")
                 }
                 
-                ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
+                ItemManager.shared.addNotify(grpupId: self.group?.groupId ?? "") { result in
                     switch result {
                     case .success:
                         print("uplaod notification collection successfully")
@@ -475,7 +463,7 @@ class AddItemViewController: UIViewController {
         
         GroupManager.shared.updateMemberExpense(userId: paidUserId ,
                                                 newExpense: 0 - paidPrice,
-                                                groupId: groupData?.groupId ?? "") { result in
+                                                groupId: group?.groupId ?? "") { result in
             switch result {
             case .success:
                 print("succedd")
@@ -489,7 +477,7 @@ class AddItemViewController: UIViewController {
         for user in 0..<involvedExpense.count {
             GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
                                                     newExpense: involvedExpense[user].price,
-                                                    groupId: groupData?.groupId ?? "") { result in
+                                                    groupId: group?.groupId ?? "") { result in
                 switch result {
                 case .success:
                     print("succedd")
@@ -554,29 +542,10 @@ class AddItemViewController: UIViewController {
     }
     
     func detectBlackListUser() {
-        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
-                                                        userData: memberData ?? [])
-        memberData = newUserData
-    }
-    
-    func setAnimation() {
-        
-        mask.frame = CGRect(x: 0, y: 0, width: width, height: height)
-        mask.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        
-        animationView = .init(name: "upload")
-        animationView.frame = CGRect(x: width/2 - 75, y: height/2 - 75, width: 150, height: 150)
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        view.addSubview(mask)
-        view.addSubview(animationView)
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        mask.removeFromSuperview()
-        animationView.stop()
-        animationView.removeFromSuperview()
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList,
+                                                        userData: group?.memberData ?? [])
+        group?.memberData = newUserData
+        tableView.reloadData()
     }
 }
 
@@ -585,7 +554,7 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         if pickerView.tag == 0 {
             return typePickerViewData.count
         } else {
-            return memberData?.count ?? 1
+            return group?.memberData?.count ?? 1
         }
     }
     
@@ -597,7 +566,7 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         if pickerView.tag == 0 {
             return typePickerViewData[row]
         } else {
-            return memberData?[row].userName
+            return group?.memberData?[row].userName
         }
     }
     
@@ -606,16 +575,16 @@ extension AddItemViewController: UIPickerViewDelegate, UIPickerViewDataSource {
             tableView.reloadData()
             return typePickerView.textField.text = typePickerViewData[row]
         } else {
-            paidId = memberData?[row].userId
+            paidId = group?.memberData?[row].userId
             paidPrice = Double(addItemView.priceTextField.text ?? "0")
-            return memberPickerView.textField.text = memberData?[row].userName
+            return memberPickerView.textField.text = group?.memberData?[row].userName
         }
     }
 }
 
 extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return memberData?.count ?? 0
+        return group?.memberData?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -626,7 +595,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
         
         guard let memberCell = cell as? AddItemTableViewCell else { return cell }
         
-        memberCell.memberName.text = memberData?[indexPath.row].userName
+        memberCell.memberName.text = group?.memberData?[indexPath.row].userName
         
         if typePickerView.textField.text == SplitType.equal.label {
             if selectedIndexs.contains(indexPath.row) {
@@ -689,9 +658,9 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             involvedExpenseData.remove(at: index)
         } else {
             selectedIndexs.append(indexPath.row)
-            involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
+            involvedMemberName.append(group?.memberData?[indexPath.row].userName ?? "")
             
-            let involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
+            let involedExpense = ExpenseInfo(userId: group?.memberData?[indexPath.row].userId ?? "", price: 0)
             involvedExpenseData.append(involedExpense)
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -704,7 +673,7 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
         involvedPrice = Double(cell.priceTextField.text ?? "0")
         
         let name = cell.memberName.text
-        let selectedUser = memberData?.filter { $0.userName == name }
+        let selectedUser = group?.memberData?.filter { $0.userName == name }
         guard let id = selectedUser?[0].userId else { return }
         
         for index in 0..<involvedExpenseData.count {

@@ -16,7 +16,7 @@ class GroupDetailViewController: UIViewController {
     var userData: [UserData] = []
     var personalExpense: Double?
     var blackList = [String]()
-    var memberExpense: Double?
+    var memberExpense: Double = 0
     
     let fullScreenSize = UIScreen.main.bounds.size
     
@@ -28,6 +28,7 @@ class GroupDetailViewController: UIViewController {
         setAddGroupButton()
 //        hideLeaveButton()
         detectBlackListUser()
+        getMembersExpense()
     }
     
     func setTableView() {
@@ -58,6 +59,15 @@ class GroupDetailViewController: UIViewController {
             creatorLeaveAlert()
         } else {
             rejectLeaveGroupAlert()
+        }
+    }
+    
+    func getMembersExpense() {
+        guard let expense = groupData?.memberExpense else { return }
+        let allExpense = expense.map { $0.allExpense }
+        memberExpense = 0
+        for member in allExpense {
+            memberExpense += abs(member)
         }
     }
     

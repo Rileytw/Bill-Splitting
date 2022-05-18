@@ -10,22 +10,21 @@ import Charts
 
 class ChartViewController: UIViewController {
     
+    var group: GroupData?
     var creditLabel = UILabel()
     var debtLabel = UILabel()
     var dismissButton = UIButton()
     var creditChart = PieChart(frame: .zero)
     var debtChart = PieChart(frame: .zero)
-    var memberExpense: [MemberExpense] = []
+//    var memberExpense: [MemberExpense] = []
     var creditMember: [MemberExpense] = []
     var debtMember: [MemberExpense] = []
-    var userData = [UserData]()
+//    var userData = [UserData]()
     var member = [UserData]()
-    let height = UIScreen.main.bounds.height
-    var blackList = [String]()
+    var blockList = [String]()
     var noDataChartsView = NoDataChartsView()
     var mask = UIView()
-    let width = UIScreen.main.bounds.size.width
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
@@ -35,7 +34,7 @@ class ChartViewController: UIViewController {
         setDebtLabel()
         setDebtChart()
         getMemberData()
-        detectBlackListUser()
+        detectBlockListUser()
         detectCreditMember()
         detectDebtMember()
         setDismissButton()
@@ -43,13 +42,16 @@ class ChartViewController: UIViewController {
     }
     
     func getMemberData() {
-        for index in 0..<userData.count {
-            member += userData.filter { $0.userId == memberExpense[index].userId }
+        let memberExpense = group?.memberExpense
+        if let memberData = group?.memberData {
+            for index in 0..<memberData.count {
+                member += memberData.filter { $0.userId == memberExpense?[index].userId }
+            }
         }
     }
     
     func detectCreditMember() {
-        creditMember = memberExpense.filter { $0.allExpense > 0 }
+        creditMember = group?.memberExpense?.filter { $0.allExpense > 0 } ?? []
         var creditUser = [UserData]()
         
         for index in 0..<creditMember.count {
@@ -57,12 +59,16 @@ class ChartViewController: UIViewController {
         }
 
         for member in 0..<creditMember.count {
-            creditChart.pieChartDataEntries.append( PieChartDataEntry(value: creditMember[member].allExpense, label: creditUser[member].userName, icon: nil, data: nil))
-        }
+            creditChart.pieChartDataEntries.append(
+                PieChartDataEntry(value: creditMember[member].allExpense,
+                                  label: creditUser[member].userName,
+                                  icon: nil,
+                                  data: nil)
+            )}
     }
     
     func detectDebtMember() {
-        debtMember = memberExpense.filter { $0.allExpense < 0 }
+        debtMember = group?.memberExpense?.filter { $0.allExpense < 0 } ?? []
         var debtUser = [UserData]()
         
         for index in 0..<debtMember.count {
@@ -70,8 +76,11 @@ class ChartViewController: UIViewController {
         }
 
         for member in 0..<debtMember.count {
-            debtChart.pieChartDataEntries.append( PieChartDataEntry(value: abs(debtMember[member].allExpense), label: debtUser[member].userName, icon: nil, data: nil))
-        }
+            debtChart.pieChartDataEntries.append(
+                PieChartDataEntry(value: abs(debtMember[member].allExpense),
+                                  label: debtUser[member].userName, icon: nil,
+                                  data: nil)
+            )}
     }
     
     func detectData() {
@@ -86,7 +95,7 @@ class ChartViewController: UIViewController {
         creditChart.topAnchor.constraint(equalTo: creditLabel.bottomAnchor, constant: 10).isActive = true
         creditChart.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         creditChart.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        creditChart.heightAnchor.constraint(equalToConstant: height/2 - 100).isActive = true
+        creditChart.heightAnchor.constraint(equalToConstant: UIScreen.height/2 - 100).isActive = true
         
     }
     
@@ -96,7 +105,7 @@ class ChartViewController: UIViewController {
         debtChart.topAnchor.constraint(equalTo: debtLabel.bottomAnchor, constant: 10).isActive = true
         debtChart.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         debtChart.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        debtChart.heightAnchor.constraint(equalToConstant: height/2 - 100).isActive = true
+        debtChart.heightAnchor.constraint(equalToConstant: UIScreen.height/2 - 100).isActive = true
         
     }
     
@@ -143,25 +152,25 @@ class ChartViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    func detectBlackListUser() {
-        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
-                                                        userData: userData)
-        userData = newUserData
+    func detectBlockListUser() {
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList, userData: group?.memberData ?? [])
+        group?.memberData = newUserData
         
-        let newMemberData = UserManager.renameBlockedUser(blockList: blackList, userData: member)
+        let newMemberData = UserManager.renameBlockedUser(blockList: blockList, userData: member)
         member = newMemberData
     }
     
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         view.addSubview(mask)
         
-        noDataChartsView = NoDataChartsView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 200))
+        noDataChartsView = NoDataChartsView(
+            frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 200))
         noDataChartsView.backgroundColor = .darkBlueColor
        
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.noDataChartsView.frame = CGRect(x: 0, y: self.height/2 - 100, width: self.width, height: 200)
+            self.noDataChartsView.frame = CGRect(x: 0, y: UIScreen.height/2 - 100, width: UIScreen.width, height: 200)
         }, completion: nil)
         view.addSubview(noDataChartsView)
 
@@ -172,8 +181,9 @@ class ChartViewController: UIViewController {
         let subviewCount = self.view.subviews.count
         
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
-        }, completion: nil)
+            self.view.subviews[subviewCount - 1].frame = CGRect(
+                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height
+            )}, completion: nil)
         mask.removeFromSuperview()
         self.dismiss(animated: true, completion: nil)
     }
