@@ -26,7 +26,6 @@ class GroupDetailViewController: UIViewController {
         setLeaveGroupButton()
         setTableView()
         setAddGroupButton()
-//        hideLeaveButton()
         detectBlackListUser()
         getMembersExpense()
     }
@@ -76,7 +75,7 @@ class GroupDetailViewController: UIViewController {
             let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
             guard let addGroupViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
             addGroupViewController.isGroupExist = true
-            addGroupViewController.groupData = groupData
+            addGroupViewController.group = groupData
             self.show(addGroupViewController, sender: nil)
         } else {
             editAlert()
