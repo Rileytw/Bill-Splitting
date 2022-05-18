@@ -7,10 +7,9 @@
 
 import UIKit
 import SwiftUI
-import Lottie
 
-class GroupsViewController: UIViewController {
-    
+class GroupsViewController: BaseViewController {
+// MARK: - Property
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     
     let selectedSource = [
@@ -21,20 +20,16 @@ class GroupsViewController: UIViewController {
     ]
     let selectedView = SelectionView(frame: .zero)
     let tableView = UITableView()
-    private var animationView = AnimationView()
     var blockUserView = BlockUserView()
-    var mask = UIView()
     var searchView = UIView()
     var emptyLabel = UILabel()
-    let width = UIScreen.main.bounds.size.width
-    let height = UIScreen.main.bounds.size.height
-    
+
     var groups: [GroupData] = []    
     var multipleGroups: [GroupData] = []
     var personalGroups: [GroupData] = []
     var closedGroups: [GroupData] = []
     var filteredGroups: [GroupData] = []
-    var blackList: [String] = []
+    var blockList: [String] = []
     var personalExpense: Double?
     var group: GroupData?
     var memberExpense: Double = 0
@@ -52,6 +47,7 @@ class GroupsViewController: UIViewController {
         networkDetect()
     }
     
+// MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         getGroupData()
@@ -59,11 +55,7 @@ class GroupsViewController: UIViewController {
         fetchCurrentUserData()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-//        NetworkStatus.shared.stopMonitoring()
-    }
-    
+// MARK: - Method
     func setSearchView() {
         view.addSubview(searchView)
         searchView.translatesAutoresizingMaskIntoConstraints = false
@@ -97,21 +89,23 @@ class GroupsViewController: UIViewController {
         }
     }
     
+    fileprivate func hideEmptyLabel(_ groups: ([GroupData])) {
+        if groups.isEmpty == true {
+            emptyLabel.isHidden = false
+        } else {
+            emptyLabel.isHidden = true
+        }
+    }
+    
     func getGroupData() {
         GroupManager.shared.fetchGroupsRealTime(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
                 self?.setFilterGroupData()
-                if groups.isEmpty == true {
-                    self?.emptyLabel.isHidden = false
-                } else {
-                    self?.emptyLabel.isHidden = true
-                }
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
+                self?.hideEmptyLabel(groups)
+            case .failure:
+                self?.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -122,10 +116,8 @@ class GroupsViewController: UIViewController {
             case .success(let groups):
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
+            case .failure:
+                self?.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -135,13 +127,10 @@ class GroupsViewController: UIViewController {
             switch result {
             case .success(let currentUserData):
                 if currentUserData?.blackList != nil {
-                    self?.blackList = currentUserData?.blackList ?? []
+                    self?.blockList = currentUserData?.blackList ?? []
                 }
-                print("success")
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
+            case .failure:
+                self?.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -149,10 +138,7 @@ class GroupsViewController: UIViewController {
     func setSearchBar() {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 60))
         searchView.addSubview(searchBar)
-        searchBar.barTintColor = UIColor.hexStringToUIColor(hex: "A0B9BF")
-        searchBar.searchTextField.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
-        searchBar.tintColor = UIColor.hexStringToUIColor(hex: "E5DFDF")
-        searchBar.searchTextField.textColor = .styleBlue
+        ElementsStyle.styleSearchBar(searchBar)
         searchBar.delegate = self
         searchBar.showsCancelButton = true
         guard let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton else { return }
@@ -203,14 +189,10 @@ class GroupsViewController: UIViewController {
         tableView.reloadData()
         removeAnimation()
     }
-    
+   
     func setSelectedView() {
         view.addSubview(selectedView)
-        selectedView.translatesAutoresizingMaskIntoConstraints = false
-        selectedView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
-        selectedView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        selectedView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        selectedView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        setSelectedViewConstraint()
         
         selectedView.selectionViewDataSource = self
         selectedView.selectionViewDelegate = self
@@ -220,37 +202,15 @@ class GroupsViewController: UIViewController {
         ElementsStyle.styleBackground(view)
     }
     
-    func setAnimation() {
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        animationView.stop()
-        animationView.removeFromSuperview()
-    }
-    
     func networkDetect() {
         NetworkStatus.shared.startMonitoring()
-        NetworkStatus.shared.netStatusChangeHandler = {
+        NetworkStatus.shared.netStatusChangeHandler = { [weak self] in
             if NetworkStatus.shared.isConnected == true {
-                print("connected")
+                return
             } else {
-                print("Not connected")
                 if !Thread.isMainThread {
                     DispatchQueue.main.async {
-                        ProgressHUD.shared.view = self.view
-                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                        self?.showFailure(text: "網路未連線，請連線後再試")
                     }
                 }
             }
@@ -274,10 +234,10 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
         groupsCell.groupName.text = filteredGroups[indexPath.row].groupName
         
         if filteredGroups[indexPath.row].type == 1 {
-            groupsCell.groupType.text = "多人支付"
+            groupsCell.groupType.text = GroupType.multipleUsers.typeName
             groupsCell.setIcon(style: 1)
         } else {
-            groupsCell.groupType.text = "個人預付"
+            groupsCell.groupType.text = GroupType.personal.typeName
             groupsCell.setIcon(style: 0)
         }
         
@@ -290,9 +250,11 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
         guard let customGroupViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
+                storyBoard.instantiateViewController(
+                    withIdentifier: String(describing: CustomGroupViewController.self)
+                ) as? CustomGroupViewController else { return }
         customGroupViewController.group = filteredGroups[indexPath.row]
-        customGroupViewController.blockList = blackList
+        customGroupViewController.blockList = blockList
         self.show(customGroupViewController, sender: nil)
     }
     
@@ -310,23 +272,6 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
             cell?.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
     }
-    
-    private func animateTableView() {
-        let cells = tableView.visibleCells
-        let tableHeight: CGFloat = tableView.bounds.size.height
-        for (index, cell) in cells.enumerated() {
-            cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
-            UIView.animate(withDuration: 0.8,
-                           delay: 0.05 * Double(index),
-                           usingSpringWithDamping: 0.8,
-                           initialSpringVelocity: 0,
-                           options: [],
-                           animations: {
-                cell.transform = CGAffineTransform(translationX: 0, y: 0)
-            }, completion: nil)
-        }
-    }
-    
 }
 
 extension GroupsViewController: SelectionViewDataSource, SelectionViewDelegate {
@@ -369,17 +314,18 @@ extension GroupsViewController: UISearchBarDelegate {
 
 extension GroupsViewController {
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         view.addSubview(mask)
         
-        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
         blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
         blockUserView.buttonTitle = " 退出群組"
         blockUserView.content = "退出群組後，將無法查看群組內容。"
-        blockUserView.blockUserButton.setImage(UIImage(systemName: "rectangle.portrait.and.arrow.right.fill"), for: .normal)
+        blockUserView.blockUserButton.setImage(
+            UIImage(systemName: "rectangle.portrait.and.arrow.right.fill"), for: .normal)
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
+            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.height - 300, width: UIScreen.width, height: 300)
         }, completion: nil)
         view.addSubview(blockUserView)
         
@@ -393,7 +339,8 @@ extension GroupsViewController {
         let subviewCount = self.view.subviews.count
         
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+            self.view.subviews[subviewCount - 1].frame = CGRect(
+                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
         }, completion: nil)
         mask.removeFromSuperview()
         self.tabBarController?.tabBar.isHidden = false
@@ -413,10 +360,8 @@ extension GroupsViewController {
                     }
                     self?.revealBlockView()
                 }
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "資料讀取發生錯誤，請稍後再試")
+            case .failure:
+                self?.showFailure(text: "資料讀取發生錯誤，請稍後再試")
             }
         }
     }
@@ -424,7 +369,7 @@ extension GroupsViewController {
     @objc func detectUserExpense() {
         if personalExpense == 0 && group?.creator != currentUserId {
             leaveGroupAlert()
-        } else if memberExpense == 0 && group?.creator == currentUserId{
+        } else if memberExpense == 0 && group?.creator == currentUserId {
             creatorLeaveAlert()
         } else {
             rejectLeaveGroupAlert()
@@ -444,43 +389,12 @@ extension GroupsViewController {
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
     }
-    
+  
     func leaveGroup() {
-        let groupId = group?.groupId
-        GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
-                                              userId: currentUserId) { [weak self] result in
-            switch result {
-            case .success:
-                print("leave group")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showSuccess(text: "成功退出群組")
-                self?.getGroupData()
-            case .failure:
-                print("remove group member failed")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "退出失敗，請稍後再試")
-            }
-        }
-        
-        GroupManager.shared.removeGroupExpense(groupId: groupId ?? "",
-                                               userId: currentUserId) { result in
-            switch result {
-            case .success:
-                print("leave group")
-            case .failure:
-                print("remove member expense failed")
-            }
-        }
-        
-        GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
-                                           userId: currentUserId) {
-            result in
-            switch result {
-            case .success:
-                print("leave group")
-            case .failure:
-                print("remove member expense failed")
-            }
+        guard let groupId = group?.groupId else { return }
+        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId, view: view) { [weak self] in
+            self?.showSuccess(text: "成功退出群組")
+            self?.getGroupData()
         }
     }
     
@@ -491,7 +405,6 @@ extension GroupsViewController {
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         let confirmAction = UIAlertAction(title: "確認退出", style: .destructive) { [weak self] _ in
             self?.closeGroup()
-            self?.leaveGroup()
             self?.pressDismissButton()
         }
         alertController.addAction(cancelAction)
@@ -501,27 +414,19 @@ extension GroupsViewController {
     
     func closeGroup() {
         if group?.creator == currentUserId {
-            // MARK: - Add ProgressHUD when refactor, need to check situation
             GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "") { [weak self] result in
                 switch result {
                 case .success:
-//                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showSuccess(text: "成功封存群組")
+                    self?.leaveGroup()
                 case .failure:
-//                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: "封存群組失敗，請稍後再試")
+                    self?.showFailure(text: "封存群組失敗，請稍後再試")
                 }
             }
         }
     }
     
     func rejectLeaveGroupAlert() {
-        let alertController = UIAlertController(title: "無法退出群組",
-                                                message: "您在群組內還有債務關係，無法退出。",
-                                                preferredStyle: .alert)
-        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
-        alertController.addAction(confirmAction)
-        present(alertController, animated: true, completion: nil)
+        confirmAlert(title: "無法退出群組", message: "您在群組內還有債務關係，無法退出。")
     }
     
     func setTableViewConstraint() {
@@ -550,5 +455,13 @@ extension GroupsViewController {
         emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         emptyLabel.isHidden = true
+    }
+    
+    fileprivate func setSelectedViewConstraint() {
+        selectedView.translatesAutoresizingMaskIntoConstraints = false
+        selectedView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        selectedView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        selectedView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        selectedView.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
 }
