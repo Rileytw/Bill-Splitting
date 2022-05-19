@@ -13,7 +13,7 @@ class SubscriptionManager {
     static var shared = SubscriptionManager()
     lazy var db = Firestore.firestore()
     
-    func addSubscriptionData(groupId: String, itemName: String, paidUser: String, paidPrice: Double, startedTime: Double, endedTime: Double, cycle: Int, completion: @escaping (String) -> Void) {
+    func addSubscriptionData(groupId: String, itemName: String, paidUser: String, paidPrice: Double, startedTime: Double, endedTime: Double, cycle: Cycle, completion: @escaping (String) -> Void) {
         let ref = db.collection(FirebaseCollection.subscription.rawValue).document()
         
         let subscriptionData = Subscription(doucmentId: "\(ref.documentID)",
