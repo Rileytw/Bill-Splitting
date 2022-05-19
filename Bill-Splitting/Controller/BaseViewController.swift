@@ -66,3 +66,32 @@ class BaseViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 }
+
+enum NavigationItemName {
+    case allGroups
+    case group
+    case settleUp
+    case reminder
+    case addGroups
+    case records
+    case profile
+    
+    var name: String {
+        switch self {
+        case .allGroups:
+            return "我的群組"
+        case .group:
+            return "群組"
+        case .settleUp:
+            return "結算群組帳務"
+        case .reminder:
+            return "設定提醒"
+        case .addGroups:
+            return "新增群組"
+        case .records:
+            return "近期紀錄"
+        case .profile:
+            return "個人頁面"
+        }
+    }
+}
