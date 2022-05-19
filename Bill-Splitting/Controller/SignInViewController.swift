@@ -163,7 +163,7 @@ class SignInViewController: UIViewController {
     }
     
     @objc func pressSignUp() {
-        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
         guard let signUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignUpViewController.self)) as? SignUpViewController else { return }
         self.present(signUpViewController, animated: true, completion: nil)
     }
@@ -411,7 +411,7 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
     }
     
     @objc func pressPrivacyButton() {
-        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
         guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
         webViewController.url = PolicyUrl.privacy.url
         self.present(webViewController, animated: true, completion: nil)
@@ -433,7 +433,7 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
     }
     
     @objc func pressEulaButton() {
-        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
         guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
         webViewController.url = PolicyUrl.eula.url
         self.present(webViewController, animated: true, completion: nil)

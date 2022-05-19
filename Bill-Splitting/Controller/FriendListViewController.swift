@@ -61,7 +61,7 @@ class FriendListViewController: UIViewController {
     }
     
     @objc func pressInviteFriendButton() {
-        let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
         let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
         if #available(iOS 15.0, *) {
             if let sheet = inviteFriendViewController.sheetPresentationController {

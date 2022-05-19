@@ -111,7 +111,7 @@ class InviteFriendViewController: UIViewController {
     }
     
     @objc func pressScanQRCode() {
-        let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
         guard let scanQRCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ScanQRCodeViewController.self)) as? ScanQRCodeViewController else { return }
         
         self.present(scanQRCodeViewController, animated: true, completion: nil)

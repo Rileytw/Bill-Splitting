@@ -285,7 +285,7 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let customGroupViewController =
                 storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
         

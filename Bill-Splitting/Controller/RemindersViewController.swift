@@ -60,7 +60,7 @@ class RemindersViewController: UIViewController {
     }
     
     @objc func pressAddButton() {
-        let storyBoard = UIStoryboard(name: "Reminders", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.reminders, bundle: nil)
         guard let addReminderViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddReminderViewController.self)) as? AddReminderViewController else { return }
         
         if #available(iOS 15.0, *) {

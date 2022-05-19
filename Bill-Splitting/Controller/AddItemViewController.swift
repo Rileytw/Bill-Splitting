@@ -184,7 +184,7 @@ class AddItemViewController: BaseViewController {
     }
     
     @objc func pressAddMore() {
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let addMoreInfoViewController = storyBoard.instantiateViewController(
             withIdentifier: String(describing: AddMoreInfoViewController.self)
         ) as? AddMoreInfoViewController else { return }

@@ -115,7 +115,7 @@ class ProfileViewController: UIViewController {
     }
     
     func backToSignInPage() {
-        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
         let signInViewController = storyBoard.instantiateViewController(
             withIdentifier: String(describing: SignInViewController.self))
         view.window?.rootViewController = signInViewController
@@ -351,7 +351,7 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
         if indexPath.section == 0 {
             if indexPath.item == 0 {
                 setAnimation()
-                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
                 let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
                 if #available(iOS 15.0, *) {
                     if let sheet = qrCodeViewController.sheetPresentationController {
@@ -362,21 +362,21 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
                 self.present(qrCodeViewController, animated: true, completion: nil)
                 removeAnimation()
             } else if indexPath.item == 1 {
-                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
                 let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
                 self.show(paymentViewController, sender: nil)
             } else if indexPath.item == 2 {
-                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
                 let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
                 self.show(friendListViewController, sender: nil)
             } else if indexPath.item == 3 {
-                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
                 guard let friendInvitationVC = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self)) as? FriendInvitationViewController
                 else { return }
                 friendInvitationVC.currentUserName = currentUser?.userName
                 self.show(friendInvitationVC, sender: nil)
             } else if indexPath.item == 4 {
-                let storyBoard = UIStoryboard(name: "Profile", bundle: nil)
+                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
                 guard let blackListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: BlackListViewController.self)) as? BlackListViewController
                 else { return }
                 blackListViewController.blackList = blackList

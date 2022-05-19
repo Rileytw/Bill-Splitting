@@ -72,7 +72,7 @@ class GroupDetailViewController: UIViewController {
     
     @objc func pressEdit() {
         if groupData?.status == 0 {
-            let storyBoard = UIStoryboard(name: "AddGroups", bundle: nil)
+            let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
             guard let addGroupViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
             addGroupViewController.isGroupExist = true
             addGroupViewController.group = groupData

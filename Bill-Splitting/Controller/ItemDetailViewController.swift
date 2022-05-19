@@ -457,7 +457,7 @@ class ItemDetailViewController: UIViewController {
         guard let tappedImage = tapGestureRecognizer.view as? UIImageView else { return }
 
 //        addImageView(image: self.image ?? "")
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let itemImageViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemImageViewController.self)) as? ItemImageViewController else { return }
         itemImageViewController.image = image
         itemImageViewController.modalPresentationStyle = .fullScreen
@@ -589,7 +589,7 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
            
             let editAction = UIAction(title: "編輯", image: UIImage(systemName: "pencil")) { action in
-                let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+                let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
                 guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
 //                addItemViewController.memberId = self.groupData?.member
 //                addItemViewController.memberData = self.userData

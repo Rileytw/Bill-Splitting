@@ -123,58 +123,6 @@ class CustomGroupViewController: BaseViewController {
         }
     }
     
-    func getLeaveMemberData() {
-        group?.leaveMemberData = []
-        if group?.leaveMembers != nil {
-            UserManager.shared.fetchMembersData(membersId: group?.leaveMembers ?? []) {  [weak self] result in
-                switch result {
-                case .success(let userData):
-                    self?.group?.leaveMemberData = userData
-                case .failure:
-                    self?.showFailure(text: ErrorType.generalError.errorMessage)
-                }
-            }
-        }
-    }
-    
-    @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
-        if sender.state == .began {
-            let touchPoint = sender.location(in: itemTableView)
-            if let indexPath = itemTableView.indexPathForRow(at: touchPoint) {
-                reportItem = items[indexPath.row]
-                showBlockView()
-            }
-        }
-    }
-    
-    func pressClosedGroup() {
-        GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "") { [weak self] result in
-            switch result {
-            case .success:
-                self?.showSuccess(text: "成功封存群組")
-            case .failure:
-                self?.showFailure(text: "封存群組失敗，請稍後再試")
-            }
-        }
-        self.navigationController?.popToRootViewController(animated: true)
-    }
-    
-    @objc func confirmCloseGroupAlert() {
-        let alertController = UIAlertController(title: "請確認是否封存群組", message: "封存後群組內容將不可編輯", preferredStyle: .alert)
-        let confirmAction = UIAlertAction(title: "封存", style: .destructive) { [weak self] _ in
-            self?.pressClosedGroup()
-        }
-        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-
-        alertController.addAction(cancelAction)
-        alertController.addAction(confirmAction)
-        present(alertController, animated: true, completion: nil)
-    }
-    
-    func disableCloseGroupButton() {
-        confirmAlert(title: "群組已封存", message: "不可重複封存群組")
-    }
-    
     func listenToNewItem() {
         ItemManager.shared.listenForNotification(groupId: group?.groupId ?? "") { [weak self] in
             self?.getItemData()
@@ -259,6 +207,58 @@ class CustomGroupViewController: BaseViewController {
         if userExpense.isEmpty == false {
             self.personalExpense = userExpense[0].allExpense
         }
+    }
+    
+    func getLeaveMemberData() {
+        group?.leaveMemberData = []
+        if group?.leaveMembers != nil {
+            UserManager.shared.fetchMembersData(membersId: group?.leaveMembers ?? []) {  [weak self] result in
+                switch result {
+                case .success(let userData):
+                    self?.group?.leaveMemberData = userData
+                case .failure:
+                    self?.showFailure(text: ErrorType.generalError.errorMessage)
+                }
+            }
+        }
+    }
+    
+    @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let touchPoint = sender.location(in: itemTableView)
+            if let indexPath = itemTableView.indexPathForRow(at: touchPoint) {
+                reportItem = items[indexPath.row]
+                showBlockView()
+            }
+        }
+    }
+    
+    func pressClosedGroup() {
+        GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "") { [weak self] result in
+            switch result {
+            case .success:
+                self?.showSuccess(text: "成功封存群組")
+            case .failure:
+                self?.showFailure(text: "封存群組失敗，請稍後再試")
+            }
+        }
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+    
+    @objc func confirmCloseGroupAlert() {
+        let alertController = UIAlertController(title: "請確認是否封存群組", message: "封存後群組內容將不可編輯", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "封存", style: .destructive) { [weak self] _ in
+            self?.pressClosedGroup()
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func disableCloseGroupButton() {
+        confirmAlert(title: "群組已封存", message: "不可重複封存群組")
     }
     
     func detectSubscription() {
@@ -425,7 +425,7 @@ class CustomGroupViewController: BaseViewController {
     
     @objc func pressAddItem() {
         if group?.status == GroupStatus.active.typeInt {
-            let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+            let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
             guard let addItemViewController = storyBoard.instantiateViewController(
                 withIdentifier: String(describing: AddItemViewController.self)
             ) as? AddItemViewController else { return }
@@ -439,7 +439,7 @@ class CustomGroupViewController: BaseViewController {
     }
     
     @objc func pressChartButton() {
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let chartViewController = storyBoard.instantiateViewController(
             withIdentifier: String(describing: ChartViewController.self)
         ) as? ChartViewController else { return }
@@ -450,7 +450,7 @@ class CustomGroupViewController: BaseViewController {
     }
     
     @objc func pressSettleUp() {
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let settleUpViewController = storyBoard.instantiateViewController(
             withIdentifier: String(describing: SettleUpViewController.self)
         ) as? SettleUpViewController else { return }
@@ -463,7 +463,7 @@ class CustomGroupViewController: BaseViewController {
     }
     
     @objc func pressSubscribe() {
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let subscribeViewController =
                 storyBoard.instantiateViewController(
                     withIdentifier: String(describing: SubscribeViewController.self)
@@ -484,6 +484,31 @@ class CustomGroupViewController: BaseViewController {
         let time = dateFormatter.string(from: date)
         return time
     }
+    
+    func getPaidInfo(item: ItemData) -> ExpenseInfo? {
+        var paid: ExpenseInfo?
+        for index in 0..<items.count {
+            if items[index].paidInfo?[0].itemId == item.itemId {
+                paid = items[index].paidInfo?[0]
+            }
+        }
+        return paid
+    }
+    
+    func getInvolvedInfo(item: ItemData) -> ExpenseInfo? {
+        var involves = [ExpenseInfo]()
+        var involved: ExpenseInfo?
+        for index in 0..<items.count {
+            involves = items[index].involedInfo ?? []
+            for  involve in 0..<involves.count {
+                if involves[involve].itemId == item.itemId && involves[involve].userId == currentUserId {
+                    involved = involves[involve]
+                }
+            }
+        }
+        return involved
+    }
+    
 }
 
 extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate {
@@ -500,51 +525,34 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         guard let itemsCell = cell as? ItemTableViewCell else { return cell }
         
         let item = items[indexPath.row]
-        var paid: ExpenseInfo?
-
-        for index in 0..<items.count {
-            if items[index].paidInfo?[0].itemId == item.itemId {
-                paid = items[index].paidInfo?[0]
-                break
-            }
-        }
-        
-        var involves = [ExpenseInfo]()
-        var involved: ExpenseInfo?
-        
-        for index in 0..<items.count {
-            involves = items[index].involedInfo ?? []
-            for  involve in 0..<involves.count {
-                if involves[involve].itemId == item.itemId && involves[involve].userId == currentUserId {
-                    involved = involves[involve]
-                    break
-                }
-            }
-        }
-
+        let paid = getPaidInfo(item: item)
+        let involved = getInvolvedInfo(item: item)
         let time = getTimeString(timeStamp: item.createdTime)
         
         if paid?.userId == currentUserId {
             itemsCell.mapItemCell(
                 item: item, time: time,
-                paidPrice: paid?.price ?? 0, involvedPrice: involved?.price ?? 0,
+                paidPrice: paid?.price ?? 0,
+                involvedPrice: involved?.price ?? 0,
                 involvedType: .paid)
         } else if involved?.userId == currentUserId {
             itemsCell.mapItemCell(
                 item: item, time: time,
-                paidPrice: paid?.price ?? 0, involvedPrice: involved?.price ?? 0,
+                paidPrice: paid?.price ?? 0,
+                involvedPrice: involved?.price ?? 0,
                 involvedType: .involved)
         } else {
             itemsCell.mapItemCell(
                 item: item, time: time,
-                paidPrice: paid?.price ?? 0, involvedPrice: involved?.price ?? 0,
+                paidPrice: paid?.price ?? 0,
+                involvedPrice: involved?.price ?? 0,
                 involvedType: .notInvolved)
         }
         return itemsCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let itemDetailViewController = storyBoard.instantiateViewController(
             withIdentifier: String(describing: ItemDetailViewController.self)
         ) as? ItemDetailViewController else { return }
@@ -582,7 +590,7 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
            
             let infoAction = UIAction(title: "查看群組資訊", image: UIImage(systemName: "eye")) { [weak self] _ in
-                let storyBoard = UIStoryboard(name: "Groups", bundle: nil)
+                let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
                 guard let detailViewController = storyBoard.instantiateViewController(
                     withIdentifier: String(describing: GroupDetailViewController.self)
                 ) as? GroupDetailViewController else { return }
@@ -621,7 +629,8 @@ extension CustomGroupViewController {
     }
     
     func showBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
+        view.addSubview(mask)
+        setMaskConstraints()
         mask.backgroundColor = .maskBackground
         view.addSubview(mask)
         
@@ -773,5 +782,13 @@ extension CustomGroupViewController {
         noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+    
+    fileprivate func setMaskConstraints() {
+        mask.translatesAutoresizingMaskIntoConstraints = false
+        mask.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        mask.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        mask.widthAnchor.constraint(equalToConstant: UIScreen.width).isActive = true
+        mask.heightAnchor.constraint(equalToConstant: UIScreen.height).isActive = true
     }
 }   
