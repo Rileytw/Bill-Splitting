@@ -339,7 +339,7 @@ class SubscribeViewController: UIViewController {
                 if !Thread.isMainThread {
                     DispatchQueue.main.async {
                         ProgressHUD.shared.view = self.view
-                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                        ProgressHUD.showFailure(text: ErrorType.networkError.errorMessage)
                     }
                 }
             }

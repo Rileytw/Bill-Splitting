@@ -86,6 +86,7 @@
 		35CC139D28334C9E00432CAB /* UIScreen+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC139C28334C9E00432CAB /* UIScreen+Extension.swift */; };
 		35CC139F2834FC4D00432CAB /* LeaveGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC139E2834FC4C00432CAB /* LeaveGroup.swift */; };
 		35CC13A12835344E00432CAB /* AddItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A02835344E00432CAB /* AddItem.swift */; };
+		35CC13A32835D88500432CAB /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A22835D88500432CAB /* ErrorType.swift */; };
 		35D0EAD8281FB806001C9324 /* ProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */; };
 		35D0EAD9281FB806001C9324 /* ProfileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */; };
 		35D0EADC281FC7BF001C9324 /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */; };
@@ -205,6 +206,7 @@
 		35CC139C28334C9E00432CAB /* UIScreen+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extension.swift"; sourceTree = "<group>"; };
 		35CC139E2834FC4C00432CAB /* LeaveGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveGroup.swift; sourceTree = "<group>"; };
 		35CC13A02835344E00432CAB /* AddItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItem.swift; sourceTree = "<group>"; };
+		35CC13A22835D88500432CAB /* ErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCollectionViewCell.swift; sourceTree = "<group>"; };
 		35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileCollectionViewCell.xib; sourceTree = "<group>"; };
 		35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 				3576B41D2823AA3C00CECE3F /* RoportManager.swift */,
 				3576B41F2823AB5800CECE3F /* ReportObject.swift */,
 				35395CF2282CFC23005BE8F2 /* NetworkStatus.swift */,
+				35CC13A22835D88500432CAB /* ErrorType.swift */,
 				35CC139E2834FC4C00432CAB /* LeaveGroup.swift */,
 				35CC13A02835344E00432CAB /* AddItem.swift */,
 			);
@@ -637,6 +640,7 @@
 				35568A1A281532C900646B57 /* ChartViewController.swift in Sources */,
 				35CC139D28334C9E00432CAB /* UIScreen+Extension.swift in Sources */,
 				35FF63D228055BA000508EAF /* FriendListTableViewCell.swift in Sources */,
+				35CC13A32835D88500432CAB /* ErrorType.swift in Sources */,
 				35CC139F2834FC4D00432CAB /* LeaveGroup.swift in Sources */,
 				35FF63F12807B22400508EAF /* AddItemViewController.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,

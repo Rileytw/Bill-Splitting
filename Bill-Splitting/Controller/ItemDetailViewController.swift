@@ -103,7 +103,7 @@ class ItemDetailViewController: UIViewController {
             case .failure(let error):
                 print("Error decoding userData: \(error)")
                 ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -122,7 +122,7 @@ class ItemDetailViewController: UIViewController {
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                     ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
                 }
                 group.leave()
 
@@ -140,7 +140,7 @@ class ItemDetailViewController: UIViewController {
                 case .failure(let error):
                     print("Error decoding userData: \(error)")
                     ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
                 }
                 group.leave()
             }
@@ -421,7 +421,7 @@ class ItemDetailViewController: UIViewController {
                 self.navigationController?.popToRootViewController(animated: true)
             } else {
                 ProgressHUD.shared.view = self.view
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }

@@ -118,7 +118,7 @@ class AddGroupsViewController: BaseViewController {
                 self?.selectedNewMember()
                 self?.setFilterFriendsData()
             case .failure:
-                self?.showFailure(text: "發生錯誤，請稍後再試")
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -154,7 +154,7 @@ class AddGroupsViewController: BaseViewController {
                         self?.showSuccess(text: "已新增群組")
                     }
                 case .failure:
-                    self?.showFailure(text: "發生錯誤，請稍後再試")
+                    self?.showFailure(text: ErrorType.generalError.errorMessage)
                 }
             }
         }
@@ -182,7 +182,7 @@ class AddGroupsViewController: BaseViewController {
             case .success(let groupId):
                 self?.updateMemberExpense(groupId)
             case .failure:
-                self?.showFailure(text: "發生錯誤，請稍後再試")
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -273,7 +273,7 @@ class AddGroupsViewController: BaseViewController {
             if NetworkStatus.shared.isConnected == false {
                 if !Thread.isMainThread {
                     DispatchQueue.main.async {
-                        self.showFailure(text: "網路未連線，請連線後再試")
+                        self.showFailure(text: ErrorType.networkError.errorMessage)
                     }
                 }
             }

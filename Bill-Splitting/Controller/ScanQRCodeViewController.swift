@@ -62,7 +62,7 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
         } catch {
             print(error)
             ProgressHUD.shared.view = view
-            ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+            ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             return
         }
     }

@@ -57,7 +57,7 @@ class ProfileViewController: UIViewController {
             case.failure(let error):
                 print(error.localizedDescription)
                 ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -70,7 +70,7 @@ class ProfileViewController: UIViewController {
             case .failure(let error):
                 print("Error decoding userData: \(error)")
                 ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -109,14 +109,15 @@ class ProfileViewController: UIViewController {
             } catch let error as NSError {
                 print(error.localizedDescription)
                 ProgressHUD.shared.view = view
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
+                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
     
     func backToSignInPage() {
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        let signInViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignInViewController.self))
+        let signInViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: SignInViewController.self))
         view.window?.rootViewController = signInViewController
         view.window?.makeKeyAndVisible()
     }
@@ -140,7 +141,8 @@ class ProfileViewController: UIViewController {
         group.enter()
         // MARK: - Delete user's friendList
         firstQueue.async(group: group) {
-            UserManager.shared.deleteFriendCollection(documentId: self.currentUserId, collection: "friend") { [weak self] result in
+            UserManager.shared.deleteFriendCollection(
+                documentId: self.currentUserId, collection: "friend") { [weak self] result in
                 switch result {
                 case .success:
                     print("Delete friends successfully")
@@ -161,7 +163,8 @@ class ProfileViewController: UIViewController {
             for friend in friends {
                 group.enter()
                 secondQueue.async(group: group) {
-                    UserManager.shared.deleteDropUserData(friendId: friend.userId, collection: "friend", userId: self.currentUserId) { [weak self] result in
+                    UserManager.shared.deleteDropUserData(
+                        friendId: friend.userId, collection: "friend", userId: self.currentUserId) { [weak self] result in
                         switch result {
                         case .success:
                             print("delete data successfully")

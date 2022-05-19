@@ -13,10 +13,10 @@ class GroupsViewController: BaseViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     
     let selectedSource = [
-        ButtonModel(title: "所有群組"),
-        ButtonModel(title: "多人支付"),
-        ButtonModel(title: "個人預付"),
-        ButtonModel(title: "封存群組")
+        ButtonModel(title: GroupButton.allGroups.buttonName),
+        ButtonModel(title: GroupButton.multipleUsers.buttonName),
+        ButtonModel(title: GroupButton.personal.buttonName),
+        ButtonModel(title: GroupButton.close.buttonName)
     ]
     let selectedView = SelectionView(frame: .zero)
     let tableView = UITableView()
@@ -41,7 +41,7 @@ class GroupsViewController: BaseViewController {
         setSearchView()
         setEmptyLabel()
         setTableView()
-        navigationItem.title = "我的群組"
+        navigationItem.title = NavigationItemName.allGroups.name
         setSearchBar()
         setAnimation()
         networkDetect()
@@ -105,7 +105,7 @@ class GroupsViewController: BaseViewController {
                 self?.setFilterGroupData()
                 self?.hideEmptyLabel(groups)
             case .failure:
-                self?.showFailure(text: "資料讀取發生錯誤，請稍後再試")
+                self?.showFailure(text: ErrorType.dataError.errorMessage)
             }
         }
     }
@@ -117,7 +117,7 @@ class GroupsViewController: BaseViewController {
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
             case .failure:
-                self?.showFailure(text: "資料讀取發生錯誤，請稍後再試")
+                self?.showFailure(text: ErrorType.dataError.errorMessage)
             }
         }
     }
@@ -130,7 +130,7 @@ class GroupsViewController: BaseViewController {
                     self?.blockList = currentUserData?.blackList ?? []
                 }
             case .failure:
-                self?.showFailure(text: "資料讀取發生錯誤，請稍後再試")
+                self?.showFailure(text: ErrorType.dataError.errorMessage)
             }
         }
     }
@@ -210,7 +210,7 @@ class GroupsViewController: BaseViewController {
             } else {
                 if !Thread.isMainThread {
                     DispatchQueue.main.async {
-                        self?.showFailure(text: "網路未連線，請連線後再試")
+                        self?.showFailure(text: ErrorType.networkError.errorMessage)
                     }
                 }
             }
@@ -361,7 +361,7 @@ extension GroupsViewController {
                     self?.revealBlockView()
                 }
             case .failure:
-                self?.showFailure(text: "資料讀取發生錯誤，請稍後再試")
+                self?.showFailure(text: ErrorType.dataError.errorMessage)
             }
         }
     }
@@ -392,9 +392,13 @@ extension GroupsViewController {
   
     func leaveGroup() {
         guard let groupId = group?.groupId else { return }
-        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId, view: view) { [weak self] in
-            self?.showSuccess(text: "成功退出群組")
-            self?.getGroupData()
+        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
+            if LeaveGroup.shared.isLeaveGroupSuccess == true {
+                self?.showSuccess(text: "成功退出群組")
+                self?.getGroupData()
+            } else {
+                self?.showSuccess(text: ErrorType.generalError.errorMessage)
+            }
         }
     }
     
