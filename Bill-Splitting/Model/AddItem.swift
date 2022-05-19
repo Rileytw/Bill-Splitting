@@ -9,9 +9,10 @@ import UIKit
 
 class AddItem {
     static let shared = AddItem()
+    
     var isDataUploadSucces: Bool = false
     
-    func addItem(groupId: String,itemId: String, paidUserId: String, paidPrice: Double, involvedExpenseData: [ExpenseInfo], involvedPrice: Double, completion: @escaping () -> Void ) {
+    func addItem(groupId: String, itemId: String, paidUserId: String, paidPrice: Double, involvedExpenseData: [ExpenseInfo], involvedPrice: [Double], completion: @escaping () -> Void ) {
         
         let group = DispatchGroup()
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
@@ -19,12 +20,12 @@ class AddItem {
 
         firstQueue.async(group: group) {
             ItemManager.shared.addPaidInfo(paidUserId: paidUserId, price: paidPrice, itemId: itemId,
-                createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                createdTime: Double(NSDate().timeIntervalSince1970)) { [weak self] result in
                 switch result {
                 case .success:
-                    self.isDataUploadSucces = true
+                    self?.isDataUploadSucces = true
                 case .failure:
-                    self.isDataUploadSucces = false
+                    self?.isDataUploadSucces = false
                 }
                 group.leave()
             }
@@ -35,12 +36,14 @@ class AddItem {
             group.enter()
             secondQueue.async(group: group) {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: involvedExpenseData[user].userId,
-                                                   price: involvedPrice, itemId: itemId, createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+                                                   price: involvedPrice[user],
+                                                   itemId: itemId,
+                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { [weak self] result in
                     switch result {
                     case .success:
-                        self.isDataUploadSucces = true
+                        self?.isDataUploadSucces = true
                     case .failure:
-                        self.isDataUploadSucces = false
+                        self?.isDataUploadSucces = false
                     }
                     group.leave()
                 }
@@ -50,12 +53,15 @@ class AddItem {
         let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
         group.enter()
         thirdQueue.async(group: group) {
-            GroupManager.shared.updateMemberExpense(userId: paidUserId, newExpense: paidPrice, groupId: groupId) { result in
+            GroupManager.shared.updateMemberExpense(
+                userId: paidUserId,
+                newExpense: paidPrice,
+                groupId: groupId) { [weak self] result in
                 switch result {
                 case .success:
-                    self.isDataUploadSucces = true
+                    self?.isDataUploadSucces = true
                 case .failure:
-                    self.isDataUploadSucces = false
+                    self?.isDataUploadSucces = false
                 }
                 group.leave()
             }
@@ -66,12 +72,13 @@ class AddItem {
             group.enter()
             fourthQueue.async(group: group) {
                 GroupManager.shared.updateMemberExpense(userId: involvedExpenseData[user].userId,
-                                                        newExpense: 0 - involvedPrice, groupId: groupId) { result in
+                                                        newExpense: 0 - involvedPrice[user],
+                                                        groupId: groupId) { [weak self] result in
                     switch result {
                     case .success:
-                        self.isDataUploadSucces = true
+                        self?.isDataUploadSucces = true
                     case .failure:
-                        self.isDataUploadSucces = false
+                        self?.isDataUploadSucces = false
                     }
                     group.leave()
                 }

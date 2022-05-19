@@ -323,134 +323,194 @@ class AddItemViewController: BaseViewController {
         }
     }
     
-    func allItemInfoUpload() {
-        var paidUserId: String?
-        if self.group?.type == 1 {
-            paidUserId = self.paidId
-        } else {
-            paidUserId = self.currentUserId
-        }
-        self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
-        let paidPrice = self.paidPrice
-        var isDataUploadSucces: Bool = false
-        
-        let group = DispatchGroup()
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-
-        firstQueue.async(group: group) {
-            ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "", price: paidPrice ?? 0, itemId: self.itemId ?? "",
-                createdTime: Double(NSDate().timeIntervalSince1970)) { result in
-                switch result {
-                case .success:
-                    isDataUploadSucces = true
-                    group.leave()
-                case .failure(let error):
-                    print(error)
-                    isDataUploadSucces = false
-                    group.leave()
-                }
-            }
-        }
-
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        for user in 0..<self.involvedExpenseData.count {
-            var involvedPrice: Double?
-            if self.typePickerView.textField.text == SplitType.equal.label {
-                involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
-            } else if self.typePickerView.textField.text == SplitType.percent.label {
-                involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
-            } else {
-                involvedPrice = self.involvedExpenseData[user].price
-            }
-            group.enter()
-            secondQueue.async(group: group) {
-                ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
-                                                   price: involvedPrice ?? 0, itemId: self.itemId ?? "", createdTime: Double(NSDate().timeIntervalSince1970)) { result in
-                    switch result {
-                    case .success:
-                        isDataUploadSucces = true
-                        group.leave()
-                    case .failure(let error):
-                        print(error)
-                        isDataUploadSucces = false
-                        group.leave()
-                    }
-                }
-            }
-        }
-
-        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        thirdQueue.async(group: group) {
-            GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.group?.groupId ?? "") { result in
-                switch result {
-                case .success:
-                    isDataUploadSucces = true
-                    group.leave()
-                case .failure(let error):
-                    print(error)
-                    isDataUploadSucces = false
-                    group.leave()
-                }
-            }
-        }
-        for user in 0..<self.involvedExpenseData.count {
-            var involvedPrice: Double?
-            if self.typePickerView.textField.text == SplitType.equal.label {
-                involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
-            } else if self.typePickerView.textField.text == SplitType.percent.label {
-                involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
-            } else {
-                involvedPrice = self.involvedExpenseData[user].price
-            }
-            guard let involvedPrice = involvedPrice else { return }
-
-            let fourthQueue = DispatchQueue(label: "fourthQueue", qos: .default, attributes: .concurrent)
-            group.enter()
-            fourthQueue.async(group: group) {
-                GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
-                                                        newExpense: 0 - involvedPrice, groupId: self.group?.groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        isDataUploadSucces = true
-                        group.leave()
-                    case .failure(let error):
-                        print(error)
-                        isDataUploadSucces = false
-                        group.leave()
-                    }
-                }
-            }
-        }
-        
-        group.notify(queue: DispatchQueue.main) {
-            if isDataUploadSucces == true {
-                self.removeAnimation()
-                ProgressHUD.shared.view = self.view ?? UIView()
-                ProgressHUD.showSuccess(text: "新增成功")
-                if self.isItemExist == true {
-                    self.editingItem?(self.itemId ?? "")
-                }
-                
-                ItemManager.shared.addNotify(grpupId: self.group?.groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("uplaod notification collection successfully")
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                    }
-                }
-                self.dismiss(animated: false, completion: nil)
-            } else {
-                self.removeAnimation()
-                ProgressHUD.shared.view = self.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請稍後再試")
-                self.dismiss(animated: false, completion: nil)
+//    func allItemInfoUpload() {
+//        var paidUserId: String?
+//        if self.group?.type == 1 {
+//            paidUserId = self.paidId
+//        } else {
+//            paidUserId = self.currentUserId
+//        }
+//        self.paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
+//        let paidPrice = self.paidPrice
+//        var isDataUploadSucces: Bool = false
+//
+//        let group = DispatchGroup()
+//        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+//        group.enter()
+//
+//        firstQueue.async(group: group) {
+//            ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "", price: paidPrice ?? 0, itemId: self.itemId ?? "",
+//                createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+//                switch result {
+//                case .success:
+//                    isDataUploadSucces = true
+//                    group.leave()
+//                case .failure(let error):
+//                    print(error)
+//                    isDataUploadSucces = false
+//                    group.leave()
+//                }
+//            }
+//        }
+//
+//        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+//        for user in 0..<self.involvedExpenseData.count {
+//            var involvedPrice: Double?
+//            if self.typePickerView.textField.text == SplitType.equal.label {
+//                involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
+//            } else if self.typePickerView.textField.text == SplitType.percent.label {
+//                involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
+//            } else {
+//                involvedPrice = self.involvedExpenseData[user].price
+//            }
+//            group.enter()
+//            secondQueue.async(group: group) {
+//                ItemManager.shared.addInvolvedInfo(involvedUserId: self.involvedExpenseData[user].userId,
+//                                                   price: involvedPrice ?? 0, itemId: self.itemId ?? "", createdTime: Double(NSDate().timeIntervalSince1970)) { result in
+//                    switch result {
+//                    case .success:
+//                        isDataUploadSucces = true
+//                        group.leave()
+//                    case .failure(let error):
+//                        print(error)
+//                        isDataUploadSucces = false
+//                        group.leave()
+//                    }
+//                }
+//            }
+//        }
+//
+//        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
+//        group.enter()
+//        thirdQueue.async(group: group) {
+//            GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "", newExpense: self.paidPrice ?? 0, groupId: self.group?.groupId ?? "") { result in
+//                switch result {
+//                case .success:
+//                    isDataUploadSucces = true
+//                    group.leave()
+//                case .failure(let error):
+//                    print(error)
+//                    isDataUploadSucces = false
+//                    group.leave()
+//                }
+//            }
+//        }
+//        for user in 0..<self.involvedExpenseData.count {
+//            var involvedPrice: Double?
+//            if self.typePickerView.textField.text == SplitType.equal.label {
+//                involvedPrice = Double(paidPrice ?? 0) / Double(self.selectedIndexs.count)
+//            } else if self.typePickerView.textField.text == SplitType.percent.label {
+//                involvedPrice = (Double(self.involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0)
+//            } else {
+//                involvedPrice = self.involvedExpenseData[user].price
+//            }
+//            guard let involvedPrice = involvedPrice else { return }
+//
+//            let fourthQueue = DispatchQueue(label: "fourthQueue", qos: .default, attributes: .concurrent)
+//            group.enter()
+//            fourthQueue.async(group: group) {
+//                GroupManager.shared.updateMemberExpense(userId: self.involvedExpenseData[user].userId,
+//                                                        newExpense: 0 - involvedPrice, groupId: self.group?.groupId ?? "") { result in
+//                    switch result {
+//                    case .success:
+//                        isDataUploadSucces = true
+//                        group.leave()
+//                    case .failure(let error):
+//                        print(error)
+//                        isDataUploadSucces = false
+//                        group.leave()
+//                    }
+//                }
+//            }
+//        }
+//
+//        group.notify(queue: DispatchQueue.main) {
+//            if isDataUploadSucces == true {
+//                self.removeAnimation()
+//                ProgressHUD.shared.view = self.view ?? UIView()
+//                ProgressHUD.showSuccess(text: "新增成功")
+//                if self.isItemExist == true {
+//                    self.editingItem?(self.itemId ?? "")
+//                }
+//
+//                ItemManager.shared.addNotify(grpupId: self.group?.groupId ?? "") { result in
+//                    switch result {
+//                    case .success:
+//                        print("uplaod notification collection successfully")
+//                    case .failure(let error):
+//                        print(error.localizedDescription)
+//                    }
+//                }
+//                self.dismiss(animated: false, completion: nil)
+//            } else {
+//                self.removeAnimation()
+//                ProgressHUD.shared.view = self.view ?? UIView()
+//                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+//                self.dismiss(animated: false, completion: nil)
+//            }
+//        }
+//    }
+    
+    fileprivate func addNotifyInDatabase() {
+        ItemManager.shared.addNotify(grpupId: self.group?.groupId ?? "") { result in
+            switch result {
+            case .success:
+                print("uplaod notification collection successfully")
+            case .failure(let error):
+                print(error.localizedDescription)
             }
         }
     }
     
+    func allItemInfoUpload() {
+        var paidUserId: String?
+        if group?.type == GroupType.personal.typeInt {
+            paidUserId = paidId
+        } else {
+            paidUserId = currentUserId
+        }
+        paidPrice = Double(addItemView.priceTextField.text ?? "0")
+        let paidPrice = paidPrice
+        
+        var involvedPrice: [Double] = []
+        for user in 0..<involvedExpenseData.count {
+            if self.typePickerView.textField.text == SplitType.equal.label {
+                involvedPrice.append(Double(paidPrice ?? 0) / Double(selectedIndexs.count))
+            } else if typePickerView.textField.text == SplitType.percent.label {
+                involvedPrice.append((Double(involvedExpenseData[user].price)/100.00) * Double(paidPrice ?? 0))
+            } else {
+                involvedPrice.append(involvedExpenseData[user].price)
+            }
+        }
+        guard let groupId = group?.groupId,
+              let itemId = itemId,
+              let paidUserId = paidUserId,
+              let paidPrice = paidPrice
+        else { return }
+        
+        AddItem.shared.addItem(
+            groupId: groupId,
+            itemId: itemId,
+            paidUserId: paidUserId,
+            paidPrice: paidPrice,
+            involvedExpenseData: self.involvedExpenseData,
+            involvedPrice: involvedPrice) { [weak self] in
+                self?.removeAnimation()
+                if AddItem.shared.isDataUploadSucces == true {
+                    self?.showSuccess(text: "新增成功")
+                    if self?.isItemExist == true {
+                        self?.editingItem?(self?.itemId ?? "")
+                    }
+                    self?.addNotifyInDatabase()
+                    
+                } else {
+                    self?.showFailure(text: ErrorType.generalError.errorMessage)
+                    
+                }
+                self?.dismiss(animated: false, completion: nil)
+            }
+    }
+
     func deleteItem() {
         reCountPersonalExpense()
         ItemManager.shared.deleteItem(itemId: itemData?.itemId ?? "") { [weak self] result in
@@ -506,7 +566,7 @@ class AddItemViewController: BaseViewController {
                 if !Thread.isMainThread {
                     DispatchQueue.main.async {
                         ProgressHUD.shared.view = self.view
-                        ProgressHUD.showFailure(text: "網路未連線，請連線後再試")
+                        ProgressHUD.showFailure(text: ErrorType.networkError.errorMessage)
                     }
                 }
             }
