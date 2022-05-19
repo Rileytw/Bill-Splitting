@@ -68,4 +68,8 @@ extension UIColor {
     static let styleYellow = UIColor.hexStringToUIColor(hex: "FFCE45")
     
     static let styleLightBlue = UIColor.hexStringToUIColor(hex: "61A4BC")
+    
+    static let maskBackground = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+    
+    static let viewDarkBackground = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
 }
