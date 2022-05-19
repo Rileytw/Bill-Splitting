@@ -59,49 +59,65 @@ class ItemTableViewCell: UITableViewCell {
         }
     }
     
-    func mapItemCell(item: ItemData,
-                     time: String,
-                     paidPrice: Double,
-                     involvedPrice: Double,
-                     involvedType: InvolvedType) {
+    func mapItemCell(
+        item: ItemData, time: String, paidPrice: Double,
+        involvedPrice: Double, involvedType: InvolvedType) {
+            var description: PaidDescription
+            var price: Double
         switch involvedType {
         case .paid:
             if item.itemName == "結帳" {
-                createItemCell(
-                    time: time,
-                    name: item.itemName,
-                    description: PaidDescription.settleUpInvolved,
-                    price: paidPrice)
+                description = .settleUpInvolved
+                price = paidPrice
+//                createItemCell(
+//                    time: time,
+//                    name: item.itemName,
+//                    description: PaidDescription.settleUpInvolved,
+//                    price: paidPrice)
                 paidDescription.textColor = .styleRed
             } else {
-                createItemCell(
-                    time: time,
-                    name: item.itemName,
-                    description: PaidDescription.paid,
-                    price: paidPrice)
+                description = .paid
+                price = paidPrice
+//                createItemCell(
+//                    time: time,
+//                    name: item.itemName,
+//                    description: PaidDescription.paid,
+//                    price: paidPrice)
                 paidDescription.textColor = .styleGreen
             }
         case .involved:
             if item.itemName == "結帳" {
-                createItemCell(
-                    time: time,
-                    name: item.itemName,
-                    description: PaidDescription.settleUpPaid,
-                    price: involvedPrice)
+                description = .settleUpPaid
+                price = involvedPrice
+//                createItemCell(
+//                    time: time,
+//                    name: item.itemName,
+//                    description: PaidDescription.settleUpPaid,
+//                    price: involvedPrice)
                 paidDescription.textColor = .styleGreen
             } else {
-                createItemCell(time: time,
-                               name: item.itemName,
-                               description: PaidDescription.involved,
-                               price: involvedPrice)
+                description = .involved
+                price = involvedPrice
+//                createItemCell(time: time,
+//                               name: item.itemName,
+//                               description: PaidDescription.involved,
+//                               price: involvedPrice)
                 paidDescription.textColor = .styleRed
             }
         case .notInvolved:
-            createItemCell(time: time,
-                           name: item.itemName,
-                           description: PaidDescription.notInvolved,
-                           price: 0)
+            description = .notInvolved
+            price = 0
+//            createItemCell(time: time,
+//                           name: item.itemName,
+//                           description: PaidDescription.notInvolved,
+//                           price: 0)
             paidDescription.textColor = .greenWhite
         }
+            
+            createItemCell(
+                time: time,
+                name: item.itemName,
+                description: description,
+                price: price)
     }
 }

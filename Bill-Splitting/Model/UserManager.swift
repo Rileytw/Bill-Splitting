@@ -6,6 +6,9 @@ class UserManager {
     static var shared = UserManager()
     lazy var db = Firestore.firestore()
     
+//    var currentUser: UserData // get only (private set)
+    private(set) var currentUser: UserData?
+    
     func addUserData(userData: UserData, completion: @escaping (Result<String, Error>) -> Void) {
         do {
             try db.collection(FirebaseCollection.user.rawValue).document(userData.userId).setData(from: userData)
@@ -183,7 +186,6 @@ class UserManager {
         }
     }
     
-
 //   MARK: - Change getDocuments to addSnapshotListener
     func fetchSignInUserData(userId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
         db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: userId).addSnapshotListener { (querySnapshot, error) in
@@ -276,6 +278,4 @@ class UserManager {
         }
        return blockedUserData
     }
-    
-    
 }

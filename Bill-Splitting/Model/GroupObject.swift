@@ -53,7 +53,7 @@ enum GroupType {
     }
 }
 
-enum GroupStatus {
+enum GroupStatus { //
     case active
     case inActive
     

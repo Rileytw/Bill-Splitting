@@ -18,15 +18,27 @@ typealias ItemDataResponse = (Result<[ItemData], Error>) -> Void
 
 class ItemManager {
     static var shared = ItemManager()
-    lazy var db = Firestore.firestore()
+    lazy var database = Firestore.firestore()
     
-    func addItemData(groupId: String, itemName: String, itemDescription: String?, createdTime: Double, itemImage: String?, completion: @escaping (String) -> Void) {
-        let ref = db.collection("item").document()
+    func addItemData(
+        groupId: String,
+        itemName: String,
+        itemDescription: String?,
+        createdTime: Double,
+        itemImage: String?,
+        completion: @escaping (String) -> Void) {
+        let ref = database.collection(FirebaseCollection.item.rawValue).document()
         
-        let itemData = ItemData(groupId: groupId, itemName: itemName, itemId: "\(ref.documentID)", itemDescription: itemDescription, createdTime: createdTime, itemImage: itemImage)
+        let itemData = ItemData(
+            groupId: groupId,
+            itemName: itemName,
+            itemId: "\(ref.documentID)",
+            itemDescription: itemDescription,
+            createdTime: createdTime,
+            itemImage: itemImage)
         
         do {
-            try db.collection("item").document("\(ref.documentID)").setData(from: itemData)
+            try database.collection(FirebaseCollection.item.rawValue).document("\(ref.documentID)").setData(from: itemData)
             completion("\(ref.documentID)")
         } catch {
             print(error)
@@ -34,7 +46,10 @@ class ItemManager {
     }
     
     func listenGroupItemData(groupId: String, completion: @escaping ItemDataResponse) {
-        db.collection("item").whereField("groupId", isEqualTo: groupId).order(by: "createdTime", descending: true).addSnapshotListener { (querySnapshot, error) in
+        database.collection(FirebaseCollection.item.rawValue)
+            .whereField("groupId", isEqualTo: groupId)
+            .order(by: "createdTime", descending: true)
+            .addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -59,7 +74,10 @@ class ItemManager {
     }
     
     func fetchGroupItemData(groupId: String, completion: @escaping ItemDataResponse) {
-        db.collection("item").whereField("groupId", isEqualTo: groupId).order(by: "createdTime", descending: true).getDocuments { (querySnapshot, error) in
+        database.collection(FirebaseCollection.item.rawValue)
+            .whereField("groupId", isEqualTo: groupId)
+            .order(by: "createdTime", descending: true)
+            .getDocuments { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -84,7 +102,7 @@ class ItemManager {
     }
     
     func listenForItems(itemId: String, completion: @escaping () -> Void) {
-        db.collection("item").document(itemId)
+        database.collection(FirebaseCollection.item.rawValue).document(itemId)
             .collection("involvedInfo")
             .whereField("itemId", isEqualTo: itemId)
             .addSnapshotListener { querySnapshot, error in
@@ -94,22 +112,14 @@ class ItemManager {
                 }
                 snapshot.documentChanges.forEach { diff in
                     if (diff.type == .added) {
-                        print("New: \(diff.document.data())")
                         completion()
-                        
-                    }
-                    if (diff.type == .modified) {
-                        print("Modified: \(diff.document.data())")
-                    }
-                    if (diff.type == .removed) {
-                        print("Removed: \(diff.document.data())")
                     }
                 }
             }
     }
     
     func fetchItem(itemId: String, completion: @escaping (Result<ItemData, Error>) -> Void) {
-        db.collection(FirebaseCollection.item.rawValue).document(itemId).addSnapshotListener { (querySnapshot, error) in
+        database.collection(FirebaseCollection.item.rawValue).document(itemId).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -137,7 +147,11 @@ class ItemManager {
     }
     
     private func fetchItemExpense(itemId: String, collection: String, completion: @escaping ExpenseInfoResponse) {
-        db.collection("item").document(itemId).collection(collection).order(by: "createdTime", descending: true).getDocuments() { (querySnapshot, error) in
+        database.collection(FirebaseCollection.item.rawValue)
+            .document(itemId)
+            .collection(collection)
+            .order(by: "createdTime", descending: true)
+            .getDocuments() { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -168,11 +182,17 @@ class ItemManager {
         fetchItemsExpense(itemsId: itemsId, collection: ItemExpenseType.paidInfo.rawValue, completion: completion)
     }
 
-
-    private func fetchItemsExpense(itemsId: [String], collection: String, completion: @escaping (Result<[[ExpenseInfo]], Error>) -> Void) {
+    private func fetchItemsExpense(
+        itemsId: [String],
+        collection: String,
+        completion: @escaping (Result<[[ExpenseInfo]], Error>) -> Void) {
         var items: [[ExpenseInfo]] = []
         for item in itemsId {
-            db.collection("item").document(item).collection(collection).order(by: "createdTime", descending: true).getDocuments() { (querySnapshot, error) in
+            database.collection(FirebaseCollection.item.rawValue)
+                .document(item)
+                .collection(collection)
+                .order(by: "createdTime", descending: true)
+                .getDocuments() { (querySnapshot, error) in
                 
                 if let error = error {
                     completion(.failure(error))
@@ -197,7 +217,12 @@ class ItemManager {
         }
     }
     
-    func addPaidInfo(paidUserId: String, price: Double, itemId: String, createdTime: Double, completion: @escaping (Result<(), Error>) -> Void) {
+    func addPaidInfo(
+        paidUserId: String,
+        price: Double,
+        itemId: String,
+        createdTime: Double,
+        completion: @escaping (Result<(), Error>) -> Void) {
         addItemExpenseInfo(typeUserId: paidUserId,
                            collection: ItemExpenseType.paidInfo,
                            price: price,
@@ -205,7 +230,12 @@ class ItemManager {
                            createdTime: createdTime, completion: completion)
     }
     
-    func addInvolvedInfo(involvedUserId: String, price: Double, itemId: String, createdTime: Double, completion: @escaping (Result<(), Error>) -> Void) {
+    func addInvolvedInfo(
+        involvedUserId: String,
+        price: Double,
+        itemId: String,
+        createdTime: Double,
+        completion: @escaping (Result<(), Error>) -> Void) {
         addItemExpenseInfo(typeUserId: involvedUserId,
                            collection: ItemExpenseType.involvedInfo,
                            price: price,
@@ -213,11 +243,13 @@ class ItemManager {
                            createdTime: createdTime, completion: completion)
     }
     
-    private func addItemExpenseInfo(typeUserId: String, collection: ItemExpenseType, price: Double, itemId: String, createdTime: Double, completion: @escaping (Result<(), Error>) -> Void) {
+    private func addItemExpenseInfo(
+        typeUserId: String, collection: ItemExpenseType, price: Double, itemId: String, createdTime: Double,
+        completion: @escaping (Result<(), Error>) -> Void) {
         let involvedInfo = ExpenseInfo(userId: typeUserId, price: price, createdTime: createdTime, itemId: itemId)
         
         do {
-            try db.collection("item").document(itemId).collection(collection.rawValue).document().setData(from: involvedInfo)
+            try database.collection(FirebaseCollection.item.rawValue).document(itemId).collection(collection.rawValue).document().setData(from: involvedInfo)
             completion(.success(()))
         } catch {
             print(error)
@@ -226,7 +258,7 @@ class ItemManager {
     }
     
     func deleteItem(itemId: String, completion: @escaping (Result<(), Error>) -> Void) {
-        db.collection(FirebaseCollection.item.rawValue).document(itemId).delete() { err in
+        database.collection(FirebaseCollection.item.rawValue).document(itemId).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")
                 completion(.failure(err))
@@ -238,8 +270,8 @@ class ItemManager {
     }
     
     func addNotify(grpupId: String, completion: @escaping (Result<(), Error>) -> Void) {
-        let ref = db.collection("notification")
-        ref.addDocument(data:[
+        let ref = database.collection("notification")
+        ref.addDocument(data: [
                    "groupId": grpupId
                ]) { err in
                    if let err = err {
@@ -253,7 +285,7 @@ class ItemManager {
     }
     
     func listenForNotification(groupId: String, completion: @escaping () -> Void) {
-        db.collection("notification").whereField("groupId", isEqualTo: groupId)
+        database.collection("notification").whereField("groupId", isEqualTo: groupId)
             .addSnapshotListener { querySnapshot, error in
                 guard let snapshot = querySnapshot else {
                     print("Error retreiving snapshots \(error?.localizedDescription)")

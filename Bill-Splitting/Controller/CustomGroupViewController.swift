@@ -10,35 +10,22 @@ import UIKit
 class CustomGroupViewController: BaseViewController {
     
 // MARK: - Property
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
     let subscribeButton = UIButton()
     var noDataView = NoDataView(frame: .zero)
+    var reportView = ReportView()
     
+    let currentUserId = AccountManager.shared.currentUser.currentUserId //
     var group: GroupData?
     var members: [UserData] = []
     var items: [ItemData] = []
-    
-    var reportView = ReportView()
-    var reportContent: String?
-    var reportItem: ItemData?
-    
-    var personalExpense: Double? {
-        didSet {
-            if personalExpense ?? 0 >= 0 {
-                let revealExpense = String(format: "%.2f", personalExpense ?? 0)
-                groupDetailView.personalFinalPaidLabel.text = "你的總支出為：\(revealExpense) 元"
-            } else {
-                let revealExpense = String(format: "%.2f", abs(personalExpense ?? 0))
-                groupDetailView.personalFinalPaidLabel.text = "你的總欠款為：\(revealExpense) 元"
-            }
-        }
-    }
-    
+    var reportItem: ItemData? // ?
+    var personalExpense: Double?
     var subsriptions: [Subscription] = []
     var subscriptionCreatedTime: Double?
-    var blockList: [String] = []
+    var blockList: [String] = [] //
     
 // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -70,49 +57,11 @@ class CustomGroupViewController: BaseViewController {
     }
     
 // MARK: - Method
-    func setGroupDetailView() {
-        view.addSubview(groupDetailView)
-        setGroupDetailViewConstraint()
-        
-        groupDetailView.groupName.text = group?.groupName ?? ""
-        groupDetailView.addExpenseButton.addTarget(self, action: #selector(pressAddItem), for: .touchUpInside)
-        groupDetailView.chartButton.addTarget(self, action: #selector(pressChartButton), for: .touchUpInside)
-        groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
-        
-        groupDetailView.personalFinalPaidLabel.text = "你的總支出為："
-        hideAddItemButton()
-    }
-    
-    func setItemTableView() {
-        self.view.addSubview(itemTableView)
-        setTableViewConstraint()
-        
-        itemTableView.register(
-            UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil),
-            forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
-        itemTableView.dataSource = self
-        itemTableView.delegate = self
-        
-        itemTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        itemTableView.backgroundColor = UIColor.clear
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
-        itemTableView.addGestureRecognizer(longPress)
-    }
-    
-    func setSubscribeButton() {
-        view.addSubview(subscribeButton)
-        setSubscribeButtonConstraint()
-        subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
-        subscribeButton.setTitle("設定週期", for: .normal)
-        subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
-        ElementsStyle.styleSpecificButton(subscribeButton)
-        hideSubscribeButton()
-    }
-
     func getUserData() {
+        guard let group = group else { return }
         members.removeAll()
-        group?.memberData?.removeAll()
-        UserManager.shared.fetchMembersData(membersId: group?.member ?? []) { [weak self] result in
+        self.group?.memberData?.removeAll()
+        UserManager.shared.fetchMembersData(membersId: group.member) { [weak self] result in
             switch result {
             case .success(let users):
                 self?.members = users
@@ -124,13 +73,15 @@ class CustomGroupViewController: BaseViewController {
     }
     
     func listenToNewItem() {
-        ItemManager.shared.listenForNotification(groupId: group?.groupId ?? "") { [weak self] in
+        guard let group = group else { return }
+        ItemManager.shared.listenForNotification(groupId: group.groupId) { [weak self] in
             self?.getItemData()
         }
     }
     
     func getItemData() {
-        ItemManager.shared.fetchGroupItemData(groupId: group?.groupId ?? "") { [weak self] result in
+        guard let group = group else { return }
+        ItemManager.shared.fetchGroupItemData(groupId: group.groupId) { [weak self] result in
             switch result {
             case .success(let items):
                 self?.hideNoDataLabel(items)
@@ -144,7 +95,7 @@ class CustomGroupViewController: BaseViewController {
     
     func getItemDetail() {
         let group = DispatchGroup()
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
+        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent) // global
         
         for (index, item) in self.items.enumerated() {
             group.enter()
@@ -191,11 +142,12 @@ class CustomGroupViewController: BaseViewController {
         GroupManager.shared.fetchMemberExpense(
             groupId: group.groupId ,
             members: group.member
-        ) { [weak self] result in
+        ) { [weak self] result in //
             switch result {
             case .success(let expense):
                 self?.group?.memberExpense = expense
                 self?.getPesronalExpense(expense)
+                
             case .failure:
                 self?.showFailure(text: ErrorType.dataError.errorMessage)
             }
@@ -203,16 +155,16 @@ class CustomGroupViewController: BaseViewController {
     }
     
     fileprivate func getPesronalExpense(_ expense: ([MemberExpense])) {
-        let userExpense = expense.filter { $0.userId == (self.currentUserId) }
-        if userExpense.isEmpty == false {
-            self.personalExpense = userExpense[0].allExpense
-        }
+        let userExpense = expense.first(where: { $0.userId == currentUserId })
+        personalExpense = userExpense?.allExpense
+        self.showPersonalExpense()
     }
     
     func getLeaveMemberData() {
-        group?.leaveMemberData = []
-        if group?.leaveMembers != nil {
-            UserManager.shared.fetchMembersData(membersId: group?.leaveMembers ?? []) {  [weak self] result in
+        guard let group = group else { return }
+        self.group?.leaveMemberData = []
+        if group.leaveMembers != nil {
+            UserManager.shared.fetchMembersData(membersId: group.leaveMembers ?? []) {  [weak self] result in
                 switch result {
                 case .success(let userData):
                     self?.group?.leaveMemberData = userData
@@ -234,7 +186,8 @@ class CustomGroupViewController: BaseViewController {
     }
     
     func pressClosedGroup() {
-        GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "") { [weak self] result in
+        guard let group = group else { return }
+        GroupManager.shared.updateGroupStatus(groupId: group.groupId) { [weak self] result in
             switch result {
             case .success:
                 self?.showSuccess(text: "成功封存群組")
@@ -262,8 +215,9 @@ class CustomGroupViewController: BaseViewController {
     }
     
     func detectSubscription() {
-        if group?.type == GroupType.personal.typeInt {
-            SubscriptionManager.shared.fetchSubscriptionData(groupId: group?.groupId ?? "") { [weak self] result  in
+        guard let group = group else { return }
+        if group.type == GroupType.personal.typeInt {
+            SubscriptionManager.shared.fetchSubscriptionData(groupId: group.groupId) { [weak self] result in
                 switch result {
                 case .success(let subscription):
                     self?.subsriptions = subscription
@@ -271,15 +225,11 @@ class CustomGroupViewController: BaseViewController {
                         for indexOfSubscription in 0..<subscription.count {
                             self?.getSubscription(index: indexOfSubscription)
                         }
-                    } else {
-                        return
                     }
                 case .failure:
                     self?.showFailure(text: ErrorType.generalError.errorMessage)
                 }
             }
-        } else {
-            return
         }
     }
     
@@ -314,68 +264,44 @@ class CustomGroupViewController: BaseViewController {
     fileprivate func deleteSubscription(_ index: Int) {
         SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[index].doucmentId)
     }
-    
-    fileprivate func updateSubscriptionMonth(_ startDate: inout Date, _ endDate: Date, _ index: Int) {
-        let components = Calendar.current.dateComponents([.month], from: startDate, to: endDate)
-        let month = components.month
-        if month ?? 0 > 0 {
-            var dateComponent = DateComponents()
-            dateComponent.month = 1
-            startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
-            subscriptionCreatedTime = startDate.timeIntervalSince1970
+        
+    private func updateSubscription(_ startDate: Date, _ endDate: Date, _ index: Int, _ component: Calendar.Component) {
+        let nextDateDistance = Date.countComponent(
+            component: component, startDate: startDate, endDate: endDate)
+        if nextDateDistance > 0 {
+            subscriptionCreatedTime = Date.updateDateTimestamp(
+                component: component, startDate: startDate, endDate: endDate)
         } else {
             deleteSubscription(index)
         }
-    }
-    
-    fileprivate func updateSubscriptionYear(_ startDate: inout Date, _ endDate: Date, _ index: Int) {
-        let components = Calendar.current.dateComponents([.year], from: startDate, to: endDate)
-        let year = components.year
-        if year ?? 0 > 0 {
-            var dateComponent = DateComponents()
-            dateComponent.year = 1
-            startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
-            subscriptionCreatedTime = startDate.timeIntervalSince1970
-        } else {
-            deleteSubscription(index)
-        }
-    }
-    
-    func getTimeDate(timeStamp: Double) -> Date {
-        let timeStamp = timeStamp
-        let timeInterval = TimeInterval(timeStamp)
-        let date = Date(timeIntervalSince1970: timeInterval)
-        return date
     }
     
     func countSubscriptiontime(index: Int) {
-        var startDate = getTimeDate(timeStamp: subsriptions[index].startTime)
-        let endDate = getTimeDate(timeStamp: subsriptions[index].endTime)
+        let startDate = Date.getTimeDate(timeStamp: subsriptions[index].startTime)
+        let endDate = Date.getTimeDate(timeStamp: subsriptions[index].endTime)
         
         switch subsriptions[index].cycle {
-        case Cycle.month.typeInt :
-            updateSubscriptionMonth(&startDate, endDate, index)
-        case Cycle.year.typeInt :
-            updateSubscriptionYear(&startDate, endDate, index)
-        default:
-            return
+        case .month:
+            updateSubscription(startDate, endDate, index, .month)
+        case .year:
+            updateSubscription(startDate, endDate, index, .year)
         }
     }
     
     func addSubscriptionItem(index: Int) {
-        ItemManager.shared.addItemData(groupId: group?.groupId ?? "",
+        guard let group = group else { return }
+        ItemManager.shared.addItemData(groupId: group.groupId,
                                        itemName: subsriptions[index].itemName,
                                        itemDescription: "",
                                        createdTime: subsriptions[index].startTime,
                                        itemImage: nil) { [weak self] itemId in
-            var paidUserId: String?
-            paidUserId = self?.subsriptions[index].paidUser
+            let paidUserId = self?.subsriptions[index].paidUser
             
             let subscriptInvolved: [ExpenseInfo]  = self?.getSubscriptionInvolved(index: index) ?? []
             let subscriptInvolvedPrice: [Double] = self?.getSubscriptionPrice(index: index) ?? []
             
             AddItem.shared.addItem(
-                groupId: self?.group?.groupId ?? "",
+                groupId: group.groupId,
                 itemId: itemId,
                 paidUserId: paidUserId ?? "",
                 paidPrice: self?.subsriptions[index].paidPrice ?? 0,
@@ -386,7 +312,7 @@ class CustomGroupViewController: BaseViewController {
         }
     }
     
-    func getSubscriptionInvolved(index: Int) -> [ExpenseInfo] {
+    func getSubscriptionInvolved(index: Int) -> [ExpenseInfo] { // map
         let subscriptInvolvedItem = subsriptions[index].subscriptionMember
         var subscriptInvolved: [ExpenseInfo] = []
         for user in 0..<(subscriptInvolvedItem?.count ?? 0) {
@@ -467,7 +393,7 @@ class CustomGroupViewController: BaseViewController {
         guard let subscribeViewController =
                 storyBoard.instantiateViewController(
                     withIdentifier: String(describing: SubscribeViewController.self)
-                ) as? SubscribeViewController else { return }
+                ) as? SubscribeViewController else { return } //
         subscribeViewController.memberId = group?.member
         subscribeViewController.memberData = members
         subscribeViewController.groupData = group
@@ -475,17 +401,7 @@ class CustomGroupViewController: BaseViewController {
         self.present(subscribeViewController, animated: true, completion: nil)
     }
     
-    func getTimeString(timeStamp: Double) -> String {
-        let timeStamp = timeStamp
-        let timeInterval = TimeInterval(timeStamp)
-        let date = Date(timeIntervalSince1970: timeInterval)
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
-        let time = dateFormatter.string(from: date)
-        return time
-    }
-    
-    func getPaidInfo(item: ItemData) -> ExpenseInfo? {
+    func getPaidInfo(item: ItemData) -> ExpenseInfo? { // filter
         var paid: ExpenseInfo?
         for index in 0..<items.count {
             if items[index].paidInfo?[0].itemId == item.itemId {
@@ -500,7 +416,7 @@ class CustomGroupViewController: BaseViewController {
         var involved: ExpenseInfo?
         for index in 0..<items.count {
             involves = items[index].involedInfo ?? []
-            for  involve in 0..<involves.count {
+            for involve in 0..<involves.count {
                 if involves[involve].itemId == item.itemId && involves[involve].userId == currentUserId {
                     involved = involves[involve]
                 }
@@ -527,27 +443,23 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         let item = items[indexPath.row]
         let paid = getPaidInfo(item: item)
         let involved = getInvolvedInfo(item: item)
-        let time = getTimeString(timeStamp: item.createdTime)
+        let time = Date.getTimeString(timeStamp: item.createdTime)
+        var involvedType: InvolvedType
         
         if paid?.userId == currentUserId {
-            itemsCell.mapItemCell(
-                item: item, time: time,
-                paidPrice: paid?.price ?? 0,
-                involvedPrice: involved?.price ?? 0,
-                involvedType: .paid)
+            involvedType = .paid
         } else if involved?.userId == currentUserId {
-            itemsCell.mapItemCell(
-                item: item, time: time,
-                paidPrice: paid?.price ?? 0,
-                involvedPrice: involved?.price ?? 0,
-                involvedType: .involved)
+            involvedType = .involved
         } else {
-            itemsCell.mapItemCell(
-                item: item, time: time,
-                paidPrice: paid?.price ?? 0,
-                involvedPrice: involved?.price ?? 0,
-                involvedType: .notInvolved)
+            involvedType = .notInvolved
         }
+        
+        itemsCell.mapItemCell(
+            item: item, time: time,
+            paidPrice: paid?.price ?? 0,
+            involvedPrice: involved?.price ?? 0,
+            involvedType: involvedType)
+        
         return itemsCell
     }
     
@@ -569,7 +481,6 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
     }
     
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
-        
         let cell = tableView.cellForRow(at: indexPath)
         UIView.animate(withDuration: 0.25) {
             cell?.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
@@ -653,8 +564,7 @@ extension CustomGroupViewController {
             textField.placeholder = "檢舉原因"
         }
         let reportAlert = UIAlertAction(title: "檢舉", style: .default) { [weak self] _ in
-            self?.reportContent = alertController.textFields?[0].text
-            self?.report()
+            self?.report(reportContent: alertController.textFields?[0].text ?? "")
         }
         let cancelAlert = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         alertController.addAction(cancelAlert)
@@ -662,7 +572,8 @@ extension CustomGroupViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-    func report() {
+    func report(reportContent: String) {
+        let reportContent = reportContent
         let report = Report(groupId: group?.groupId ?? "",
                             itemId: reportItem?.itemId ?? "",
                             reportContent: reportContent)
@@ -731,6 +642,54 @@ extension CustomGroupViewController {
 }
 
 extension CustomGroupViewController {
+    func setGroupDetailView() {
+        view.addSubview(groupDetailView)
+        setGroupDetailViewConstraint()
+        
+        groupDetailView.groupName.text = group?.groupName ?? ""
+        groupDetailView.addExpenseButton.addTarget(self, action: #selector(pressAddItem), for: .touchUpInside)
+        groupDetailView.chartButton.addTarget(self, action: #selector(pressChartButton), for: .touchUpInside)
+        groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
+        showPersonalExpense()
+        hideAddItemButton()
+    }
+    
+    func showPersonalExpense() {
+        if personalExpense ?? 0 >= 0 {
+            let revealExpense = Double.formatString(personalExpense ?? 0)
+            groupDetailView.personalFinalPaidLabel.text = "你的總支出為：\(revealExpense) 元"
+        } else {
+            let revealExpense = Double.formatString(abs(personalExpense ?? 0))
+            groupDetailView.personalFinalPaidLabel.text = "你的總欠款為：\(revealExpense) 元"
+        }
+    }
+    
+    func setItemTableView() {
+        self.view.addSubview(itemTableView)
+        setTableViewConstraint()
+        
+        itemTableView.register(
+            UINib(nibName: String(describing: ItemTableViewCell.self), bundle: nil),
+            forCellReuseIdentifier: String(describing: ItemTableViewCell.self))
+        itemTableView.dataSource = self
+        itemTableView.delegate = self
+        
+        itemTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        itemTableView.backgroundColor = UIColor.clear
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
+        itemTableView.addGestureRecognizer(longPress)
+    }
+    
+    func setSubscribeButton() {
+        view.addSubview(subscribeButton)
+        setSubscribeButtonConstraint()
+        subscribeButton.setImage(UIImage(systemName: "calendar"), for: .normal)
+        subscribeButton.setTitle("設定週期", for: .normal)
+        subscribeButton.addTarget(self, action: #selector(pressSubscribe), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(subscribeButton)
+        hideSubscribeButton()
+    }
+
     fileprivate func hideNoDataLabel(_ items: ([ItemData])) {
         if items.isEmpty == true {
             removeAnimation()
