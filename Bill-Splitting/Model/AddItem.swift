@@ -38,7 +38,8 @@ class AddItem {
                 ItemManager.shared.addInvolvedInfo(involvedUserId: involvedExpenseData[user].userId,
                                                    price: involvedPrice[user],
                                                    itemId: itemId,
-                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { [weak self] result in
+                                                   createdTime: Double(NSDate().timeIntervalSince1970)
+                ) { [weak self] result in
                     switch result {
                     case .success:
                         self?.isDataUploadSucces = true

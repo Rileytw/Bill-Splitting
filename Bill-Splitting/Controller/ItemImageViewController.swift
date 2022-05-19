@@ -9,8 +9,6 @@ import UIKit
 
 class ItemImageViewController: UIViewController, UIScrollViewDelegate {
 
-    let width = UIScreen.main.bounds.size.width
-    let height = UIScreen.main.bounds.size.height
     var scrollImage: UIScrollView = UIScrollView()
     var photoView = UIView()
     var photoImage = UIImageView()

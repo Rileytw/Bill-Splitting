@@ -67,32 +67,40 @@ class ItemTableViewCell: UITableViewCell {
         switch involvedType {
         case .paid:
             if item.itemName == "結帳" {
-                createItemCell(time: time, name: item.itemName,
-                               description: PaidDescription.settleUpInvolved, price: paidPrice)
+                createItemCell(
+                    time: time,
+                    name: item.itemName,
+                    description: PaidDescription.settleUpInvolved,
+                    price: paidPrice)
                 paidDescription.textColor = .styleRed
             } else {
-                createItemCell(time: time, name: item.itemName, description: PaidDescription.paid, price: paidPrice)
+                createItemCell(
+                    time: time,
+                    name: item.itemName,
+                    description: PaidDescription.paid,
+                    price: paidPrice)
                 paidDescription.textColor = .styleGreen
             }
         case .involved:
             if item.itemName == "結帳" {
-                createItemCell(time: time,
-                                         name: item.itemName,
-                                         description: PaidDescription.settleUpPaid,
-                                         price: involvedPrice)
+                createItemCell(
+                    time: time,
+                    name: item.itemName,
+                    description: PaidDescription.settleUpPaid,
+                    price: involvedPrice)
                 paidDescription.textColor = .styleGreen
             } else {
                 createItemCell(time: time,
-                                         name: item.itemName,
-                                         description: PaidDescription.involved,
-                                         price: involvedPrice)
+                               name: item.itemName,
+                               description: PaidDescription.involved,
+                               price: involvedPrice)
                 paidDescription.textColor = .styleRed
             }
         case .notInvolved:
             createItemCell(time: time,
-                                     name: item.itemName,
-                                     description: PaidDescription.notInvolved,
-                                     price: 0)
+                           name: item.itemName,
+                           description: PaidDescription.notInvolved,
+                           price: 0)
             paidDescription.textColor = .greenWhite
         }
     }
