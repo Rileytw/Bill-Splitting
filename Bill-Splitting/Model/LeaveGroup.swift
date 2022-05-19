@@ -10,10 +10,9 @@ import UIKit
 class LeaveGroup {
     
     static let shared = LeaveGroup()
+    var isLeaveGroupSuccess: Bool = false
     
-    func leaveGroup(groupId: String, currentUserId: String, view: UIView, completion: @escaping () -> Void) {
-        
-        var isLeaveGroupSuccess: Bool = false
+    func leaveGroup(groupId: String, currentUserId: String, completion: @escaping () -> Void) {
         
         let group = DispatchGroup()
         let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
@@ -22,12 +21,12 @@ class LeaveGroup {
         
         firstQueue.async(group: group) {
             GroupManager.shared.removeGroupMember(
-                groupId: groupId, userId: currentUserId) { result in
+                groupId: groupId, userId: currentUserId) { [weak self] result in
                 switch result {
                 case .success:
-                    isLeaveGroupSuccess = true
+                    self?.isLeaveGroupSuccess = true
                 case .failure:
-                    isLeaveGroupSuccess = false
+                    self?.isLeaveGroupSuccess = false
                 }
                 group.leave()
             }
@@ -37,12 +36,12 @@ class LeaveGroup {
         group.enter()
         secondQueue.async(group: group) {
             GroupManager.shared.removeGroupExpense(
-                groupId: groupId, userId: currentUserId) { result in
+                groupId: groupId, userId: currentUserId) { [weak self] result in
                 switch result {
                 case .success:
-                    isLeaveGroupSuccess = true
+                    self?.isLeaveGroupSuccess = true
                 case .failure:
-                    isLeaveGroupSuccess = false
+                    self?.isLeaveGroupSuccess = false
                 }
                 group.leave()
             }
@@ -53,24 +52,19 @@ class LeaveGroup {
         
         thirdQueue.async(group: group) {
             GroupManager.shared.addLeaveMember(
-                groupId: groupId, userId: currentUserId) { result in
+                groupId: groupId, userId: currentUserId) { [weak self] result in
                 switch result {
                 case .success:
-                    isLeaveGroupSuccess = true
+                    self?.isLeaveGroupSuccess = true
                 case .failure:
-                    isLeaveGroupSuccess = false
+                    self?.isLeaveGroupSuccess = false
                 }
                 group.leave()
             }
         }
        
         group.notify(queue: DispatchQueue.main) {
-            if isLeaveGroupSuccess == true {
-                completion()
-            } else {
-                ProgressHUD.shared.view = view
-                ProgressHUD.showFailure(text: "發生錯誤")
-            }
+            completion()
         }
     }
 }
