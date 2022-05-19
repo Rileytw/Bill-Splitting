@@ -15,7 +15,7 @@ struct Subscription: Codable {
     var itemName: String
     var paidUser: String
     var paidPrice: Double
-    var cycle: Int
+    var cycle: Cycle
     var subscriptionMember: [SubscriptionMember]?
 }
 
@@ -25,16 +25,16 @@ struct SubscriptionMember: Codable {
     var involvedPrice: Double
 }
 
-enum Cycle: String {
-    case month = "每月"
-    case year = "每年"
-    
-    var typeInt: Int {
+enum Cycle: Int, Codable {
+    case month = 0
+    case year = 1
+
+    var typeName: String {
         switch self {
         case .month:
-            return 0
+            return "每月"
         case .year:
-            return 1
+            return "每年"
         }
-    }    
+    }
 }
