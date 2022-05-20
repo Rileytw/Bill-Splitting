@@ -89,6 +89,7 @@
 		35CC13A32835D88500432CAB /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A22835D88500432CAB /* ErrorType.swift */; };
 		35CC13A528360E8100432CAB /* Double+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A428360E8100432CAB /* Double+Extension.swift */; };
 		35CC13A72836186C00432CAB /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A62836186C00432CAB /* Date+Extension.swift */; };
+		35CC13BC2837317600432CAB /* WeCountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13BB2837317600432CAB /* WeCountTests.swift */; };
 		35D0EAD8281FB806001C9324 /* ProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */; };
 		35D0EAD9281FB806001C9324 /* ProfileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */; };
 		35D0EADC281FC7BF001C9324 /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */; };
@@ -121,10 +122,22 @@
 		35FF6401280A619E00508EAF /* SettleUpTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */; };
 		35FF6405280C2B8500508EAF /* SpecificSettleIUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF6404280C2B8500508EAF /* SpecificSettleIUpViewController.swift */; };
 		35FF6407280C62C900508EAF /* SubscribeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF6406280C62C900508EAF /* SubscribeViewController.swift */; };
+		D1FC7504CD96C7B8A92C70D0 /* Pods_WeCountTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BFA9C34388931ECC62739C7 /* Pods_WeCountTests.framework */; };
 		FDC92872A92782C067FD7CAA /* Pods_Bill_Splitting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		35CC13BD2837317600432CAB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 350A33382800450000201E40 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 350A333F2800450000201E40;
+			remoteInfo = "Bill-Splitting";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		00D2085030155118B7EB2828 /* Pods-WeCountTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WeCountTests.debug.xcconfig"; path = "Target Support Files/Pods-WeCountTests/Pods-WeCountTests.debug.xcconfig"; sourceTree = "<group>"; };
 		0619BB2CF09025753646E789 /* Pods-Bill-Splitting.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.debug.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.debug.xcconfig"; sourceTree = "<group>"; };
 		350A33402800450000201E40 /* WeCount.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeCount.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		350A33432800450000201E40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -211,6 +224,8 @@
 		35CC13A22835D88500432CAB /* ErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		35CC13A428360E8100432CAB /* Double+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extension.swift"; sourceTree = "<group>"; };
 		35CC13A62836186C00432CAB /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		35CC13B92837317600432CAB /* WeCountTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeCountTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		35CC13BB2837317600432CAB /* WeCountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeCountTests.swift; sourceTree = "<group>"; };
 		35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCollectionViewCell.swift; sourceTree = "<group>"; };
 		35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileCollectionViewCell.xib; sourceTree = "<group>"; };
 		35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
@@ -243,8 +258,10 @@
 		35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettleUpTableViewCell.xib; sourceTree = "<group>"; };
 		35FF6404280C2B8500508EAF /* SpecificSettleIUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecificSettleIUpViewController.swift; sourceTree = "<group>"; };
 		35FF6406280C62C900508EAF /* SubscribeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeViewController.swift; sourceTree = "<group>"; };
+		3BFA9C34388931ECC62739C7 /* Pods_WeCountTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WeCountTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bill-Splitting.release.xcconfig"; path = "Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting.release.xcconfig"; sourceTree = "<group>"; };
 		F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bill_Splitting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB279D2628A21FB8897FE986 /* Pods-WeCountTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WeCountTests.release.xcconfig"; path = "Target Support Files/Pods-WeCountTests/Pods-WeCountTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,6 +273,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		35CC13B62837317600432CAB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D1FC7504CD96C7B8A92C70D0 /* Pods_WeCountTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -263,6 +288,7 @@
 			isa = PBXGroup;
 			children = (
 				F86F6C5233B86EE54AEAD309 /* Pods_Bill_Splitting.framework */,
+				3BFA9C34388931ECC62739C7 /* Pods_WeCountTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -272,6 +298,8 @@
 			children = (
 				0619BB2CF09025753646E789 /* Pods-Bill-Splitting.debug.xcconfig */,
 				55154E560DABCC620B02955B /* Pods-Bill-Splitting.release.xcconfig */,
+				00D2085030155118B7EB2828 /* Pods-WeCountTests.debug.xcconfig */,
+				FB279D2628A21FB8897FE986 /* Pods-WeCountTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -280,6 +308,7 @@
 			isa = PBXGroup;
 			children = (
 				350A33422800450000201E40 /* Bill-Splitting */,
+				35CC13BA2837317600432CAB /* WeCountTests */,
 				350A33412800450000201E40 /* Products */,
 				247F1CC3EB2FEA18213B19E1 /* Pods */,
 				0FF1AB64931DEEA61F5ACA60 /* Frameworks */,
@@ -290,6 +319,7 @@
 			isa = PBXGroup;
 			children = (
 				350A33402800450000201E40 /* WeCount.app */,
+				35CC13B92837317600432CAB /* WeCountTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -457,6 +487,14 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		35CC13BA2837317600432CAB /* WeCountTests */ = {
+			isa = PBXGroup;
+			children = (
+				35CC13BB2837317600432CAB /* WeCountTests.swift */,
+			);
+			path = WeCountTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -481,6 +519,26 @@
 			productReference = 350A33402800450000201E40 /* WeCount.app */;
 			productType = "com.apple.product-type.application";
 		};
+		35CC13B82837317600432CAB /* WeCountTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35CC13BF2837317600432CAB /* Build configuration list for PBXNativeTarget "WeCountTests" */;
+			buildPhases = (
+				B01513C80DB7D8E863CA7DCA /* [CP] Check Pods Manifest.lock */,
+				35CC13B52837317600432CAB /* Sources */,
+				35CC13B62837317600432CAB /* Frameworks */,
+				35CC13B72837317600432CAB /* Resources */,
+				7BCE8F790FF7C7D5E381EF34 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				35CC13BE2837317600432CAB /* PBXTargetDependency */,
+			);
+			name = WeCountTests;
+			productName = WeCountTests;
+			productReference = 35CC13B92837317600432CAB /* WeCountTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -493,6 +551,10 @@
 				TargetAttributes = {
 					350A333F2800450000201E40 = {
 						CreatedOnToolsVersion = 13.1;
+					};
+					35CC13B82837317600432CAB = {
+						CreatedOnToolsVersion = 13.1;
+						TestTargetID = 350A333F2800450000201E40;
 					};
 				};
 			};
@@ -510,6 +572,7 @@
 			projectRoot = "";
 			targets = (
 				350A333F2800450000201E40 /* Bill-Splitting */,
+				35CC13B82837317600432CAB /* WeCountTests */,
 			);
 		};
 /* End PBXProject section */
@@ -546,6 +609,13 @@
 				350A334B2800450000201E40 /* Main.storyboard in Resources */,
 				35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */,
 				350A33682803F65800201E40 /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35CC13B72837317600432CAB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -604,6 +674,45 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Bill-Splitting/Pods-Bill-Splitting-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7BCE8F790FF7C7D5E381EF34 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-WeCountTests/Pods-WeCountTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-WeCountTests/Pods-WeCountTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-WeCountTests/Pods-WeCountTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B01513C80DB7D8E863CA7DCA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-WeCountTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FC61F7906505F907B0C475D7 /* [CP] Check Pods Manifest.lock */ = {
@@ -725,7 +834,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		35CC13B52837317600432CAB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				35CC13BC2837317600432CAB /* WeCountTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		35CC13BE2837317600432CAB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 350A333F2800450000201E40 /* Bill-Splitting */;
+			targetProxy = 35CC13BD2837317600432CAB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		350A33492800450000201E40 /* Main.storyboard */ = {
@@ -933,6 +1058,54 @@
 			};
 			name = Release;
 		};
+		35CC13C02837317600432CAB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 00D2085030155118B7EB2828 /* Pods-WeCountTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lei.WeCountTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WeCount.app/WeCount";
+			};
+			name = Debug;
+		};
+		35CC13C12837317600432CAB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FB279D2628A21FB8897FE986 /* Pods-WeCountTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lei.WeCountTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WeCount.app/WeCount";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -950,6 +1123,15 @@
 			buildConfigurations = (
 				350A33552800450100201E40 /* Debug */,
 				350A33562800450100201E40 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		35CC13BF2837317600432CAB /* Build configuration list for PBXNativeTarget "WeCountTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35CC13C02837317600432CAB /* Debug */,
+				35CC13C12837317600432CAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

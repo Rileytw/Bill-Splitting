@@ -157,7 +157,7 @@ class CustomGroupViewController: BaseViewController {
     fileprivate func getPesronalExpense(_ expense: ([MemberExpense])) {
         let userExpense = expense.first(where: { $0.userId == currentUserId })
         personalExpense = userExpense?.allExpense
-        self.showPersonalExpense()
+        self.showPersonalExpense(personalExpense: self.personalExpense ?? 0)
     }
     
     func getLeaveMemberData() {
@@ -270,7 +270,7 @@ class CustomGroupViewController: BaseViewController {
             component: component, startDate: startDate, endDate: endDate)
         if nextDateDistance > 0 {
             subscriptionCreatedTime = Date.updateDateTimestamp(
-                component: component, startDate: startDate, endDate: endDate)
+                component: component, startDate: startDate)
         } else {
             deleteSubscription(index)
         }
@@ -650,16 +650,16 @@ extension CustomGroupViewController {
         groupDetailView.addExpenseButton.addTarget(self, action: #selector(pressAddItem), for: .touchUpInside)
         groupDetailView.chartButton.addTarget(self, action: #selector(pressChartButton), for: .touchUpInside)
         groupDetailView.settleUpButton.addTarget(self, action: #selector(pressSettleUp), for: .touchUpInside)
-        showPersonalExpense()
+        showPersonalExpense(personalExpense: personalExpense ?? 0)
         hideAddItemButton()
     }
     
-    func showPersonalExpense() {
-        if personalExpense ?? 0 >= 0 {
-            let revealExpense = Double.formatString(personalExpense ?? 0)
+    func showPersonalExpense(personalExpense: Double) {
+        if personalExpense >= 0 {
+            let revealExpense = Double.formatString(personalExpense)
             groupDetailView.personalFinalPaidLabel.text = "你的總支出為：\(revealExpense) 元"
         } else {
-            let revealExpense = Double.formatString(abs(personalExpense ?? 0))
+            let revealExpense = Double.formatString(abs(personalExpense))
             groupDetailView.personalFinalPaidLabel.text = "你的總欠款為：\(revealExpense) 元"
         }
     }

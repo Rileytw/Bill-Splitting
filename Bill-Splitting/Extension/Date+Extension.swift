@@ -20,7 +20,7 @@ extension Date {
         }
     }
     
-    static func updateDateTimestamp(component: Calendar.Component, startDate: Date, endDate: Date) -> Double {
+    static func updateDateTimestamp(component: Calendar.Component, startDate: Date) -> Double {
         var dateComponent = DateComponents()
         
         if component == .month {
@@ -29,10 +29,10 @@ extension Date {
             dateComponent.year = 1
         }
         let startDate = Calendar.current.date(byAdding: dateComponent, to: startDate) ?? Date()
-        return startDate.timeIntervalSince1970
+        let newDate = startDate.timeIntervalSince1970
+        return newDate
     }
     
-    // extension
     static func getTimeDate(timeStamp: Double) -> Date {
         let timeStamp = timeStamp
         let timeInterval = TimeInterval(timeStamp)
