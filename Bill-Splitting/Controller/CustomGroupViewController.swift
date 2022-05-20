@@ -95,12 +95,10 @@ class CustomGroupViewController: BaseViewController {
     
     func getItemDetail() {
         let group = DispatchGroup()
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent) // global
-        
+        // global
         for (index, item) in self.items.enumerated() {
             group.enter()
-            
-            firstQueue.async(group: group) {
+            DispatchQueue.global().async {
                 ItemManager.shared.fetchPaidItemExpense(itemId: item.itemId) { [weak self] result in
                     switch result {
                     case .success(let items):
@@ -112,12 +110,10 @@ class CustomGroupViewController: BaseViewController {
                 }
             }
         }
-       
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         
         for (index, item) in self.items.enumerated() {
             group.enter()
-            secondQueue.async(group: group) {
+            DispatchQueue.global().async {
                 ItemManager.shared.fetchInvolvedItemExpense(itemId: item.itemId) { [weak self] result in
                     switch result {
                     case .success(let items):
@@ -326,11 +322,8 @@ class CustomGroupViewController: BaseViewController {
     }
     
     func getSubscriptionPrice(index: Int) -> [Double] {
-        let subscriptInvolvedItem = subsriptions[index].subscriptionMember
-        var  subscriptInvolvedPrice: [Double] = []
-        for user in 0..<(subscriptInvolvedItem?.count ?? 0) {
-            subscriptInvolvedPrice.append(subscriptInvolvedItem?[user].involvedPrice ?? 0)
-        }
+        guard let subscriptInvolvedItem = subsriptions[index].subscriptionMember else { return [] }
+        let subscriptInvolvedPrice: [Double] = subscriptInvolvedItem.map { $0.involvedPrice }
         return subscriptInvolvedPrice
     }
         
