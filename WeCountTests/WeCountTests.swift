@@ -18,7 +18,7 @@ class WeCountTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
-//        sut = nil
+        sut = nil
         try super.tearDownWithError()
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
@@ -29,10 +29,10 @@ class WeCountTests: XCTestCase {
         let startDate = Date.getTimeDate(timeStamp: 1653019200)
         
       // when
-//        Date.updateDateTimestamp(component: component, startDate: startDate)
-
+        let newDate = Date.updateDateTimestamp(component: component, startDate: startDate)
+        
       // then
-        XCTAssertEqual(Date.updateDateTimestamp(component: component, startDate: startDate),
+        XCTAssertEqual(newDate,
                        1655697600,
                        "updateDate is wrong")
     
