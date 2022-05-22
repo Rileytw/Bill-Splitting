@@ -8,8 +8,9 @@
 import UIKit
 
 class AddItemViewController: BaseViewController {
-    
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+
+// MARK: - Property
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
     var typePickerViewData = [SplitType.equal.label, SplitType.percent.label, SplitType.customize.label]
@@ -50,10 +51,10 @@ class AddItemViewController: BaseViewController {
     
     var itemImage: UIImage?
     
-    var blockList = [String]()
     typealias EditItem = (String) -> Void
     var editingItem: EditItem?
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -66,7 +67,7 @@ class AddItemViewController: BaseViewController {
         setInvolvedMembers()
         setTableView()
         setDismissButton()
-        detectBlackListUser()
+        detectBlockListUser()
         networkDetect()
     }
     
@@ -75,113 +76,8 @@ class AddItemViewController: BaseViewController {
         ElementsStyle.styleTextField(addItemView.itemNameTextField)
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
-    
-    fileprivate func setAddItemViewConstaint() {
-        addItemView.translatesAutoresizingMaskIntoConstraints = false
-        addItemView.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 10).isActive = true
-        addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-    }
-    
-    func setAddItemView() {
-        view.addSubview(addItemView)
-        setAddItemViewConstaint()
-        addItemView.itemName.text = "項目名稱"
-        addItemView.priceLabel.text = "支出金額"
-        
-        addItemView.priceTextField.keyboardType = .numberPad
-        
-        if isItemExist == true {
-            addItemView.itemNameTextField.text = itemData?.itemName
-            addItemView.priceTextField.text = String(itemData?.paidInfo?[0].price ?? 0)
-        }
-    }
-    
-    fileprivate func setPickerViewConstraint() {
-        typePickerView.translatesAutoresizingMaskIntoConstraints = false
-        typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
-        typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
-        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
-        typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-    }
-    
-    func setTypePickerView() {
-        view.addSubview(typePickerView)
-        setPickerViewConstraint()
-        typePickerView.pickerViewData = typePickerViewData
-        
-        typePickerView.pickerView.dataSource = self
-        typePickerView.pickerView.delegate = self
-        typePickerView.textField.delegate = self
-        
-        typePickerView.pickerView.tag = 0
-    }
-    
-    fileprivate func setMemberPickerViewConstraint() {
-        choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
-        choosePaidMember.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
-        choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
-    }
-    
-    func setmemberPickerView() {
-        view.addSubview(choosePaidMember)
-        setMemberPickerViewConstraint()
-        choosePaidMember.text = "選擇付款人"
-        choosePaidMember.textColor = UIColor.greenWhite
-        if group?.type == 0 {
-            choosePaidMember.isHidden = true
-        }
-        
-        view.addSubview(memberPickerView)
-        memberPickerView.translatesAutoresizingMaskIntoConstraints = false
-        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
-        memberPickerView.leadingAnchor.constraint(equalTo: choosePaidMember.trailingAnchor, constant: 20).isActive = true
-        memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
-        memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        memberPickerView.pickerView.dataSource = self
-        memberPickerView.pickerView.delegate = self
-        memberPickerView.textField.delegate = self
-        memberPickerView.pickerView.tag = 1
-        
-        if group?.type == 0 {
-            memberPickerView.isHidden = true
-            memberPickerView.heightAnchor.constraint(equalToConstant: 0).isActive = true
-        }
-    }
-    
-    func setAddButton() {
-        view.addSubview(addButton)
-        addButton.setTitle("完成", for: .normal)
-        //        addButton.backgroundColor = .systemGray
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
-        addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        addButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        ElementsStyle.styleSpecificButton(addButton)
-        
-        addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
-    }
-    
-    func setAddMoreButton() {
-        view.addSubview(addMoreButton)
-        addMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
-        addMoreButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        addMoreButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
-        addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
-        addMoreButton.backgroundColor = .systemTeal
-        addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
-        addMoreButton.setTitle("新增照片及說明", for: .normal)
-        addMoreButton.tintColor = .white
-        addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
-        ElementsStyle.styleSpecificButton(addMoreButton)
-    }
+
+// MARK: - Method
     
     @objc func pressAddMore() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
@@ -481,7 +377,9 @@ class AddItemViewController: BaseViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    func detectBlackListUser() {
+    func detectBlockListUser() {
+        let blockList = UserManager.shared.currentUser?.blackList
+        guard let blockList = blockList else { return }
         let newUserData = UserManager.renameBlockedUser(blockList: blockList,
                                                         userData: group?.memberData ?? [])
         group?.memberData = newUserData
@@ -638,5 +536,114 @@ extension AddItemViewController: UITextFieldDelegate {
                 self.pickerView(memberPickerView.pickerView, didSelectRow: 0, inComponent: 0)
             }
         }
+    }
+}
+
+extension AddItemViewController {
+    fileprivate func setAddItemViewConstaint() {
+        addItemView.translatesAutoresizingMaskIntoConstraints = false
+        addItemView.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 10).isActive = true
+        addItemView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        addItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+    }
+    
+    func setAddItemView() {
+        view.addSubview(addItemView)
+        setAddItemViewConstaint()
+        addItemView.itemName.text = "項目名稱"
+        addItemView.priceLabel.text = "支出金額"
+        
+        addItemView.priceTextField.keyboardType = .numberPad
+        
+        if isItemExist == true {
+            addItemView.itemNameTextField.text = itemData?.itemName
+            addItemView.priceTextField.text = String(itemData?.paidInfo?[0].price ?? 0)
+        }
+    }
+    
+    fileprivate func setPickerViewConstraint() {
+        typePickerView.translatesAutoresizingMaskIntoConstraints = false
+        typePickerView.topAnchor.constraint(equalTo: addItemView.bottomAnchor, constant: 20).isActive = true
+        typePickerView.leadingAnchor.constraint(equalTo: typeLabel.trailingAnchor, constant: 10).isActive = true
+        typePickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
+        typePickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setTypePickerView() {
+        view.addSubview(typePickerView)
+        setPickerViewConstraint()
+        typePickerView.pickerViewData = typePickerViewData
+        
+        typePickerView.pickerView.dataSource = self
+        typePickerView.pickerView.delegate = self
+        typePickerView.textField.delegate = self
+        
+        typePickerView.pickerView.tag = 0
+    }
+    
+    fileprivate func setMemberPickerViewConstraint() {
+        choosePaidMember.translatesAutoresizingMaskIntoConstraints = false
+        choosePaidMember.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
+        choosePaidMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        choosePaidMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        choosePaidMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setmemberPickerView() {
+        view.addSubview(choosePaidMember)
+        setMemberPickerViewConstraint()
+        choosePaidMember.text = "選擇付款人"
+        choosePaidMember.textColor = UIColor.greenWhite
+        if group?.type == 0 {
+            choosePaidMember.isHidden = true
+        }
+        
+        view.addSubview(memberPickerView)
+        memberPickerView.translatesAutoresizingMaskIntoConstraints = false
+        memberPickerView.topAnchor.constraint(equalTo: typePickerView.bottomAnchor, constant: 20).isActive = true
+        memberPickerView.leadingAnchor.constraint(equalTo: choosePaidMember.trailingAnchor, constant: 20).isActive = true
+        memberPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
+        memberPickerView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        memberPickerView.pickerView.dataSource = self
+        memberPickerView.pickerView.delegate = self
+        memberPickerView.textField.delegate = self
+        memberPickerView.pickerView.tag = 1
+        
+        if group?.type == 0 {
+            memberPickerView.isHidden = true
+            memberPickerView.heightAnchor.constraint(equalToConstant: 0).isActive = true
+        }
+    }
+    
+    func setAddButton() {
+        view.addSubview(addButton)
+        addButton.setTitle("完成", for: .normal)
+        //        addButton.backgroundColor = .systemGray
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
+        addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        addButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        ElementsStyle.styleSpecificButton(addButton)
+        
+        addButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
+    }
+    
+    func setAddMoreButton() {
+        view.addSubview(addMoreButton)
+        addMoreButton.translatesAutoresizingMaskIntoConstraints = false
+        addMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
+        addMoreButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        addMoreButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        addMoreButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
+        addMoreButton.backgroundColor = .systemTeal
+        addMoreButton.setImage(UIImage(systemName: "paperclip"), for: .normal)
+        addMoreButton.setTitle("新增照片及說明", for: .normal)
+        addMoreButton.tintColor = .white
+        addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(addMoreButton)
     }
 }

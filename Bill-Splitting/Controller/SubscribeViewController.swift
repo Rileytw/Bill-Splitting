@@ -9,7 +9,7 @@ import UIKit
 
 class SubscribeViewController: UIViewController {
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var startTimeDatePicker = UIDatePicker()
     var endTimeDatePicker = UIDatePicker()
     
@@ -49,8 +49,6 @@ class SubscribeViewController: UIViewController {
             tableView.reloadData()
         }
     }
-    
-    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -322,7 +320,9 @@ class SubscribeViewController: UIViewController {
     }
     
     func detectBlackListUser() {
-        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+        let blockList = UserManager.shared.currentUser?.blackList
+        guard let blockList = blockList else { return }
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList,
                                                         userData: memberData ?? [])
         memberData = newUserData
     }

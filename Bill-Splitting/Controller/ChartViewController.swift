@@ -21,7 +21,7 @@ class ChartViewController: UIViewController {
     var debtMember: [MemberExpense] = []
 //    var userData = [UserData]()
     var member = [UserData]()
-    var blockList = [String]()
+//    var blockList = [String]()
     var noDataChartsView = NoDataChartsView()
     var mask = UIView()
 
@@ -153,6 +153,7 @@ class ChartViewController: UIViewController {
     }
     
     func detectBlockListUser() {
+        guard let blockList = UserManager.shared.currentUser?.blackList else { return }
         let newUserData = UserManager.renameBlockedUser(blockList: blockList, userData: group?.memberData ?? [])
         group?.memberData = newUserData
         

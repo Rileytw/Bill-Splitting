@@ -14,24 +14,24 @@ import Lottie
 
 class SignInViewController: UIViewController {
     
-    let authorizationButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
-    var user: UserData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
-    
+// MARK: - Property
+    let authorizationButton = ASAuthorizationAppleIDButton(
+        authorizationButtonType: .signIn, authorizationButtonStyle: .black)
     var appName = UIImageView()
     private var animationView = AnimationView()
     var accountTextField = UITextField()
     var passwordTextField = UITextField()
     var logInButton = UIButton()
     var signUpButton = UIButton()
-    var thirdPartyId: String?
-    var appleId: String?
-    
     var privacyButton = UIButton()
     var eulaButton = UIButton()
-    let width = UIScreen.main.bounds.width
     
+    var user: UserData? = UserData()
     fileprivate var currentNonce: String?
-    
+    var thirdPartyId: String?
+    var appleId: String?
+
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -52,14 +52,7 @@ class SignInViewController: UIViewController {
         ElementsStyle.styleTextField(passwordTextField)
     }
     
-    func setAppleSignInButton() {
-        view.addSubview(authorizationButton)
-        authorizationButton.translatesAutoresizingMaskIntoConstraints = false
-        setAuthorizationButtonConstraint()
-        authorizationButton.cornerRadius = 8.0
-        authorizationButton.addTarget(self, action: #selector(handleAuthorizationAppleIDButtonPress), for: .touchUpInside)
-    }
-    
+// MARK: - Method
     @objc func handleAuthorizationAppleIDButtonPress() {
         let nonce = randomNonceString()
         currentNonce = nonce
@@ -81,40 +74,14 @@ class SignInViewController: UIViewController {
         }
     }
     
-    func setAccountTextField() {
-        view.addSubview(accountTextField)
-        accountTextField.translatesAutoresizingMaskIntoConstraints = false
-        setAccountTextFieldConstraint()
-        accountTextField.attributedPlaceholder = NSAttributedString(string: "輸入帳號",
-                                                                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
-    }
-    
-    func setPasswordTextField() {
-        view.addSubview(passwordTextField)
-        passwordTextField.translatesAutoresizingMaskIntoConstraints = false
-        setPasswordTextFieldConstraint()
-        passwordTextField.attributedPlaceholder = NSAttributedString(string: "輸入密碼",
-                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
-    }
-    
-    func setLoginButton() {
-        view.addSubview(logInButton)
-        logInButton.translatesAutoresizingMaskIntoConstraints = false
-        setLoginButtonConstraint()
-        logInButton.setTitle("登入", for: .normal)
-        logInButton.setTitleColor(.greenWhite, for: .normal)
-        ElementsStyle.styleSpecificButton(logInButton)
-        logInButton.layer.cornerRadius = 8.0
-        logInButton.addTarget(self, action: #selector(pressLogin), for: .touchUpInside)
-    }
-    
     @objc func pressLogin() {
         checkUserInput()
     }
     
     func signInWithFirebase() {
-        AccountManager.shared.signInWithFirebase(email: accountTextField.text ?? "",
-                                                 password: passwordTextField.text ?? "") { [weak self] result in
+        AccountManager.shared.signInWithFirebase(
+            email: accountTextField.text ?? "",
+            password: passwordTextField.text ?? "") { [weak self] result in
             switch result {
             case .success(let firebaseId):
                 self?.fetchUserData(userId: firebaseId, email: self?.accountTextField.text ?? "")
@@ -133,43 +100,34 @@ class SignInViewController: UIViewController {
         UserManager.shared.fetchSignInUserData(userId: userId) { [weak self] result in
             switch result {
             case .success(let user):
-                //                print(user)
                 if user == nil {
-                    self?.user.userId = userId
-                    self?.user.userEmail = email
+                    self?.user?.userId = userId
+                    self?.user?.userEmail = email
                     self?.addNewUserData()
                 }
-                self?.user.userName = user?.userName ?? ""
-                self?.user.userEmail = user?.userEmail ?? ""
-                self?.user.userId = user?.userId ?? ""
-                print("Login successed!")
-                AccountManager.shared.getCurrentUserInfo()
+//                self?.user?.userName = user?.userName ?? ""
+//                self?.user?.userEmail = user?.userEmail ?? ""
+//                self?.user?.userId = user?.userId ?? ""
+                self?.user = user
+//                AccountManager.shared.getCurrentUserInfo()
                 self?.enterFirstPage()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+            case .failure:
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: "讀取資料失敗")
             }
         }
     }
     
-    func setSignUpButton() {
-        view.addSubview(signUpButton)
-        signUpButton.translatesAutoresizingMaskIntoConstraints = false
-        setSignUpconstraint()
-        signUpButton.setTitle("沒有帳號嗎？開始註冊", for: .normal)
-        signUpButton.setTitleColor(.greenWhite, for: .normal)
-        signUpButton.addTarget(self, action: #selector(pressSignUp), for: .touchUpInside)
-    }
-    
     @objc func pressSignUp() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
-        guard let signUpViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: SignUpViewController.self)) as? SignUpViewController else { return }
+        guard let signUpViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: SignUpViewController.self)) as? SignUpViewController else { return }
         self.present(signUpViewController, animated: true, completion: nil)
     }
     
     func enterFirstPage() {
-        let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
+        let tabBarViewController = storyboard?.instantiateViewController(
+            withIdentifier: String(describing: TabBarViewController.self)) as? UITabBarController
         view.window?.rootViewController = tabBarViewController
         view.window?.makeKeyAndVisible()
     }
@@ -233,6 +191,159 @@ class SignInViewController: UIViewController {
         alertController.addAction(defaultAction)
         
         present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension SignInViewController: ASAuthorizationControllerDelegate {
+    func authorizationController(controller: ASAuthorizationController,
+                                 didCompleteWithAuthorization authorization: ASAuthorization) {
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
+        
+        guard let nonce = currentNonce else { return }
+        
+        guard let appleIDToken = credential.identityToken else { return }
+        guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { return}
+        let appCredential = OAuthProvider.credential(
+            withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
+        self.appleId = credential.user
+        user?.userName = "\(credential.fullName?.givenName ?? "請輸入使用者名稱")"
+        user?.userEmail = "\(credential.email ?? "")"
+        
+        firebaseSignInWithApple(credential: appCredential)
+    }
+    
+    func firebaseSignInWithApple(credential: AuthCredential) {
+        setAnimation()
+        Auth.auth().signIn(with: credential) { [weak self] authResult, error in
+            if error == nil {
+                self?.getFirebaseUserInfo()
+            } else {
+                self?.errorHandleWithAppleSignIn()
+            }
+        }
+    }
+    
+    func getFirebaseUserInfo() {
+        let currentUser = Auth.auth().currentUser
+        guard let user = currentUser else { return }
+        let uid = user.uid
+        let email = user.email
+        self.user?.userId = uid
+        self.user?.userEmail = email ?? ""
+        fetchUserData(userId: uid, email: email ?? "")
+    }
+    
+    func addNewUserData() {
+        guard let user = user else { return }
+        UserManager.shared.addUserData(userData: user) { [weak self] result in
+            switch result {
+            case .success:
+                self?.enterFirstPage()
+            case .failure(let error):
+                print("Error decoding userData: \(error)")
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: "發生錯誤，請重新登入")
+            }
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        switch (error) {
+        case ASAuthorizationError.canceled:
+            errorHandleWithAppleSignIn()
+            //            break
+        case ASAuthorizationError.failed:
+            errorHandleWithAppleSignIn()
+            //            break
+        case ASAuthorizationError.invalidResponse:
+            errorHandleWithAppleSignIn()
+            //            break
+        case ASAuthorizationError.notHandled:
+            errorHandleWithAppleSignIn()
+            //            break
+        case ASAuthorizationError.unknown:
+            errorHandleWithAppleSignIn()
+            //            break
+        default:
+            break
+        }
+        
+        print("didCompleteWithError: \(error.localizedDescription)")
+    }
+    
+    func errorHandleWithAppleSignIn() {
+        ProgressHUD.shared.view = self.view
+        ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+        
+    }
+    
+    @objc func pressPrivacyButton() {
+        let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
+        guard let webViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
+        webViewController.url = PolicyUrl.privacy.url
+        self.present(webViewController, animated: true, completion: nil)
+    }
+    
+    @objc func pressEulaButton() {
+        let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
+        guard let webViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
+        webViewController.url = PolicyUrl.eula.url
+        self.present(webViewController, animated: true, completion: nil)
+    }
+    
+}
+
+extension SignInViewController: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
+    }
+    
+    func setAppleSignInButton() {
+        view.addSubview(authorizationButton)
+        authorizationButton.translatesAutoresizingMaskIntoConstraints = false
+        setAuthorizationButtonConstraint()
+        authorizationButton.cornerRadius = 8.0
+        authorizationButton.addTarget(self,
+                                      action: #selector(handleAuthorizationAppleIDButtonPress), for: .touchUpInside)
+    }
+    
+    func setAccountTextField() {
+        view.addSubview(accountTextField)
+        accountTextField.translatesAutoresizingMaskIntoConstraints = false
+        setAccountTextFieldConstraint()
+        accountTextField.attributedPlaceholder = NSAttributedString(
+            string: "輸入帳號", attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+    }
+    
+    func setPasswordTextField() {
+        view.addSubview(passwordTextField)
+        passwordTextField.translatesAutoresizingMaskIntoConstraints = false
+        setPasswordTextFieldConstraint()
+        passwordTextField.attributedPlaceholder = NSAttributedString(
+            string: "輸入密碼",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+    }
+    
+    func setLoginButton() {
+        view.addSubview(logInButton)
+        logInButton.translatesAutoresizingMaskIntoConstraints = false
+        setLoginButtonConstraint()
+        logInButton.setTitle("登入", for: .normal)
+        logInButton.setTitleColor(.greenWhite, for: .normal)
+        ElementsStyle.styleSpecificButton(logInButton)
+        logInButton.layer.cornerRadius = 8.0
+        logInButton.addTarget(self, action: #selector(pressLogin), for: .touchUpInside)
+    }
+    
+    func setSignUpButton() {
+        view.addSubview(signUpButton)
+        signUpButton.translatesAutoresizingMaskIntoConstraints = false
+        setSignUpconstraint()
+        signUpButton.setTitle("沒有帳號嗎？開始註冊", for: .normal)
+        signUpButton.setTitleColor(.greenWhite, for: .normal)
+        signUpButton.addTarget(self, action: #selector(pressSignUp), for: .touchUpInside)
     }
     
     func setAnimation() {
@@ -302,94 +413,14 @@ class SignInViewController: UIViewController {
         signUpButton.widthAnchor.constraint(equalToConstant: 250).isActive = true
         signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
-}
-
-extension SignInViewController: ASAuthorizationControllerDelegate {
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
-        
-        guard let nonce = currentNonce else { return }
-        
-        guard let appleIDToken = credential.identityToken else { return }
-        guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { return}
-        let appCredential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
-        self.appleId = credential.user
-        user.userName = "\(credential.fullName?.givenName ?? "請輸入使用者名稱")"
-        user.userEmail = "\(credential.email ?? "")"
-        
-        firebaseSignInWithApple(credential: appCredential)
-    }
-    
-    func firebaseSignInWithApple(credential: AuthCredential) {
-        setAnimation()
-        Auth.auth().signIn(with: credential) { [weak self] authResult, error in
-            if error == nil {
-                self?.getFirebaseUserInfo()
-            } else {
-                self?.errorHandleWithAppleSignIn()
-            }
-        }
-    }
-    
-    func getFirebaseUserInfo() {
-        let currentUser = Auth.auth().currentUser
-        guard let user = currentUser else { return }
-        let uid = user.uid
-        let email = user.email
-        self.user.userId = uid
-        self.user.userEmail = email ?? ""
-        fetchUserData(userId: uid, email: email ?? "")
-    }
-    
-    func addNewUserData() {
-        UserManager.shared.addUserData(userData: user) { [weak self] result in
-            switch result {
-            case .success(let id):
-                self?.enterFirstPage()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "發生錯誤，請重新登入")
-            }
-        }
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        switch (error) {
-        case ASAuthorizationError.canceled:
-            errorHandleWithAppleSignIn()
-            //            break
-        case ASAuthorizationError.failed:
-            errorHandleWithAppleSignIn()
-            //            break
-        case ASAuthorizationError.invalidResponse:
-            errorHandleWithAppleSignIn()
-            //            break
-        case ASAuthorizationError.notHandled:
-            errorHandleWithAppleSignIn()
-            //            break
-        case ASAuthorizationError.unknown:
-            errorHandleWithAppleSignIn()
-            //            break
-        default:
-            break
-        }
-        
-        print("didCompleteWithError: \(error.localizedDescription)")
-    }
-    
-    func errorHandleWithAppleSignIn() {
-        ProgressHUD.shared.view = self.view
-        ProgressHUD.showFailure(text: "發生錯誤請稍後再試")
-        
-    }
     
     func setPrivacyButton() {
         let privacyLabel = UILabel()
         view.addSubview(privacyLabel)
         privacyLabel.translatesAutoresizingMaskIntoConstraints = false
         privacyLabel.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20).isActive = true
-        privacyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (width - 316)/2 ).isActive = true
+        privacyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+                                              constant: (UIScreen.width - 316)/2 ).isActive = true
         privacyLabel.widthAnchor.constraint(equalToConstant: 130).isActive = true
         privacyLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         privacyLabel.text = "點擊登入表示您同意"
@@ -410,13 +441,6 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         privacyButton.titleLabel?.font = privacyButton.titleLabel?.font.withSize(14)
     }
     
-    @objc func pressPrivacyButton() {
-        let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
-        guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
-        webViewController.url = PolicyUrl.privacy.url
-        self.present(webViewController, animated: true, completion: nil)
-    }
-    
     func setEulaButton() {
         view.addSubview(eulaButton)
         eulaButton.translatesAutoresizingMaskIntoConstraints = false
@@ -430,19 +454,5 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         eulaButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         eulaButton.titleLabel?.font = eulaButton.titleLabel?.font.withSize(14)
         eulaButton.addTarget(self, action: #selector(pressEulaButton), for: .touchUpInside)
-    }
-    
-    @objc func pressEulaButton() {
-        let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
-        guard let webViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: WebViewController.self)) as? WebViewController else { return }
-        webViewController.url = PolicyUrl.eula.url
-        self.present(webViewController, animated: true, completion: nil)
-    }
-    
-}
-
-extension SignInViewController: ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        return self.view.window!
     }
 }

@@ -11,6 +11,7 @@ import Lottie
 class RemindersViewController: UIViewController {
     
     let currentUserId = AccountManager.shared.currentUser.currentUserId
+//    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var addNotificationButton = UIButton()
     var notificationTime: Double?
     var reminders = [Reminder]()
@@ -22,7 +23,7 @@ class RemindersViewController: UIViewController {
     var reminderTitle: String?
     var reminderSubtitle: String?
     var remindBody: String?
-    var blackList = [String]()
+//    var blackList = [String]()
     
     var tableView = UITableView()
     var emptyLabel = UILabel()
@@ -40,7 +41,7 @@ class RemindersViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchCurrentUserData()
+//        fetchCurrentUserData()
         getReminders()
     }
     override func viewWillLayoutSubviews() {
@@ -215,24 +216,26 @@ class RemindersViewController: UIViewController {
         }
     }
     
-    func fetchCurrentUserData() {
-        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let currentUserData):
-                if currentUserData?.blackList != nil {
-                    self?.blackList = currentUserData?.blackList ?? []
-                }
-                print("success")
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
-            }
-        }
-    }
+//    func fetchCurrentUserData() {
+//        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+//            switch result {
+//            case .success(let currentUserData):
+//                if currentUserData?.blackList != nil {
+//                    self?.blackList = currentUserData?.blackList ?? []
+//                }
+//                print("success")
+//            case .failure(let error):
+//                print("\(error.localizedDescription)")
+//                ProgressHUD.shared.view = self?.view ?? UIView()
+//                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+//            }
+//        }
+//    }
     
     func detectBlackListUser() {
-        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+        let blockList = UserManager.shared.currentUser?.blackList
+        guard let blockList = blockList else { return }
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList,
                                                         userData: members)
         members = newUserData
     }

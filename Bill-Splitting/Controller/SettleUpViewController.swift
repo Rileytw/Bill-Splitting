@@ -9,8 +9,8 @@ import UIKit
 
 class SettleUpViewController: UIViewController {
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
-    var currentUserName: String?
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
+    var currentUserName = UserManager.shared.currentUser?.userName ?? ""
     var creator: UserData?
     var group: GroupData?
     var expense: Double?
@@ -23,7 +23,6 @@ class SettleUpViewController: UIViewController {
 
         navigationItem.title = "結算群組帳務"
         ElementsStyle.styleBackground(view)
-        getCurrentUserName()
         checkLeaveMember()
         getCreatorData()
         detectBlockListUser()
@@ -59,20 +58,6 @@ class SettleUpViewController: UIViewController {
         if let memberExpense = group?.memberExpense {
             if group?.creator == currentUserId {
                 group?.memberExpense = memberExpense.filter { $0.userId != currentUserId }
-            }
-        }
-    }
-    
-    func getCurrentUserName() {
-        UserManager.shared.fetchSignInUserData(userId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let user):
-                self?.currentUserName = user?.userName
-                self?.tableView.reloadData()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -136,23 +121,23 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
             if let revealExpense = memberExpense?.allExpense {
                 if (memberExpense?.allExpense ?? 0) > 0 {
                     settleUpCell.price.text = " $ " + String(format: "%.2f", revealExpense)
-                    settleUpCell.payerName.text = "\(currentUserName ?? "")"
+                    settleUpCell.payerName.text = currentUserName
                     settleUpCell.creditorName.text = "\(memberData?[0].userName ?? "")"
                     
                 } else {
                     settleUpCell.price.text = " $ " + String(format: "%.2f", abs(revealExpense))
-                    settleUpCell.creditorName.text = "\(currentUserName ?? "")"
+                    settleUpCell.creditorName.text = currentUserName
                     settleUpCell.payerName.text = "\(memberData?[0].userName ?? "")"
                 }
             }
         } else {
             if expense < 0 {
-                settleUpCell.payerName.text = "\(currentUserName ?? "")"
+                settleUpCell.payerName.text = currentUserName
                 settleUpCell.creditorName.text = "\(creator?.userName ?? "")"
                 settleUpCell.price.text = " $ " + String(format: "%.2f", abs(expense))
             } else {
                 settleUpCell.price.text = " $ " + String(format: "%.2f", expense)
-                settleUpCell.creditorName.text = "\(currentUserName ?? "")"
+                settleUpCell.creditorName.text = currentUserName
                 settleUpCell.payerName.text = "\(creator?.userName ?? "")"
             }
         }

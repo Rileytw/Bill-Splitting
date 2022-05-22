@@ -9,7 +9,8 @@ import UIKit
 
 class SpecificSettleIUpViewController: UIViewController {
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+//    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var userData: UserData?
     var groupId: String?
     var groupData: GroupData?

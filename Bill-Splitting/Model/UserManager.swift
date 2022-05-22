@@ -115,7 +115,7 @@ class UserManager {
                                 userData = user
                                 if let userData = userData {
                                     users.append(userData)
-                                    completion(.success(users))
+//                                    completion(.success(users))
                                 }
                             }
                         } catch {
@@ -125,12 +125,13 @@ class UserManager {
                         }
                     }
                 }
+                
+                if users.count == membersId.count {
+                    completion(.success(users))
+                }
             }
-          
         }
-        
     }
-    
     
     func fetchUsersData(completion: @escaping (Result<[UserData], Error>) -> Void) {
         db.collection(FirebaseCollection.user.rawValue).getDocuments() { (querySnapshot, error) in
@@ -186,7 +187,7 @@ class UserManager {
         }
     }
     
-//   MARK: - Change getDocuments to addSnapshotListener
+// MARK: - Change getDocuments to addSnapshotListener
     func fetchSignInUserData(userId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
         db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: userId).addSnapshotListener { (querySnapshot, error) in
             
@@ -196,6 +197,7 @@ class UserManager {
                 do {
                     if let user = try querySnapshot!.documents.first?.data(as: UserData.self, decoder: Firestore.Decoder()) {
                         completion(.success(user))
+                        self.currentUser = user
                     } else {
                         completion(.success(nil))
                     }

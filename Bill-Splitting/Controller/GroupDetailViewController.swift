@@ -7,50 +7,29 @@
 
 import UIKit
 
-class GroupDetailViewController: UIViewController {
+class GroupDetailViewController: BaseViewController {
 
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+// MARK: - Property
     var tableView = UITableView()
     var leaveGroupButton = UIButton()
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var groupData: GroupData?
     var userData: [UserData] = []
     var personalExpense: Double?
-    var blackList = [String]()
     var memberExpense: Double = 0
     
-    let fullScreenSize = UIScreen.main.bounds.size
-    
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         setLeaveGroupButton()
         setTableView()
         setAddGroupButton()
-        detectBlackListUser()
+        detectBlockListUser()
         getMembersExpense()
     }
-    
-    func setTableView() {
-        self.view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        setTableViewConstraint()
-        tableView.register(UINib(nibName: String(describing: GroupDetailTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: GroupDetailTableViewCell.self))
-        tableView.register(UINib(nibName: String(describing: FriendListTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: FriendListTableViewCell.self))
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.backgroundColor = .clear
-    }
-    
-    func setLeaveGroupButton() {
-        view.addSubview(leaveGroupButton)
-        leaveGroupButton.translatesAutoresizingMaskIntoConstraints = false
-        setLeaveGroupButtonConstraint()
-        leaveGroupButton.setTitle("退出群組", for: .normal)
-        leaveGroupButton.setTitleColor(.greenWhite, for: .normal)
-        ElementsStyle.styleSpecificButton(leaveGroupButton)
-        leaveGroupButton.addTarget(self, action: #selector(detectUserExpense), for: .touchUpInside)
-    }
-    
+
+// MARK: - Method
     @objc func detectUserExpense() {
         if personalExpense == 0 && groupData?.creator != currentUserId {
             leaveGroupAlert()
@@ -73,7 +52,8 @@ class GroupDetailViewController: UIViewController {
     @objc func pressEdit() {
         if groupData?.status == 0 {
             let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
-            guard let addGroupViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
+            guard let addGroupViewController = storyBoard.instantiateViewController(
+                withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
             addGroupViewController.isGroupExist = true
             addGroupViewController.group = groupData
             self.show(addGroupViewController, sender: nil)
@@ -83,7 +63,8 @@ class GroupDetailViewController: UIViewController {
     }
     
     func setAddGroupButton() {
-        let addButton = UIBarButtonItem.init(title: "編輯", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pressEdit))
+        let addButton = UIBarButtonItem.init(
+            title: "編輯", style: UIBarButtonItem.Style.plain, target: self, action: #selector(pressEdit))
         self.navigationItem.setRightBarButton(addButton, animated: true)
     }
     
@@ -176,8 +157,10 @@ class GroupDetailViewController: UIViewController {
         self.navigationController?.popToRootViewController(animated: true)
     }
     
-    func detectBlackListUser() {
-        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+    func detectBlockListUser() {
+        let blockList = UserManager.shared.currentUser?.blackList
+        guard let blockList = blockList else { return }
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList,
                                       userData: userData)
         userData = newUserData
     }
@@ -188,11 +171,9 @@ class GroupDetailViewController: UIViewController {
             GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "") { [weak self] result in
                    switch result {
                    case .success:
-//                       ProgressHUD.shared.view = self?.view ?? UIView()
-                       ProgressHUD.showSuccess(text: "成功封存群組")
+                       self?.showSuccess(text: "成功封存群組")
                    case .failure:
-//                       ProgressHUD.shared.view = self?.view ?? UIView()
-                       ProgressHUD.showFailure(text: "封存群組失敗，請稍後再試")
+                       self?.showFailure(text: "封存群組失敗，請稍後再試")
                    }
             }
             self.navigationController?.popToRootViewController(animated: true)
@@ -267,5 +248,28 @@ extension GroupDetailViewController {
         leaveGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         leaveGroupButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
         leaveGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        setTableViewConstraint()
+        tableView.register(UINib(nibName: String(describing: GroupDetailTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: GroupDetailTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: FriendListTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: FriendListTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.backgroundColor = .clear
+    }
+    
+    func setLeaveGroupButton() {
+        view.addSubview(leaveGroupButton)
+        leaveGroupButton.translatesAutoresizingMaskIntoConstraints = false
+        setLeaveGroupButtonConstraint()
+        leaveGroupButton.setTitle("退出群組", for: .normal)
+        leaveGroupButton.setTitleColor(.greenWhite, for: .normal)
+        ElementsStyle.styleSpecificButton(leaveGroupButton)
+        leaveGroupButton.addTarget(self, action: #selector(detectUserExpense), for: .touchUpInside)
     }
 }

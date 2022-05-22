@@ -17,6 +17,16 @@ struct UserData: Codable {
     var payment: [Payment]?
     var blackList: [String]?
     var friends: [Friend]?
+    
+    init() {
+        userId = ""
+        userName = ""
+        userEmail = ""
+        group = nil
+        payment = nil
+        blackList = nil
+        friends = nil
+    }
 }
 
 struct Payment: Codable {

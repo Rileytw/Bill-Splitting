@@ -10,7 +10,8 @@ import Lottie
 
 class RecordsViewController: UIViewController {
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+//    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     private var animationView = AnimationView()
     var tableView = UITableView()
     var emptyLabel = UILabel()
@@ -21,7 +22,7 @@ class RecordsViewController: UIViewController {
     var personalPaid: [ExpenseInfo] = []
     var personalInvolved: [ExpenseInfo] = []
     var allPersonalItem: [ExpenseInfo] = []
-    var blackList = [String]()
+//    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +36,7 @@ class RecordsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchCurrentUserData()
+//        fetchCurrentUserData()
 //        setAnimation()
         getGroupData()
     }
@@ -145,19 +146,19 @@ class RecordsViewController: UIViewController {
         }
     }
     
-    func fetchCurrentUserData() {
-        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let currentUserData):
-                if currentUserData?.blackList != nil {
-                    self?.blackList = currentUserData?.blackList ?? []
-                }
-                print("success")
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-            }
-        }
-    }
+//    func fetchCurrentUserData() {
+//        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+//            switch result {
+//            case .success(let currentUserData):
+//                if currentUserData?.blackList != nil {
+//                    self?.blackList = currentUserData?.blackList ?? []
+//                }
+//                print("success")
+//            case .failure(let error):
+//                print("\(error.localizedDescription)")
+//            }
+//        }
+//    }
 
     func cleanData() {
         groups.removeAll()
@@ -167,7 +168,6 @@ class RecordsViewController: UIViewController {
         personalPaid.removeAll()
         personalInvolved.removeAll()
         allPersonalItem.removeAll()
-        blackList.removeAll()
     }
     
     func setAnimation() {
@@ -298,7 +298,7 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
         groupData = groups.filter { $0.groupId == personalItem?.groupId }
 //        print("peronalitem:\(personalItem)")
         customGroupViewController.group = groupData[0]
-        customGroupViewController.blockList = blackList
+//        customGroupViewController.blockList = blackList
         self.show(customGroupViewController, sender: nil)
     }
     

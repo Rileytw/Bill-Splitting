@@ -18,7 +18,7 @@ class SignUpViewController: UIViewController {
     var passwordTextField = UITextField()
     var validPasswordTextField = UITextField()
     var signUpButton = UIButton()
-    var userData = UserData(userId: "", userName: "", userEmail: "", group: nil, payment: nil)
+    var userData = UserData()
     
     override func viewDidLoad() {
         super.viewDidLoad()

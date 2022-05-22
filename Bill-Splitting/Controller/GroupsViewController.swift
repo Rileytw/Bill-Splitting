@@ -10,8 +10,6 @@ import SwiftUI
 
 class GroupsViewController: BaseViewController {
 // MARK: - Property
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
-    
     let selectedSource = [
         ButtonModel(title: GroupButton.allGroups.buttonName),
         ButtonModel(title: GroupButton.multipleUsers.buttonName),
@@ -24,18 +22,19 @@ class GroupsViewController: BaseViewController {
     var searchView = UIView()
     var emptyLabel = UILabel()
 
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var groups: [GroupData] = []    
     var multipleGroups: [GroupData] = []
     var personalGroups: [GroupData] = []
     var closedGroups: [GroupData] = []
     var filteredGroups: [GroupData] = []
-    var blockList: [String] = []
     var personalExpense: Double?
     var group: GroupData?
     var memberExpense: Double = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchCurrentUserData()
         setViewBackground()
         setSelectedView()
         setSearchView()
@@ -56,6 +55,15 @@ class GroupsViewController: BaseViewController {
     }
     
 // MARK: - Method
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchSignInUserData(userId: currentUserId) { [weak self] result in
+            if case .failure = result {
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+            }
+        }
+    }
+    
     func setSearchView() {
         view.addSubview(searchView)
         searchView.translatesAutoresizingMaskIntoConstraints = false
@@ -116,19 +124,6 @@ class GroupsViewController: BaseViewController {
             case .success(let groups):
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
-            case .failure:
-                self?.showFailure(text: ErrorType.dataError.errorMessage)
-            }
-        }
-    }
-    
-    func fetchCurrentUserData() {
-        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let currentUserData):
-                if currentUserData?.blackList != nil {
-                    self?.blockList = currentUserData?.blackList ?? []
-                }
             case .failure:
                 self?.showFailure(text: ErrorType.dataError.errorMessage)
             }
@@ -254,7 +249,6 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
                     withIdentifier: String(describing: CustomGroupViewController.self)
                 ) as? CustomGroupViewController else { return }
         customGroupViewController.group = filteredGroups[indexPath.row]
-        customGroupViewController.blockList = blockList
         self.show(customGroupViewController, sender: nil)
     }
     

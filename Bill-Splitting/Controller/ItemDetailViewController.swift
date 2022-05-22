@@ -6,36 +6,33 @@
 //
 
 import UIKit
-import Lottie
-class ItemDetailViewController: UIViewController {
+
+class ItemDetailViewController: BaseViewController {
+
+// MARK: - Property
+    var reportView = ReportView()
+    let photoView = UIView()
+    var tableView = UITableView()
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var itemId: String?
     var item: ItemData?
     var groupData: GroupData?
     var userData: [UserData] = []
-    var tableView = UITableView()
     var paidUser: [UserData] = []
     var involvedUser: [UserData] = []
     var leaveMemberData: [UserData] = []
-    var blackList = [String]()
     var personalExpense: Double?
     var reportContent: String?
-    
-    var reportView = ReportView()
-    private var animationView = AnimationView()
-    var mask = UIView()
-    let width = UIScreen.main.bounds.size.width
-    let height = UIScreen.main.bounds.size.height
-    let photoView = UIView()
     var image: String?
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         addMenu()
         setTableView()
-        detectBlackListUser()
+        detectBlockListUser()
 //        getItemData()
     }
     
@@ -52,48 +49,7 @@ class ItemDetailViewController: UIViewController {
         removeAnimation()
     }
     
-    func addMenu() {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "info.circle"), for: .normal)
-        
-        let barButton = UIBarButtonItem(customView: button)
-        self.navigationItem.rightBarButtonItem = barButton
-        
-        if groupData?.status == GroupStatus.active.typeInt {
-            let interaction = UIContextMenuInteraction(delegate: self)
-            button.addInteraction(interaction)
-        } else {
-            disableInfoButton()
-        }
-    }
-    
-    func disableInfoButton() {
-        let alertController = UIAlertController(title: "無法編輯", message: "已封存群組不可編輯或刪除款項", preferredStyle: .alert)
-        
-        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
-        
-        alertController.addAction(confirmAction)
-        present(alertController, animated: true, completion: nil)
-    }
-    
-    func setTableView() {
-        view.addSubview(tableView)
-        setTableViewConstraint()
-        tableView.register(UINib(nibName: String(describing: ItemDetailTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemDetailTableViewCell.self))
-        tableView.register(UINib(nibName: String(describing: ItemMemberTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemMemberTableViewCell.self))
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.backgroundColor = .clear
-    }
-    
-    func setTableViewConstraint() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10).isActive = true
-    }
-    
+// MARK: - Method
     func getItemData(itemId: String) {
         ItemManager.shared.fetchItem(itemId: itemId) { [weak self] result in
             switch result {
@@ -271,8 +227,10 @@ class ItemDetailViewController: UIViewController {
         }
     }
     
-    func detectBlackListUser() {
-        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
+    func detectBlockListUser() {
+        let blockList = UserManager.shared.currentUser?.blackList
+        guard let blockList = blockList else { return }
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList,
                                       userData: userData)
         userData = newUserData
     }
@@ -294,7 +252,7 @@ class ItemDetailViewController: UIViewController {
     }
     
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: -0, width: width, height: height))
+        mask = UIView(frame: CGRect(x: 0, y: -0, width: UIScreen.width, height: UIScreen.height))
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         view.addSubview(mask)
         
@@ -481,8 +439,8 @@ class ItemDetailViewController: UIViewController {
         photoImage.translatesAutoresizingMaskIntoConstraints = false
         photoImage.centerXAnchor.constraint(equalTo: photoView.centerXAnchor).isActive = true
         photoImage.centerYAnchor.constraint(equalTo: photoView.centerYAnchor).isActive = true
-        photoImage.widthAnchor.constraint(equalToConstant: width).isActive = true
-        photoImage.heightAnchor.constraint(equalToConstant: height - 200).isActive = true
+        photoImage.widthAnchor.constraint(equalToConstant: UIScreen.width).isActive = true
+        photoImage.heightAnchor.constraint(equalToConstant: UIScreen.height - 200).isActive = true
         
         let dismissButton = UIButton()
         photoView.addSubview(dismissButton)
@@ -499,26 +457,6 @@ class ItemDetailViewController: UIViewController {
     
     @objc func dismissPhotoView() {
         photoView.removeFromSuperview()
-    }
-    
-    func setAnimation() {
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        animationView.stop()
-        animationView.removeFromSuperview()
     }
 }
 
@@ -611,5 +549,49 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
             }
             return UIMenu(title: "", children: [editAction, removeAction, reportAction])
         }
+    }
+}
+
+extension ItemDetailViewController {
+    func addMenu() {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "info.circle"), for: .normal)
+        
+        let barButton = UIBarButtonItem(customView: button)
+        self.navigationItem.rightBarButtonItem = barButton
+        
+        if groupData?.status == GroupStatus.active.typeInt {
+            let interaction = UIContextMenuInteraction(delegate: self)
+            button.addInteraction(interaction)
+        } else {
+            disableInfoButton()
+        }
+    }
+    
+    func disableInfoButton() {
+        let alertController = UIAlertController(title: "無法編輯", message: "已封存群組不可編輯或刪除款項", preferredStyle: .alert)
+        
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func setTableView() {
+        view.addSubview(tableView)
+        setTableViewConstraint()
+        tableView.register(UINib(nibName: String(describing: ItemDetailTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemDetailTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: ItemMemberTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemMemberTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.backgroundColor = .clear
+    }
+    
+    func setTableViewConstraint() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10).isActive = true
     }
 }

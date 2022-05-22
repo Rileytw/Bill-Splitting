@@ -53,9 +53,9 @@ enum GroupType {
     }
 }
 
-enum GroupStatus { //
-    case active
-    case inActive
+enum GroupStatus: Int, Codable { //
+    case active = 0
+    case inActive = 1
     
     var typeInt: Int {
         switch self {

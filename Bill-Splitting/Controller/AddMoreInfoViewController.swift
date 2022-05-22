@@ -10,7 +10,8 @@ import Lottie
 
 class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+//    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var photoImageView = UIImageView()
     var addPhotoButton = UIButton()
     var addPhotoLabel = UILabel()
@@ -20,8 +21,6 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     var descriptionTextView = UITextView()
     let imagePickerController = UIImagePickerController()
     var selectedImage: UIImage?
-    let width = UIScreen.main.bounds.width
-    let height = UIScreen.main.bounds.height
     private var animationView = AnimationView()
     
 //    weak var delegate: MoreInfoDelegate?
@@ -119,7 +118,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
         photoImageView.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 10).isActive = true
         photoImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        photoImageView.widthAnchor.constraint(equalToConstant: width - 40).isActive = true
+        photoImageView.widthAnchor.constraint(equalToConstant: UIScreen.width - 40).isActive = true
         photoImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         
         photoImageView.contentMode = .scaleAspectFit
@@ -169,18 +168,17 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     func setAnimation() {
         let mask = UIView()
-        mask.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        mask.frame = CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height)
         mask.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         
         animationView = .init(name: "upload")
-        animationView.frame = CGRect(x: width/2 - 75, y: height/2 - 75, width: 150, height: 150)
+        animationView.frame = CGRect(x: UIScreen.width/2 - 75, y: UIScreen.height/2 - 75, width: 150, height: 150)
         animationView.contentMode = .scaleAspectFit
         animationView.loopMode = .loop
         view.addSubview(mask)
         view.addSubview(animationView)
         animationView.play()
     }
-    
     
     func setDescription() {
         view.addSubview(descriptionLabel)
