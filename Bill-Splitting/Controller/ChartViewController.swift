@@ -10,21 +10,21 @@ import Charts
 
 class ChartViewController: UIViewController {
     
-    var group: GroupData?
+// MARK: - Property
     var creditLabel = UILabel()
     var debtLabel = UILabel()
     var dismissButton = UIButton()
+    var mask = UIView()
     var creditChart = PieChart(frame: .zero)
     var debtChart = PieChart(frame: .zero)
-//    var memberExpense: [MemberExpense] = []
+    
+    var group: GroupData?
     var creditMember: [MemberExpense] = []
     var debtMember: [MemberExpense] = []
-//    var userData = [UserData]()
     var member = [UserData]()
-//    var blockList = [String]()
     var noDataChartsView = NoDataChartsView()
-    var mask = UIView()
-
+   
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
@@ -41,6 +41,7 @@ class ChartViewController: UIViewController {
         detectData()
     }
     
+// MARK: - Method
     func getMemberData() {
         let memberExpense = group?.memberExpense
         if let memberData = group?.memberData {
@@ -87,6 +88,47 @@ class ChartViewController: UIViewController {
         if debtMember.isEmpty == true && creditMember.isEmpty == true {
             revealBlockView()
         }
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func detectBlockListUser() {
+        guard let blockList = UserManager.shared.currentUser?.blackList else { return }
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList, userData: group?.memberData ?? [])
+        group?.memberData = newUserData
+        
+        let newMemberData = UserManager.renameBlockedUser(blockList: blockList, userData: member)
+        member = newMemberData
+    }
+    
+    func revealBlockView() {
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
+        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.addSubview(mask)
+        
+        noDataChartsView = NoDataChartsView(
+            frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 200))
+        noDataChartsView.backgroundColor = .darkBlueColor
+       
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.noDataChartsView.frame = CGRect(x: 0, y: UIScreen.height/2 - 100, width: UIScreen.width, height: 200)
+        }, completion: nil)
+        view.addSubview(noDataChartsView)
+
+        noDataChartsView.confirmButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+    }
+    
+    @objc func pressDismissButton() {
+        let subviewCount = self.view.subviews.count
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.view.subviews[subviewCount - 1].frame = CGRect(
+                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height
+            )}, completion: nil)
+        mask.removeFromSuperview()
+        self.dismiss(animated: true, completion: nil)
     }
     
     func setCreditChart() {
@@ -146,46 +188,5 @@ class ChartViewController: UIViewController {
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = UIColor.greenWhite
         dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
-    }
-    
-    @objc func pressDismiss() {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    func detectBlockListUser() {
-        guard let blockList = UserManager.shared.currentUser?.blackList else { return }
-        let newUserData = UserManager.renameBlockedUser(blockList: blockList, userData: group?.memberData ?? [])
-        group?.memberData = newUserData
-        
-        let newMemberData = UserManager.renameBlockedUser(blockList: blockList, userData: member)
-        member = newMemberData
-    }
-    
-    func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
-        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.addSubview(mask)
-        
-        noDataChartsView = NoDataChartsView(
-            frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 200))
-        noDataChartsView.backgroundColor = .darkBlueColor
-       
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.noDataChartsView.frame = CGRect(x: 0, y: UIScreen.height/2 - 100, width: UIScreen.width, height: 200)
-        }, completion: nil)
-        view.addSubview(noDataChartsView)
-
-        noDataChartsView.confirmButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
-    }
-    
-    @objc func pressDismissButton() {
-        let subviewCount = self.view.subviews.count
-        
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(
-                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height
-            )}, completion: nil)
-        mask.removeFromSuperview()
-        self.dismiss(animated: true, completion: nil)
     }
 }

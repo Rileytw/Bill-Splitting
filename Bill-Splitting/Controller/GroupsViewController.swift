@@ -58,31 +58,9 @@ class GroupsViewController: BaseViewController {
     func fetchCurrentUserData() {
         UserManager.shared.fetchSignInUserData(userId: currentUserId) { [weak self] result in
             if case .failure = result {
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
-    }
-    
-    func setSearchView() {
-        view.addSubview(searchView)
-        searchView.translatesAutoresizingMaskIntoConstraints = false
-        setSearchViewConstraint()
-    }
-    
-    func setTableView() {
-        self.view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        setTableViewConstraint()
-        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        tableView.backgroundColor = UIColor.clear
-        tableView.register(UINib(nibName: String(describing: GroupsTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: GroupsTableViewCell.self))
-        tableView.dataSource = self
-        tableView.delegate = self
-        
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
-        tableView.addGestureRecognizer(longPress)
     }
     
     @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
@@ -97,16 +75,9 @@ class GroupsViewController: BaseViewController {
         }
     }
     
-    fileprivate func hideEmptyLabel(_ groups: ([GroupData])) {
-        if groups.isEmpty == true {
-            emptyLabel.isHidden = false
-        } else {
-            emptyLabel.isHidden = true
-        }
-    }
-    
     func getGroupData() {
-        GroupManager.shared.fetchGroupsRealTime(userId: currentUserId, status: 0) { [weak self] result in
+        GroupManager.shared.fetchGroupsRealTime(
+            userId: currentUserId, status: GroupStatus.active.typeInt) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.groups = groups
@@ -119,7 +90,8 @@ class GroupsViewController: BaseViewController {
     }
     
     func getClosedGroupData() {
-        GroupManager.shared.fetchGroupsRealTime(userId: currentUserId, status: 1) { [weak self] result in
+        GroupManager.shared.fetchGroupsRealTime(
+            userId: currentUserId, status: GroupStatus.inActive.typeInt) { [weak self] result in
             switch result {
             case .success(let groups):
                 self?.closedGroups = groups
@@ -192,25 +164,6 @@ class GroupsViewController: BaseViewController {
         selectedView.selectionViewDataSource = self
         selectedView.selectionViewDelegate = self
     }
-    
-    func setViewBackground() {
-        ElementsStyle.styleBackground(view)
-    }
-    
-    func networkDetect() {
-        NetworkStatus.shared.startMonitoring()
-        NetworkStatus.shared.netStatusChangeHandler = { [weak self] in
-            if NetworkStatus.shared.isConnected == true {
-                return
-            } else {
-                if !Thread.isMainThread {
-                    DispatchQueue.main.async {
-                        self?.showFailure(text: ErrorType.networkError.errorMessage)
-                    }
-                }
-            }
-        }
-    }
 }
 
 extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
@@ -253,18 +206,13 @@ extension GroupsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
-        
         let cell = tableView.cellForRow(at: indexPath)
-        UIView.animate(withDuration: 0.25) {
-            cell?.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-        }
+        TableViewAnimation.hightlight(cell: cell)
     }
     
     func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
-        UIView.animate(withDuration: 0.25) {
-            cell?.transform = CGAffineTransform(scaleX: 1, y: 1)
-        }
+        TableViewAnimation.unHightlight(cell: cell)
     }
 }
 
@@ -461,5 +409,38 @@ extension GroupsViewController {
         selectedView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         selectedView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         selectedView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    }
+    
+    func setSearchView() {
+        view.addSubview(searchView)
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        setSearchViewConstraint()
+    }
+    
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        setTableViewConstraint()
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tableView.backgroundColor = UIColor.clear
+        tableView.register(UINib(nibName: String(describing: GroupsTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: GroupsTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
+        tableView.addGestureRecognizer(longPress)
+    }
+    
+    private func hideEmptyLabel(_ groups: ([GroupData])) {
+        if groups.isEmpty == true {
+            emptyLabel.isHidden = false
+        } else {
+            emptyLabel.isHidden = true
+        }
+    }
+    
+    func setViewBackground() {
+        ElementsStyle.styleBackground(view)
     }
 }

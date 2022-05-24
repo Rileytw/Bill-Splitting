@@ -14,7 +14,7 @@ class SettleUpViewController: UIViewController {
     var creator: UserData?
     var group: GroupData?
     var expense: Double?
-    var blockList = [String]()
+//    var blockList = [String]()
     
     let tableView = UITableView()
     
@@ -71,6 +71,8 @@ class SettleUpViewController: UIViewController {
     }
     
     func detectBlockListUser() {
+        let blockList = UserManager.shared.currentUser?.blackList
+        guard let blockList = blockList else { return }
         let newUserData = UserManager.renameBlockedUser(blockList: blockList,
                                                         userData: group?.memberData ?? [])
         group?.memberData = newUserData

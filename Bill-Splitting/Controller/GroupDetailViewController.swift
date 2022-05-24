@@ -13,7 +13,7 @@ class GroupDetailViewController: BaseViewController {
     var tableView = UITableView()
     var leaveGroupButton = UIButton()
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
-    var groupData: GroupData?
+    var group: GroupData?
     var userData: [UserData] = []
     var personalExpense: Double?
     var memberExpense: Double = 0
@@ -31,9 +31,9 @@ class GroupDetailViewController: BaseViewController {
 
 // MARK: - Method
     @objc func detectUserExpense() {
-        if personalExpense == 0 && groupData?.creator != currentUserId {
+        if personalExpense == 0 && group?.creator != currentUserId {
             leaveGroupAlert()
-        } else if memberExpense == 0 && groupData?.creator == currentUserId {
+        } else if memberExpense == 0 && group?.creator == currentUserId {
             creatorLeaveAlert()
         } else {
             rejectLeaveGroupAlert()
@@ -41,7 +41,7 @@ class GroupDetailViewController: BaseViewController {
     }
     
     func getMembersExpense() {
-        guard let expense = groupData?.memberExpense else { return }
+        guard let expense = group?.memberExpense else { return }
         let allExpense = expense.map { $0.allExpense }
         memberExpense = 0
         for member in allExpense {
@@ -50,12 +50,13 @@ class GroupDetailViewController: BaseViewController {
     }
     
     @objc func pressEdit() {
-        if groupData?.status == 0 {
+        if group?.status == 0 {
             let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
             guard let addGroupViewController = storyBoard.instantiateViewController(
-                withIdentifier: String(describing: AddGroupsViewController.self)) as? AddGroupsViewController else { return }
+                withIdentifier: String(describing: AddGroupsViewController.self)
+            ) as? AddGroupsViewController else { return }
             addGroupViewController.isGroupExist = true
-            addGroupViewController.group = groupData
+            addGroupViewController.group = group
             self.show(addGroupViewController, sender: nil)
         } else {
             editAlert()
@@ -114,42 +115,19 @@ class GroupDetailViewController: BaseViewController {
     }
     
     func hideLeaveButton() {
-        if groupData?.creator == currentUserId {
+        if group?.creator == currentUserId {
             leaveGroupButton.isHidden = true
         }
     }
     
     func leaveGroup() {
-        let groupId = groupData?.groupId
-        GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
-                                              userId: currentUserId) { result in
-            switch result {
-            case .success:
-                print("leave group")
-            case .failure:
-                print("remove group member failed")
+        guard let groupId = group?.groupId else { return }
+        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
+            if LeaveGroup.shared.isLeaveGroupSuccess == true {
+                self?.showSuccess(text: "成功退出群組")
+            } else {
+                self?.showSuccess(text: ErrorType.generalError.errorMessage)
             }
-        }
-        
-        GroupManager.shared.removeGroupExpense(groupId: groupId ?? "",
-                                               userId: currentUserId) { result in
-            switch result {
-            case .success:
-                print("leave group")
-            case .failure:
-                print("remove member expense failed")
-            }
-        }
-        
-        GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
-                                           userId: currentUserId) { result in
-            switch result {
-            case .success:
-                print("leave group")
-            case .failure:
-                print("remove member expense failed")
-            }
-            
         }
     }
     
@@ -166,9 +144,9 @@ class GroupDetailViewController: BaseViewController {
     }
     
     func closeGroup() {
-        if groupData?.creator == currentUserId {
+        if group?.creator == currentUserId {
             // MARK: - Add ProgressHUD when refactor, need to check situation
-            GroupManager.shared.updateGroupStatus(groupId: groupData?.groupId ?? "") { [weak self] result in
+            GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "") { [weak self] result in
                    switch result {
                    case .success:
                        self?.showSuccess(text: "成功封存群組")
@@ -189,12 +167,12 @@ extension GroupDetailViewController: UITableViewDataSource, UITableViewDelegate 
         if section == 0 {
             return 1
         } else {
-            return groupData?.member.count ?? 0
+            return group?.member.count ?? 0
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let groupData = groupData else { return UITableViewCell() }
+        guard let groupData = group else { return UITableViewCell() }
         
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(
@@ -244,7 +222,8 @@ extension GroupDetailViewController {
     }
     
     func setLeaveGroupButtonConstraint() {
-        leaveGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        leaveGroupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                                                 constant: -10).isActive = true
         leaveGroupButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         leaveGroupButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
         leaveGroupButton.heightAnchor.constraint(equalToConstant: 40).isActive = true

@@ -73,6 +73,7 @@
 		3576B42428261C6400CECE3F /* EditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B42328261C6400CECE3F /* EditingView.swift */; };
 		3576B4282826B4BF00CECE3F /* NoDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B4272826B4BF00CECE3F /* NoDataView.swift */; };
 		3576B42A2827C1D600CECE3F /* NoDataChartsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B4292827C1D600CECE3F /* NoDataChartsView.swift */; };
+		357851BC283CA93D0033AD3D /* TableViewHightlightAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357851BB283CA93D0033AD3D /* TableViewHightlightAnimation.swift */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -208,6 +209,7 @@
 		3576B42328261C6400CECE3F /* EditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditingView.swift; sourceTree = "<group>"; };
 		3576B4272826B4BF00CECE3F /* NoDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDataView.swift; sourceTree = "<group>"; };
 		3576B4292827C1D600CECE3F /* NoDataChartsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDataChartsView.swift; sourceTree = "<group>"; };
+		357851BB283CA93D0033AD3D /* TableViewHightlightAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewHightlightAnimation.swift; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -443,6 +445,7 @@
 				3576B42328261C6400CECE3F /* EditingView.swift */,
 				3576B4272826B4BF00CECE3F /* NoDataView.swift */,
 				3576B4292827C1D600CECE3F /* NoDataChartsView.swift */,
+				357851BB283CA93D0033AD3D /* TableViewHightlightAnimation.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -748,6 +751,7 @@
 				350A337B2805060B00201E40 /* FriendManager.swift in Sources */,
 				35568A2928157EBC00646B57 /* ButtonModel.swift in Sources */,
 				350A3379280469BB00201E40 /* UserObject.swift in Sources */,
+				357851BC283CA93D0033AD3D /* TableViewHightlightAnimation.swift in Sources */,
 				3576B4222824CD7F00CECE3F /* JGProgressHUD.swift in Sources */,
 				35568A2D28157F3800646B57 /* SelectionViewDelegate.swift in Sources */,
 				35FF63DD2806560F00508EAF /* ItemManager.swift in Sources */,
