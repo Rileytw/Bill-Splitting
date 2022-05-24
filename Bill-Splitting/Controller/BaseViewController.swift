@@ -18,6 +18,21 @@ class BaseViewController: UIViewController {
 
     }
     
+    func networkDetect() {
+        NetworkStatus.shared.startMonitoring()
+        NetworkStatus.shared.netStatusChangeHandler = { [weak self] in
+            if NetworkStatus.shared.isConnected == true {
+                return
+            } else {
+                if !Thread.isMainThread {
+                    DispatchQueue.main.async {
+                        self?.showFailure(text: ErrorType.networkError.errorMessage)
+                    }
+                }
+            }
+        }
+    }
+    
     func setAnimation() {
         mask.frame = CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height)
         mask.backgroundColor = UIColor.black.withAlphaComponent(0.2)

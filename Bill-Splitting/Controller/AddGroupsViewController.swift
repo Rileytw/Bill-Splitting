@@ -267,19 +267,6 @@ class AddGroupsViewController: BaseViewController {
         removeAnimation()
     }
     
-    func networkDetect() {
-        NetworkStatus.shared.startMonitoring()
-        NetworkStatus.shared.netStatusChangeHandler = {
-            if NetworkStatus.shared.isConnected == false {
-                if !Thread.isMainThread {
-                    DispatchQueue.main.async {
-                        self.showFailure(text: ErrorType.networkError.errorMessage)
-                    }
-                }
-            }
-        }
-    }
-    
     func networkConnectAlert() {
         confirmAlert(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。")
     }
