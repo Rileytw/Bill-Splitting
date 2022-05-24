@@ -17,11 +17,10 @@ class ItemDetailViewController: BaseViewController {
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var itemId: String?
     var item: ItemData?
-    var groupData: GroupData?
+    var group: GroupData?
     var userData: [UserData] = []
     var paidUser: [UserData] = []
     var involvedUser: [UserData] = []
-    var leaveMemberData: [UserData] = []
     var personalExpense: Double?
     var reportContent: String?
     var image: String?
@@ -33,7 +32,6 @@ class ItemDetailViewController: BaseViewController {
         addMenu()
         setTableView()
         detectBlockListUser()
-//        getItemData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,10 +54,8 @@ class ItemDetailViewController: BaseViewController {
             case .success(let items):
                 self?.item = items
                 self?.getItemExpense()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+            case .failure:
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -67,9 +63,8 @@ class ItemDetailViewController: BaseViewController {
     func getItemExpense() {
         let group = DispatchGroup()
         
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         group.enter()
-        firstQueue.async(group: group) {
+        DispatchQueue.global().async {
             ItemManager.shared.fetchPaidItemExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
                 switch result {
                 case .success(let items):
@@ -85,9 +80,8 @@ class ItemDetailViewController: BaseViewController {
             }
         }
         
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         group.enter()
-        secondQueue.async(group: group) {
+        DispatchQueue.global().async {
             ItemManager.shared.fetchInvolvedItemExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
                 switch result {
                 case .success(let items):
@@ -109,6 +103,7 @@ class ItemDetailViewController: BaseViewController {
     
     func getPayUser() {
         paidUser = userData.filter { $0.userId == item?.paidInfo?[0].userId }
+        guard let leaveMemberData = group?.leaveMemberData else { return }
         if leaveMemberData.isEmpty == false && paidUser.count == 0 {
             paidUser = leaveMemberData.filter { $0.userId == item?.paidInfo?[0].userId }
             paidUser[0].userName = paidUser[0].userName + "(已離開群組)"
@@ -123,6 +118,7 @@ class ItemDetailViewController: BaseViewController {
             involvedUser += userData.filter { $0.userId == involvedExpense[index].userId }
         }
         
+        guard let leaveMemberData = group?.leaveMemberData else { return }
         if leaveMemberData.isEmpty == false {
             var leaveUser = [UserData]()
             for index in 0..<involvedExpense.count {
@@ -147,18 +143,15 @@ class ItemDetailViewController: BaseViewController {
         var isItemDeleteSucces: Bool = false
         
         let group = DispatchGroup()
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         group.enter()
-        firstQueue.async(group: group) {
+        DispatchQueue.global().async {
             GroupManager.shared.updateMemberExpense(userId: paidUserId ,
                                                     newExpense: 0 - paidPrice,
-                                                    groupId: self.groupData?.groupId ?? "") { result in
+                                                    groupId: self.group?.groupId ?? "") { result in
                 switch result {
                 case .success:
-                    print("success")
                     isItemDeleteSucces = true
-                case .failure(let error):
-                    print(error.localizedDescription)
+                case .failure:
                     isItemDeleteSucces = false
                 }
                 group.leave()
@@ -167,21 +160,17 @@ class ItemDetailViewController: BaseViewController {
         
         guard let involvedExpense = item?.involedInfo else { return }
         
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        
         for user in 0..<involvedExpense.count {
             group.enter()
-            secondQueue.async(group: group) {
+            DispatchQueue.global().async {
                 GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
                                                         newExpense: involvedExpense[user].price,
-                                                        groupId: self.groupData?.groupId ?? "") { result in
+                                                        groupId: self.group?.groupId ?? "") { result in
                     switch result {
                     case .success:
-                        print("success")
                         isItemDeleteSucces = true
                         group.leave()
-                    case .failure(let error):
-                        print(error.localizedDescription)
+                    case .failure:
                         isItemDeleteSucces = false
                         group.leave()
                     }
@@ -189,16 +178,13 @@ class ItemDetailViewController: BaseViewController {
             }
         }
         
-        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
         group.enter()
-        thirdQueue.async(group: group) {
+        DispatchQueue.global().async {
             ItemManager.shared.deleteItem(itemId: self.itemId ?? "") { result in
                 switch result {
                 case .success:
-                    print("success")
                     isItemDeleteSucces = true
-                case .failure(let error):
-                    print(error.localizedDescription)
+                case .failure:
                     isItemDeleteSucces = false
                 }
                 group.leave()
@@ -207,22 +193,19 @@ class ItemDetailViewController: BaseViewController {
         
         group.notify(queue: DispatchQueue.main) {
             if isItemDeleteSucces == true {
-                ProgressHUD.shared.view = self.view ?? UIView()
-                ProgressHUD.showSuccess(text: "移除成功")
-                
-                ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
+//                self.showSuccess(text: "移除成功")
+                ItemManager.shared.addNotify(grpupId: self.group?.groupId ?? "") { result in
                     switch result {
                     case .success:
-                        print("uplaod notification collection successfully")
-                    case .failure(let error):
-                        print(error.localizedDescription)
+                        self.showSuccess(text: "移除成功")
+                    case .failure:
+                        self.showFailure(text: "移除失敗，請稍後再試")
                     }
                 }
                 
                 self.navigationController?.popViewController(animated: true)
             } else {
-                ProgressHUD.shared.view = self.view ?? UIView()
-                ProgressHUD.showFailure(text: "移除失敗，請稍後再試")
+                self.showFailure(text: "移除失敗，請稍後再試")
             }
         }
     }
@@ -242,7 +225,6 @@ class ItemDetailViewController: BaseViewController {
         let deleteAction = UIAlertAction(title: "刪除", style: .destructive) { [weak self]_ in
             self?.setAnimation()
             self?.deleteItem()
-//            self?.navigationController?.popViewController(animated: true)
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         
@@ -256,11 +238,11 @@ class ItemDetailViewController: BaseViewController {
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         view.addSubview(mask)
         
-        reportView = ReportView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        reportView = ReportView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
         reportView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
         
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.reportView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
+            self.reportView.frame = CGRect(x: 0, y: UIScreen.height - 300, width: UIScreen.width, height: 300)
         }, completion: nil)
         view.addSubview(reportView)
         
@@ -286,7 +268,7 @@ class ItemDetailViewController: BaseViewController {
     }
     
     func report() {
-        let report = Report(groupId: groupData?.groupId ?? "",
+        let report = Report(groupId: group?.groupId ?? "",
                             itemId: itemId ?? "",
                             reportContent: reportContent)
         ReportManager.shared.updateReport(report: report) { [weak self] result in
@@ -304,7 +286,6 @@ class ItemDetailViewController: BaseViewController {
         let confirmAction = UIAlertAction(title: "退出群組", style: .destructive) { [weak self] _ in
             self?.detectUserExpense()
             self?.pressDismissButton()
-//            self?.navigationController?.popToRootViewController(animated: true)
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel)
         
@@ -314,77 +295,18 @@ class ItemDetailViewController: BaseViewController {
     }
     
     func leaveGroup() {
-        let groupId = groupData?.groupId
-        var isLeaveGroup: Bool = false
-        
-        let group = DispatchGroup()
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        
-        firstQueue.async(group: group) {
-            GroupManager.shared.removeGroupMember(groupId: groupId ?? "",
-                                                  userId: self.currentUserId) { result in
-                switch result {
-                case .success:
-                    print("leave group")
-                    isLeaveGroup = true
-                case .failure:
-                    print("remove group member failed")
-                    isLeaveGroup = false
-                }
-                group.leave()
-            }
-            
-        }
-        
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        secondQueue.async(group: group) {
-            GroupManager.shared.removeGroupExpense(groupId: groupId ?? "",
-                                                   userId: self.currentUserId) { result in
-                switch result {
-                case .success:
-                    print("leave group")
-                    isLeaveGroup = true
-                case .failure:
-                    print("remove member expense failed")
-                    isLeaveGroup = false
-                }
-                group.leave()
-            }
-           
-        }
-        
-        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        thirdQueue.async(group: group) {
-            GroupManager.shared.addLeaveMember(groupId: groupId ?? "",
-                                               userId: self.currentUserId) { result in
-                switch result {
-                case .success:
-                    print("leave group")
-                    isLeaveGroup = true
-                case .failure:
-                    print("remove member expense failed")
-                    isLeaveGroup = false
-                }
-                group.leave()
-            }
-        }
-        
-        group.notify(queue: DispatchQueue.main) {
-            if isLeaveGroup == true {
-                ProgressHUD.shared.view = self.view
-                ProgressHUD.showSuccess(text: "成功退出群組")
-                self.navigationController?.popToRootViewController(animated: true)
+        guard let groupId = group?.groupId else { return }
+        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
+            if LeaveGroup.shared.isLeaveGroupSuccess == true {
+                self?.showSuccess(text: "成功退出群組")
             } else {
-                ProgressHUD.shared.view = self.view
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+                self?.showSuccess(text: ErrorType.generalError.errorMessage)
             }
         }
     }
     
     func detectUserExpense() {
+//        group?.memberExpense
         if personalExpense == 0 {
             leaveGroup()
         } else {
@@ -405,7 +327,7 @@ class ItemDetailViewController: BaseViewController {
         let subviewCount = self.view.subviews.count
         
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
         }, completion: nil)
         mask.removeFromSuperview()
     }
@@ -414,47 +336,16 @@ class ItemDetailViewController: BaseViewController {
        
         guard let tappedImage = tapGestureRecognizer.view as? UIImageView else { return }
 
-//        addImageView(image: self.image ?? "")
         let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
-        guard let itemImageViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ItemImageViewController.self)) as? ItemImageViewController else { return }
+        guard let itemImageViewController = storyBoard.instantiateViewController(
+            withIdentifier: String(describing: ItemImageViewController.self)) as? ItemImageViewController else { return }
         itemImageViewController.image = image
         itemImageViewController.modalPresentationStyle = .fullScreen
         self.present(itemImageViewController, animated: true, completion: nil)
         
     }
     
-    func addImageView(image: String) {
-        view.addSubview(photoView)
-        photoView.translatesAutoresizingMaskIntoConstraints = false
-        photoView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        photoView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        photoView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        photoView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        photoView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.9)
-        
-        let photoImage = UIImageView()
-        photoView.addSubview(photoImage)
-        photoImage.getImage(image)
-        photoImage.contentMode = .scaleAspectFit
-        photoImage.translatesAutoresizingMaskIntoConstraints = false
-        photoImage.centerXAnchor.constraint(equalTo: photoView.centerXAnchor).isActive = true
-        photoImage.centerYAnchor.constraint(equalTo: photoView.centerYAnchor).isActive = true
-        photoImage.widthAnchor.constraint(equalToConstant: UIScreen.width).isActive = true
-        photoImage.heightAnchor.constraint(equalToConstant: UIScreen.height - 200).isActive = true
-        
-        let dismissButton = UIButton()
-        photoView.addSubview(dismissButton)
-        dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        dismissButton.topAnchor.constraint(equalTo: photoView.topAnchor, constant: 10).isActive = true
-        dismissButton.rightAnchor.constraint(equalTo: photoView.rightAnchor, constant: -10).isActive = true
-        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-        dismissButton.tintColor = .greenWhite
-        
-        dismissButton.addTarget(self, action: #selector(dismissPhotoView), for: .touchUpInside)
-    }
-    
+   
     @objc func dismissPhotoView() {
         photoView.removeFromSuperview()
     }
@@ -492,7 +383,7 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
                 
             }
             
-             detailCell.createDetailCell(group: groupData?.groupName ?? "",
+             detailCell.createDetailCell(group: group?.groupName ?? "",
                                         item: item.itemName,
                                         time: item.createdTime,
                                         paidPrice: item.paidInfo?[0].price ?? 0,
@@ -502,7 +393,8 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
              
              if item.itemImage != nil {
                  self.image = item.itemImage
-                 let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+                 let tapGestureRecognizer = UITapGestureRecognizer(
+                    target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
                  detailCell.itemImage.isUserInteractionEnabled = true
                  detailCell.itemImage.addGestureRecognizer(tapGestureRecognizer)
              }
@@ -529,9 +421,7 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
             let editAction = UIAction(title: "編輯", image: UIImage(systemName: "pencil")) { action in
                 let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
                 guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
-//                addItemViewController.memberId = self.groupData?.member
-//                addItemViewController.memberData = self.userData
-                addItemViewController.group = self.groupData
+                addItemViewController.group = self.group
                 addItemViewController.itemData = self.item
                 addItemViewController.isItemExist = true
                 addItemViewController.editingItem = { [weak self] newItemId in
@@ -560,7 +450,7 @@ extension ItemDetailViewController {
         let barButton = UIBarButtonItem(customView: button)
         self.navigationItem.rightBarButtonItem = barButton
         
-        if groupData?.status == GroupStatus.active.typeInt {
+        if group?.status == GroupStatus.active.typeInt {
             let interaction = UIContextMenuInteraction(delegate: self)
             button.addInteraction(interaction)
         } else {
@@ -593,5 +483,37 @@ extension ItemDetailViewController {
         tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10).isActive = true
+    }
+    
+    func addImageView(image: String) {
+        view.addSubview(photoView)
+        photoView.translatesAutoresizingMaskIntoConstraints = false
+        photoView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        photoView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        photoView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        photoView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        photoView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.9)
+        
+        let photoImage = UIImageView()
+        photoView.addSubview(photoImage)
+        photoImage.getImage(image)
+        photoImage.contentMode = .scaleAspectFit
+        photoImage.translatesAutoresizingMaskIntoConstraints = false
+        photoImage.centerXAnchor.constraint(equalTo: photoView.centerXAnchor).isActive = true
+        photoImage.centerYAnchor.constraint(equalTo: photoView.centerYAnchor).isActive = true
+        photoImage.widthAnchor.constraint(equalToConstant: UIScreen.width).isActive = true
+        photoImage.heightAnchor.constraint(equalToConstant: UIScreen.height - 200).isActive = true
+        
+        let dismissButton = UIButton()
+        photoView.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: photoView.topAnchor, constant: 10).isActive = true
+        dismissButton.rightAnchor.constraint(equalTo: photoView.rightAnchor, constant: -10).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = .greenWhite
+        
+        dismissButton.addTarget(self, action: #selector(dismissPhotoView), for: .touchUpInside)
     }
 }

@@ -10,16 +10,15 @@ import UIKit
 class LeaveGroup {
     
     static let shared = LeaveGroup()
-    var isLeaveGroupSuccess: Bool = false
+    private(set) var isLeaveGroupSuccess: Bool = false
     
     func leaveGroup(groupId: String, currentUserId: String, completion: @escaping () -> Void) {
         
         let group = DispatchGroup()
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         
         group.enter()
         
-        firstQueue.async(group: group) {
+        DispatchQueue.global().async {
             GroupManager.shared.removeGroupMember(
                 groupId: groupId, userId: currentUserId) { [weak self] result in
                 switch result {
@@ -32,9 +31,8 @@ class LeaveGroup {
             }
         }
         
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         group.enter()
-        secondQueue.async(group: group) {
+        DispatchQueue.global().async {
             GroupManager.shared.removeGroupExpense(
                 groupId: groupId, userId: currentUserId) { [weak self] result in
                 switch result {
@@ -47,10 +45,9 @@ class LeaveGroup {
             }
         }
        
-        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
         group.enter()
         
-        thirdQueue.async(group: group) {
+        DispatchQueue.global().async {
             GroupManager.shared.addLeaveMember(
                 groupId: groupId, userId: currentUserId) { [weak self] result in
                 switch result {
