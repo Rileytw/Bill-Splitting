@@ -26,7 +26,7 @@ class SubscribeViewController: UIViewController {
     var dismissButton = UIButton()
     
     var cyclePicker = BasePickerViewInTextField(frame: .zero)
-    var cycle = ["每月", "每年"]
+    var cycle = [Cycle.month.typeName, Cycle.year.typeName]
     
     let addItemView = AddItemView(frame: .zero)
     let tableView = UITableView()
@@ -43,7 +43,6 @@ class SubscribeViewController: UIViewController {
     var involvedTotalPrice: Double = 0
     
     var groupData: GroupData?
-    var memberId: [String]?
     var memberData: [UserData]? = [] {
         didSet {
             tableView.reloadData()
