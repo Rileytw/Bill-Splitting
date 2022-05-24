@@ -6,13 +6,11 @@
 //
 
 import UIKit
-import Lottie
 
-class RecordsViewController: UIViewController {
+class RecordsViewController: BaseViewController {
     
-//    let currentUserId = AccountManager.shared.currentUser.currentUserId
-    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
-    private var animationView = AnimationView()
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
+//    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var tableView = UITableView()
     var emptyLabel = UILabel()
     var groups: [GroupData] = []
@@ -22,12 +20,10 @@ class RecordsViewController: UIViewController {
     var personalPaid: [ExpenseInfo] = []
     var personalInvolved: [ExpenseInfo] = []
     var allPersonalItem: [ExpenseInfo] = []
-//    var blackList = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
-//        getGroupData()
         setEmptyLabel()
         setTableView()
         setAnimation()
@@ -36,14 +32,11 @@ class RecordsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        fetchCurrentUserData()
-//        setAnimation()
         getGroupData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-//        animationView.stop()
         cleanData()
     }
     
@@ -136,7 +129,6 @@ class RecordsViewController: UIViewController {
             for index in 0..<self.personalInvolved.count {
                 self.personalInvolved[index].price = 0 - self.personalInvolved[index].price
             }
-            print("====involved:\(self.personalInvolved)")
             
             self.allPersonalItem = self.personalPaid + self.personalInvolved
             self.allPersonalItem.sort { $0.createdTime ?? 0 > $1.createdTime ?? 0 }
@@ -145,20 +137,6 @@ class RecordsViewController: UIViewController {
             self.removeAnimation()
         }
     }
-    
-//    func fetchCurrentUserData() {
-//        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
-//            switch result {
-//            case .success(let currentUserData):
-//                if currentUserData?.blackList != nil {
-//                    self?.blackList = currentUserData?.blackList ?? []
-//                }
-//                print("success")
-//            case .failure(let error):
-//                print("\(error.localizedDescription)")
-//            }
-//        }
-//    }
 
     func cleanData() {
         groups.removeAll()
@@ -168,26 +146,6 @@ class RecordsViewController: UIViewController {
         personalPaid.removeAll()
         personalInvolved.removeAll()
         allPersonalItem.removeAll()
-    }
-    
-    func setAnimation() {
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        animationView.stop()
-        animationView.removeFromSuperview()
     }
     
     func setTableView() {
@@ -254,14 +212,12 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                                          description: PaidDescription.settleUpInvolved,
                                          price: item.price)
                 itemsCell.paidDescription.textColor = .styleRed
-//                itemsCell.setIcon(style: 0)
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: itemName ?? "",
                                          description: PaidDescription.paid,
                                          price: item.price)
                 itemsCell.paidDescription.textColor = .styleGreen
-//                itemsCell.setIcon(style: 0)
             }
         } else {
             if itemName == "結帳" {
@@ -270,14 +226,12 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                                          description: PaidDescription.settleUpPaid,
                                          price: abs(item.price))
                 itemsCell.paidDescription.textColor = .styleGreen
-//                itemsCell.setIcon(style: 1)
             } else {
                 itemsCell.createItemCell(time: time,
                                          name: itemName ?? "",
                                          description: PaidDescription.involved,
                                          price: abs(item.price))
                 itemsCell.paidDescription.textColor = .styleRed
-//                itemsCell.setIcon(style: 1)
             }
         }
       
@@ -290,45 +244,23 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                 storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
         
         var personalItem: ItemData?
-        var groupData = [GroupData]()
+        var groupData: GroupData?
         for items in itemData where items.itemId == allPersonalItem[indexPath.row].itemId {
             personalItem = items
         }
         
-        groupData = groups.filter { $0.groupId == personalItem?.groupId }
-//        print("peronalitem:\(personalItem)")
-        customGroupViewController.group = groupData[0]
-//        customGroupViewController.blockList = blackList
+        groupData = groups.first(where: { $0.groupId == personalItem?.groupId })
+        customGroupViewController.group = groupData
         self.show(customGroupViewController, sender: nil)
     }
     
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
         
         let cell = tableView.cellForRow(at: indexPath)
-        UIView.animate(withDuration: 0.25) {
-            cell?.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-        }
+        TableViewAnimation.hightlight(cell: cell)
     }
     func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
-        UIView.animate(withDuration: 0.25) {
-            cell?.transform = CGAffineTransform(scaleX: 1, y: 1)
-        }
-    }
-    
-    private func animateTableView() {
-        let cells = tableView.visibleCells
-        let tableHeight: CGFloat = tableView.bounds.size.height
-        for (index, cell) in cells.enumerated() {
-            cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
-            UIView.animate(withDuration: 0.8,
-                           delay: 0.05 * Double(index),
-                           usingSpringWithDamping: 0.8,
-                           initialSpringVelocity: 0,
-                           options: [],
-                           animations: {
-                cell.transform = CGAffineTransform(translationX: 0, y: 0)
-            }, completion: nil)
-        }
+        TableViewAnimation.unHightlight(cell: cell)
     }
 }
