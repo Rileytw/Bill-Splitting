@@ -16,6 +16,17 @@ struct ItemData: Codable {
     var itemImage: String?
     var paidInfo: [ExpenseInfo]?
     var involedInfo: [ExpenseInfo]?
+    
+    init() {
+        groupId = ""
+        itemId = ""
+        itemName = ""
+        itemDescription = nil
+        createdTime = 0
+        itemImage = nil
+        paidInfo = nil
+        involedInfo = nil
+    }
 }
 
 struct ExpenseInfo: Codable {

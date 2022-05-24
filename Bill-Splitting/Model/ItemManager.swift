@@ -20,25 +20,39 @@ class ItemManager {
     static var shared = ItemManager()
     lazy var database = Firestore.firestore()
     
-    func addItemData(
-        groupId: String,
-        itemName: String,
-        itemDescription: String?,
-        createdTime: Double,
-        itemImage: String?,
-        completion: @escaping (String) -> Void) {
+//    func addItemData(
+//        groupId: String,
+//        itemName: String,
+//        itemDescription: String?,
+//        createdTime: Double,
+//        itemImage: String?,
+//        completion: @escaping (String) -> Void) {
+//        let ref = database.collection(FirebaseCollection.item.rawValue).document()
+//
+//        let itemData = ItemData(
+//            groupId: groupId,
+//            itemName: itemName,
+//            itemId: "\(ref.documentID)",
+//            itemDescription: itemDescription,
+//            createdTime: createdTime,
+//            itemImage: itemImage)
+//
+//        do {
+//            try database.collection(FirebaseCollection.item.rawValue).document("\(ref.documentID)").setData(from: itemData)
+//            completion("\(ref.documentID)")
+//        } catch {
+//            print(error)
+//        }
+//    }
+    
+    func addItemData(itemData: ItemData, completion: @escaping (String) -> Void) {
         let ref = database.collection(FirebaseCollection.item.rawValue).document()
         
-        let itemData = ItemData(
-            groupId: groupId,
-            itemName: itemName,
-            itemId: "\(ref.documentID)",
-            itemDescription: itemDescription,
-            createdTime: createdTime,
-            itemImage: itemImage)
+        var updateItem = itemData
+        updateItem.itemId = "\(ref.documentID)"
         
         do {
-            try database.collection(FirebaseCollection.item.rawValue).document("\(ref.documentID)").setData(from: itemData)
+            try database.collection(FirebaseCollection.item.rawValue).document("\(ref.documentID)").setData(from: updateItem)
             completion("\(ref.documentID)")
         } catch {
             print(error)

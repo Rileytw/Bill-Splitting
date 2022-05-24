@@ -10,7 +10,6 @@ import UIKit
 class CustomGroupViewController: BaseViewController {
     
 // MARK: - Property
-    
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
     let subscribeButton = UIButton()
@@ -95,6 +94,7 @@ class CustomGroupViewController: BaseViewController {
     }
     
     func getItemDetail() {
+        var isFetchDataSuccess: Bool = false
         let group = DispatchGroup()
         for (index, item) in self.items.enumerated() {
             group.enter()
@@ -103,14 +103,15 @@ class CustomGroupViewController: BaseViewController {
                     switch result {
                     case .success(let items):
                         self?.items[index].paidInfo = items
+                        isFetchDataSuccess = true
                     case .failure:
-                        self?.showFailure(text: ErrorType.generalError.errorMessage)
+                        isFetchDataSuccess = false
                     }
                     group.leave()
                 }
             }
         }
-        
+
         for (index, item) in self.items.enumerated() {
             group.enter()
             DispatchQueue.global().async {
@@ -118,17 +119,22 @@ class CustomGroupViewController: BaseViewController {
                     switch result {
                     case .success(let items):
                         self?.items[index].involedInfo = items
+                        isFetchDataSuccess = true
                     case .failure:
-                        self?.showFailure(text: ErrorType.generalError.errorMessage)
+                        isFetchDataSuccess = false
                     }
                     group.leave()
                 }
             }
         }
- 
+
         group.notify(queue: DispatchQueue.main) { [weak self] in
-            self?.itemTableView.reloadData()
-            self?.removeAnimation()
+            if isFetchDataSuccess == true {
+                self?.itemTableView.reloadData()
+                self?.removeAnimation()
+            } else {
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
+            }
         }
     }
     
@@ -286,11 +292,11 @@ class CustomGroupViewController: BaseViewController {
     
     func addSubscriptionItem(index: Int) {
         guard let group = group else { return }
-        ItemManager.shared.addItemData(groupId: group.groupId,
-                                       itemName: subsriptions[index].itemName,
-                                       itemDescription: "",
-                                       createdTime: subsriptions[index].startTime,
-                                       itemImage: nil) { [weak self] itemId in
+        var item = ItemData()
+        item.groupId = group.groupId
+        item.itemName = subsriptions[index].itemName
+        item.createdTime = subsriptions[index].startTime
+        ItemManager.shared.addItemData(itemData: item) { [weak self] itemId in
             let paidUserId = self?.subsriptions[index].paidUser
             
             let subscriptInvolved: [ExpenseInfo]  = self?.getSubscriptionInvolved(index: index) ?? []
@@ -343,27 +349,12 @@ class CustomGroupViewController: BaseViewController {
     }
     
     @objc func pressAddItem() {
-//        switch group?.status {
-//        case .active:
-//            let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
-//            guard let addItemViewController = storyBoard.instantiateViewController(
-//                withIdentifier: String(describing: AddItemViewController.self)
-//            ) as? AddItemViewController else { return }
-//            addItemViewController.group = group
-//            addItemViewController.blockList = blockList
-//            addItemViewController.modalPresentationStyle = .fullScreen
-//            self.present(addItemViewController, animated: true, completion: nil)
-//        case .inActive:
-//            addItemAlert()
-//        }
-        
         if group?.status == GroupStatus.active.typeInt {
             let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
             guard let addItemViewController = storyBoard.instantiateViewController(
                 withIdentifier: String(describing: AddItemViewController.self)
             ) as? AddItemViewController else { return }
             addItemViewController.group = group
-//            addItemViewController.blockList = blockList
             addItemViewController.modalPresentationStyle = .fullScreen
             self.present(addItemViewController, animated: true, completion: nil)
         } else {
@@ -377,7 +368,6 @@ class CustomGroupViewController: BaseViewController {
             withIdentifier: String(describing: ChartViewController.self)
         ) as? ChartViewController else { return }
         chartViewController.group = group
-//        chartViewController.blockList = blockList
         chartViewController.modalPresentationStyle = .fullScreen
         self.present(chartViewController, animated: true, completion: nil)
     }
@@ -390,7 +380,6 @@ class CustomGroupViewController: BaseViewController {
         
         settleUpViewController.group = group
         settleUpViewController.expense = personalExpense
-//        settleUpViewController.blockList = blockList
 
         self.show(settleUpViewController, sender: nil)
     }
@@ -401,10 +390,8 @@ class CustomGroupViewController: BaseViewController {
                 storyBoard.instantiateViewController(
                     withIdentifier: String(describing: SubscribeViewController.self)
                 ) as? SubscribeViewController else { return } //
-        subscribeViewController.memberId = group?.member
         subscribeViewController.memberData = members
         subscribeViewController.groupData = group
-//        subscribeViewController.blackList = blockList
         self.present(subscribeViewController, animated: true, completion: nil)
     }
     
@@ -431,7 +418,6 @@ class CustomGroupViewController: BaseViewController {
         }
         return involved
     }
-    
 }
 
 extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate {
@@ -479,9 +465,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         let item = items[indexPath.row]
         itemDetailViewController.itemId = item.itemId
         itemDetailViewController.userData = members
-        itemDetailViewController.groupData = group
-        itemDetailViewController.leaveMemberData = group?.leaveMemberData ?? []
-//        itemDetailViewController.blackList = blockList
+        itemDetailViewController.group = group
         itemDetailViewController.personalExpense = personalExpense
         
         self.show(itemDetailViewController, sender: nil)
@@ -489,15 +473,11 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
     
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
-        UIView.animate(withDuration: 0.25) {
-            cell?.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-        }
+        TableViewAnimation.hightlight(cell: cell)
     }
     func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
-        UIView.animate(withDuration: 0.25) {
-            cell?.transform = CGAffineTransform(scaleX: 1, y: 1)
-        }
+        TableViewAnimation.unHightlight(cell: cell)
     }
 }
 
@@ -512,10 +492,9 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
                 guard let detailViewController = storyBoard.instantiateViewController(
                     withIdentifier: String(describing: GroupDetailViewController.self)
                 ) as? GroupDetailViewController else { return }
-                detailViewController.groupData = self?.group
+                detailViewController.group = self?.group
                 detailViewController.userData = self?.members ?? []
                 detailViewController.personalExpense = self?.personalExpense
-//                detailViewController.blackList = self?.blockList ?? []
 
                 self?.show(detailViewController, sender: nil)
             }

@@ -24,7 +24,6 @@ class AddItemViewController: BaseViewController {
     var addMoreButton = UIButton()
     
     var group: GroupData?
-    
     var itemId: String?
     var paidItem: [[ExpenseInfo]] = []
     var involvedItem: [[ExpenseInfo]] = []
@@ -209,11 +208,13 @@ class AddItemViewController: BaseViewController {
     }
     
     func addItem() {
-        ItemManager.shared.addItemData(groupId: group?.groupId ?? "",
-                                       itemName: addItemView.itemNameTextField.text ?? "",
-                                       itemDescription: itemDescription,
-                                       createdTime: Double(NSDate().timeIntervalSince1970),
-                                       itemImage: self.itemImageString) { [weak self] itemId in
+        var item = ItemData()
+        item.groupId = group?.groupId ?? ""
+        item.itemName = addItemView.itemNameTextField.text ?? ""
+        item.itemDescription = itemDescription
+        item.createdTime = Double(NSDate().timeIntervalSince1970)
+        item.itemImage = itemImageString
+        ItemManager.shared.addItemData(itemData: item) { [weak self] itemId in
             self?.itemId = itemId
             self?.allItemInfoUpload()
         }
@@ -319,23 +320,6 @@ class AddItemViewController: BaseViewController {
                     print("succedd")
                 case .failure(let error):
                     print("error")
-                }
-            }
-        }
-    }
-    
-    func networkDetect() {
-        NetworkStatus.shared.startMonitoring()
-        NetworkStatus.shared.netStatusChangeHandler = {
-            if NetworkStatus.shared.isConnected == true {
-                print("connected")
-            } else {
-                print("Not connected")
-                if !Thread.isMainThread {
-                    DispatchQueue.main.async {
-                        ProgressHUD.shared.view = self.view
-                        ProgressHUD.showFailure(text: ErrorType.networkError.errorMessage)
-                    }
                 }
             }
         }

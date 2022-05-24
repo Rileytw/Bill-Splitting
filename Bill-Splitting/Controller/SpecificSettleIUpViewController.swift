@@ -105,11 +105,11 @@ class SpecificSettleIUpViewController: UIViewController {
         
         let userExpense = userExpense.filter { $0.userId == currentUserId }
         
-        ItemManager.shared.addItemData(groupId: groupId ?? "",
-                                       itemName: "結帳",
-                                       itemDescription: "",
-                                       createdTime: Double(NSDate().timeIntervalSince1970),
-                                       itemImage: nil) { itemId in
+        var item = ItemData()
+        item.groupId = groupId ?? ""
+        item.itemName = "結帳"
+        item.createdTime = Double(NSDate().timeIntervalSince1970)
+        ItemManager.shared.addItemData(itemData: item) { itemId in
             self.itemId = itemId
             
             var paidUserId: String?
