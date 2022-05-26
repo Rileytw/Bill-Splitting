@@ -6,34 +6,28 @@
 //
 
 import UIKit
-import Firebase
-import FirebaseAuth
-import Lottie
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: BaseViewController {
     
-    private var animationView = AnimationView()
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
-    var currentUser: UserData?
+// MARK: - Property
     var profileView = UIView()
     var profileImage = UIImageView()
     let userName = UILabel()
     let userEmail = UILabel()
     let editButton = UIButton()
     var collectionView: UICollectionView!
-    var blackList = [String]()
-    let screenWidth = UIScreen.main.bounds.width - 20
-    var mask = UIView()
     var editingView = EditingView()
-    let width = UIScreen.main.bounds.size.width
-    let height = UIScreen.main.bounds.size.height
-    var profileList: [ProfileList] = [ProfileList.qrCode,
-                                      ProfileList.payment,
-                                      ProfileList.friendList,
-                                      ProfileList.friendInvitation,
-                                      ProfileList.logOut,
+    var personalInfoList: [ProfileList] = [ProfileList.qrCode,
+                                           ProfileList.payment,
+                                           ProfileList.friendList,
+                                           ProfileList.friendInvitation,
+                                           ProfileList.blockList]
+    var accountList: [ProfileList] = [ProfileList.logOut,
                                       ProfileList.deleteAccount]
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    var currentUser: UserData?
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -42,9 +36,10 @@ class ProfileViewController: UIViewController {
         setCollectionView()
         setAddGroupButton()
         
-        navigationItem.title = "個人頁面"
+        navigationItem.title = NavigationItemName.profile.name
     }
     
+// MARK: - Method
     func getUserData() {
         UserManager.shared.fetchSignInUserData(userId: currentUserId) { [weak self] result in
             switch result {
@@ -52,12 +47,9 @@ class ProfileViewController: UIViewController {
                 self?.currentUser = user
                 self?.userName.text = user?.userName
                 self?.userEmail.text = user?.userEmail
-                self?.blackList = user?.blackList ?? []
                 self?.fetchFriends()
-            case.failure(let error):
-                print(error.localizedDescription)
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+            case.failure:
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -67,10 +59,8 @@ class ProfileViewController: UIViewController {
             switch result {
             case .success(let friend):
                 self?.currentUser?.friends = friend
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+            case .failure:
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -86,30 +76,26 @@ class ProfileViewController: UIViewController {
         UserManager.shared.updateUserName(userId: currentUserId, userName: newUserName) { [weak self] result in
             switch result {
             case .success:
-                print("userName update successfully")
                 self?.getUserData()
                 self?.pressDismissButton()
             case .failure:
-                print("userName update failed")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "資料修改失敗，請稍後再試")
+                self?.showFailure(text: ErrorType.dataModifyError.errorMessage)
             }
         }
     }
     
     func updateUserNameInFriendList(friendId: String, newName: String) {
-        FriendManager.shared.updateFriendNewName(friendId: friendId, currentUserId: currentUserId, currentUserName: newName)
+        FriendManager.shared.updateFriendNewName(
+            friendId: friendId, currentUserId: currentUserId, currentUserName: newName)
     }
     
     func logOut() {
-        if Auth.auth().currentUser != nil {
-            do {
-                try Auth.auth().signOut()
-                backToSignInPage()
-            } catch let error as NSError {
-                print(error.localizedDescription)
-                ProgressHUD.shared.view = view
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+        AccountManager.shared.logOutAccount { [weak self] result in
+            switch result {
+            case .success:
+                self?.backToSignInPage()
+            case .failure:
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
@@ -137,43 +123,36 @@ class ProfileViewController: UIViewController {
         var isUserRemove: Bool = false
         
         let group = DispatchGroup()
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         group.enter()
         // MARK: - Delete user's friendList
-        firstQueue.async(group: group) {
+        DispatchQueue.global().async {
             UserManager.shared.deleteFriendCollection(
                 documentId: self.currentUserId, collection: "friend") { [weak self] result in
                 switch result {
                 case .success:
-                    print("Delete friends successfully")
                     isFriendsRemove = true
-                    
-                case .failure(let error):
-                    print("\(error.localizedDescription)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: "資料刪除失敗，請稍後再試")
+                case .failure:
+                    self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
                 }
                 group.leave()
             }
         }
         // MARK: - Delete userData from friend's friendList
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
         group.enter()
         if let friends = currentUser?.friends {
             for friend in friends {
                 group.enter()
-                secondQueue.async(group: group) {
+                DispatchQueue.global().async {
                     UserManager.shared.deleteDropUserData(
-                        friendId: friend.userId, collection: "friend", userId: self.currentUserId) { [weak self] result in
+                        friendId: friend.userId,
+                        collection: "friend",
+                        userId: self.currentUserId) { [weak self] result in
                         switch result {
                         case .success:
-                            print("delete data successfully")
                             isUserRemove = true
                             group.leave()
-                        case .failure(let error):
-                            print("\(error.localizedDescription)")
-                            ProgressHUD.shared.view = self?.view ?? UIView()
-                            ProgressHUD.showFailure(text: "資料刪除失敗，請稍後再試")
+                        case .failure:
+                            self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
                             isUserRemove = false
                             group.leave()
                         }
@@ -182,37 +161,33 @@ class ProfileViewController: UIViewController {
             }
         }
         
-        group.notify(queue: DispatchQueue.main) {
+        group.notify(queue: DispatchQueue.main) { [weak self] in
             if isUserRemove == true && isFriendsRemove == true {
-                self.deleteUserData()
+                self?.deleteUserData()
             }
         }
     }
 
     func deleteUserData() {
-        UserManager.shared.deleteUserData(userId: currentUserId, userName: currentUser?.userName ?? "") { [weak self] result in
+        UserManager.shared.deleteUserData(
+            userId: currentUserId, userName: currentUser?.userName ?? "") { [weak self] result in
             switch result {
             case .success:
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showSuccess(text: "資料已刪除")
+                self?.showSuccess(text: SuccessType.deleteSuccess.successMessage)
                 self?.deletAccount()
-            case .failure(let error):
-                print("Error updating document: \(error)")
-                //  MARK: - Add alert to tell user: Remove userdata failed
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "刪除資料失敗，請稍後再試")
+            case .failure:
+                // MARK: - Add alert to tell user: Remove userdata failed
+                self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
             }
         }
     }
     
     func deletAccount() {
         let currentUserName = currentUser?.userName ?? ""
-        AccountManager.shared.deleteAccount() { [weak self] result in
+        AccountManager.shared.deleteAccount { [weak self] result in
             switch result {
             case .success:
-                print("Account successfully deleted ")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showSuccess(text: "帳號已刪除")
+                self?.showSuccess(text: "帳號已刪除")
                 self?.updateUserName(newUserName: currentUserName + "（帳號已刪除）")
                 self?.backToSignInPage()
             case .failure:
@@ -237,12 +212,7 @@ class ProfileViewController: UIViewController {
     }
     
     func alertSignInAgain() {
-        let alertController = UIAlertController(title: "重新登入", message: "若需刪除帳號，請重新登入", preferredStyle: .alert)
-        
-        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
-        
-        alertController.addAction(confirmAction)
-        present(alertController, animated: true, completion: nil)
+        confirmAlert(title: "重新登入", message: "若需刪除帳號，請重新登入")
     }
     
 }
@@ -256,47 +226,47 @@ extension ProfileViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
-            return 5
+            return personalInfoList.count
         } else {
-            return 2
+            return accountList.count
         }
-        //        return profileList.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: String(describing: ProfileCollectionViewCell.self),
             for: indexPath
         )
-        
         guard let profileCell = cell as? ProfileCollectionViewCell else { return cell }
         
-        if indexPath.section == 0 {
-            if indexPath.item == 0 {
-                profileCell.textLabel.text = ProfileList.qrCode.content
-                profileCell.icon.image = ProfileList.qrCode.icon
-            } else if indexPath.item == 1 {
-                profileCell.textLabel.text = ProfileList.payment.content
-                profileCell.icon.image = ProfileList.payment.icon
-            } else if indexPath.item == 2 {
-                profileCell.textLabel.text = ProfileList.friendList.content
-                profileCell.icon.image = ProfileList.friendList.icon
-            } else if indexPath.item == 3 {
-                profileCell.textLabel.text = ProfileList.friendInvitation.content
-                profileCell.icon.image = ProfileList.friendInvitation.icon
-            } else if indexPath.item == 4 {
-                profileCell.textLabel.text = ProfileList.blackList.content
-                profileCell.icon.image = ProfileList.blackList.icon
+        switch indexPath.section {
+        case 0:
+            switch indexPath.item {
+            case 0:
+                profileCell.createProfileCell(image: ProfileList.qrCode.icon, text: ProfileList.qrCode.content)
+            case 1:
+                profileCell.createProfileCell(image: ProfileList.payment.icon, text: ProfileList.payment.content)
+            case 2:
+                profileCell.createProfileCell(image: ProfileList.friendList.icon, text: ProfileList.friendList.content)
+            case 3:
+                profileCell.createProfileCell(image: ProfileList.friendInvitation.icon,
+                                              text: ProfileList.friendInvitation.content)
+            case 4:
+                profileCell.createProfileCell(image: ProfileList.blockList.icon, text: ProfileList.blockList.content)
+            default:
+                return profileCell
             }
-        } else {
+        case 1:
             if indexPath.item == 0 {
-                profileCell.textLabel.text = ProfileList.logOut.content
-                profileCell.icon.image = ProfileList.logOut.icon
+                profileCell.createProfileCell(image: ProfileList.logOut.icon, text: ProfileList.logOut.content)
             } else {
-                profileCell.textLabel.text = ProfileList.deleteAccount.content
-                profileCell.icon.image = ProfileList.deleteAccount.icon
+                profileCell.createProfileCell(image: ProfileList.deleteAccount.icon,
+                                              text: ProfileList.deleteAccount.content)
             }
+        default:
+            return profileCell
         }
         return profileCell
     }
@@ -304,13 +274,14 @@ extension ProfileViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView,
                         viewForSupplementaryElementOfKind kind: String,
                         at indexPath: IndexPath) -> UICollectionReusableView {
-        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader,
+        guard let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: ProfileHeaderView.identifier,
             for: indexPath) as? ProfileHeaderView else { return UICollectionReusableView()}
         if indexPath.section == 0 {
-            header.label.text = "個人資訊"
+            header.label.text = ProfileSection.personalInfo.name
         } else {
-            header.label.text = "帳號"
+            header.label.text = ProfileSection.account.name
         }
         header.configure()
         return header
@@ -319,40 +290,51 @@ extension ProfileViewController: UICollectionViewDataSource {
 
 extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let screenWidth = UIScreen.width - 20
         let itemWidth: CGFloat = screenWidth / 4 - 5
         let itemHeight: CGFloat = itemWidth
         return CGSize(width: itemWidth, height: itemHeight)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
         
         return UIEdgeInsets(top: 24.0, left: 0, bottom: 0, right: 0)
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
             return 24
         }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         
         return 0
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForHeaderInSection section: Int) -> CGSize {
             
-            return CGSize(width: UIScreen.main.bounds.width, height: 48.0)
+            return CGSize(width: UIScreen.width, height: 48.0)
         }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        if indexPath.section == 0 {
-            if indexPath.item == 0 {
+        let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
+        switch indexPath.section {
+        case 0:
+            switch indexPath.item {
+            case 0:
                 setAnimation()
-                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
-                let qrCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: QRCodeViewController.self))
+                let qrCodeViewController = storyBoard.instantiateViewController(
+                    withIdentifier: QRCodeViewController.identifier)
                 if #available(iOS 15.0, *) {
                     if let sheet = qrCodeViewController.sheetPresentationController {
                         sheet.detents = [.medium()]
@@ -361,33 +343,36 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
                 }
                 self.present(qrCodeViewController, animated: true, completion: nil)
                 removeAnimation()
-            } else if indexPath.item == 1 {
-                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
-                let paymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: PaymentViewController.self))
+            case 1:
+                let paymentViewController = storyBoard.instantiateViewController(
+                    withIdentifier: PaymentViewController.identifier)
                 self.show(paymentViewController, sender: nil)
-            } else if indexPath.item == 2 {
-                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
-                let friendListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendListViewController.self))
+            case 2:
+                let friendListViewController = storyBoard.instantiateViewController(
+                    withIdentifier: FriendListViewController.identifier)
                 self.show(friendListViewController, sender: nil)
-            } else if indexPath.item == 3 {
-                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
-                guard let friendInvitationVC = storyBoard.instantiateViewController(withIdentifier: String(describing: FriendInvitationViewController.self)) as? FriendInvitationViewController
-                else { return }
+            case 3:
+                guard let friendInvitationVC = storyBoard.instantiateViewController(
+                    withIdentifier: FriendInvitationViewController.identifier
+                ) as? FriendInvitationViewController else { return }
                 friendInvitationVC.currentUserName = currentUser?.userName
                 self.show(friendInvitationVC, sender: nil)
-            } else if indexPath.item == 4 {
-                let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
-                guard let blackListViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: BlackListViewController.self)) as? BlackListViewController
+            case 4:
+                guard let blockListViewController = storyBoard.instantiateViewController(
+                    withIdentifier: BlockListViewController.identifier) as? BlockListViewController
                 else { return }
-                blackListViewController.blackList = blackList
-                self.show(blackListViewController, sender: nil)
+                self.show(blockListViewController, sender: nil)
+            default:
+                return
             }
-        } else {
+        case 1:
             if indexPath.item == 0 {
                 logOut()
             } else {
                 alertDeleteAccount()
             }
+        default:
+            return
         }
     }
     
@@ -449,7 +434,6 @@ extension ProfileViewController {
         userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 30).isActive = true
         userName.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 20).isActive = true
         userName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-//        userName.heightAnchor.constraint(equalToConstant: 30).isActive = true
         userName.textColor = .greenWhite
         userName.font = userName.font.withSize(20)
         
@@ -480,40 +464,20 @@ extension ProfileViewController {
         profileView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         profileView.heightAnchor.constraint(equalToConstant: 100).isActive = true
     }
-    
-    func setAnimation() {
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        animationView.stop()
-        animationView.removeFromSuperview()
-    }
 }
 
 extension ProfileViewController {
     @objc func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         view.addSubview(mask)
         
-        editingView = EditingView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        editingView = EditingView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
         editingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
         editingView.buttonTitle = "完成"
         editingView.textField.text = currentUser?.userName ?? ""
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.editingView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 400, width: UIScreen.main.bounds.size.width, height: 400)
+            self.editingView.frame = CGRect(x: 0, y: UIScreen.height - 400, width: UIScreen.width, height: 400)
         }, completion: nil)
         view.addSubview(editingView)
         editingView.completeButton.addTarget(self, action: #selector(checkUserNameEmpty), for: .touchUpInside)
@@ -524,10 +488,7 @@ extension ProfileViewController {
     
     @objc func checkUserNameEmpty() {
         if editingView.textField.text == "" {
-            let alertController = UIAlertController(title: "請填寫使用者名稱", message: "使用這名稱不可空白", preferredStyle: .alert)
-            let cancelAlert = UIAlertAction(title: "確認", style: .default, handler: nil)
-            alertController.addAction(cancelAlert)
-            present(alertController, animated: true, completion: nil)
+            confirmAlert(title: "請填寫使用者名稱", message: "使用這名稱不可空白")
         } else {
             let newName = editingView.textField.text ?? ""
             updateUserName(newUserName: newName)
@@ -542,61 +503,58 @@ extension ProfileViewController {
     @objc func pressDismissButton() {
         let subviewCount = self.view.subviews.count
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+            self.view.subviews[subviewCount - 1].frame = CGRect(
+                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
         }, completion: nil)
         mask.removeFromSuperview()
         self.tabBarController?.tabBar.isHidden = false
     }
+    
+    enum ProfileList {
+        case qrCode, payment, friendList, friendInvitation, blockList, logOut, deleteAccount
+        
+        var content: String {
+            switch self {
+            case .qrCode: return "QRCode"
+            case .payment: return "付款方式"
+            case .friendList: return "好友列表"
+            case .friendInvitation: return "交友邀請"
+            case .blockList: return "黑名單"
+            case .logOut: return "登出"
+            case .deleteAccount: return "刪除帳號"
+            }
+        }
+        
+        var icon: UIImage {
+            switch self {
+            case .qrCode: return UIImage(systemName: "qrcode") ?? UIImage()
+            case .payment: return UIImage(systemName: "creditcard") ?? UIImage()
+            case .friendList: return UIImage(systemName: "person.2.fill") ?? UIImage()
+            case .friendInvitation: return UIImage(systemName: "mail.fill") ?? UIImage()
+            case .blockList: return UIImage(systemName: "xmark.rectangle.fill") ?? UIImage()
+            case .logOut:
+                if #available(iOS 15, *) {
+                    return UIImage(systemName: "rectangle.portrait.and.arrow.right.fill") ?? UIImage()
+                } else {
+                    return UIImage(systemName: "arrow.turn.down.right") ?? UIImage()
+                }
+            case .deleteAccount: return UIImage(systemName: "person.crop.circle.fill.badge.xmark") ?? UIImage()
+            }
+        }
+    }
+    
+    enum ProfileSection {
+        case personalInfo
+        case account
+        
+        var name: String {
+            switch self {
+            case .personalInfo:
+                return "個人資訊"
+            case .account:
+                return "帳號"
+            }
+        }
+    }
 }
 
-enum ProfileList {
-    case qrCode
-    case payment
-    case friendList
-    case friendInvitation
-    case blackList
-    case logOut
-    case deleteAccount
-    
-    var content: String {
-        switch self {
-        case .qrCode:
-            return "QRCode"
-        case .payment:
-            return "付款方式"
-        case .friendList:
-            return "好友列表"
-        case .friendInvitation:
-            return "交友邀請"
-        case .blackList:
-            return "黑名單"
-        case .logOut:
-            return "登出"
-        case .deleteAccount:
-            return "刪除帳號"
-        }
-    }
-    
-    var icon: UIImage {
-        switch self {
-        case .qrCode:
-            return UIImage(systemName: "qrcode") ?? UIImage()
-        case .payment:
-            return UIImage(systemName: "creditcard") ?? UIImage()
-        case .friendList:
-            return UIImage(systemName: "person.2.fill") ?? UIImage()
-        case .friendInvitation:
-            return UIImage(systemName: "mail.fill") ?? UIImage()
-        case .blackList:
-            return UIImage(systemName: "xmark.rectangle.fill") ?? UIImage()
-        case .logOut:
-            if #available(iOS 15, *) {
-                return UIImage(systemName: "rectangle.portrait.and.arrow.right.fill") ?? UIImage()
-            } else {
-                return UIImage(systemName: "arrow.turn.down.right") ?? UIImage()
-            }
-        case .deleteAccount:
-            return UIImage(systemName: "person.crop.circle.fill.badge.xmark") ?? UIImage()
-        }
-    }
-}
