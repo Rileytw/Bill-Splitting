@@ -9,16 +9,18 @@ import UIKit
 import CoreImage
 
 class QRCodeViewController: UIViewController {
-
-    var qrCodeView = UIImageView()
     
+// MARK: - Property
+    var qrCodeView = UIImageView()
+
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         setQRCodeView()
         setDismissButton()
     }
-    
+// MARK: - Method
     func generateQRCode(qrString: String) -> UIImage {
         let stringData = qrString.data(using: String.Encoding.utf8)
         

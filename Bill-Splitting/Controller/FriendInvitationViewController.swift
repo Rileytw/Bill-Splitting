@@ -9,15 +9,16 @@ import UIKit
 
 class FriendInvitationViewController: UIViewController {
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
-    var currentUserName: String?
+// MARK: - Property
     let tableView = UITableView()
     var noDataView = NoDataView(frame: .zero)
-    
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
+    var currentUserName: String?
     var senderId: [String] = []
     var invitationUsers = [UserData]()
     var invitationId: [String] = []
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -35,7 +36,8 @@ class FriendInvitationViewController: UIViewController {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
     }
-    
+
+// MARK: - Method
     func getSenderData(completion: @escaping ([String]) -> Void) {
         FriendManager.shared.fetchFriendInvitation(userId: currentUserId) { [weak self] result in
             switch result {
@@ -43,9 +45,7 @@ class FriendInvitationViewController: UIViewController {
                 let senderId = invitation.map { $0.senderId }
                 self?.invitationId = invitation.map { $0.documentId }
                 completion(senderId)
-                print("senderId: \(senderId)")
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+            case .failure:
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
@@ -53,8 +53,7 @@ class FriendInvitationViewController: UIViewController {
     }
     
     func getUserInfo() {
-        getSenderData() { [weak self] senderIdList in
-            print("senderList:\(senderIdList.count)")
+        getSenderData { [weak self] senderIdList in
             self?.senderId = senderIdList
             if self?.senderId.isEmpty == true {
                 self?.noDataView.noDataLabel.isHidden = false
@@ -62,19 +61,15 @@ class FriendInvitationViewController: UIViewController {
                 self?.noDataView.noDataLabel.isHidden = true
             }
             
-            self?.senderId.forEach {
-                sender in
+            self?.senderId.forEach { sender in
                 UserManager.shared.fetchUserData(friendId: sender) { [weak self] result in
                     switch result {
                     case .success(let userData):
                         if let userData = userData {
                             self?.invitationUsers.append(userData)
                         }
-                        print("userData:\(userData)")
-                        print("invitationData: \(self?.invitationUsers)")
                         self?.tableView.reloadData()
-                    case .failure(let error):
-                        print("Error decoding userData: \(error)")
+                    case .failure:
                         ProgressHUD.shared.view = self?.view ?? UIView()
                         ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
                     }
@@ -105,7 +100,6 @@ class FriendInvitationViewController: UIViewController {
         noDataView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-//        noDataView.noDataLabel.isHidden = false
     }
 }
 
@@ -144,7 +138,7 @@ extension FriendInvitationViewController: TableViewCellDelegate {
         FriendManager.shared.receiverToFriends(userId: currentUserId,
                                                senderId: senderId[indexPath.row],
                                                userName: currentUserName ?? "",
-                                               userEmail: AccountManager.shared.currentUser.currentUserEmail)
+                                               userEmail: UserManager.shared.currentUser?.userEmail ?? "")
         
         self.invitationUsers.remove(at: indexPath.row)
         self.tableView.deleteRows(at: [IndexPath(row: indexPath.row, section: indexPath.section)], with: .fade)

@@ -20,31 +20,6 @@ class ItemManager {
     static var shared = ItemManager()
     lazy var database = Firestore.firestore()
     
-//    func addItemData(
-//        groupId: String,
-//        itemName: String,
-//        itemDescription: String?,
-//        createdTime: Double,
-//        itemImage: String?,
-//        completion: @escaping (String) -> Void) {
-//        let ref = database.collection(FirebaseCollection.item.rawValue).document()
-//
-//        let itemData = ItemData(
-//            groupId: groupId,
-//            itemName: itemName,
-//            itemId: "\(ref.documentID)",
-//            itemDescription: itemDescription,
-//            createdTime: createdTime,
-//            itemImage: itemImage)
-//
-//        do {
-//            try database.collection(FirebaseCollection.item.rawValue).document("\(ref.documentID)").setData(from: itemData)
-//            completion("\(ref.documentID)")
-//        } catch {
-//            print(error)
-//        }
-//    }
-    
     func addItemData(itemData: ItemData, completion: @escaping (String) -> Void) {
         let ref = database.collection(FirebaseCollection.item.rawValue).document()
         
@@ -52,7 +27,8 @@ class ItemManager {
         updateItem.itemId = "\(ref.documentID)"
         
         do {
-            try database.collection(FirebaseCollection.item.rawValue).document("\(ref.documentID)").setData(from: updateItem)
+            try database.collection(FirebaseCollection.item.rawValue)
+                .document("\(ref.documentID)").setData(from: updateItem)
             completion("\(ref.documentID)")
         } catch {
             print(error)
@@ -133,7 +109,8 @@ class ItemManager {
     }
     
     func fetchItem(itemId: String, completion: @escaping (Result<ItemData, Error>) -> Void) {
-        database.collection(FirebaseCollection.item.rawValue).document(itemId).addSnapshotListener { (querySnapshot, error) in
+        database.collection(FirebaseCollection.item.rawValue)
+            .document(itemId).addSnapshotListener { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -165,7 +142,7 @@ class ItemManager {
             .document(itemId)
             .collection(collection)
             .order(by: "createdTime", descending: true)
-            .getDocuments() { (querySnapshot, error) in
+            .getDocuments { (querySnapshot, error) in
             
             if let error = error {
                 completion(.failure(error))
@@ -206,7 +183,7 @@ class ItemManager {
                 .document(item)
                 .collection(collection)
                 .order(by: "createdTime", descending: true)
-                .getDocuments() { (querySnapshot, error) in
+                .getDocuments { (querySnapshot, error) in
                 
                 if let error = error {
                     completion(.failure(error))
@@ -263,21 +240,20 @@ class ItemManager {
         let involvedInfo = ExpenseInfo(userId: typeUserId, price: price, createdTime: createdTime, itemId: itemId)
         
         do {
-            try database.collection(FirebaseCollection.item.rawValue).document(itemId).collection(collection.rawValue).document().setData(from: involvedInfo)
+            try database.collection(FirebaseCollection.item.rawValue)
+                .document(itemId).collection(collection.rawValue)
+                .document().setData(from: involvedInfo)
             completion(.success(()))
         } catch {
-            print(error)
             completion(.failure(error))
         }
     }
     
     func deleteItem(itemId: String, completion: @escaping (Result<(), Error>) -> Void) {
-        database.collection(FirebaseCollection.item.rawValue).document(itemId).delete() { err in
+        database.collection(FirebaseCollection.item.rawValue).document(itemId).delete { err in
             if let err = err {
-                print("Error removing document: \(err)")
                 completion(.failure(err))
             } else {
-                print("Document successfully removed!")
                 completion(.success(()))
             }
         }
@@ -289,10 +265,8 @@ class ItemManager {
                    "groupId": grpupId
                ]) { err in
                    if let err = err {
-                       print("Error updating document: \(err)")
                        completion(.failure(err))
                    } else {
-                       print("Document successfully updated")
                 completion(.success(()))
             }
         }
@@ -301,10 +275,7 @@ class ItemManager {
     func listenForNotification(groupId: String, completion: @escaping () -> Void) {
         database.collection("notification").whereField("groupId", isEqualTo: groupId)
             .addSnapshotListener { querySnapshot, error in
-                guard let snapshot = querySnapshot else {
-                    print("Error retreiving snapshots \(error?.localizedDescription)")
-                    return
-                }
+                guard let snapshot = querySnapshot else { return }
                 print("groupId: \(snapshot.documents.map { $0.data() })")
                 completion()
             }

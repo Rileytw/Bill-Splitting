@@ -52,3 +52,8 @@ struct CurrentUser {
     var currentUserEmail: String
 //    var currentUserName: String
 }
+
+struct FriendSearchModel {
+    var friendList: Friend
+    var isSelected: Bool
+}

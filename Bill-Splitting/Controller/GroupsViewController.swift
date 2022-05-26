@@ -84,7 +84,7 @@ class GroupsViewController: BaseViewController {
                 self?.setFilterGroupData()
                 self?.hideEmptyLabel(groups)
             case .failure:
-                self?.showFailure(text: ErrorType.dataError.errorMessage)
+                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }
@@ -97,7 +97,7 @@ class GroupsViewController: BaseViewController {
                 self?.closedGroups = groups
                 self?.setFilterGroupData()
             case .failure:
-                self?.showFailure(text: ErrorType.dataError.errorMessage)
+                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }
@@ -303,7 +303,7 @@ extension GroupsViewController {
                     self?.revealBlockView()
                 }
             case .failure:
-                self?.showFailure(text: ErrorType.dataError.errorMessage)
+                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }

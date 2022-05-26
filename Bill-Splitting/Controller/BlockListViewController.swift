@@ -10,8 +10,8 @@ import UIKit
 class BlockListViewController: UIViewController {
 
     let tableView = UITableView()
-    var blackList = [String]()
-    var blackUsers = [UserData]()
+    var blockList = UserManager.shared.currentUser?.blackList
+    var blockUsers = [UserData]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,13 +34,12 @@ class BlockListViewController: UIViewController {
         UserManager.shared.fetchUsersData { [weak self] result in
             switch result {
             case .success(let users):
-                guard let blackList = self?.blackList else { return }
+                guard let blackList = self?.blockList else { return }
                 for blockedUser in blackList {
-                    self?.blackUsers += users.filter { $0.userId == blockedUser }
+                    self?.blockUsers += users.filter { $0.userId == blockedUser }
                 }
                 self?.tableView.reloadData()
             case .failure(let error):
-                print("Error decoding users: \(error)")
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
@@ -64,7 +63,7 @@ class BlockListViewController: UIViewController {
 
 extension BlockListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return blackUsers.count
+        return blockUsers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -75,7 +74,7 @@ extension BlockListViewController: UITableViewDataSource, UITableViewDelegate {
         
         guard let profileCell = cell as? FriendListTableViewCell else { return cell }
         
-        profileCell.createCell(userName: blackUsers[indexPath.row].userName, userEmail: blackUsers[indexPath.row].userEmail)
+        profileCell.createCell(userName: blockUsers[indexPath.row].userName, userEmail: blockUsers[indexPath.row].userEmail)
         profileCell.infoButton.isHidden = true
         
         return profileCell

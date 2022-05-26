@@ -244,14 +244,11 @@ class SubscribeViewController: UIViewController {
         formatter.dateFormat = "yyyy-MM-dd"
         if sender == startTimeDatePicker {
             startDate = startTimeDatePicker.date
-            print("startDate: \(startDate)")
         } else if sender == endTimeDatePicker {
             endDate = endTimeDatePicker.date
-            print("endDate: \(endDate)")
         }
         let components = Calendar.current.dateComponents([.month], from: startDate ?? Date(), to: endDate ?? Date())
         month = components.month
-        print("Number of months: \(month)")
         countSubscriptiontime()
     }
     

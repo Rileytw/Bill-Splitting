@@ -67,7 +67,7 @@ class CustomGroupViewController: BaseViewController {
                 self?.members = users
                 self?.group?.memberData = users
             case .failure:
-                self?.showFailure(text: ErrorType.dataError.errorMessage)
+                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }
@@ -86,7 +86,9 @@ class CustomGroupViewController: BaseViewController {
             case .success(let items):
                 self?.hideNoDataLabel(items)
                 self?.items = items
-                self?.getItemDetail()
+                if !items.isEmpty {
+                    self?.getItemDetail()
+                }
             case .failure:
                 self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
@@ -151,7 +153,7 @@ class CustomGroupViewController: BaseViewController {
                 self?.getPesronalExpense(expense)
                 
             case .failure:
-                self?.showFailure(text: ErrorType.dataError.errorMessage)
+                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }
@@ -257,7 +259,7 @@ class CustomGroupViewController: BaseViewController {
     func getSubscription(index: Int) {
         let nowTime = Date().timeIntervalSince1970
         if (subsriptions.count != 0) && subsriptions[index].startTime <= nowTime {
-            countSubscriptiontime(index: index)
+            calculateSubscriptionTime(index: index)
             updateSubscription(index)
             getSubscriptionInvolvedData(index)
         }
@@ -278,7 +280,7 @@ class CustomGroupViewController: BaseViewController {
         }
     }
     
-    func countSubscriptiontime(index: Int) {
+    func calculateSubscriptionTime(index: Int) {
         let startDate = Date.getTimeDate(timeStamp: subsriptions[index].startTime)
         let endDate = Date.getTimeDate(timeStamp: subsriptions[index].endTime)
         

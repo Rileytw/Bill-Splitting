@@ -6,10 +6,17 @@
 //
 
 import UIKit
+import SwiftUI
 
-class SpecificSettleIUpViewController: UIViewController {
+class SpecificSettleIUpViewController: BaseViewController {
     
-//    let currentUserId = AccountManager.shared.currentUser.currentUserId
+// MARK: - Property
+    var nameLabel = UILabel()
+    var price = UILabel()
+    var account = UILabel()
+    var settleButton = UIButton()
+    var tableView = UITableView()
+    
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var userData: UserData?
     var groupId: String?
@@ -18,12 +25,7 @@ class SpecificSettleIUpViewController: UIViewController {
     var itemId: String?
     var userExpense: [MemberExpense] = []
     
-    var nameLabel = UILabel()
-    var price = UILabel()
-    var account = UILabel()
-    var settleButton = UIButton()
-    var tableView = UITableView()
-    
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -43,6 +45,113 @@ class SpecificSettleIUpViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
+// MARK: - Method
+    @objc func pressSettleUpButton() {
+        if NetworkStatus.shared.isConnected == true {
+            addItem()
+            if let groupViewController = self.navigationController?.viewControllers[1] {
+                self.navigationController?.popToViewController(groupViewController, animated: true)
+            }
+        } else {
+            networkConnectAlert()
+        }
+    }
+    
+    func addItem() {
+        guard let expense = memberExpense?.allExpense,
+              let memberId = memberExpense?.userId,
+              let groupId = groupData?.groupId
+        else { return }
+        
+        let userExpense = userExpense.filter { $0.userId == currentUserId }
+        
+        var item = ItemData()
+        item.groupId = groupId
+        item.itemName = "結帳"
+        item.createdTime = Double(NSDate().timeIntervalSince1970)
+        ItemManager.shared.addItemData(itemData: item) { itemId in
+            self.itemId = itemId
+            
+            var paidUserId: String?
+            var creditorId: String?
+            if self.groupData?.creator == self.currentUserId {
+                if expense <= 0 {
+                    paidUserId = memberId
+                    creditorId = self.currentUserId
+                } else {
+                    paidUserId = self.currentUserId
+                    creditorId = memberId
+                }
+                
+                AddItem.shared.addSettleUpItem(groupId: groupId, itemId: itemId,
+                                               paidUserId: paidUserId ?? "", paidPrice: abs(expense),
+                                               involvedUserId: creditorId ?? "",
+                                               involvedPrice: abs(expense)) { [weak self] in
+                    if AddItem.shared.isDataUploadSucces {
+                        self?.addItemNotification()
+                    }
+                }
+                
+            } else {
+                if userExpense[0].allExpense <= 0 {
+                    paidUserId = self.userData?.userId
+                    creditorId = self.currentUserId
+                } else {
+                    paidUserId = self.currentUserId
+                    creditorId = self.userData?.userId
+                }
+                
+                AddItem.shared.addSettleUpItem(groupId: groupId, itemId: itemId,
+                                               paidUserId: creditorId ?? "", paidPrice: abs(userExpense[0].allExpense),
+                                               involvedUserId: paidUserId ?? "",
+                                               involvedPrice: abs(userExpense[0].allExpense)) {[weak self] in
+                    if AddItem.shared.isDataUploadSucces {
+                        self?.addItemNotification()
+                    }
+                }
+            }
+        }
+    }
+    
+    func addItemNotification() {
+        ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
+            switch result {
+            case .success:
+                print("uplaod notification collection successfully")
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+        
+    func networkConnectAlert() {
+        confirmAlert(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再結清。")
+    }
+}
+
+extension SpecificSettleIUpViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return userData?.payment?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: PaymentTableViewCell.self),
+            for: indexPath
+        )
+        
+        guard let paymentCell = cell as? PaymentTableViewCell else { return cell }
+        let userPayment = userData?.payment
+        
+        paymentCell.createPaymentCell(payment: userPayment?[indexPath.row].paymentName ?? "",
+                                      accountName: userPayment?[indexPath.row].paymentAccount ?? "",
+                                      link: userPayment?[indexPath.row].paymentLink ?? "")
+
+        return paymentCell
+    }
+}
+
+extension SpecificSettleIUpViewController {
     func setUserInfo() {
         setNameInfo()
         setPriceInfo()
@@ -66,7 +175,8 @@ class SpecificSettleIUpViewController: UIViewController {
         tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
         tableView.bottomAnchor.constraint(equalTo: settleButton.topAnchor, constant: -10).isActive = true
         
-        tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear
@@ -85,232 +195,6 @@ class SpecificSettleIUpViewController: UIViewController {
         settleButton.addTarget(self, action: #selector(pressSettleUpButton), for: .touchUpInside)
     }
     
-    @objc func pressSettleUpButton() {
-        if NetworkStatus.shared.isConnected == true {
-            addItem()
-            
-            if let groupViewController = self.navigationController?.viewControllers[1] {
-                self.navigationController?.popToViewController(groupViewController, animated: true)
-            }
-        } else {
-            print("======== Cannot add groups")
-            networkConnectAlert()
-        }
-    }
-    
-    func addItem() {
-        guard let expense = memberExpense?.allExpense,
-              let memberId = memberExpense?.userId
-        else { return }
-        
-        let userExpense = userExpense.filter { $0.userId == currentUserId }
-        
-        var item = ItemData()
-        item.groupId = groupId ?? ""
-        item.itemName = "結帳"
-        item.createdTime = Double(NSDate().timeIntervalSince1970)
-        ItemManager.shared.addItemData(itemData: item) { itemId in
-            self.itemId = itemId
-            
-            var paidUserId: String?
-            var creditorId: String?
-            if self.groupData?.creator == self.currentUserId {
-                if expense <= 0 {
-                    paidUserId = memberId
-                    creditorId = self.currentUserId
-                } else {
-                    paidUserId = self.currentUserId
-                    creditorId = memberId
-                }
-                
-                ItemManager.shared.addPaidInfo(paidUserId: paidUserId ?? "",
-                                               price: abs(expense),
-                                               itemId: itemId,
-                                               createdTime: Double(NSDate().timeIntervalSince1970)) { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-                
-                ItemManager.shared.addInvolvedInfo(involvedUserId: creditorId ?? "",
-                                                   price: abs(expense),
-                                                   itemId: itemId,
-                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-                
-            } else {
-                if userExpense[0].allExpense <= 0 {
-                    paidUserId = self.userData?.userId
-                    creditorId = self.currentUserId
-                } else {
-                    paidUserId = self.currentUserId
-                    creditorId = self.userData?.userId
-                }
-                
-                ItemManager.shared.addPaidInfo(paidUserId: creditorId ?? "",
-                                               price: abs(userExpense[0].allExpense),
-                                               itemId: itemId,
-                                               createdTime: Double(NSDate().timeIntervalSince1970)) { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-                
-                ItemManager.shared.addInvolvedInfo(involvedUserId: paidUserId ?? "",
-                                                   price: abs(userExpense[0].allExpense),
-                                                   itemId: itemId,
-                                                   createdTime: Double(NSDate().timeIntervalSince1970)) { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-            }
-            self.updatePersonalExpense()
-            self.addItemNotification()
-        }
-    }
-    
-    func updatePersonalExpense() {
-        guard let expense = memberExpense?.allExpense,
-              let memberId = memberExpense?.userId
-        else { return }
-        
-        var paidUserId: String?
-        var creditorId: String?
-        
-        let userExpense = userExpense.filter { $0.userId == currentUserId }
-        
-        if groupData?.creator == currentUserId {
-            if expense <= 0 {
-                paidUserId = currentUserId
-                creditorId = memberId
-                GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
-                                                        newExpense: expense,
-                                                        groupId: groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-                
-                GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
-                                                        newExpense: 0 - expense,
-                                                        groupId: groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-            } else {
-                paidUserId = memberId
-                creditorId = currentUserId
-                GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
-                                                        newExpense: 0 - expense,
-                                                        groupId: groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-                
-                GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
-                                                        newExpense: expense,
-                                                        groupId: groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-            }
-        } else {
-            if userExpense[0].allExpense <= 0 {
-                paidUserId = currentUserId
-                creditorId = userData?.userId
-                GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
-                                                        newExpense: 0 - userExpense[0].allExpense,
-                                                        groupId: groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-                
-                GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
-                                                        newExpense: userExpense[0].allExpense,
-                                                        groupId: groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-            } else {
-                paidUserId = userData?.userId
-                creditorId = currentUserId
-                GroupManager.shared.updateMemberExpense(userId: paidUserId ?? "",
-                                                        newExpense: userExpense[0].allExpense,
-                                                        groupId: groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-                
-                GroupManager.shared.updateMemberExpense(userId: creditorId ?? "",
-                                                        newExpense: 0 - userExpense[0].allExpense,
-                                                        groupId: groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        print("success")
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-            }
-        }
-        
-       
-    }
-    
-    func addItemNotification() {
-        ItemManager.shared.addNotify(grpupId: self.groupData?.groupId ?? "") { result in
-            switch result {
-            case .success:
-                print("uplaod notification collection successfully")
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-    }
-    
     func setNameInfo() {
         guard let memberExpense = memberExpense,
               let userData = userData
@@ -324,15 +208,15 @@ class SpecificSettleIUpViewController: UIViewController {
         nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
-                nameLabel.text = "付款對象：\(userData.userName)"
+                nameLabel.text = SettleUpType.pay.settleUpUser + "\(userData.userName)"
             } else {
-                nameLabel.text = "收款對象：\(userData.userName)"
+                nameLabel.text = SettleUpType.credit.settleUpUser + "\(userData.userName)"
             }
         } else {
             if groupData?.creator == currentUserId {
-                nameLabel.text = "收款對象：\(userData.userName)"
+                nameLabel.text = SettleUpType.credit.settleUpUser + "\(userData.userName)"
             } else {
-                nameLabel.text = "付款對象：\(userData.userName)"
+                nameLabel.text = SettleUpType.pay.settleUpUser + "\(userData.userName)"
             }
         }
         nameLabel.font = nameLabel.font.withSize(20)
@@ -351,67 +235,42 @@ class SpecificSettleIUpViewController: UIViewController {
         price.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
-                
-                price.text = "付款金額：" + String(format: "%.2f", abs(memberExpense.allExpense)) + " 元"
+                price.text = SettleUpType.pay.settleUpPrice + Double.formatString(abs(memberExpense.allExpense)) + " 元"
             } else {
-                price.text = "收款金額：" + String(format: "%.2f", abs(userExpense[0].allExpense)) + " 元"
+                price.text = SettleUpType.credit.settleUpPrice + Double.formatString(abs(userExpense[0].allExpense)) + " 元"
             }
 
         } else {
             if groupData?.creator == currentUserId {
-                price.text = "收款金額：" + String(format: "%.2f", abs(memberExpense.allExpense)) + " 元"
+                price.text = SettleUpType.credit.settleUpPrice + Double.formatString(abs(memberExpense.allExpense)) + " 元"
             } else {
-                price.text = "付款金額：" + String(format: "%.2f", abs(userExpense[0].allExpense)) + " 元"
+                price.text = SettleUpType.pay.settleUpPrice + Double.formatString(abs(userExpense[0].allExpense)) + " 元"
             }
         }
         price.font = price.font.withSize(20)
         price.textColor = .greenWhite
     }
     
-    func networkDetect() {
-        NetworkStatus.shared.startMonitoring()
-        NetworkStatus.shared.netStatusChangeHandler = {
-            if NetworkStatus.shared.isConnected == true {
-                print("connected")
-            } else {
-                print("Not connected")
-                if !Thread.isMainThread {
-                    DispatchQueue.main.async {
-                        ProgressHUD.shared.view = self.view
-                        ProgressHUD.showFailure(text: ErrorType.networkError.errorMessage)
-                    }
-                }
+    enum SettleUpType {
+        case pay
+        case credit
+        
+        var settleUpPrice: String {
+            switch self {
+            case .pay:
+                return "付款金額："
+            case .credit:
+                return "收款金額："
             }
         }
-    }
-    
-    func networkConnectAlert() {
-        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
-
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
-    }
-}
-
-extension SpecificSettleIUpViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return userData?.payment?.count ?? 0
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: String(describing: PaymentTableViewCell.self),
-            for: indexPath
-        )
         
-        guard let paymentCell = cell as? PaymentTableViewCell else { return cell }
-        let userPayment = userData?.payment
-        
-        paymentCell.createPaymentCell(payment: userPayment?[indexPath.row].paymentName ?? "",
-                                      accountName: userPayment?[indexPath.row].paymentAccount ?? "",
-                                      link: userPayment?[indexPath.row].paymentLink ?? "")
-
-        return paymentCell
+        var settleUpUser: String {
+            switch self {
+            case .pay:
+                return "付款對象："
+            case .credit:
+                return "收款對象："
+            }
+        }
     }
 }

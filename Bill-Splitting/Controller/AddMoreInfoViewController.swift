@@ -10,8 +10,7 @@ import Lottie
 
 class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
-//    let currentUserId = AccountManager.shared.currentUser.currentUserId
-    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
+// MARK: - Property
     var photoImageView = UIImageView()
     var addPhotoButton = UIButton()
     var addPhotoLabel = UILabel()
@@ -23,8 +22,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     var selectedImage: UIImage?
     private var animationView = AnimationView()
     
-//    weak var delegate: MoreInfoDelegate?
-    
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var isItemExist: Bool = false
     var itemData: ItemData?
     
@@ -36,7 +34,8 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     typealias ImageData = (UIImage) -> Void
     var itemImage: ImageData?
-    
+
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -50,22 +49,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         
     }
     
-    func setAddPhotoButton() {
-        view.addSubview(addPhotoButton)
-        addPhotoButton.translatesAutoresizingMaskIntoConstraints = false
-        addPhotoButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
-        addPhotoButton.leftAnchor.constraint(equalTo: addPhotoLabel.rightAnchor, constant: 20).isActive = true
-        addPhotoButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        addPhotoButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
-        addPhotoButton.setImage(UIImage(systemName: "camera"), for: .normal)
-        addPhotoButton.setTitle("上傳", for: .normal)
-        addPhotoButton.setTitleColor(UIColor.greenWhite, for: .normal)
-        addPhotoButton.tintColor = UIColor.greenWhite
-        addPhotoButton.addTarget(self, action: #selector(pressUploadPhoto), for: .touchUpInside)
-        ElementsStyle.styleSpecificButton(addPhotoButton)
-    }
-    
+// MARK: - Method
     @objc func pressUploadPhoto() {
         let imagePickerAlertController = UIAlertController(title: "上傳照片",
                                                            message: "拍攝或上傳照片",
@@ -105,44 +89,13 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         imagePickerAlertController.popoverPresentationController?.permittedArrowDirections = .up
     }
     
-    internal func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    internal func imagePickerController(_ picker: UIImagePickerController,
+                                        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let pickedImage = info[.originalImage] as? UIImage {
             self.photoImageView.image = pickedImage
             selectedImage = pickedImage
         }
         dismiss(animated: true, completion: nil)
-    }
-    
-    func setPhotoImageView() {
-        view.addSubview(photoImageView)
-        photoImageView.translatesAutoresizingMaskIntoConstraints = false
-        photoImageView.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 10).isActive = true
-        photoImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        photoImageView.widthAnchor.constraint(equalToConstant: UIScreen.width - 40).isActive = true
-        photoImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
-        
-        photoImageView.contentMode = .scaleAspectFit
-        photoImageView.layer.borderColor = UIColor.selectedColor.cgColor
-        photoImageView.layer.borderWidth = 1
-        photoImageView.layer.cornerRadius = 10
-        
-        if isItemExist == true {
-            let image = itemData?.itemImage
-            photoImageView.getImage(image, placeHolder: nil)
-        }
-    }
-    
-    func setCompleteButton() {
-        view.addSubview(completeButton)
-        completeButton.translatesAutoresizingMaskIntoConstraints = false
-        completeButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
-        completeButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        completeButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        completeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        
-        completeButton.setTitle("儲存", for: .normal)
-        completeButton.addTarget(self, action: #selector(pressComplete), for: .touchUpInside)
-        ElementsStyle.styleSpecificButton(completeButton)
     }
     
     @objc func pressComplete() {
@@ -153,12 +106,10 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
                 self.urlData?(itemData?.itemImage ?? "")
                 self.dismiss(animated: true, completion: nil)
             } else {
-//                getImageURL()
                 itemImage?(self.selectedImage ?? UIImage())
                 self.dismiss(animated: true, completion: nil)
             }
         } else if selectedImage != nil && isItemExist == false {
-//            getImageURL()
             itemImage?(self.selectedImage ?? UIImage())
             self.dismiss(animated: true, completion: nil)
         } else {
@@ -237,5 +188,53 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
         addPhotoLabel.textColor = UIColor.greenWhite
         addPhotoLabel.text = "新增照片"
+    }
+    
+    func setAddPhotoButton() {
+        view.addSubview(addPhotoButton)
+        addPhotoButton.translatesAutoresizingMaskIntoConstraints = false
+        addPhotoButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 40).isActive = true
+        addPhotoButton.leftAnchor.constraint(equalTo: addPhotoLabel.rightAnchor, constant: 20).isActive = true
+        addPhotoButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        addPhotoButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        
+        addPhotoButton.setImage(UIImage(systemName: "camera"), for: .normal)
+        addPhotoButton.setTitle("上傳", for: .normal)
+        addPhotoButton.setTitleColor(UIColor.greenWhite, for: .normal)
+        addPhotoButton.tintColor = UIColor.greenWhite
+        addPhotoButton.addTarget(self, action: #selector(pressUploadPhoto), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(addPhotoButton)
+    }
+    
+    func setPhotoImageView() {
+        view.addSubview(photoImageView)
+        photoImageView.translatesAutoresizingMaskIntoConstraints = false
+        photoImageView.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 10).isActive = true
+        photoImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        photoImageView.widthAnchor.constraint(equalToConstant: UIScreen.width - 40).isActive = true
+        photoImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        
+        photoImageView.contentMode = .scaleAspectFit
+        photoImageView.layer.borderColor = UIColor.selectedColor.cgColor
+        photoImageView.layer.borderWidth = 1
+        photoImageView.layer.cornerRadius = 10
+        
+        if isItemExist == true {
+            let image = itemData?.itemImage
+            photoImageView.getImage(image, placeHolder: nil)
+        }
+    }
+    
+    func setCompleteButton() {
+        view.addSubview(completeButton)
+        completeButton.translatesAutoresizingMaskIntoConstraints = false
+        completeButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        completeButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        completeButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        completeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        
+        completeButton.setTitle("儲存", for: .normal)
+        completeButton.addTarget(self, action: #selector(pressComplete), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(completeButton)
     }
 }

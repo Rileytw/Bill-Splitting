@@ -8,13 +8,15 @@
 import UIKit
 
 class ItemImageViewController: UIViewController, UIScrollViewDelegate {
-
-    var scrollImage: UIScrollView = UIScrollView()
+    
+// MARK: - Property
+    var scrollImage = UIScrollView()
     var photoView = UIView()
     var photoImage = UIImageView()
     let dismissButton = UIButton()
     var image: String?
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.9)
@@ -23,6 +25,7 @@ class ItemImageViewController: UIViewController, UIScrollViewDelegate {
         setDismissButton()
     }
 
+// MARK: - Method
     func addImageView(image: String) {
         scrollImage.addSubview(photoImage)
         photoImage.getImage(image)

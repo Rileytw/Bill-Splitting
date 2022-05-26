@@ -9,13 +9,12 @@ import UIKit
 
 class FriendListViewController: UIViewController {
 
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+// MARK: - Property
     let tableView = UITableView()
     var noDataView = NoDataView(frame: .zero)
-    let width = UIScreen.main.bounds.size.width
-    let height = UIScreen.main.bounds.size.height
     var blockUserView = BlockUserView()
     var mask = UIView()
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var blockedUserId: String?
     
     var friends: [Friend]? {
@@ -24,6 +23,7 @@ class FriendListViewController: UIViewController {
         }
     }
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -43,26 +43,11 @@ class FriendListViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
-    func setInviteButton() {
-        let inviteFriendButton = UIButton()
-        inviteFriendButton.setTitle("邀請好友", for: .normal)
-        inviteFriendButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        inviteFriendButton.tintColor = .greenWhite
-        inviteFriendButton.setTitleColor(.greenWhite, for: .normal)
-        ElementsStyle.styleSpecificButton(inviteFriendButton)
-        view.addSubview(inviteFriendButton)
-        inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
-        inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        inviteFriendButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        inviteFriendButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
-        
-        inviteFriendButton.addTarget(self, action: #selector(pressInviteFriendButton), for: .touchUpInside)
-    }
-    
+// MARK: - Method
     @objc func pressInviteFriendButton() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
-        let inviteFriendViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: InviteFriendViewController.self))
+        let inviteFriendViewController = storyBoard.instantiateViewController(
+            withIdentifier: InviteFriendViewController.identifier)
         if #available(iOS 15.0, *) {
             if let sheet = inviteFriendViewController.sheetPresentationController {
                 sheet.detents = [.medium()]
@@ -72,20 +57,6 @@ class FriendListViewController: UIViewController {
         self.present(inviteFriendViewController, animated: true, completion: nil)
     }
 
-    func setTableView() {
-        self.view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        tableView.backgroundColor = .clear
-        
-        tableView.register(UINib(nibName: String(describing: FriendListTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: FriendListTableViewCell.self))
-        tableView.dataSource = self
-        tableView.delegate = self
-    }
-    
     func fetchFriends() {
         UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
             switch result {
@@ -94,8 +65,7 @@ class FriendListViewController: UIViewController {
                 if friend.isEmpty == true {
                     self?.noDataView.noDataLabel.isHidden = false
                 }
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+            case .failure:
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
@@ -134,17 +104,18 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
         mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         view.addSubview(mask)
         
-        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: 300))
+        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
         blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
         blockUserView.buttonTitle = " 封鎖使用者"
         blockUserView.content = "封鎖使用者後，並不會隱藏你們共享的群組，若有需要可在結清帳務後退出群組。"
-        blockUserView.blockUserButton.setImage(UIImage(systemName: "person.crop.circle.badge.exclam.fill"), for: .normal)
+        blockUserView.blockUserButton.setImage(UIImage(
+            systemName: "person.crop.circle.badge.exclam.fill"), for: .normal)
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
+            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.height - 300, width: UIScreen.width, height: 300)
         }, completion: nil)
         view.addSubview(blockUserView)
         
@@ -154,11 +125,11 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     @objc func pressDismissButton() {
-//        blockUserView.removeFromSuperview()
         let subviewCount = self.view.subviews.count
         
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+            self.view.subviews[subviewCount - 1].frame = CGRect(
+                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
         }, completion: nil)
         mask.removeFromSuperview()
     }
@@ -166,9 +137,8 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     @objc func blockUserAlert() {
         let alertController = UIAlertController(title: "請確認是否封鎖使用者", message: "封鎖後不可解除", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "封鎖", style: .destructive) { [weak self] _ in
-            print("封鎖\(self?.blockedUserId)")
             self?.blockUser()
-            self?.addToBlackList()
+            self?.addToBlockList()
             
             self?.pressDismissButton()
             self?.navigationController?.popToRootViewController(animated: true)
@@ -182,37 +152,26 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func blockUser() {
         FriendManager.shared.removeFriend(userId: currentUserId, friendId: blockedUserId ?? "") { [weak self] result in
-            switch result {
-            case .success:
-                print("remove friend successfully")
-            case .failure(let error):
-                print("\(error.localizedDescription)")
+            if case .failure = result {
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
         
         FriendManager.shared.removeFriend(userId: blockedUserId ?? "", friendId: currentUserId) { [weak self] result in
-            switch result {
-            case .success:
-                print("remove friend successfully")
-            case .failure(let error):
-                print("\(error.localizedDescription)")
+            if case .failure = result {
                 ProgressHUD.shared.view = self?.view ?? UIView()
                 ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
     
-    func addToBlackList() {
-        FriendManager.shared.addBlockFriends(userId: currentUserId, blockedUser: blockedUserId ?? "") { [weak self] result in
-            switch result {
-            case .success():
-                print("Add blackList successfully")
-            case .failure(let error):
-                print("\(error.localizedDescription)")
+    func addToBlockList() {
+        FriendManager.shared.addBlockFriends(userId: currentUserId,
+                                             blockedUser: blockedUserId ?? "") { [weak self] result in
+            if case .failure = result {
                 ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "資料上傳發生錯誤，請稍後再試")
+                ProgressHUD.showFailure(text: ErrorType.dataUpdateError.errorMessage)
             }
         }
     }
@@ -226,4 +185,39 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
         noDataView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         noDataView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
+    
+    func setInviteButton() {
+        let inviteFriendButton = UIButton()
+        inviteFriendButton.setTitle("邀請好友", for: .normal)
+        inviteFriendButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        inviteFriendButton.tintColor = .greenWhite
+        inviteFriendButton.setTitleColor(.greenWhite, for: .normal)
+        ElementsStyle.styleSpecificButton(inviteFriendButton)
+        view.addSubview(inviteFriendButton)
+        inviteFriendButton.translatesAutoresizingMaskIntoConstraints = false
+        inviteFriendButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        inviteFriendButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        inviteFriendButton.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        inviteFriendButton.topAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        
+        inviteFriendButton.addTarget(self, action: #selector(pressInviteFriendButton), for: .touchUpInside)
+    }
+    
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.backgroundColor = .clear
+        
+        tableView.register(UINib(nibName: String(describing: FriendListTableViewCell.self),
+                                 bundle: nil),
+                           forCellReuseIdentifier: String(describing: FriendListTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+    }
+    
 }

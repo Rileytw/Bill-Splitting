@@ -9,6 +9,7 @@ import UIKit
 
 class AddPaymentViewController: UIViewController {
 
+// MARK: - Property
     let addItemView = AddItemView(frame: .zero)
     let linkLabel = UILabel()
     let linkTextView = UITextView()
@@ -17,7 +18,8 @@ class AddPaymentViewController: UIViewController {
     var paymentName: String?
     var account: String?
     var link: String?
-    
+
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -32,6 +34,33 @@ class AddPaymentViewController: UIViewController {
         ElementsStyle.styleTextField(addItemView.itemNameTextField)
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
+
+// MARK: - Method
+    @objc func pressSaveButton() {
+        paymentName = addItemView.itemNameTextField.text
+        account = addItemView.priceTextField.text
+        link = linkTextView.text
+        
+        if addItemView.itemNameTextField.text == "" {
+            loseInfoAlert(message: "請填寫收款方式")
+        } else if addItemView.priceTextField.text == "" {
+            loseInfoAlert(message: "請填寫帳戶")
+        } else {
+            UserManager.shared.addPaymentData(paymentName: paymentName, account: account, link: link)
+            dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func loseInfoAlert(message: String) {
+        let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true, completion: nil)
+    }
     
     func setAddItemView() {
         view.addSubview(addItemView)
@@ -42,11 +71,10 @@ class AddPaymentViewController: UIViewController {
         addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         addItemView.itemName.text = "收款方式"
-//        addItemView.itemNameTextField.placeholder = " 如：銀行(台新、國泰）、LinePay"
+
         addItemView.itemNameTextField.attributedPlaceholder = NSAttributedString(string: "如：銀行(台新、國泰）、LinePay",
                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
         addItemView.priceLabel.text = "帳戶"
-//        addItemView.priceTextField.placeholder = "(XXX)00000000XXX000"
         addItemView.priceTextField.attributedPlaceholder = NSAttributedString(string: "(XXX)00000000XXX000",
                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
@@ -91,21 +119,6 @@ class AddPaymentViewController: UIViewController {
         saveButton.addTarget(self, action: #selector(pressSaveButton), for: .touchUpInside)
     }
     
-    @objc func pressSaveButton() {
-        paymentName = addItemView.itemNameTextField.text
-        account = addItemView.priceTextField.text
-        link = linkTextView.text
-        
-        if addItemView.itemNameTextField.text == "" {
-            loseInfoAlert(message: "請填寫收款方式")
-        } else if addItemView.priceTextField.text == "" {
-            loseInfoAlert(message: "請填寫帳戶")
-        } else {
-            UserManager.shared.addPaymentData(paymentName: paymentName, account: account, link: link)
-            dismiss(animated: true, completion: nil)
-        }
-    }
-    
     func setDismissButton() {
         let dismissButton = UIButton()
         view.addSubview(dismissButton)
@@ -118,17 +131,5 @@ class AddPaymentViewController: UIViewController {
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = UIColor.greenWhite
         dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
-    }
-    
-    @objc func pressDismiss() {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    
-    func loseInfoAlert(message: String) {
-        let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
-        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
-        alertController.addAction(confirmAction)
-        present(alertController, animated: true, completion: nil)
     }
 }

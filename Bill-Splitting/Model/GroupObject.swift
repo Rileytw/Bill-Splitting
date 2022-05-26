@@ -23,6 +23,20 @@ struct GroupData: Codable {
     var leaveMemberData: [UserData]?
     var memberExpense: [MemberExpense]?
     var memberData: [UserData]?
+    
+    init() {
+        groupId = ""
+        groupName = ""
+        groupDescription = nil
+        creator = ""
+        type = 0
+        status = 0
+        member = []
+        createdTime = 0
+        leaveMembers = nil
+        memberExpense = nil
+        memberData = nil
+    }
 }
 
 struct MemberExpense: Codable {
