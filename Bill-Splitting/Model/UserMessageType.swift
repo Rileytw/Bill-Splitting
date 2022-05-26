@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 enum ErrorType {
     case generalError
@@ -13,6 +14,7 @@ enum ErrorType {
     case dataFetchError
     case dataDeleteError
     case dataModifyError
+    case dataUpdateError
     
     var errorMessage: String {
         switch self {
@@ -26,7 +28,22 @@ enum ErrorType {
             return "資料刪除失敗，請稍後再試"
         case .dataModifyError:
             return "資料修改失敗，請稍後再試"
+        case .dataUpdateError:
+            return "資料上傳發生錯誤，請稍後再試"
         }
     }
 }
 
+enum SuccessType {
+    case addSuccess
+    case deleteSuccess
+    
+    var successMessage: String {
+        switch self {
+        case .addSuccess:
+            return ""
+        case .deleteSuccess:
+            return "資料已刪除"
+        }
+    }
+}
