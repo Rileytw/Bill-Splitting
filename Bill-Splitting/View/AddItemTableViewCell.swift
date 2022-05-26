@@ -43,8 +43,57 @@ class AddItemTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
     }
+    
+    func createEqualType(selectedType: InvolvedSelected, selectedNumber: Int?) {
+        priceTextField.isHidden = true
+        switch selectedType {
+        case .selected:
+            selectedButton.isSelected = true
+            equalLabel.isHidden = false
+            percentLabel.text = "%"
+            percentLabel.isHidden = false
+            
+            let percent: Double = (100.00 / Double(selectedNumber ?? 0))
+            equalLabel.text = String(format: "%.2f", percent)
+        case .unselected:
+            selectedButton.isSelected = false
+            equalLabel.isHidden = true
+            percentLabel.isHidden = true
+        }
+    }
+    
+    func createPercentType(selectedType: InvolvedSelected) {
+        equalLabel.isHidden = true
+        switch selectedType {
+        case .selected:
+            selectedButton.isSelected = true
+            priceTextField.isHidden = false
+            percentLabel.text = "%"
+            percentLabel.isHidden = false
+        case .unselected:
+            selectedButton.isSelected = false
+            priceTextField.isHidden = true
+            percentLabel.isHidden = true
+        }
+    }
+   
+    func createCustomizeType(selectedType: InvolvedSelected) {
+        equalLabel.isHidden = true
+        switch selectedType {
+        case .selected:
+            selectedButton.isSelected = true
+            priceTextField.isHidden = false
+            percentLabel.text = "元"
+            percentLabel.isHidden = false
+        case .unselected:
+            selectedButton.isSelected = false
+            priceTextField.isHidden = true
+            percentLabel.isHidden = true
+        }
+    }
+    
+    
 }
 
 extension AddItemTableViewCell: UITextFieldDelegate {
@@ -57,3 +106,7 @@ protocol AddItemTableViewCellDelegate: AnyObject {
     func endEditing(_ cell: AddItemTableViewCell)
 }
 
+enum InvolvedSelected {
+    case selected
+    case unselected
+}

@@ -25,8 +25,6 @@ class AddItemViewController: BaseViewController {
     
     var group: GroupData?
     var itemId: String?
-    var paidItem: [[ExpenseInfo]] = []
-    var involvedItem: [[ExpenseInfo]] = []
     var paidId: String?
     var paidPrice: Double?
     var involvedExpenseData: [ExpenseInfo] = []
@@ -35,19 +33,11 @@ class AddItemViewController: BaseViewController {
     var isItemExist: Bool = false
     var itemData: ItemData?
     
-    var selectedIndexs = [Int]() {
-        didSet {
-            if typePickerView.textField.text == SplitType.equal.label {
-                tableView.reloadData()
-            }
-        }
-    }
+    var selectedIndexs = [Int]()
     var involvedMemberName: [String] = []
     
     var itemImageString: String?
     var itemDescription: String?
-    var involvedTotalPrice: Double = 0
-    
     var itemImage: UIImage?
     
     typealias EditItem = (String) -> Void
@@ -77,7 +67,6 @@ class AddItemViewController: BaseViewController {
     }
 
 // MARK: - Method
-    
     @objc func pressAddMore() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let addMoreInfoViewController = storyBoard.instantiateViewController(
@@ -112,34 +101,9 @@ class AddItemViewController: BaseViewController {
         self.present(addMoreInfoViewController, animated: true, completion: nil)
     }
     
-    func setInvolvedMembers() {
-        view.addSubview(chooseInvolvedMember)
-        chooseInvolvedMember.translatesAutoresizingMaskIntoConstraints = false
-        chooseInvolvedMember.topAnchor.constraint(equalTo: choosePaidMember.bottomAnchor, constant: 10).isActive = true
-        chooseInvolvedMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        chooseInvolvedMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        chooseInvolvedMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        chooseInvolvedMember.text = "選擇參與人"
-        chooseInvolvedMember.textColor = UIColor.greenWhite
-    }
-    
-    func setTableView() {
-        self.view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: chooseInvolvedMember.bottomAnchor, constant: 5).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: addMoreButton.topAnchor, constant: -10).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
-        tableView.backgroundColor = .clear
-        
-        tableView.register(UINib(nibName: String(describing: AddItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddItemTableViewCell.self))
-        tableView.dataSource = self
-        tableView.delegate = self
-    }
-    
     @objc func pressAddButton() {
         if NetworkStatus.shared.isConnected == true {
-            checkInvolvedData()
+            let involvedTotalPrice = countInvolvedPrice()
             if addItemView.itemNameTextField.text == "" ||
                 addItemView.priceTextField.text == "" ||
                 typePickerView.textField.text == "" {
@@ -170,19 +134,15 @@ class AddItemViewController: BaseViewController {
     }
     
     func getImageURL() {
-        
         if let itemImage = itemImage {
             let fileName = "\(currentUserId)" + "\(Date())"
             ImageManager.shared.uploadImageToStorage(image: itemImage, fileName: fileName) { [weak self] urlString in
                 self?.itemImageString = urlString
                 self?.addItem()
-                
             }
         } else {
             addItem()
-            
         }
-        
     }
     
     func confirmAddItem() {
@@ -193,18 +153,16 @@ class AddItemViewController: BaseViewController {
         }
     }
     
-    func checkInvolvedData() {
-        involvedTotalPrice = 0
+    func countInvolvedPrice() -> Double {
+        var involvedTotalPrice: Double = 0
         for involvePrice in involvedExpenseData {
             involvedTotalPrice += involvePrice.price
         }
+        return involvedTotalPrice
     }
     
     func lossInfoAlert(message: String) {
-        let alertController = UIAlertController(title: "請填寫完整資訊", message: message, preferredStyle: .alert)
-        let confirmAction = UIAlertAction(title: "確認", style: .default, handler: nil)
-        alertController.addAction(confirmAction)
-        present(alertController, animated: true, completion: nil)
+        confirmAlert(title: "請填寫完整資訊", message: message)
     }
     
     func addItem() {
@@ -257,13 +215,10 @@ class AddItemViewController: BaseViewController {
               let paidPrice = paidPrice
         else { return }
         
-        AddItem.shared.addItem(
-            groupId: groupId,
-            itemId: itemId,
-            paidUserId: paidUserId,
-            paidPrice: paidPrice,
-            involvedExpenseData: self.involvedExpenseData,
-            involvedPrice: involvedPrice) { [weak self] in
+        AddItem.shared.addItem(groupId: groupId, itemId: itemId,
+                               paidUserId: paidUserId, paidPrice: paidPrice,
+                               involvedExpenseData: self.involvedExpenseData,
+                               involvedPrice: involvedPrice) { [weak self] in
                 self?.removeAnimation()
                 if AddItem.shared.isDataUploadSucces == true {
                     self?.showSuccess(text: "新增成功")
@@ -292,45 +247,21 @@ class AddItemViewController: BaseViewController {
             }
         }
     }
-    
+
     func reCountPersonalExpense() {
-        guard let paidUserId = itemData?.paidInfo?[0].userId,
-              let paidPrice = itemData?.paidInfo?[0].price
+        guard let group = group,
+              let item = itemData
         else { return }
-        
-        GroupManager.shared.updateMemberExpense(userId: paidUserId ,
-                                                newExpense: 0 - paidPrice,
-                                                groupId: group?.groupId ?? "") { result in
-            switch result {
-            case .success:
-                print("succedd")
-            case .failure(let error):
-                print("error")
-            }
-        }
-        
-        guard let involvedExpense = itemData?.involedInfo else { return }
-        
-        for user in 0..<involvedExpense.count {
-            GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
-                                                    newExpense: involvedExpense[user].price,
-                                                    groupId: group?.groupId ?? "") { result in
-                switch result {
-                case .success:
-                    print("succedd")
-                case .failure(let error):
-                    print("error")
-                }
+
+        GroupManager.shared.updatePersonalExpense(groupId: group.groupId, item: item) { [weak self] in
+            if !GroupManager.shared.isExpenseUpdateSucces == true {
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
         }
     }
     
     func networkConnectAlert() {
-        let alertController = UIAlertController(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。", preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
-
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
+        confirmAlert(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。")
     }
     
     func setTypeLabel() {
@@ -421,54 +352,24 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
         
         if typePickerView.textField.text == SplitType.equal.label {
             if selectedIndexs.contains(indexPath.row) {
-                memberCell.selectedButton.isSelected = true
-                memberCell.equalLabel.isHidden = false
-                memberCell.percentLabel.text = "%"
-                memberCell.percentLabel.isHidden = false
-//                memberCell.equalLabel.text = "\(100 / selectedIndexs.count)"
-                
-                let percent: Double = (100.00 / Double(selectedIndexs.count))
-                print("percent\(percent)")
-                memberCell.equalLabel.text = String(format: "%.2f", percent)
-//                String(format: "%.2f", currentRatio)
+                memberCell.createEqualType(selectedType: .selected, selectedNumber: selectedIndexs.count)
             } else {
-                cell.accessoryType = .none
-                memberCell.selectedButton.isSelected = false
-                memberCell.equalLabel.isHidden = true
-                memberCell.percentLabel.isHidden = true
+                memberCell.createEqualType(selectedType: .unselected, selectedNumber: nil)
             }
-            memberCell.priceTextField.isHidden = true
         } else if typePickerView.textField.text == SplitType.percent.label {
             if selectedIndexs.contains(indexPath.row) {
-                memberCell.selectedButton.isSelected = true
-                memberCell.priceTextField.isHidden = false
-                memberCell.percentLabel.text = "%"
-                memberCell.percentLabel.isHidden = false
+                memberCell.createPercentType(selectedType: .selected)
             } else {
-                cell.accessoryType = .none
-                memberCell.selectedButton.isSelected = false
-                memberCell.priceTextField.isHidden = true
-                memberCell.percentLabel.isHidden = true
+                memberCell.createPercentType(selectedType: .unselected)
             }
-            memberCell.equalLabel.isHidden = true
         } else if typePickerView.textField.text == SplitType.customize.label {
             if selectedIndexs.contains(indexPath.row) {
-                memberCell.selectedButton.isSelected = true
-                memberCell.priceTextField.isHidden = false
-                memberCell.percentLabel.text = "元"
-                memberCell.percentLabel.isHidden = false
+                memberCell.createCustomizeType(selectedType: .selected)
             } else {
-                cell.accessoryType = .none
-                memberCell.selectedButton.isSelected = false
-                memberCell.priceTextField.isHidden = true
-                memberCell.percentLabel.isHidden = true
+                memberCell.createCustomizeType(selectedType: .unselected)
             }
-            memberCell.equalLabel.isHidden = true
-            //            memberCell.percentLabel.isHidden = true
         }
-        
         memberCell.delegate = self
-        
         return memberCell
     }
     
@@ -485,7 +386,7 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             let involedExpense = ExpenseInfo(userId: group?.memberData?[indexPath.row].userId ?? "", price: 0)
             involvedExpenseData.append(involedExpense)
         }
-        self.tableView.reloadRows(at: [indexPath], with: .automatic)
+        self.tableView.reloadData()
     }
 }
 
@@ -499,7 +400,6 @@ extension AddItemViewController: AddItemTableViewCellDelegate {
         guard let id = selectedUser?[0].userId else { return }
         
         for index in 0..<involvedExpenseData.count {
-            
             if involvedExpenseData[index].userId == id {
                 involvedExpenseData[index].price = involvedPrice ?? 0
             }
@@ -537,7 +437,6 @@ extension AddItemViewController {
         setAddItemViewConstaint()
         addItemView.itemName.text = "項目名稱"
         addItemView.priceLabel.text = "支出金額"
-        
         addItemView.priceTextField.keyboardType = .numberPad
         
         if isItemExist == true {
@@ -604,7 +503,6 @@ extension AddItemViewController {
     func setAddButton() {
         view.addSubview(addButton)
         addButton.setTitle("完成", for: .normal)
-        //        addButton.backgroundColor = .systemGray
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
         addButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
@@ -629,5 +527,30 @@ extension AddItemViewController {
         addMoreButton.tintColor = .white
         addMoreButton.addTarget(self, action: #selector(pressAddMore), for: .touchUpInside)
         ElementsStyle.styleSpecificButton(addMoreButton)
+    }
+    
+    func setInvolvedMembers() {
+        view.addSubview(chooseInvolvedMember)
+        chooseInvolvedMember.translatesAutoresizingMaskIntoConstraints = false
+        chooseInvolvedMember.topAnchor.constraint(equalTo: choosePaidMember.bottomAnchor, constant: 10).isActive = true
+        chooseInvolvedMember.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        chooseInvolvedMember.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        chooseInvolvedMember.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        chooseInvolvedMember.text = "選擇參與人"
+        chooseInvolvedMember.textColor = UIColor.greenWhite
+    }
+    
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: chooseInvolvedMember.bottomAnchor, constant: 5).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: addMoreButton.topAnchor, constant: -10).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        tableView.backgroundColor = .clear
+        
+        tableView.register(UINib(nibName: String(describing: AddItemTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AddItemTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
     }
 }
