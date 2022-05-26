@@ -67,9 +67,9 @@ class AddItem {
         }
         
         for user in 0..<involvedExpenseData.count {
-            let fourthQueue = DispatchQueue(label: "fourthQueue", qos: .default, attributes: .concurrent)
+            
             group.enter()
-            fourthQueue.async(group: group) {
+            DispatchQueue.global().async {
                 GroupManager.shared.updateMemberExpense(userId: involvedExpenseData[user].userId,
                                                         newExpense: 0 - involvedPrice[user],
                                                         groupId: groupId) { [weak self] result in
@@ -83,6 +83,77 @@ class AddItem {
                 }
             }
         }
+        
+        group.notify(queue: DispatchQueue.main) {
+            completion()
+        }
+    }
+    
+    func addSettleUpItem(groupId: String, itemId: String, paidUserId: String, paidPrice: Double, involvedUserId: String, involvedPrice: Double, completion: @escaping () -> Void ) {
+        let group = DispatchGroup()
+
+        group.enter()
+
+        DispatchQueue.global().async {
+            ItemManager.shared.addPaidInfo(paidUserId: paidUserId, price: paidPrice, itemId: itemId,
+                createdTime: Double(NSDate().timeIntervalSince1970)) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.isDataUploadSucces = true
+                case .failure:
+                    self?.isDataUploadSucces = false
+                }
+                group.leave()
+            }
+        }
+
+        group.enter()
+        DispatchQueue.global().async {
+            ItemManager.shared.addInvolvedInfo(involvedUserId: involvedUserId,
+                                               price: involvedPrice,
+                                               itemId: itemId,
+                                               createdTime: Double(NSDate().timeIntervalSince1970)
+            ) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.isDataUploadSucces = true
+                case .failure:
+                    self?.isDataUploadSucces = false
+                }
+                group.leave()
+            }
+        }
+        
+        group.enter()
+        DispatchQueue.global().async {
+            GroupManager.shared.updateMemberExpense(
+                userId: paidUserId,
+                newExpense: paidPrice,
+                groupId: groupId) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.isDataUploadSucces = true
+                case .failure:
+                    self?.isDataUploadSucces = false
+                }
+                group.leave()
+            }
+        }
+        
+            group.enter()
+        DispatchQueue.global().async {
+                GroupManager.shared.updateMemberExpense(userId: involvedUserId,
+                                                        newExpense: 0 - involvedPrice,
+                                                        groupId: groupId) { [weak self] result in
+                    switch result {
+                    case .success:
+                        self?.isDataUploadSucces = true
+                    case .failure:
+                        self?.isDataUploadSucces = false
+                    }
+                    group.leave()
+                }
+            }
         
         group.notify(queue: DispatchQueue.main) {
             completion()
