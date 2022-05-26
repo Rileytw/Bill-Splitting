@@ -68,6 +68,18 @@ class AccountManager {
 //            self.currentUser.currentUserEmail = email ?? ""
         }
     }
+    
+    func logOutAccount(completion: @escaping (Result<(), Error>) -> Void) {
+        if Auth.auth().currentUser != nil {
+            do {
+                try Auth.auth().signOut()
+                completion(.success(()))
+            } catch let error as NSError {
+                completion(.failure(error))
+            }
+        }
+    }
+    
 }
 
 extension AuthErrorCode {
