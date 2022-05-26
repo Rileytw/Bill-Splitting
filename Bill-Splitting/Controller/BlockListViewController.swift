@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BlackListViewController: UIViewController {
+class BlockListViewController: UIViewController {
 
     let tableView = UITableView()
     var blackList = [String]()
@@ -62,7 +62,7 @@ class BlackListViewController: UIViewController {
     }
 }
 
-extension BlackListViewController: UITableViewDataSource, UITableViewDelegate {
+extension BlockListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return blackUsers.count
     }

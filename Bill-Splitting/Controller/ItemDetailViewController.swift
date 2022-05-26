@@ -19,8 +19,6 @@ class ItemDetailViewController: BaseViewController {
     var item: ItemData?
     var group: GroupData?
     var userData: [UserData] = []
-    var paidUser: [UserData] = []
-    var involvedUser: [UserData] = []
     var personalExpense: Double?
     var reportContent: String?
     var image: String?
@@ -62,21 +60,18 @@ class ItemDetailViewController: BaseViewController {
     
     func getItemExpense() {
         let group = DispatchGroup()
-        
+        var isGetItemExpenseSuccess: Bool = false
         group.enter()
         DispatchQueue.global().async {
             ItemManager.shared.fetchPaidItemExpense(itemId: self.item?.itemId ?? "") { [weak self] result in
                 switch result {
                 case .success(let items):
                     self?.item?.paidInfo = items
-                    self?.getPayUser()
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+                    isGetItemExpenseSuccess = true
+                case .failure:
+                    isGetItemExpenseSuccess = false
                 }
                 group.leave()
-
             }
         }
         
@@ -86,39 +81,41 @@ class ItemDetailViewController: BaseViewController {
                 switch result {
                 case .success(let items):
                     self?.item?.involedInfo = items
-                    self?.getInvolvedUser()
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+                    isGetItemExpenseSuccess = true
+                case .failure:
+                    isGetItemExpenseSuccess = false
                 }
                 group.leave()
             }
         }
-        group.notify(queue: DispatchQueue.main) {
-            self.tableView.reloadData()
-            self.removeAnimation()
+        group.notify(queue: DispatchQueue.main) { [weak self] in
+            if isGetItemExpenseSuccess {
+                self?.tableView.reloadData()
+                self?.removeAnimation()
+            } else {
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
+            }
         }
     }
     
-    func getPayUser() {
-        paidUser = userData.filter { $0.userId == item?.paidInfo?[0].userId }
-        guard let leaveMemberData = group?.leaveMemberData else { return }
+    func getPayUser() -> [UserData] {
+        var paidUser = userData.filter { $0.userId == item?.paidInfo?[0].userId }
+        guard let leaveMemberData = group?.leaveMemberData else { return [] }
         if leaveMemberData.isEmpty == false && paidUser.count == 0 {
             paidUser = leaveMemberData.filter { $0.userId == item?.paidInfo?[0].userId }
             paidUser[0].userName = paidUser[0].userName + "(已離開群組)"
         }
+        return paidUser
     }
     
-    func getInvolvedUser() {
-        guard let involvedExpense = item?.involedInfo else {
-            return
-        }
+    func getInvolvedUser() -> [UserData] {
+        guard let involvedExpense = item?.involedInfo else { return [] }
+        var involvedUser: [UserData] = []
         for index in 0..<involvedExpense.count {
             involvedUser += userData.filter { $0.userId == involvedExpense[index].userId }
         }
         
-        guard let leaveMemberData = group?.leaveMemberData else { return }
+        guard let leaveMemberData = group?.leaveMemberData else { return [] }
         if leaveMemberData.isEmpty == false {
             var leaveUser = [UserData]()
             for index in 0..<involvedExpense.count {
@@ -133,79 +130,33 @@ class ItemDetailViewController: BaseViewController {
             }
             
             involvedUser += leaveUser
+            return involvedUser
+        } else {
+            return involvedUser
         }
     }
     
     func deleteItem() {
-        guard let paidUserId = item?.paidInfo?[0].userId,
-              let paidPrice = item?.paidInfo?[0].price
+        guard let group = group,
+              let item = item
         else { return }
-        var isItemDeleteSucces: Bool = false
-        
-        let group = DispatchGroup()
-        group.enter()
-        DispatchQueue.global().async {
-            GroupManager.shared.updateMemberExpense(userId: paidUserId ,
-                                                    newExpense: 0 - paidPrice,
-                                                    groupId: self.group?.groupId ?? "") { result in
-                switch result {
-                case .success:
-                    isItemDeleteSucces = true
-                case .failure:
-                    isItemDeleteSucces = false
-                }
-                group.leave()
-            }
-        }
-        
-        guard let involvedExpense = item?.involedInfo else { return }
-        
-        for user in 0..<involvedExpense.count {
-            group.enter()
-            DispatchQueue.global().async {
-                GroupManager.shared.updateMemberExpense(userId: involvedExpense[user].userId,
-                                                        newExpense: involvedExpense[user].price,
-                                                        groupId: self.group?.groupId ?? "") { result in
+
+        DeleteItem.shared.deleteItem(groupId: group.groupId,
+                                     itemId: itemId ?? "",
+                                     item: item) { [weak self] in
+            
+            if DeleteItem.shared.isItemDeleteSucces == true {
+                ItemManager.shared.addNotify(grpupId: group.groupId) { [weak self] result in
                     switch result {
                     case .success:
-                        isItemDeleteSucces = true
-                        group.leave()
+                        self?.showSuccess(text: "移除成功")
                     case .failure:
-                        isItemDeleteSucces = false
-                        group.leave()
+                        self?.showFailure(text: "移除失敗，請稍後再試")
                     }
                 }
-            }
-        }
-        
-        group.enter()
-        DispatchQueue.global().async {
-            ItemManager.shared.deleteItem(itemId: self.itemId ?? "") { result in
-                switch result {
-                case .success:
-                    isItemDeleteSucces = true
-                case .failure:
-                    isItemDeleteSucces = false
-                }
-                group.leave()
-            }
-        }
-        
-        group.notify(queue: DispatchQueue.main) {
-            if isItemDeleteSucces == true {
-//                self.showSuccess(text: "移除成功")
-                ItemManager.shared.addNotify(grpupId: self.group?.groupId ?? "") { result in
-                    switch result {
-                    case .success:
-                        self.showSuccess(text: "移除成功")
-                    case .failure:
-                        self.showFailure(text: "移除失敗，請稍後再試")
-                    }
-                }
-                
-                self.navigationController?.popViewController(animated: true)
+                self?.navigationController?.popViewController(animated: true)
             } else {
-                self.showFailure(text: "移除失敗，請稍後再試")
+                self?.showFailure(text: "移除失敗，請稍後再試")
             }
         }
     }
@@ -258,7 +209,6 @@ class ItemDetailViewController: BaseViewController {
         }
         let reportAlert = UIAlertAction(title: "檢舉", style: .default) { [weak self] _ in
             self?.reportContent = alertController.textFields?[0].text
-//            self?.leaveGroupAlert()
             self?.report()
         }
         let cancelAlert = UIAlertAction(title: "取消", style: .cancel, handler: nil)
@@ -282,7 +232,9 @@ class ItemDetailViewController: BaseViewController {
     }
     
     func leaveGroupAlert() {
-        let alertController = UIAlertController(title: "退出群組", message: "檢舉內容已回報。請確認是否退出群組，退出群組後，將無法查看群組內容。群組建立者離開群組後，群組將封存。", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "退出群組",
+                                                message: "檢舉內容已回報。請確認是否退出群組，退出群組後，將無法查看群組內容。群組建立者離開群組後，群組將封存。",
+                                                preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "退出群組", style: .destructive) { [weak self] _ in
             self?.detectUserExpense()
             self?.pressDismissButton()
@@ -306,7 +258,6 @@ class ItemDetailViewController: BaseViewController {
     }
     
     func detectUserExpense() {
-//        group?.memberExpense
         if personalExpense == 0 {
             leaveGroup()
         } else {
@@ -327,7 +278,8 @@ class ItemDetailViewController: BaseViewController {
         let subviewCount = self.view.subviews.count
         
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
+            self.view.subviews[subviewCount - 1].frame =
+            CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
         }, completion: nil)
         mask.removeFromSuperview()
     }
@@ -338,14 +290,14 @@ class ItemDetailViewController: BaseViewController {
 
         let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let itemImageViewController = storyBoard.instantiateViewController(
-            withIdentifier: String(describing: ItemImageViewController.self)) as? ItemImageViewController else { return }
+            withIdentifier: String(describing: ItemImageViewController.self)
+        ) as? ItemImageViewController else { return }
         itemImageViewController.image = image
         itemImageViewController.modalPresentationStyle = .fullScreen
         self.present(itemImageViewController, animated: true, completion: nil)
         
     }
     
-   
     @objc func dismissPhotoView() {
         photoView.removeFromSuperview()
     }
@@ -354,7 +306,6 @@ class ItemDetailViewController: BaseViewController {
 extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         guard let item = item else { return 0 }
-
         return 2
     }
     
@@ -382,14 +333,12 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
                 return cell
                 
             }
-            
-             detailCell.createDetailCell(group: group?.groupName ?? "",
-                                        item: item.itemName,
-                                        time: item.createdTime,
-                                        paidPrice: item.paidInfo?[0].price ?? 0,
-                                        paidMember: paidUser[0].userName,
-                                        description: item.itemDescription,
-                                        image: item.itemImage)
+            let paidUser = getPayUser()
+             if !paidUser.isEmpty {
+                 detailCell.createDetailCell(group: group?.groupName ?? "",
+                                             item: item,
+                                             paidMember: paidUser[0].userName)
+             }
              
              if item.itemImage != nil {
                  self.image = item.itemImage
@@ -406,21 +355,30 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
                 for: indexPath
             )
             guard let memberCell = cell as? ItemMemberTableViewCell else { return cell }
-            
-            memberCell.createItemMamberCell(involedMember: involvedUser[indexPath.row].userName,
-                                            involvedPrice: item.involedInfo?[indexPath.row].price ?? 0)
+            let involvedUser = getInvolvedUser()
+            if !involvedUser.isEmpty {
+                memberCell.createItemMamberCell(involedMember: involvedUser[indexPath.row].userName,
+                                                involvedPrice: item.involedInfo?[indexPath.row].price ?? 0)
+            }
             return memberCell
         }
     }
 }
 
 extension ItemDetailViewController: UIContextMenuInteractionDelegate {
-    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
+    func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(
+            identifier: nil, previewProvider: nil
+        ) { _ in
            
-            let editAction = UIAction(title: "編輯", image: UIImage(systemName: "pencil")) { action in
+            let editAction = UIAction(title: "編輯",
+                                      image: UIImage(systemName: "pencil")) { _ in
                 let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
-                guard let addItemViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddItemViewController.self)) as? AddItemViewController else { return }
+                guard let addItemViewController = storyBoard.instantiateViewController(
+                    withIdentifier: String(describing: AddItemViewController.self)
+                ) as? AddItemViewController else { return }
                 addItemViewController.group = self.group
                 addItemViewController.itemData = self.item
                 addItemViewController.isItemExist = true
@@ -430,11 +388,13 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
                 self.present(addItemViewController, animated: true, completion: nil)
             }
            
-            let removeAction = UIAction(title: "刪除", image: UIImage(systemName: "trash")) { action in
+            let removeAction = UIAction(title: "刪除",
+                                        image: UIImage(systemName: "trash")) { _ in
                 self.alertDeleteItem()
             }
             
-            let reportAction = UIAction(title: "檢舉", image: UIImage(systemName: "megaphone")) { action in
+            let reportAction = UIAction(title: "檢舉",
+                                        image: UIImage(systemName: "megaphone")) { _ in
                 self.revealBlockView()
             }
             return UIMenu(title: "", children: [editAction, removeAction, reportAction])
@@ -470,8 +430,10 @@ extension ItemDetailViewController {
     func setTableView() {
         view.addSubview(tableView)
         setTableViewConstraint()
-        tableView.register(UINib(nibName: String(describing: ItemDetailTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemDetailTableViewCell.self))
-        tableView.register(UINib(nibName: String(describing: ItemMemberTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ItemMemberTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: ItemDetailTableViewCell.self),
+                                 bundle: nil), forCellReuseIdentifier: String(describing: ItemDetailTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: ItemMemberTableViewCell.self),
+                                 bundle: nil), forCellReuseIdentifier: String(describing: ItemMemberTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear

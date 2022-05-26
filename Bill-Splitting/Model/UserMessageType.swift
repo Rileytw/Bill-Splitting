@@ -10,7 +10,9 @@ import UIKit
 enum ErrorType {
     case generalError
     case networkError
-    case dataError
+    case dataFetchError
+    case dataDeleteError
+    case dataModifyError
     
     var errorMessage: String {
         switch self {
@@ -18,8 +20,12 @@ enum ErrorType {
             return "發生錯誤，請稍後再試"
         case .networkError:
             return "網路未連線，請連線後再試"
-        case .dataError:
+        case .dataFetchError:
             return "資料讀取發生錯誤，請稍後再試"
+        case .dataDeleteError:
+            return "資料刪除失敗，請稍後再試"
+        case .dataModifyError:
+            return "資料修改失敗，請稍後再試"
         }
     }
 }
