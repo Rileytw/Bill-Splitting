@@ -61,27 +61,21 @@ class ItemDetailTableViewCell: UITableViewCell {
         ElementsStyle.styleView(cellView)
     }
     
-    func createDetailCell(group: String,
-                          item: String,
-                          time: Double,
-                          paidPrice: Double,
-                          paidMember: String,
-                          description: String?,
-                          image: String?) {
+    func createDetailCell(group: String, item: ItemData, paidMember: String) {
         groupName.text = group
-        itemName.text = item
+        itemName.text = item.itemName
         
-        let date = Date(timeIntervalSince1970: time)
+        let date = Date(timeIntervalSince1970: item.createdTime)
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
         let createdDate = dateFormatter.string(from: date)
         createdTime.text = createdDate
         
-       
-//        price.text = "金額：" + String(paidPrice)
-        price.text = "金額：" + String(format: "%.2f", paidPrice)
+        let paidPrice = Double.formatString(item.paidInfo?[0].price ?? 0)
+        price.text = "金額：" + "\(paidPrice)"
+
         paidUser.text = paidMember
-        descriptionTextView.text = description
-        itemImage.getImage(image, placeHolder: nil)
+        descriptionTextView.text = item.itemDescription
+        itemImage.getImage(item.itemImage, placeHolder: nil)
     }
 }
