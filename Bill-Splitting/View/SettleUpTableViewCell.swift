@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class SettleUpTableViewCell: UITableViewCell {
 
@@ -40,4 +41,29 @@ class SettleUpTableViewCell: UITableViewCell {
         ElementsStyle.styleView(cellView)
     }
     
+    func createSettleUpCell(debtType: DebtType,
+                            revealExpense: Double,
+                            groupCreator: String,
+                            groupMember: String) {
+        switch debtType {
+        case .credit:
+            price.text = " $ " + Double.formatString(revealExpense)
+            payerName.text = groupCreator
+            creditorName.text = groupMember
+        case .debt:
+            price.text = " $ " + Double.formatString(abs(revealExpense))
+            payerName.text = groupMember
+            creditorName.text = groupCreator
+        }
+    }
+}
+
+enum MemberType {
+    case creator
+    case member
+}
+
+enum DebtType {
+    case credit
+    case debt
 }

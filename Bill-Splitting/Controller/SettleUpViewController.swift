@@ -8,16 +8,17 @@
 import UIKit
 
 class SettleUpViewController: UIViewController {
+
+// MARK: - Property
+    let tableView = UITableView()
     
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var currentUserName = UserManager.shared.currentUser?.userName ?? ""
     var creator: UserData?
     var group: GroupData?
     var expense: Double?
-//    var blockList = [String]()
     
-    let tableView = UITableView()
-    
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -40,20 +41,7 @@ class SettleUpViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
-    func setTableView() {
-        self.view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        
-        tableView.register(UINib(nibName: String(describing: SettleUpTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: SettleUpTableViewCell.self))
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.backgroundColor = UIColor.clear
-    }
-    
+// MARK: - Method
     func removeCreatorData() {
         if let memberExpense = group?.memberExpense {
             if group?.creator == currentUserId {
@@ -116,34 +104,39 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         guard let settleUpCell = cell as? SettleUpTableViewCell,
               let expense = expense
         else { return cell }
+        
         let memberExpense = group?.memberExpense?[indexPath.row]
         let memberData = group?.memberData?.filter { $0.userId == memberExpense?.userId }
+        var debtType: DebtType = .debt
+        var price: Double = 0
+        var groupCreator: String = ""
+        var groupMember: String = ""
         
         if group?.creator == currentUserId {
             if let revealExpense = memberExpense?.allExpense {
+                groupCreator = currentUserName
+                groupMember = "\(memberData?[0].userName ?? "")"
+                price = revealExpense
                 if (memberExpense?.allExpense ?? 0) > 0 {
-                    settleUpCell.price.text = " $ " + String(format: "%.2f", revealExpense)
-                    settleUpCell.payerName.text = currentUserName
-                    settleUpCell.creditorName.text = "\(memberData?[0].userName ?? "")"
-                    
+                    debtType = .credit
                 } else {
-                    settleUpCell.price.text = " $ " + String(format: "%.2f", abs(revealExpense))
-                    settleUpCell.creditorName.text = currentUserName
-                    settleUpCell.payerName.text = "\(memberData?[0].userName ?? "")"
+                    debtType = .debt
                 }
             }
         } else {
+            groupCreator = "\(creator?.userName ?? "")"
+            groupMember = currentUserName
+            price = expense
             if expense < 0 {
-                settleUpCell.payerName.text = currentUserName
-                settleUpCell.creditorName.text = "\(creator?.userName ?? "")"
-                settleUpCell.price.text = " $ " + String(format: "%.2f", abs(expense))
+                debtType = .debt
             } else {
-                settleUpCell.price.text = " $ " + String(format: "%.2f", expense)
-                settleUpCell.creditorName.text = currentUserName
-                settleUpCell.payerName.text = "\(creator?.userName ?? "")"
+                debtType = .credit
             }
         }
-        
+        settleUpCell.createSettleUpCell(debtType: debtType,
+                                        revealExpense: price,
+                                        groupCreator: groupCreator,
+                                        groupMember: groupMember)
         return settleUpCell
     }
     
@@ -159,7 +152,6 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         if group?.creator == currentUserId {
             specificSettleUpViewController.userData = memberData?[0]
         } else {
-            // MARK: - Bugs of not creator user
             specificSettleUpViewController.userData = creator
         }
         specificSettleUpViewController.memberExpense = memberExpense
@@ -169,4 +161,47 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
     
         self.show(specificSettleUpViewController, sender: nil)
     }
+    
+    func setTableView() {
+        self.view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        tableView.register(UINib(nibName: String(describing: SettleUpTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: SettleUpTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.backgroundColor = UIColor.clear
+    }
 }
+
+//
+//if group?.creator == currentUserId {
+//    if let revealExpense = memberExpense?.allExpense {
+//        if (memberExpense?.allExpense ?? 0) > 0 {
+//            settleUpCell.price.text = " $ " + String(format: "%.2f", revealExpense)
+//            settleUpCell.payerName.text = currentUserName
+//            settleUpCell.creditorName.text = "\(memberData?[0].userName ?? "")"
+//
+//        } else {
+//            settleUpCell.price.text = " $ " + String(format: "%.2f", abs(revealExpense))
+//            settleUpCell.creditorName.text = currentUserName
+//            settleUpCell.payerName.text = "\(memberData?[0].userName ?? "")"
+//
+//        }
+//    }
+//} else {
+//    if expense < 0 {
+//        settleUpCell.payerName.text = currentUserName
+//        settleUpCell.creditorName.text = "\(creator?.userName ?? "")"
+//        settleUpCell.price.text = " $ " + String(format: "%.2f", abs(expense))
+//
+//    } else {
+//        settleUpCell.price.text = " $ " + String(format: "%.2f", expense)
+//        settleUpCell.creditorName.text = currentUserName
+//        settleUpCell.payerName.text = "\(creator?.userName ?? "")"
+//    }
+//}
