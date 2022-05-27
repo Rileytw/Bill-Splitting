@@ -105,15 +105,11 @@ class SignInViewController: UIViewController {
                     self?.user?.userEmail = email
                     self?.addNewUserData()
                 }
-//                self?.user?.userName = user?.userName ?? ""
-//                self?.user?.userEmail = user?.userEmail ?? ""
-//                self?.user?.userId = user?.userId ?? ""
                 self?.user = user
-//                AccountManager.shared.getCurrentUserInfo()
                 self?.enterFirstPage()
             case .failure:
                 ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "讀取資料失敗")
+                ProgressHUD.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }
@@ -121,7 +117,7 @@ class SignInViewController: UIViewController {
     @objc func pressSignUp() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
         guard let signUpViewController = storyBoard.instantiateViewController(
-            withIdentifier: String(describing: SignUpViewController.self)) as? SignUpViewController else { return }
+            withIdentifier: SignUpViewController.identifier) as? SignUpViewController else { return }
         self.present(signUpViewController, animated: true, completion: nil)
     }
     
@@ -213,13 +209,22 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
     }
     
     func firebaseSignInWithApple(credential: AuthCredential) {
-        setAnimation()
-        Auth.auth().signIn(with: credential) { [weak self] authResult, error in
-            if error == nil {
-                self?.getFirebaseUserInfo()
-            } else {
-                self?.errorHandleWithAppleSignIn()
-            }
+//        setAnimation()
+//        Auth.auth().signIn(with: credential) { [weak self] authResult, error in
+//            if error == nil {
+//                self?.getFirebaseUserInfo()
+//            } else {
+//                self?.errorHandleWithAppleSignIn()
+//            }
+//        }
+        AccountManager.shared.firebaseSignInWithApple(
+            credential: credential) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.getFirebaseUserInfo()
+                case .failure:
+                    self?.errorHandleWithAppleSignIn()
+                }
         }
     }
     

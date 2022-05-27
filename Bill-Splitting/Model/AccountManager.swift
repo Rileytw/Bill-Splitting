@@ -46,6 +46,20 @@ class AccountManager {
         }
     }
     
+    func firebaseSignInWithApple(credential: AuthCredential, completion: @escaping (Result<(()), Error>) -> Void) {
+        Auth.auth().signIn(with: credential) { authResult, error in
+            if error != nil {
+                //                self?.errorHandleWithAppleSignIn()
+                if let error = error {
+                    completion(.failure(error))
+                }
+            } else {
+                //                self?.getFirebaseUserInfo()
+                completion(.success(()))
+            }
+        }
+    }
+    
     func deleteAccount(completion: @escaping (Result<(), Error>) -> Void) {
         let user = Auth.auth().currentUser
         
