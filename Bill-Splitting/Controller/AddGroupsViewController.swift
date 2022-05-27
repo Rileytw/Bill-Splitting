@@ -9,7 +9,7 @@ import UIKit
 
 class AddGroupsViewController: BaseViewController {
 // MARK: - Property
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    var currentUserId: String?
     var nameTextField = UITextField()
     let descriptionTextView = UITextView()
     var searchView = UIView()
@@ -41,6 +41,7 @@ class AddGroupsViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        getCurrentUser()
         setTextField()
         setTextView()
         setTextFieldOfPickerView()
@@ -49,7 +50,7 @@ class AddGroupsViewController: BaseViewController {
         setSelectMamberLabel()
         setSearchView()
         setTableView()
-        navigationItem.title = "新增群組"
+        navigationItem.title = NavigationItemName.addGroups.name
         setSearchBar()
         
         hideUnchagableGroupInfo()
@@ -68,6 +69,10 @@ class AddGroupsViewController: BaseViewController {
     }
     
 // MARK: - Method
+    func getCurrentUser() {
+        currentUserId = UserManager.shared.currentUser?.userId ?? ""
+    }
+    
     func setAddGroupButton() {
         var buttonName: String
         if isGroupExist == true {
@@ -104,6 +109,7 @@ class AddGroupsViewController: BaseViewController {
     }
     
     func fetchFriendData() {
+        guard let currentUserId = currentUserId else { return }
         UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
             switch result {
             case .success(let friend):
@@ -119,6 +125,7 @@ class AddGroupsViewController: BaseViewController {
     }
     
     func listenNewFriends() {
+        guard let currentUserId = currentUserId else { return }
         if isGroupExist == false {
             UserManager.shared.listenFriendData(userId: currentUserId) { [weak self]  in
                 self?.fetchFriendData()
@@ -165,6 +172,7 @@ class AddGroupsViewController: BaseViewController {
     }
     
     private func createGroup(_ type: Int?) -> GroupData {
+        guard let currentUserId = currentUserId else { return GroupData() }
         var group = GroupData()
         group.groupName = nameTextField.text ?? ""
         group.groupDescription = descriptionTextView.text
@@ -177,6 +185,7 @@ class AddGroupsViewController: BaseViewController {
     }
     
     func uploadGroupData() {
+        guard let currentUserId = currentUserId else { return }
         member.append(currentUserId)
         
         var type: Int?
