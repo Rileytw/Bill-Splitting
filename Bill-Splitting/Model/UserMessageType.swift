@@ -15,6 +15,7 @@ enum ErrorType {
     case dataDeleteError
     case dataModifyError
     case dataUpdateError
+    case dataAddError
     
     var errorMessage: String {
         switch self {
@@ -30,6 +31,8 @@ enum ErrorType {
             return "資料修改失敗，請稍後再試"
         case .dataUpdateError:
             return "資料上傳發生錯誤，請稍後再試"
+        case .dataAddError:
+            return "資料新增失敗，請稍後再試"
         }
     }
 }
@@ -41,7 +44,7 @@ enum SuccessType {
     var successMessage: String {
         switch self {
         case .addSuccess:
-            return ""
+            return "新增成功"
         case .deleteSuccess:
             return "資料已刪除"
         }
