@@ -32,7 +32,7 @@ class AddReminderViewController: UIViewController {
     var reminderData = Reminder(groupId: "",
                                 memberId: "",
                                 creatorId: AccountManager.shared.currentUser.currentUserId,
-                                type: 0,
+                                type: .credit,
                                 remindTime: 0,
                                 status: 1,
                                 documentId: "")
@@ -177,34 +177,23 @@ class AddReminderViewController: UIViewController {
         setButtonsConstraint()
         creditButton.setTitle("收款", for: .normal)
         creditButton.titleLabel?.font = creditButton.titleLabel?.font.withSize(14)
-//        creditButton.backgroundColor = .styleLightBlue
         creditButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
-//        creditButton.setTitleColor(.styleBlue, for: .normal)
         ElementsStyle.styleNotSelectedButton(creditButton)
-//        creditButton.backgroundColor = .clear
-//        creditButton.setTitleColor(.greenWhite, for: .normal)
-//
         debtButton.setTitle("付款", for: .normal)
-//        debtButton.backgroundColor = .styleYellow
         debtButton.titleLabel?.font = debtButton.titleLabel?.font.withSize(14)
         debtButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
-//        debtButton.setTitleColor(.styleBlue, for: .normal)
         ElementsStyle.styleNotSelectedButton(debtButton)
-//        debtButton.backgroundColor = .clear
-//        debtButton.setTitleColor(.greenWhite, for: .normal)
     }
     
     @objc func pressTypeButton(_ sender: UIButton) {
         if sender.isSelected == false {
-//            sender.layer.borderColor = UIColor.greenWhite.cgColor
-//            sender.layer.borderWidth = 1
             ElementsStyle.styleSelectedButton(sender)
             sender.isSelected = true
             
             if sender == creditButton {
-                reminderData.type = RemindType.credit.intData
+                reminderData.type = RemindType.credit
             } else {
-                reminderData.type = RemindType.debt.intData
+                reminderData.type = RemindType.debt
             }
         } else {
             sender.layer.borderWidth = 0
@@ -215,7 +204,6 @@ class AddReminderViewController: UIViewController {
         for button in buttonArray {
             if button.isSelected && button !== sender {
                 button.isSelected = false
-//                button.layer.borderWidth = 0
                 ElementsStyle.styleNotSelectedButton(button)
             }
         }
@@ -226,7 +214,7 @@ class AddReminderViewController: UIViewController {
             switch result {
             case .success(let userData):
                 self?.userData = userData
-                self?.detectBlackListUser()
+                self?.detectBlockListUser()
             case .failure(let error):
                 print("Error decoding userData: \(error)")
             }
@@ -285,7 +273,7 @@ class AddReminderViewController: UIViewController {
         }
     }
     
-    func detectBlackListUser() {
+    func detectBlockListUser() {
         let newUserData = UserManager.renameBlockedUser(blockList: blackList,
                                                         userData: userData)
         userData = newUserData
