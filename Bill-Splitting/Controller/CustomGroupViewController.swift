@@ -15,8 +15,8 @@ class CustomGroupViewController: BaseViewController {
     let subscribeButton = UIButton()
     var noDataView = NoDataView(frame: .zero)
     var reportView = ReportView()
+    var reportViewBottom: NSLayoutConstraint?
     
-//    let currentUserId = AccountManager.shared.currentUser.currentUserId //
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var group: GroupData?
     var members: [UserData] = []
@@ -450,7 +450,7 @@ extension CustomGroupViewController: UITableViewDataSource, UITableViewDelegate 
         }
         
         itemsCell.mapItemCell(
-            item: item, time: time,
+            itemName: item.itemName, time: time,
             paidPrice: paid?.price ?? 0,
             involvedPrice: involved?.price ?? 0,
             involvedType: involvedType)
@@ -531,18 +531,25 @@ extension CustomGroupViewController {
         view.addSubview(mask)
         setMaskConstraints()
         mask.backgroundColor = .maskBackground
-        view.addSubview(mask)
         
-        reportView = ReportView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
+        view.addSubview(reportView)
+        reportView.translatesAutoresizingMaskIntoConstraints = false
+        reportView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        reportView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        reportView.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        reportViewBottom = reportView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+        reportViewBottom?.isActive = true
         reportView.backgroundColor = .viewDarkBackground
         
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.reportView.frame = CGRect(x: 0, y: UIScreen.height - 300, width: UIScreen.width, height: 300)
+        view.layoutIfNeeded()
+        
+        reportViewBottom?.constant = -300
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
-        view.addSubview(reportView)
         
         reportView.reportButton.addTarget(self, action: #selector(reportAlert), for: .touchUpInside)
-        
         reportView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
     }
     
@@ -616,14 +623,10 @@ extension CustomGroupViewController {
     }
     
     @objc func pressDismissButton() {
-        let subviewCount = self.view.subviews.count
-        
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(
-                x: 0,
-                y: UIScreen.height,
-                width: UIScreen.width,
-                height: UIScreen.height)
+        reportViewBottom?.constant = 0
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
         mask.removeFromSuperview()
     }
