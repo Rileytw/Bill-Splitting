@@ -15,8 +15,8 @@ You can record shared costs for friends, follow the debt relationship in groups,
 
 WeCount make it more convenient for multiple people to spilt bills.
 
+[![Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917](https://user-images.githubusercontent.com/74561850/170669608-6b45c68f-c830-4e3d-8dde-61ca6e37fd71.svg)](https://apps.apple.com/tw/app/wecount/id1619743121)
 
-[![Download_on_the_App_Store_Badge_US-UK_blk_092917](https://user-images.githubusercontent.com/74561850/170664940-460e0b24-a5db-4962-9401-fbc1a2c1beed.png)](https://apps.apple.com/tw/app/wecount/id1619743121)
 
 ## Features
 
