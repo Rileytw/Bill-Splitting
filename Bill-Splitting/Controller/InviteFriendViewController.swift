@@ -9,17 +9,19 @@ import UIKit
 
 class InviteFriendViewController: UIViewController {
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+// MARK: - Property
     let nameLabel = UILabel()
     let friendTextField = UITextField()
     let searchButton = UIButton()
     let friendNameLabel = UILabel()
     let sendButton = UIButton()
     var scanQRCode = UIButton()
+    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var friendData: UserData?
     var friendList: [Friend]?
     var searchId: String?
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -32,9 +34,250 @@ class InviteFriendViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         friendNameLabel.isHidden = true
         sendButton.isHidden = true
+    }
+
+// MARK: - Method
+  
+    @objc func pressScanQRCode() {
+        let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
+        guard let scanQRCodeViewController = storyBoard.instantiateViewController(
+            withIdentifier: ScanQRCodeViewController.identifier) as? ScanQRCodeViewController else { return }
+        
+        self.present(scanQRCodeViewController, animated: true, completion: nil)
+        
+        scanQRCodeViewController.qrCodeContent = { [weak self] qrCode in
+            self?.searchFriend(userEmail: qrCode)
+        }
+    }
+    
+    @objc func pressSearchButton() {
+        if friendTextField.text?.isEmpty == false {
+            searchFriend(userEmail: friendTextField.text ?? "")
+        } else {
+            let alertController = UIAlertController(title: "請輸入好友 Email", message: "尚未輸入 Email", preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+
+            alertController.addAction(cancelAction)
+            present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    func searchFriend(userEmail: String) {
+        FriendManager.shared.fetchFriendUserData(userEmail: userEmail) { [weak self] result in
+            switch result {
+            case .success(let user):
+                self?.friendData = user
+                self?.searchId = user.userId
+                self?.friendNameLabel.isHidden = true
+                self?.detectFriendStatus()
+                
+            case .failure:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+            }
+        }
+        
+        if self.friendData == nil {
+            self.friendNameLabel.text = "無符合對象"
+            self.friendNameLabel.isHidden = false
+            self.sendButton.isHidden = true
+        }
+    }
+    
+    func detectFriendStatus() {
+        let group = DispatchGroup()
+        var nameText: String?
+        var isFriend: Bool = false
+        var isInvitationSend: Bool = false
+        var isInvitationReceive: Bool = false
+        var isBlockUser: Bool = false
+        var isFetchDataSuccess: Bool = false
+        
+        group.enter()
+        DispatchQueue.global().async {
+            // MARK: - Detect FriendList
+            UserManager.shared.fetchFriendData(userId: self.currentUserId) { [weak self] result in
+                switch result {
+                case .success(let friend):
+                    let friendId = friend.map { $0.userId }
+                    if friendId.contains(self?.friendData?.userId ?? "") {
+                        isFriend = true
+                    }
+                    isFetchDataSuccess = true
+                case .failure:
+                    isFetchDataSuccess = false
+                }
+                group.leave()
+            }
+        }
+        // MARK: - Detect invitation
+        group.enter()
+        DispatchQueue.global().async {
+            
+            FriendManager.shared.fetchReceiverInvitation(
+                userId: self.currentUserId, friendId: self.friendData?.userId ?? "") { result in
+                switch result {
+                case .success(let invitaion):
+                    if invitaion != nil {
+                        isInvitationReceive = true
+                    }
+                    isFetchDataSuccess = true
+                case .failure:
+                    isFetchDataSuccess = false
+                }
+                group.leave()
+            }
+            
+        }
+        // MARK: - Detect invitation
+        group.enter()
+        DispatchQueue.global().async {
+            
+            FriendManager.shared.fetchSenderInvitation(
+                userId: self.currentUserId, friendId: self.friendData?.userId ?? "") { result in
+                switch result {
+                case .success(let invitaion):
+                    if invitaion != nil {
+                        isInvitationSend = true
+                    }
+                    isFetchDataSuccess = true
+                case .failure:
+                    isFetchDataSuccess = false
+                }
+                group.leave()
+            }
+        }
+        
+        // MARK: - Detect blockUser
+        group.enter()
+        DispatchQueue.global().async {
+            
+            UserManager.shared.fetchUserData(friendId: self.searchId ?? "") { [weak self] result in
+                switch result {
+                case .success(let searchUser):
+                    let blockList = searchUser?.blackList
+                    if ((blockList?.contains(self?.currentUserId ?? "")) != nil) {
+                        isBlockUser = true
+                    }
+                    isFetchDataSuccess = true
+                case .failure:
+                    isFetchDataSuccess = false
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: DispatchQueue.main) { [weak self] in
+            switch isFetchDataSuccess {
+            case true:
+                if isFriend == true {
+                    nameText = self?.showSearchResult(status: FriendStatus.isFriend.searchResult, buttonHidden: true)
+                } else if isInvitationReceive == true {
+                    nameText = self?.showSearchResult(
+                        status: FriendStatus.receivedInvitaion.searchResult, buttonHidden: true)
+                } else if isInvitationSend == true {
+                    nameText = self?.showSearchResult(
+                        status: FriendStatus.sentInvitaion.searchResult, buttonHidden: true)
+                } else if isBlockUser == true {
+                    nameText = self?.showSearchResult(status: FriendStatus.block.searchResult, buttonHidden: true)
+                } else if self?.friendData == nil {
+                    nameText = self?.showSearchResult(status: FriendStatus.emptyData.searchResult, buttonHidden: true)
+                } else {
+                    nameText = self?.showSearchResult(status: self?.friendData?.userName ?? "", buttonHidden: false)
+                }
+                
+                self?.friendNameLabel.text = nameText
+                self?.friendNameLabel.isHidden = false
+            case false:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+            }
+        }
+    }
+    
+    private func showSearchResult(status: String, buttonHidden: Bool) -> String {
+        sendButton.isHidden = buttonHidden
+        let nameText = status
+        return nameText
+    }
+
+    @objc func pressSendButton() {
+        FriendManager.shared.updateFriendInvitation(senderId: currentUserId,
+                                                    receiverId: self.friendData?.userId ?? "") { [weak self] in
+            ProgressHUD.shared.view = self?.view ?? UIView()
+            ProgressHUD.showSuccess(text: "已寄出邀請")
+            self?.friendData = nil
+            self?.sendButton.isHidden = true
+            self?.friendNameLabel.isHidden = true
+            self?.friendTextField.text = ""
+        }
+    }
+    
+    func setScanQRCodeButtonConstraint() {
+        scanQRCode.topAnchor.constraint(equalTo: friendTextField.bottomAnchor, constant: 20).isActive = true
+        scanQRCode.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        scanQRCode.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        scanQRCode.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    }
+    
+    func setDismissButton() {
+        let dismissButton = UIButton()
+        view.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = UIColor.greenWhite
+        dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
+    }
+}
+
+extension InviteFriendViewController: UITextFieldDelegate {
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.friendData = nil
+        friendNameLabel.text = ""
+    }
+}
+
+extension InviteFriendViewController {
+    func setNameLabelConstraint() {
+        NSLayoutConstraint(item: nameLabel, attribute: .top,
+                           relatedBy: .equal, toItem: view.safeAreaLayoutGuide,
+                           attribute: .top, multiplier: 1, constant: 60).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .leading,
+                           relatedBy: .equal, toItem: view,
+                           attribute: .leading, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .width,
+                           relatedBy: .equal, toItem: view,
+                           attribute: .width, multiplier: 2/3, constant: -20).isActive = true
+        NSLayoutConstraint(item: nameLabel, attribute: .height,
+                           relatedBy: .equal, toItem: nil,
+                           attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
+    }
+    
+    func setTextFieldConstraint() {
+        NSLayoutConstraint(item: friendTextField, attribute: .top,
+                           relatedBy: .equal, toItem: nameLabel,
+                           attribute: .bottom, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: friendTextField, attribute: .leading,
+                           relatedBy: .equal, toItem: view,
+                           attribute: .leading, multiplier: 1, constant: 20).isActive = true
+        NSLayoutConstraint(item: friendTextField, attribute: .width,
+                           relatedBy: .equal, toItem: view,
+                           attribute: .width, multiplier: 2/3, constant: 0).isActive = true
+        NSLayoutConstraint(item: friendTextField, attribute: .height,
+                           relatedBy: .equal, toItem: nil,
+                           attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
     }
     
     func setTextField() {
@@ -105,241 +348,33 @@ class InviteFriendViewController: UIViewController {
         setScanQRCodeButtonConstraint()
         scanQRCode.setTitle("掃描 QRCode", for: .normal)
         scanQRCode.setTitleColor(.greenWhite, for: .normal)
-//        scanQRCode.contentHorizontalAlignment = .left
         ElementsStyle.styleSpecificButton(scanQRCode)
         scanQRCode.addTarget(self, action: #selector(pressScanQRCode), for: .touchUpInside)
     }
-    
-    @objc func pressScanQRCode() {
-        let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
-        guard let scanQRCodeViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: ScanQRCodeViewController.self)) as? ScanQRCodeViewController else { return }
+ 
+    enum FriendStatus {
+        case notFriend
+        case isFriend
+        case sentInvitaion
+        case receivedInvitaion
+        case block
+        case emptyData
         
-        self.present(scanQRCodeViewController, animated: true, completion: nil)
-        
-        scanQRCodeViewController.qrCodeContent = { [weak self] qrCode in
-            self?.searchFriend(userEmail: qrCode)
-        }
-//        self.present(scanQRCodeViewController, animated: true, completion: nil)
-    }
-    
-    @objc func pressSearchButton() {
-        if friendTextField.text?.isEmpty == false {
-            searchFriend(userEmail: friendTextField.text ?? "")
-        } else {
-            let alertController = UIAlertController(title: "請輸入好友 Email", message: "尚未輸入 Email", preferredStyle: .alert)
-            let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
-
-            alertController.addAction(cancelAction)
-            present(alertController, animated: true, completion: nil)
-        }
-//        searchFriend(userEmail: friendTextField.text ?? "")
-    }
-    
-    func searchFriend(userEmail: String) {
-        FriendManager.shared.fetchFriendUserData(userEmail: userEmail) { [weak self] result in
-            switch result {
-            case .success(let user):
-                self?.friendData = user
-                self?.searchId = user.userId
-                self?.friendNameLabel.isHidden = true
-                self?.detectFriendStatus()
-                
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+        var searchResult: String {
+            switch self {
+            case .notFriend:
+                return ""
+            case .isFriend:
+                return "你們已是好友"
+            case .sentInvitaion:
+                return "已寄送好友邀請"
+            case .receivedInvitaion:
+                return "對方已寄送好友邀請"
+            case .block:
+                return "無符合對象"
+            case .emptyData:
+                return "無符合對象"
             }
         }
-        
-        if self.friendData == nil {
-            self.friendNameLabel.text = "無符合對象"
-            self.friendNameLabel.isHidden = false
-            self.sendButton.isHidden = true
-        }
-    }
-    
-    func detectFriendStatus() {
-        let group = DispatchGroup()
-        var nameText: String?
-        var isFriend: Bool = false
-        var isInvitationSend: Bool = false
-        var isInvitationReceive: Bool = false
-        var isBlockUser: Bool = false
-
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        firstQueue.async(group: group) {
-            // MARK: - Detect FriendList
-            UserManager.shared.fetchFriendData(userId: self.currentUserId) { [weak self] result in
-                switch result {
-                case .success(let friend):
-                    let friendId = friend.map { $0.userId }
-                    if friendId.contains(self?.friendData?.userId ?? "") {
-//                        nameText = "你們已是好友"
-                        isFriend = true
-                    }
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
-                }
-                group.leave()
-            }
-        }
-        // MARK: - Detect invitation
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        secondQueue.async(group: group) {
-            
-            FriendManager.shared.fetchReceiverInvitation(userId: self.currentUserId,
-                                                         friendId: self.friendData?.userId ?? "") { [weak self] result in
-                switch result {
-                case .success(let invitaion):
-//                    nameText = "對方已寄送好友邀請"
-                    if invitaion != nil {
-                        isInvitationReceive = true
-                    }
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
-                }
-                group.leave()
-            }
-            
-        }
-        // MARK: - Detect invitation
-        let thirdQueue = DispatchQueue(label: "thirdQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        thirdQueue.async(group: group) {
-            
-            FriendManager.shared.fetchSenderInvitation(userId: self.currentUserId,
-                                                       friendId: self.friendData?.userId ?? "") { [weak self] result in
-                switch result {
-                case .success(let invitaion):
-                    if invitaion != nil {
-                        isInvitationSend = true
-                    }
-                    
-                case .failure(let error):
-                    print("Error decoding userData: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
-                }
-                group.leave()
-            }
-        }
-        
-        // MARK: - Detect blockUser
-        let fourthQueue = DispatchQueue(label: "fourthQueue", qos: .default, attributes: .concurrent)
-        group.enter()
-        fourthQueue.async(group: group) {
-            
-            UserManager.shared.fetchUserData(friendId: self.searchId ?? "") { [weak self] result in
-                switch result {
-                case .success(let searchUser):
-                    let blackList = searchUser?.blackList
-                    if ((blackList?.contains(self?.currentUserId ?? "")) != nil) {
-                        isBlockUser = true
-                    }
-                case .failure(let err):
-                    print("\(err.localizedDescription)")
-                }
-                group.leave()
-            }
-        }
-        
-        group.notify(queue: DispatchQueue.main) {
-            if isFriend == true {
-                nameText = "你們已是好友"
-                self.sendButton.isHidden = true
-            } else if isInvitationReceive == true {
-                nameText = "對方已寄送好友邀請"
-                self.sendButton.isHidden = true
-            } else if isInvitationSend == true {
-                nameText = "已寄送好友邀請"
-                self.sendButton.isHidden = true
-            } else if isBlockUser == true {
-                nameText = "無符合對象"
-                self.sendButton.isHidden = true
-            } else if self.friendData == nil {
-                nameText = "無符合對象"
-                self.sendButton.isHidden = true
-            } else {
-                nameText = self.friendData?.userName
-                self.sendButton.isHidden = false
-            }
-            
-            self.friendNameLabel.text = nameText
-            self.friendNameLabel.isHidden = false
-        }
-    }
-
-    @objc func pressSendButton() {
-        FriendManager.shared.updateFriendInvitation(senderId: currentUserId, receiverId: self.friendData?.userId ?? "") { [weak self] in
-            ProgressHUD.shared.view = self?.view ?? UIView()
-            ProgressHUD.showSuccess(text: "已寄出邀請")
-            self?.friendData = nil
-            self?.sendButton.isHidden = true
-            self?.friendNameLabel.isHidden = true
-            self?.friendTextField.text = ""
-        }
-    }
-    
-    func setScanQRCodeButtonConstraint() {
-        scanQRCode.topAnchor.constraint(equalTo: friendTextField.bottomAnchor, constant: 20).isActive = true
-        scanQRCode.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        scanQRCode.widthAnchor.constraint(equalToConstant: 160).isActive = true
-        scanQRCode.heightAnchor.constraint(equalToConstant: 40).isActive = true
-    }
-    
-    func setDismissButton() {
-        let dismissButton = UIButton()
-        view.addSubview(dismissButton)
-        dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
-        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-        dismissButton.tintColor = UIColor.greenWhite
-        dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
-    }
-    
-    @objc func pressDismiss() {
-        self.dismiss(animated: true, completion: nil)
-    }
-}
-
-extension InviteFriendViewController: UITextFieldDelegate {
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//        if self.friendData == nil {
-//            self.friendNameLabel.text = "無符合對象"
-//            self.friendNameLabel.isHidden = false
-//            self.sendButton.isHidden = true
-//        }
-//    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.friendData = nil
-        friendNameLabel.text = ""
-    }
-}
-
-extension InviteFriendViewController {
-    func setNameLabelConstraint() {
-        NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 60).isActive = true
-        NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
-        NSLayoutConstraint(item: nameLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: -20).isActive = true
-        NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
-    }
-    
-    func setTextFieldConstraint() {
-        NSLayoutConstraint(item: friendTextField, attribute: .top, relatedBy: .equal, toItem: nameLabel, attribute: .bottom, multiplier: 1, constant: 20).isActive = true
-        NSLayoutConstraint(item: friendTextField, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 20).isActive = true
-        NSLayoutConstraint(item: friendTextField, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 2/3, constant: 0).isActive = true
-        NSLayoutConstraint(item: friendTextField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 40).isActive = true
-        
     }
 }
