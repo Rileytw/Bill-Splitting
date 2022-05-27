@@ -15,6 +15,16 @@ struct Reminder: Codable {
     var remindTime: Double
     var status: Int
     var documentId: String
+    
+    init() {
+        groupId = ""
+        memberId = ""
+        creatorId = ""
+        type = .credit
+        remindTime = 0
+        status = 0
+        documentId = ""
+    }
 }
 
 enum RemindType: Int, Codable {
