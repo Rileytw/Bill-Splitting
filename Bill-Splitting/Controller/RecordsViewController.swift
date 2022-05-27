@@ -12,7 +12,7 @@ class RecordsViewController: BaseViewController {
 // MARK: - Property
     var tableView = UITableView()
     var emptyLabel = UILabel()
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    var currentUserId: String?
     var groups: [GroupData] = []
     var itemData: [ItemData] = []
     var paidItem: [ExpenseInfo] = []
@@ -25,14 +25,15 @@ class RecordsViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
+        getCurrentUser()
         setEmptyLabel()
         setTableView()
-        setAnimation()
         navigationItem.title = NavigationItemName.records.name
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setAnimation()
         getGroupData()
     }
     
@@ -42,7 +43,12 @@ class RecordsViewController: BaseViewController {
     }
 
 // MARK: - Method
+    func getCurrentUser() {
+        currentUserId = UserManager.shared.currentUser?.userId ?? ""
+    }
+    
     func getGroupData() {
+        guard let currentUserId = currentUserId else { return }
         GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
             case .success(let groups):
@@ -72,9 +78,9 @@ class RecordsViewController: BaseViewController {
                     case .success(let items):
                         self?.itemData += items
                         semaphore.signal()
-                    case .failure(let error):
-                        print("Error decoding userData: \(error)")
-                        
+                    case .failure:
+                        self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
+                        semaphore.signal()
                     }
                 }
                 semaphore.wait()
@@ -86,59 +92,67 @@ class RecordsViewController: BaseViewController {
     // MARK: - Use GCD group to get two collection data at same time
     func getItemExpense() {
         let group = DispatchGroup()
-        
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
-            self.paidItem.removeAll()
-            for item in self.itemData {
-                group.enter()
-                firstQueue.async(group: group) {
-                    ItemManager.shared.fetchPaidItemExpense(itemId: item.itemId) { [weak self] result in
-                        switch result {
-                        case .success(let items):
-                            self?.paidItem += items
-                            group.leave()
-                        case .failure(let error):
-                            print("Error decoding userData: \(error)")
-                            group.leave()
-                        }
-                    }
-
-                }
-            }
-        
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
-            self.involvedItem.removeAll()
-            for index in 0..<self.itemData.count {
-                group.enter()
-                secondQueue.async(group: group) {
-                    ItemManager.shared.fetchInvolvedItemExpense(itemId: self.itemData[index].itemId) { [weak self] result in
-                        switch result {
-                        case .success(let items):
-                            self?.involvedItem += items
-                            group.leave()
-                        case .failure(let error):
-                            print("Error decoding userData: \(error)")
-                            group.leave()
-                        }
+        var isFetchDataSuccess: Bool = false
+        self.paidItem.removeAll()
+        for item in self.itemData {
+            group.enter()
+            DispatchQueue.global().async {
+                ItemManager.shared.fetchPaidItemExpense(itemId: item.itemId) { [weak self] result in
+                    switch result {
+                    case .success(let items):
+                        self?.paidItem += items
+                        group.leave()
+                        isFetchDataSuccess = true
+                    case .failure:
+                        isFetchDataSuccess = false
+                        group.leave()
                     }
                 }
             }
-        group.notify(queue: DispatchQueue.main) {
-            self.personalPaid = self.paidItem.filter { $0.userId == self.currentUserId }
-            self.personalInvolved = self.involvedItem.filter { $0.userId == self.currentUserId }
-            
-            for index in 0..<self.personalInvolved.count {
-                self.personalInvolved[index].price = 0 - self.personalInvolved[index].price
+        }
+        
+        self.involvedItem.removeAll()
+        for index in 0..<self.itemData.count {
+            group.enter()
+            DispatchQueue.global().async {
+                ItemManager.shared.fetchInvolvedItemExpense(itemId: self.itemData[index].itemId) { [weak self] result in
+                    switch result {
+                    case .success(let items):
+                        self?.involvedItem += items
+                        group.leave()
+                        isFetchDataSuccess = true
+                    case .failure:
+                        isFetchDataSuccess = false
+                        group.leave()
+                    }
+                }
             }
-            
-            self.allPersonalItem = self.personalPaid + self.personalInvolved
-            self.allPersonalItem.sort { $0.createdTime ?? 0 > $1.createdTime ?? 0 }
-            self.allPersonalItem = Array(self.allPersonalItem.prefix(10))
-            self.tableView.reloadData()
-            self.removeAnimation()
+        }
+        group.notify(queue: DispatchQueue.main) { [weak self] in
+            switch isFetchDataSuccess {
+            case true:
+                self?.getAllPersonalItems()
+                self?.tableView.reloadData()
+                self?.removeAnimation()
+            case false:
+                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
+            }
         }
     }
-
+    
+    private func getAllPersonalItems() {
+        personalPaid = paidItem.filter { $0.userId == self.currentUserId }
+        personalInvolved = involvedItem.filter { $0.userId == self.currentUserId }
+        
+        for index in 0..<personalInvolved.count {
+            personalInvolved[index].price = 0 - personalInvolved[index].price
+        }
+        
+        allPersonalItem = personalPaid + personalInvolved
+        allPersonalItem.sort { $0.createdTime ?? 0 > $1.createdTime ?? 0 }
+        allPersonalItem = Array(allPersonalItem.prefix(10))
+    }
+    
     func cleanData() {
         groups.removeAll()
         itemData.removeAll()
@@ -148,7 +162,72 @@ class RecordsViewController: BaseViewController {
         personalInvolved.removeAll()
         allPersonalItem.removeAll()
     }
+}
+
+extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return allPersonalItem.count
+    }
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: String(describing: ItemTableViewCell.self),
+            for: indexPath
+        )
+        
+        guard let itemsCell = cell as? ItemTableViewCell else { return cell }
+        
+        let item = allPersonalItem[indexPath.row]
+        let time = Date.getTimeString(timeStamp: item.createdTime ?? 0)
+        
+        var itemName: String?
+        for items in itemData where items.itemId == item.itemId {
+            itemName = items.itemName
+        }
+        
+        if item.price > 0 {
+            itemsCell.mapItemCell(itemName: itemName ?? "" ,
+                                  time: time, paidPrice: item.price,
+                                  involvedPrice: abs(item.price),
+                                  involvedType: .paid)
+        } else {
+            itemsCell.mapItemCell(itemName: itemName ?? "" ,
+                                  time: time, paidPrice: item.price,
+                                  involvedPrice: abs(item.price),
+                                  involvedType: .involved)
+        }
+      
+        return itemsCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
+        guard let customGroupViewController = storyBoard.instantiateViewController(
+                    withIdentifier: CustomGroupViewController.identifier) as? CustomGroupViewController else { return }
+        
+        var personalItem: ItemData?
+        var groupData: GroupData?
+        for items in itemData where items.itemId == allPersonalItem[indexPath.row].itemId {
+            personalItem = items
+        }
+        
+        groupData = groups.first(where: { $0.groupId == personalItem?.groupId })
+        customGroupViewController.group = groupData
+        self.show(customGroupViewController, sender: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        
+        let cell = tableView.cellForRow(at: indexPath)
+        TableViewAnimation.hightlight(cell: cell)
+    }
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath)
+        TableViewAnimation.unHightlight(cell: cell)
+    }
+}
+
+extension RecordsViewController {
     func setTableView() {
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -176,92 +255,5 @@ class RecordsViewController: BaseViewController {
         emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         emptyLabel.isHidden = true
-    }
-}
-
-extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return allPersonalItem.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: String(describing: ItemTableViewCell.self),
-            for: indexPath
-        )
-        
-        guard let itemsCell = cell as? ItemTableViewCell else { return cell }
-        
-        let item = allPersonalItem[indexPath.row]
-        
-        let timeStamp = item.createdTime
-        let timeInterval = TimeInterval(timeStamp ?? 0)
-        let date = Date(timeIntervalSince1970: timeInterval)
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
-        let time = dateFormatter.string(from: date)
-        
-        var itemName: String?
-        for items in itemData where items.itemId == item.itemId {
-            itemName = items.itemName
-        }
-        
-        if item.price > 0 {
-            if itemName == "結帳" {
-                itemsCell.createItemCell(time: time,
-                                         name: itemName ?? "",
-                                         description: PaidDescription.settleUpInvolved,
-                                         price: item.price)
-                itemsCell.paidDescription.textColor = .styleRed
-            } else {
-                itemsCell.createItemCell(time: time,
-                                         name: itemName ?? "",
-                                         description: PaidDescription.paid,
-                                         price: item.price)
-                itemsCell.paidDescription.textColor = .styleGreen
-            }
-        } else {
-            if itemName == "結帳" {
-                itemsCell.createItemCell(time: time,
-                                         name: itemName ?? "",
-                                         description: PaidDescription.settleUpPaid,
-                                         price: abs(item.price))
-                itemsCell.paidDescription.textColor = .styleGreen
-            } else {
-                itemsCell.createItemCell(time: time,
-                                         name: itemName ?? "",
-                                         description: PaidDescription.involved,
-                                         price: abs(item.price))
-                itemsCell.paidDescription.textColor = .styleRed
-            }
-        }
-      
-        return itemsCell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
-        guard let customGroupViewController =
-                storyBoard.instantiateViewController(withIdentifier: String(describing: CustomGroupViewController.self)) as? CustomGroupViewController else { return }
-        
-        var personalItem: ItemData?
-        var groupData: GroupData?
-        for items in itemData where items.itemId == allPersonalItem[indexPath.row].itemId {
-            personalItem = items
-        }
-        
-        groupData = groups.first(where: { $0.groupId == personalItem?.groupId })
-        customGroupViewController.group = groupData
-        self.show(customGroupViewController, sender: nil)
-    }
-    
-    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
-        
-        let cell = tableView.cellForRow(at: indexPath)
-        TableViewAnimation.hightlight(cell: cell)
-    }
-    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
-        TableViewAnimation.unHightlight(cell: cell)
     }
 }
