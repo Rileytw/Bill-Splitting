@@ -138,7 +138,6 @@ class ChartViewController: UIViewController {
         creditChart.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         creditChart.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         creditChart.heightAnchor.constraint(equalToConstant: UIScreen.height/2 - 100).isActive = true
-        
     }
     
     func setDebtChart() {
@@ -148,7 +147,6 @@ class ChartViewController: UIViewController {
         debtChart.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         debtChart.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         debtChart.heightAnchor.constraint(equalToConstant: UIScreen.height/2 - 100).isActive = true
-        
     }
     
     func setCreditLabel() {
