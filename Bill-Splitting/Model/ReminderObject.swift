@@ -11,15 +11,15 @@ struct Reminder: Codable {
     var groupId: String
     var memberId: String
     var creatorId: String
-    var type: Int
+    var type: RemindType
     var remindTime: Double
     var status: Int
     var documentId: String
 }
 
-enum RemindType {
-    case credit
-    case debt
+enum RemindType: Int, Codable {
+    case credit = 0
+    case debt = 1
     
     var intData: Int {
         switch self {
