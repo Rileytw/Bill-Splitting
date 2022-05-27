@@ -9,10 +9,10 @@ import UIKit
 
 class RecordsViewController: BaseViewController {
     
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
-//    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
+// MARK: - Property
     var tableView = UITableView()
     var emptyLabel = UILabel()
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     var groups: [GroupData] = []
     var itemData: [ItemData] = []
     var paidItem: [ExpenseInfo] = []
@@ -20,14 +20,15 @@ class RecordsViewController: BaseViewController {
     var personalPaid: [ExpenseInfo] = []
     var personalInvolved: [ExpenseInfo] = []
     var allPersonalItem: [ExpenseInfo] = []
-    
+
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         setEmptyLabel()
         setTableView()
         setAnimation()
-        navigationItem.title = "近期紀錄"
+        navigationItem.title = NavigationItemName.records.name
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,8 +40,8 @@ class RecordsViewController: BaseViewController {
         super.viewWillDisappear(animated)
         cleanData()
     }
-    
-    // MARK: - Get groups data first
+
+// MARK: - Method
     func getGroupData() {
         GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
@@ -53,8 +54,8 @@ class RecordsViewController: BaseViewController {
                 } else {
                     self?.emptyLabel.isHidden = true
                 }
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+            case .failure:
+                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }
