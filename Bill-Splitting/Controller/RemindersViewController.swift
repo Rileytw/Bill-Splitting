@@ -8,10 +8,11 @@
 import UIKit
 import Lottie
 
-class RemindersViewController: UIViewController {
-    
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
-//    let currentUserId = UserManager.shared.currentUser?.userId ?? ""
+class RemindersViewController: BaseViewController {
+
+// MARK: - Property
+    var tableView = UITableView()
+    var emptyLabel = UILabel()
     var addNotificationButton = UIButton()
     var notificationTime: Double?
     var reminders = [Reminder]()
@@ -23,12 +24,9 @@ class RemindersViewController: UIViewController {
     var reminderTitle: String?
     var reminderSubtitle: String?
     var remindBody: String?
-//    var blackList = [String]()
+    let currentUserId = AccountManager.shared.currentUser.currentUserId
     
-    var tableView = UITableView()
-    var emptyLabel = UILabel()
-    private var animationView = AnimationView()
-    
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -41,7 +39,7 @@ class RemindersViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        fetchCurrentUserData()
+        fetchCurrentUserData()
         getReminders()
     }
     override func viewWillLayoutSubviews() {
@@ -49,20 +47,13 @@ class RemindersViewController: UIViewController {
         addNotificationButton.layer.cornerRadius = 0.5 * addNotificationButton.bounds.size.width
         addNotificationButton.clipsToBounds = true
     }
-    
-    func setAddButton() {
-        view.addSubview(addNotificationButton)
-        setAddButtonConstraints()
-        addNotificationButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        addNotificationButton.tintColor = .white
-        addNotificationButton.backgroundColor = .systemGray
-        addNotificationButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
-        ElementsStyle.styleSpecificButton(addNotificationButton)
-    }
-    
+
+// MARK: - Method
     @objc func pressAddButton() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.reminders, bundle: nil)
-        guard let addReminderViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddReminderViewController.self)) as? AddReminderViewController else { return }
+        guard let addReminderViewController = storyBoard.instantiateViewController(
+            withIdentifier: AddReminderViewController.identifier
+        ) as? AddReminderViewController else { return }
         
         if #available(iOS 15.0, *) {
             if let sheet = addReminderViewController.sheetPresentationController {
@@ -88,15 +79,12 @@ class RemindersViewController: UIViewController {
         content.title = reminderTitle
         content.subtitle = reminderSubtitle
         content.body = reminderBody
-        //        content.badge = 1
-        //        content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
         content.sound = UNNotificationSound.default
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(notificationTime), repeats: false)
         let request = UNNotificationRequest(identifier: "notification", content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
-            print("成功建立通知...")
         })
     }
     
@@ -112,19 +100,26 @@ class RemindersViewController: UIViewController {
                 } else {
                     self?.emptyLabel.isHidden = true
                 }
-            case .failure(let error):
-                print("Error decoding reminders: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+            case .failure:
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
+            }
+        }
+    }
+    
+    private func updateReminderStatus() {
+        for index in 0..<self.reminders.count {
+            let remindTime = self.reminders[index].remindTime - Date().timeIntervalSince1970
+            if remindTime < 0 {
+                ReminderManager.shared.updateReminderStatus(documentId: reminders[index].documentId)
             }
         }
     }
     
     func fetchReminderInfo() {
+        var isGetReminderSuccess: Bool = false
         let group = DispatchGroup()
-        let firstQueue = DispatchQueue(label: "firstQueue", qos: .default, attributes: .concurrent)
         group.enter()
-        firstQueue.async(group: group) {
+        DispatchQueue.global().async {
             GroupManager.shared.fetchGroups(userId: self.currentUserId, status: 0) { [weak self] result in
                 switch result {
                 case .success(let groups):
@@ -134,170 +129,122 @@ class RemindersViewController: UIViewController {
                             self?.group = group
                         }
                     }
-                case .failure(let error):
-                    print("Error decoding groups: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+                    isGetReminderSuccess = true
+                case .failure:
+                    isGetReminderSuccess = false
                 }
                 group.leave()
             }
         }
-        
-        let secondQueue = DispatchQueue(label: "secondQueue", qos: .default, attributes: .concurrent)
+
         group.enter()
-        secondQueue.async(group: group) {
+        DispatchQueue.global().async {
             UserManager.shared.fetchUsersData { [weak self] result in
                 switch result {
                 case .success(let users):
                     self?.members = users
-                    self?.detectBlackListUser()
+                    self?.detectBlockListUser()
                     if self?.reminders.isEmpty == false {
                         for user in users where user.userId == self?.reminders[0].memberId {
                             self?.member = user
                         }
                     }
-                case .failure(let error):
-                    print("Error decoding users: \(error)")
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
+                    isGetReminderSuccess = true
+                case .failure:
+                    isGetReminderSuccess = false
                 }
                 group.leave()
             }
         }
         
-        group.notify(queue: DispatchQueue.main) {
-            if self.reminders.isEmpty == false {
-                for index in 0..<self.reminders.count {
-                    let remindTime = self.reminders[index].remindTime - Date().timeIntervalSince1970
-                    if remindTime < 0 {
-                        ReminderManager.shared.updateReminderStatus(documentId: self.reminders[index].documentId)
+        group.notify(queue: DispatchQueue.main) { [weak self] in
+            if isGetReminderSuccess {
+                if self?.reminders.isEmpty == false {
+                    self?.updateReminderStatus()
+                    
+                    let activeReminders = self?.getActiveReminder()
+                    if activeReminders?.isEmpty == false {
+                        guard let activeReminder = activeReminders?[0],
+                              let notifyGroup = self?.getNotifyGroup(activeReminder: activeReminder),
+                              let memberName = self?.getNotifyMember(activeReminder: activeReminder).userName
+                        else { return }
+                        self?.setLocalReminder(activeReminder, memberName, notifyGroup)
                     }
                 }
+                self?.tableView.reloadData()
+                self?.removeAnimation()
                 
-                var activeReminder  = self.reminders.filter { ($0.remindTime - Date().timeIntervalSince1970) > 0 }
-                activeReminder.sort { $0.remindTime < $1.remindTime }
-                if activeReminder.isEmpty == false {
-                    var notifyGroup: GroupData?
-                    for group in self.reminderGroups where group.groupId == activeReminder[0].groupId {
-                        notifyGroup = group
-                    }
-                   
-                    var notifyMember: UserData?
-                    for user in self.members where user.userId == activeReminder[0].memberId {
-                        notifyMember = user
-                    }
-                    
-                    guard let memberName = notifyMember?.userName else { return }
-    //                let remindTimeInterval = activeReminder[0].remindTime - Date().timeIntervalSince1970
-                    self.reminderTitle = notifyGroup?.groupName
-                    
-                    if activeReminder[0].type == RemindType.credit.intData {
-                        self.reminderSubtitle = RemindType.credit.textInfo
-                        self.remindBody = "記得向" + memberName + "請款"
-                    } else {
-                        self.reminderSubtitle = RemindType.debt.textInfo
-                        self.remindBody = "記得付錢給" + memberName
-                    }
-                    self.notificationTime = activeReminder[0].remindTime - Date().timeIntervalSince1970
-                    
-                    self.sendNotification()
-                }
-
-            }
-            self.tableView.reloadData()
-            self.removeAnimation()
-            
-            for index in 0..<self.reminders.count {
-                let remindTime = self.reminders[index].remindTime - Date().timeIntervalSince1970
-                if remindTime < 0 && self.reminders[index].status == RemindStatus.active.statusInt  {
-                    ReminderManager.shared.updateReminderStatus(documentId: self.reminders[index].documentId)
-                }
+                guard let reminders = self?.reminders else { return }
+                self?.updateReminderStatus(reminders)
+            } else {
+                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }
     
-//    func fetchCurrentUserData() {
-//        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
-//            switch result {
-//            case .success(let currentUserData):
-//                if currentUserData?.blackList != nil {
-//                    self?.blackList = currentUserData?.blackList ?? []
-//                }
-//                print("success")
-//            case .failure(let error):
-//                print("\(error.localizedDescription)")
-//                ProgressHUD.shared.view = self?.view ?? UIView()
-//                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
-//            }
-//        }
-//    }
+    private func setLocalReminder(
+        _ activeReminder: Reminder, _ memberName: String, _ notifyGroup: GroupData) {
+        reminderTitle = notifyGroup.groupName
+        getReminderContent(activeReminder, memberName)
+        notificationTime = activeReminder.remindTime - Date().timeIntervalSince1970
+        sendNotification()
+    }
     
-    func detectBlackListUser() {
-        let blockList = UserManager.shared.currentUser?.blackList
-        guard let blockList = blockList else { return }
+    private func getNotifyGroup(activeReminder: Reminder) -> GroupData {
+        var notifyGroup: GroupData?
+        for group in reminderGroups where group.groupId == activeReminder.groupId {
+            notifyGroup = group
+        }
+        return notifyGroup ?? GroupData()
+    }
+    
+    private func getNotifyMember(activeReminder: Reminder) -> UserData {
+        var notifyMember: UserData?
+        for user in members where user.userId == activeReminder.memberId {
+            notifyMember = user
+        }
+        return notifyMember ?? UserData()
+    }
+    
+    private func getActiveReminder() -> [Reminder] {
+        var activeReminders = reminders.filter { ($0.remindTime - Date().timeIntervalSince1970) > 0 }
+        activeReminders.sort { $0.remindTime < $1.remindTime }
+        return activeReminders
+    }
+    
+    private func getReminderContent(_ activeReminder: Reminder, _ memberName: String) {
+        switch activeReminder.type {
+        case .credit:
+            reminderSubtitle = RemindType.credit.textInfo
+            remindBody = "記得向" + memberName + "請款"
+        case .debt:
+            reminderSubtitle = RemindType.debt.textInfo
+            remindBody = "記得付錢給" + memberName
+        }
+    }
+    
+    private func updateReminderStatus(_ reminders: [Reminder]) {
+        for index in 0..<reminders.count {
+            let remindTime = reminders[index].remindTime - Date().timeIntervalSince1970
+            if remindTime < 0 && reminders[index].status == RemindStatus.active.statusInt {
+                ReminderManager.shared.updateReminderStatus(documentId: reminders[index].documentId)
+            }
+        }
+    }
+    
+    func fetchCurrentUserData() {
+        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
+            if case .failure = result {
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
+            }
+        }
+    }
+    
+    func detectBlockListUser() {
+        guard let blockList = UserManager.shared.currentUser?.blackList else { return }
         let newUserData = UserManager.renameBlockedUser(blockList: blockList,
                                                         userData: members)
         members = newUserData
-    }
-    
-    func setTableView() {
-        view.addSubview(tableView)
-        setTableViewConstraint()
-        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-        tableView.register(UINib(nibName: String(describing: ReminderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ReminderTableViewCell.self))
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.backgroundColor = .clear
-        //        tableView.isEditing = true
-    }
-    
-    func setTableViewConstraint() {
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10).isActive = true
-    }
-    
-    func setAddButtonConstraints() {
-        addNotificationButton.translatesAutoresizingMaskIntoConstraints = false
-        addNotificationButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
-        addNotificationButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        addNotificationButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        addNotificationButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-    }
-    
-    func setEmptyLabel() {
-        view.addSubview(emptyLabel)
-        emptyLabel.text = "目前暫無資料，點擊右下 + 新增提醒"
-        emptyLabel.textColor = .greenWhite
-        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
-        emptyLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15).isActive = true
-        emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        emptyLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
-        emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        
-        emptyLabel.isHidden = true
-    }
-    
-    func setAnimation() {
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        animationView.stop()
-        animationView.removeFromSuperview()
     }
 }
 
@@ -323,7 +270,9 @@ extension RemindersViewController: UITableViewDataSource, UITableViewDelegate {
         let time = allReminders[indexPath.row].remindTime
         let type = allReminders[indexPath.row].type
         
-        reminderCell.createReminderCell(member: memberName ?? "", type: type, groupName: groupName ?? "", time: time)
+        reminderCell.createReminderCell(member: memberName ?? "",
+                                        type: type.rawValue,
+                                        groupName: groupName ?? "", time: time)
         
         return reminderCell
     }
@@ -335,7 +284,6 @@ extension RemindersViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
     -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { (_, _, completionHandler) in
-            // delete the item here
             ReminderManager.shared.deleteReminder(documentId: self.allReminders[indexPath.row].documentId)
             self.allReminders.remove(at: indexPath.row)
             self.tableView.deleteRows(at: [indexPath], with: .fade)
@@ -345,5 +293,58 @@ extension RemindersViewController: UITableViewDataSource, UITableViewDelegate {
         deleteAction.backgroundColor = .systemRed
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         return configuration
+    }
+}
+
+extension RemindersViewController {
+    func setTableView() {
+        view.addSubview(tableView)
+        setTableViewConstraint()
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tableView.register(UINib(nibName: String(describing: ReminderTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: ReminderTableViewCell.self))
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.backgroundColor = .clear
+    }
+    
+    func setTableViewConstraint() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10).isActive = true
+    }
+    
+    func setAddButtonConstraints() {
+        addNotificationButton.translatesAutoresizingMaskIntoConstraints = false
+        addNotificationButton.bottomAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        addNotificationButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        addNotificationButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        addNotificationButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    }
+    
+    func setEmptyLabel() {
+        view.addSubview(emptyLabel)
+        emptyLabel.text = "目前暫無資料，點擊右下 + 新增提醒"
+        emptyLabel.textColor = .greenWhite
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15).isActive = true
+        emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        emptyLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+        emptyLabel.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        emptyLabel.isHidden = true
+    }
+    
+    func setAddButton() {
+        view.addSubview(addNotificationButton)
+        setAddButtonConstraints()
+        addNotificationButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        addNotificationButton.tintColor = .white
+        addNotificationButton.backgroundColor = .systemGray
+        addNotificationButton.addTarget(self, action: #selector(pressAddButton), for: .touchUpInside)
+        ElementsStyle.styleSpecificButton(addNotificationButton)
     }
 }
