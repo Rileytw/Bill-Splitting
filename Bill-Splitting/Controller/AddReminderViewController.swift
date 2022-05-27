@@ -9,43 +9,36 @@ import UIKit
 
 class AddReminderViewController: UIViewController {
 
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+// MARK: - Property
     let groupLabel = UILabel()
     let groupPicker = BasePickerViewInTextField(frame: .zero)
-    let userLabel = UILabel()
     let userPicker = BasePickerViewInTextField(frame: .zero)
+    let userLabel = UILabel()
     let typeLabel = UILabel()
     let priceLabel = UILabel()
     let priceTextField = UITextField()
     let completeButton = UIButton()
     let debtButton = UIButton()
     let creditButton = UIButton()
-    var groupPickerData: [String] = []
     var remindTimeDatePicker = UIDatePicker()
     var reminderLabel = UILabel()
     
+    var currentUserId = UserManager.shared.currentUser?.userId ?? ""
+    var groupPickerData: [String] = []
     var groups: [GroupData] = []
     var member: [UserData] = []
     var userData: [UserData] = []
-    var blackList = [String]()
-    var remindTimeStamp: Double?
-    var reminderData = Reminder(groupId: "",
-                                memberId: "",
-                                creatorId: AccountManager.shared.currentUser.currentUserId,
-                                type: .credit,
-                                remindTime: 0,
-                                status: 1,
-                                documentId: "")
+    var reminderData = Reminder()
     
     typealias ReminderInfo = (String) -> Void
     var reminderInfo: ReminderInfo?
     
+// MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         getGroupData()
         getUserData()
-        fetchCurrentUserData()
         
         setGroup()
         setGroupPicker()
@@ -58,19 +51,8 @@ class AddReminderViewController: UIViewController {
         setCompleteButton()
         setDismissButton()
     }
-    
-// MARK: Wait to try
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        if #available(iOS 15.0, *) {
-//
-//        } else {
-//            self.view.frame = CGRect(x: 0, y: UIScreen.main.bounds.height / 5 * 2, width: self.view.bounds.width, height: UIScreen.main.bounds.height / 5 * 3)
-//            self.view.layer.cornerRadius = 20
-//            self.view.layer.masksToBounds = true
-//        }
-//    }
 
+// MARK: - Method
     func getGroupData() {
         GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
@@ -78,12 +60,193 @@ class AddReminderViewController: UIViewController {
                 self?.groups = groups
                 self?.groupPicker.pickerViewData = groups.map { $0.groupName }
                 self?.groupPickerData = groups.map { $0.groupName }
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
+            case .failure:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: ErrorType.dataFetchError.errorMessage)
             }
         }
     }
     
+    @objc func pressComplete() {
+        
+        if groupPicker.textField.text == "" || userPicker.textField.text == "" {
+            loseInfoAlert(title: "資料不完整", message: "請確認是否已設定群組及提醒對象")
+        } else if creditButton.isSelected == false && debtButton.isSelected == false {
+            loseInfoAlert(title: "資料不完整", message: "請確認已選擇提醒類型")
+        } else if reminderData.remindTime == 0 {
+            loseInfoAlert(title: "請確認提醒時間", message: "提醒時間需晚於現在時間")
+        } else {
+            addReminder()
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    func loseInfoAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func addReminder() {
+        reminderData.creatorId = currentUserId
+        ReminderManager.shared.addReminderData(reminder: reminderData) { [weak self] result in
+            switch result {
+            case .success:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showSuccess(text: SuccessType.addSuccess.successMessage)
+                self?.reminderInfo?("reminder set successfully")
+            case .failure:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: ErrorType.dataAddError.errorMessage)
+            }
+        }
+    }
+    
+    @objc func pressTypeButton(_ sender: UIButton) {
+        if sender.isSelected == false {
+            ElementsStyle.styleSelectedButton(sender)
+            sender.isSelected = true
+            
+            if sender == creditButton {
+                reminderData.type = RemindType.credit
+            } else {
+                reminderData.type = RemindType.debt
+            }
+        } else {
+            sender.layer.borderWidth = 0
+            sender.isSelected = false
+            ElementsStyle.styleNotSelectedButton(sender)
+        }
+        let buttonArray = [creditButton, debtButton]
+        for button in buttonArray {
+            if button.isSelected && button !== sender {
+                button.isSelected = false
+                ElementsStyle.styleNotSelectedButton(button)
+            }
+        }
+    }
+    
+    func getUserData() {
+        UserManager.shared.fetchUsersData { [weak self] result in
+            switch result {
+            case .success(let userData):
+                self?.userData = userData
+                self?.detectBlockListUser()
+            case .failure:
+                ProgressHUD.shared.view = self?.view ?? UIView()
+                ProgressHUD.showFailure(text: ErrorType.dataFetchError.errorMessage)
+            }
+        }
+    }
+    
+    func selectedMember(membersId: [String]) {
+        var memberData: [UserData] = []
+        for memberId in membersId {
+            for indexdata in userData where indexdata.userId == memberId {
+                memberData.append(indexdata)
+            }
+        }
+        member = memberData
+        member = member.filter { $0.userId != currentUserId }
+    }
+    
+    @objc func datePickerChanged() {
+        let remindDate = remindTimeDatePicker.date
+        var remindTimeStamp: Double?
+        remindTimeStamp = remindDate.timeIntervalSince1970
+        reminderData.remindTime = remindTimeStamp ?? Date().timeIntervalSince1970
+    }
+    
+    func detectBlockListUser() {
+        guard let blockList = UserManager.shared.currentUser?.blackList else { return }
+        let newUserData = UserManager.renameBlockedUser(blockList: blockList,
+                                                        userData: userData)
+        userData = newUserData
+    }
+    
+    @objc func pressDismiss() {
+        self.dismiss(animated: true, completion: nil)
+    }
+}
+
+extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView == groupPicker.pickerView {
+            return groups.count
+        } else {
+            return member.count
+        }
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView == groupPicker.pickerView {
+            if groupPickerData.isEmpty == false {
+                return groupPickerData[row]
+            } else {
+                return "目前暫無群組"
+            }
+            
+        } else {
+            return member[row].userName
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        if pickerView == groupPicker.pickerView {
+            if groupPickerData.isEmpty == false {
+                let groupMember = groups[row].member
+                selectedMember(membersId: groupMember)
+                reminderData.groupId = groups[row].groupId
+                return groupPicker.textField.text = groupPickerData[row]
+            } else {
+               pickGroupAlert(title: "目前沒有群組", message: "請先建立群組，才能建立提醒喔！")
+            }
+            
+        } else {
+            if member.isEmpty == false {
+                reminderData.memberId = member[row].userId
+                return userPicker.textField.text = member[row].userName
+            } else {
+               pickGroupAlert(title: "請先選擇群組", message: "選擇群組後，才能選擇提醒對象喔！")
+            }
+        }
+    }
+    
+    func pickGroupAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension AddReminderViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == groupPicker.textField {
+            if textField.text?.isEmpty == true {
+                groupPicker.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(groupPicker.pickerView, didSelectRow: 0, inComponent: 0)
+            }
+        } else if textField == userPicker.textField {
+            if textField.text?.isEmpty == true {
+                userPicker.pickerView.selectRow(0, inComponent: 0, animated: true)
+                self.pickerView(userPicker.pickerView, didSelectRow: 0, inComponent: 0)
+            }
+        }
+    }
+}
+
+extension AddReminderViewController {
     func setGroup() {
         view.addSubview(groupLabel)
         setGroupLabelConstraint()
@@ -133,44 +296,6 @@ class AddReminderViewController: UIViewController {
         ElementsStyle.styleSpecificButton(completeButton)
     }
     
-    @objc func pressComplete() {
-        
-        if groupPicker.textField.text == "" || userPicker.textField.text == "" {
-            loseInfoAlert(title: "資料不完整", message: "請確認是否已設定群組及提醒對象")
-        } else if creditButton.isSelected == false && debtButton.isSelected == false {
-            loseInfoAlert(title: "資料不完整", message: "請確認已選擇提醒類型")
-        } else if reminderData.remindTime == 0 {
-            loseInfoAlert(title: "請確認提醒時間", message: "提醒時間需晚於現在時間")
-        } else {
-            addReminder()
-            self.dismiss(animated: true, completion: nil)
-        }
-    }
-    
-    func loseInfoAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
-        alertController.addAction(defaultAction)
-        
-        present(alertController, animated: true, completion: nil)
-    }
-    
-    func addReminder() {
-        reminderData.creatorId = currentUserId
-        ReminderManager.shared.addReminderData(reminder: reminderData) { [weak self] result in
-            switch result {
-            case .success:
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showSuccess(text: "新增成功")
-                self?.reminderInfo?("reminder set successfully")
-            case .failure:
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "新增失敗，請稍後再試")
-            }
-        }
-    }
-    
     func setButtons() {
         view.addSubview(creditButton)
         view.addSubview(debtButton)
@@ -183,53 +308,6 @@ class AddReminderViewController: UIViewController {
         debtButton.titleLabel?.font = debtButton.titleLabel?.font.withSize(14)
         debtButton.addTarget(self, action: #selector(pressTypeButton), for: .touchUpInside)
         ElementsStyle.styleNotSelectedButton(debtButton)
-    }
-    
-    @objc func pressTypeButton(_ sender: UIButton) {
-        if sender.isSelected == false {
-            ElementsStyle.styleSelectedButton(sender)
-            sender.isSelected = true
-            
-            if sender == creditButton {
-                reminderData.type = RemindType.credit
-            } else {
-                reminderData.type = RemindType.debt
-            }
-        } else {
-            sender.layer.borderWidth = 0
-            sender.isSelected = false
-            ElementsStyle.styleNotSelectedButton(sender)
-        }
-        let buttonArray = [creditButton, debtButton]
-        for button in buttonArray {
-            if button.isSelected && button !== sender {
-                button.isSelected = false
-                ElementsStyle.styleNotSelectedButton(button)
-            }
-        }
-    }
-    
-    func getUserData() {
-        UserManager.shared.fetchUsersData { [weak self] result in
-            switch result {
-            case .success(let userData):
-                self?.userData = userData
-                self?.detectBlockListUser()
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-            }
-        }
-    }
-    
-    func selectedMember(membersId: [String]) {
-        var memberData: [UserData] = []
-        for memberId in membersId {
-            for indexdata in userData where indexdata.userId == memberId {
-                memberData.append(indexdata)
-            }
-        }
-        member = memberData
-        member = member.filter { $0.userId != currentUserId }
     }
     
     func setReminderLael() {
@@ -249,34 +327,6 @@ class AddReminderViewController: UIViewController {
         remindTimeDatePicker.addTarget(self, action: #selector(datePickerChanged), for: .valueChanged)
         let now = Date()
         remindTimeDatePicker.minimumDate = now
-    }
-    
-    @objc func datePickerChanged() {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "yyyy-MM-dd"
-        let remindDate = remindTimeDatePicker.date
-        remindTimeStamp = remindDate.timeIntervalSince1970
-        reminderData.remindTime = remindTimeStamp ?? Date().timeIntervalSince1970
-    }
-    
-    func fetchCurrentUserData() {
-        UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let currentUserData):
-                if currentUserData?.blackList != nil {
-                    self?.blackList = currentUserData?.blackList ?? []
-                }
-                print("success")
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-            }
-        }
-    }
-    
-    func detectBlockListUser() {
-        let newUserData = UserManager.renameBlockedUser(blockList: blackList,
-                                                        userData: userData)
-        userData = newUserData
     }
     
     func setReminderLabelConstraint() {
@@ -368,83 +418,5 @@ class AddReminderViewController: UIViewController {
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = UIColor.greenWhite
         dismissButton.addTarget(self, action: #selector(pressDismiss), for: .touchUpInside)
-    }
-    
-    @objc func pressDismiss() {
-        self.dismiss(animated: true, completion: nil)
-    }
-}
-
-extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView == groupPicker.pickerView {
-            return groups.count
-        } else {
-            return member.count
-        }
-    }
-    
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView == groupPicker.pickerView {
-            if groupPickerData.isEmpty == false {
-                return groupPickerData[row]
-            } else {
-                return "目前暫無群組"
-            }
-            
-        } else {
-            return member[row].userName
-        }
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        
-        if pickerView == groupPicker.pickerView {
-            if groupPickerData.isEmpty == false {
-                let groupMember = groups[row].member
-                selectedMember(membersId: groupMember)
-                reminderData.groupId = groups[row].groupId
-                return groupPicker.textField.text = groupPickerData[row]
-            } else {
-               pickGroupAlert(title: "目前沒有群組", message: "請先建立群組，才能建立提醒喔！")
-            }
-            
-        } else {
-            if member.isEmpty == false {
-                reminderData.memberId = member[row].userId
-                return userPicker.textField.text = member[row].userName
-            } else {
-               pickGroupAlert(title: "請先選擇群組", message: "選擇群組後，才能選擇提醒對象喔！")
-            }
-        }
-    }
-    
-    func pickGroupAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
-        alertController.addAction(defaultAction)
-        
-        present(alertController, animated: true, completion: nil)
-    }
-}
-
-extension AddReminderViewController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField == groupPicker.textField {
-            if textField.text?.isEmpty == true {
-                groupPicker.pickerView.selectRow(0, inComponent: 0, animated: true)
-                self.pickerView(groupPicker.pickerView, didSelectRow: 0, inComponent: 0)
-            }
-        } else if textField == userPicker.textField {
-            if textField.text?.isEmpty == true {
-                userPicker.pickerView.selectRow(0, inComponent: 0, animated: true)
-                self.pickerView(userPicker.pickerView, didSelectRow: 0, inComponent: 0)
-            }
-        }
     }
 }
