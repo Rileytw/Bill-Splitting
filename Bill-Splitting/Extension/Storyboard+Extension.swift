@@ -7,7 +7,7 @@
 
 import UIKit
 
-private struct StoryboardCategory {
+struct StoryboardCategory {
 
     static let main = "Main"
 

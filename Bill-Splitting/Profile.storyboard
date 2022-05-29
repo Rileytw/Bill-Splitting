@@ -12,7 +12,7 @@
         <!--Profile View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController id="Y6W-OH-hqX" customClass="ProfileViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Y6W-OH-hqX" customClass="ProfileViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -28,7 +28,7 @@
         <!--Payment View Controller-->
         <scene sceneID="Mbm-3J-zqb">
             <objects>
-                <viewController storyboardIdentifier="PaymentViewController" id="rXd-eM-edE" customClass="PaymentViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PaymentViewController" id="rXd-eM-edE" customClass="PaymentViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="iFJ-Kt-axb">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -43,7 +43,7 @@
         <!--Add Payment View Controller-->
         <scene sceneID="FnX-Gc-w8k">
             <objects>
-                <viewController storyboardIdentifier="AddPaymentViewController" id="m7h-3t-7Qu" customClass="AddPaymentViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AddPaymentViewController" id="m7h-3t-7Qu" customClass="AddPaymentViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="NAt-2V-tDQ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -58,7 +58,7 @@
         <!--Friend List View Controller-->
         <scene sceneID="ZdY-4n-5kD">
             <objects>
-                <viewController storyboardIdentifier="FriendListViewController" id="vjs-TU-FJ6" customClass="FriendListViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FriendListViewController" id="vjs-TU-FJ6" customClass="FriendListViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dtt-BH-9W1">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -73,7 +73,7 @@
         <!--Code View Controller-->
         <scene sceneID="zrl-j0-25l">
             <objects>
-                <viewController storyboardIdentifier="QRCodeViewController" id="pIC-et-M6b" customClass="QRCodeViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="QRCodeViewController" id="pIC-et-M6b" customClass="QRCodeViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H5d-WT-KgB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -88,7 +88,7 @@
         <!--Friend Invitation View Controller-->
         <scene sceneID="hCW-Q7-Orr">
             <objects>
-                <viewController storyboardIdentifier="FriendInvitationViewController" id="WX6-NJ-O2B" customClass="FriendInvitationViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FriendInvitationViewController" id="WX6-NJ-O2B" customClass="FriendInvitationViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1W0-IH-DMe">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -100,10 +100,10 @@
             </objects>
             <point key="canvasLocation" x="2074" y="871"/>
         </scene>
-        <!--Black List View Controller-->
+        <!--Block List View Controller-->
         <scene sceneID="aid-vm-6ju">
             <objects>
-                <viewController storyboardIdentifier="BlackListViewController" id="sp3-gE-Ykq" customClass="BlackListViewController" customModule="Bill_Splitting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="BlockListViewController" id="sp3-gE-Ykq" customClass="BlockListViewController" customModule="WeCount" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mx6-Me-fct">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
