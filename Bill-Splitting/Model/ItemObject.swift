@@ -34,6 +34,13 @@ struct ExpenseInfo: Codable {
     var price: Double
     var createdTime: Double?
     var itemId: String?
+    
+    init() {
+        userId = ""
+        price = 0
+        createdTime = nil
+        itemId = nil
+    }
 }
 
 enum SplitType {
