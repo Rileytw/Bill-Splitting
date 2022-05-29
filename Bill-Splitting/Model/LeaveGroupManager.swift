@@ -21,45 +21,45 @@ class LeaveGroupManager {
         DispatchQueue.global().async {
             GroupManager.shared.removeGroupMember(
                 groupId: groupId, userId: currentUserId) { [weak self] result in
-                switch result {
-                case .success:
-                    self?.isLeaveGroupSuccess = true
-                case .failure:
-                    self?.isLeaveGroupSuccess = false
+                    switch result {
+                    case .success:
+                        self?.isLeaveGroupSuccess = true
+                    case .failure:
+                        self?.isLeaveGroupSuccess = false
+                    }
+                    group.leave()
                 }
-                group.leave()
-            }
         }
         
         group.enter()
         DispatchQueue.global().async {
             GroupManager.shared.removeGroupExpense(
                 groupId: groupId, userId: currentUserId) { [weak self] result in
-                switch result {
-                case .success:
-                    self?.isLeaveGroupSuccess = true
-                case .failure:
-                    self?.isLeaveGroupSuccess = false
+                    switch result {
+                    case .success:
+                        self?.isLeaveGroupSuccess = true
+                    case .failure:
+                        self?.isLeaveGroupSuccess = false
+                    }
+                    group.leave()
                 }
-                group.leave()
-            }
         }
-       
+        
         group.enter()
         
         DispatchQueue.global().async {
             GroupManager.shared.addLeaveMember(
                 groupId: groupId, userId: currentUserId) { [weak self] result in
-                switch result {
-                case .success:
-                    self?.isLeaveGroupSuccess = true
-                case .failure:
-                    self?.isLeaveGroupSuccess = false
+                    switch result {
+                    case .success:
+                        self?.isLeaveGroupSuccess = true
+                    case .failure:
+                        self?.isLeaveGroupSuccess = false
+                    }
+                    group.leave()
                 }
-                group.leave()
-            }
         }
-       
+        
         group.notify(queue: DispatchQueue.main) {
             completion()
         }
