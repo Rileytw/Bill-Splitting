@@ -21,7 +21,6 @@ class ProfileHeaderView: UICollectionReusableView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-//        label.frame = bounds
         label.frame = CGRect(x: 8, y: 20, width: 100, height: 40)
     }
     

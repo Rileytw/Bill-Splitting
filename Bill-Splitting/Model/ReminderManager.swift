@@ -11,14 +11,16 @@ import FirebaseFirestore
 
 class ReminderManager {
     static var shared = ReminderManager()
-    lazy var db = Firestore.firestore()
+    lazy var database = Firestore.firestore()
     
     func addReminderData(reminder: Reminder, completion: @escaping (Result<(), Error>) -> Void) {
-        let ref = db.collection(FirebaseCollection.reminder.rawValue).document()
+        let ref = database.collection(FirebaseCollection.reminder.rawValue).document()
         var reminder = reminder
         reminder.documentId = "\(ref.documentID)"
         do {
-            try db.collection(FirebaseCollection.reminder.rawValue).document("\(ref.documentID)").setData(from: reminder)
+            try database.collection(FirebaseCollection.reminder.rawValue)
+                .document("\(ref.documentID)")
+                .setData(from: reminder)
             completion(.success(()))
         } catch {
             print(error)
@@ -27,32 +29,34 @@ class ReminderManager {
     }
     
     func fetchReminders(currentUser: String, completion: @escaping (Result<[Reminder], Error>) -> Void) {
-        db.collection(FirebaseCollection.reminder.rawValue).whereField("creatorId", isEqualTo: currentUser).order(by: "remindTime", descending: true).getDocuments() {
-            (querySnapshot, error) in
-            
-            if let error = error {
-                completion(.failure(error))
-            } else {
+        database.collection(FirebaseCollection.reminder.rawValue)
+            .whereField("creatorId", isEqualTo: currentUser)
+            .order(by: "remindTime", descending: true)
+            .getDocuments { (querySnapshot, error) in
                 
-                var reminders = [Reminder]()
-                
-                for document in querySnapshot!.documents {
+                if let error = error {
+                    completion(.failure(error))
+                } else {
                     
-                    do {
-                        if let reminder = try document.data(as: Reminder.self, decoder: Firestore.Decoder()) {
-                            reminders.append(reminder)
+                    var reminders = [Reminder]()
+                    
+                    for document in querySnapshot!.documents {
+                        
+                        do {
+                            if let reminder = try document.data(as: Reminder.self, decoder: Firestore.Decoder()) {
+                                reminders.append(reminder)
+                            }
+                        } catch {
+                            completion(.failure(error))
                         }
-                    } catch {
-                        completion(.failure(error))
                     }
+                    completion(.success(reminders))
                 }
-                completion(.success(reminders))
             }
-        }
     }
     
     func updateReminderStatus(documentId: String) {
-        let reminderRef = db.collection(FirebaseCollection.reminder.rawValue).document(documentId)
+        let reminderRef = database.collection(FirebaseCollection.reminder.rawValue).document(documentId)
         
         reminderRef.updateData([
             "status": RemindStatus.inActive.statusInt
@@ -66,12 +70,14 @@ class ReminderManager {
     }
     
     func deleteReminder(documentId: String) {
-        db.collection(FirebaseCollection.reminder.rawValue).document(documentId).delete() { err in
-            if let err = err {
-                print("Error removing document: \(err)")
-            } else {
-                print("Document successfully removed!")
+        database.collection(FirebaseCollection.reminder.rawValue)
+            .document(documentId)
+            .delete { err in
+                if let err = err {
+                    print("Error removing document: \(err)")
+                } else {
+                    print("Document successfully removed!")
+                }
             }
-        }
     }
 }

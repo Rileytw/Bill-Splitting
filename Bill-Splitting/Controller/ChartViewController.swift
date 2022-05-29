@@ -7,24 +7,26 @@
 
 import UIKit
 import Charts
+import SwiftUI
 
 class ChartViewController: UIViewController {
     
-// MARK: - Property
+    // MARK: - Property
     var creditLabel = UILabel()
     var debtLabel = UILabel()
     var dismissButton = UIButton()
     var mask = UIView()
     var creditChart = PieChart(frame: .zero)
     var debtChart = PieChart(frame: .zero)
+    var noDataChartsView = NoDataChartsView(frame: .zero)
+    var noDataViewBottom: NSLayoutConstraint?
     
     var group: GroupData?
     var creditMember: [MemberExpense] = []
     var debtMember: [MemberExpense] = []
     var member = [UserData]()
-    var noDataChartsView = NoDataChartsView()
-   
-// MARK: - Lifecycle
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.hexStringToUIColor(hex: "F8F1F1")
@@ -41,7 +43,7 @@ class ChartViewController: UIViewController {
         detectData()
     }
     
-// MARK: - Method
+    // MARK: - Method
     func getMemberData() {
         let memberExpense = group?.memberExpense
         if let memberData = group?.memberData {
@@ -58,7 +60,7 @@ class ChartViewController: UIViewController {
         for index in 0..<creditMember.count {
             creditUser += member.filter { $0.userId == creditMember[index].userId}
         }
-
+        
         for member in 0..<creditMember.count {
             creditChart.pieChartDataEntries.append(
                 PieChartDataEntry(value: creditMember[member].allExpense,
@@ -75,7 +77,7 @@ class ChartViewController: UIViewController {
         for index in 0..<debtMember.count {
             debtUser += member.filter { $0.userId == debtMember[index].userId}
         }
-
+        
         for member in 0..<debtMember.count {
             debtChart.pieChartDataEntries.append(
                 PieChartDataEntry(value: abs(debtMember[member].allExpense),
@@ -104,29 +106,42 @@ class ChartViewController: UIViewController {
     }
     
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
-        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.addSubview(mask)
+        mask.backgroundColor = .maskBackgroundColor
+        view.stickSubView(mask)
         
-        noDataChartsView = NoDataChartsView(
-            frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 200))
-        noDataChartsView.backgroundColor = .darkBlueColor
-       
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.noDataChartsView.frame = CGRect(x: 0, y: UIScreen.height/2 - 100, width: UIScreen.width, height: 200)
+        setNoDataView()
+        noDataViewBottom?.constant = -200
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn,
+                       animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
-        view.addSubview(noDataChartsView)
-
+        
         noDataChartsView.confirmButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
     }
     
-    @objc func pressDismissButton() {
-        let subviewCount = self.view.subviews.count
+    private func setNoDataView() {
+        noDataChartsView.removeFromSuperview()
+        view.addSubview(noDataChartsView)
+        noDataChartsView.translatesAutoresizingMaskIntoConstraints = false
+        noDataChartsView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        noDataChartsView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        noDataChartsView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        noDataViewBottom = noDataChartsView.topAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+        noDataViewBottom?.isActive = true
+        noDataChartsView.backgroundColor = .darkBlueColor
         
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(
-                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height
-            )}, completion: nil)
+        view.layoutIfNeeded()
+    }
+    
+    @objc func pressDismissButton() {
+        noDataViewBottom?.constant = 0
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn,
+                       animations: { [weak self] in
+            self?.view.layoutIfNeeded()
+        }, completion: nil)
         mask.removeFromSuperview()
         self.dismiss(animated: true, completion: nil)
     }

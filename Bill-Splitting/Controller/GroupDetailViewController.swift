@@ -8,8 +8,8 @@
 import UIKit
 
 class GroupDetailViewController: BaseViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     var tableView = UITableView()
     var leaveGroupButton = UIButton()
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
@@ -18,7 +18,7 @@ class GroupDetailViewController: BaseViewController {
     var personalExpense: Double?
     var memberExpense: Double = 0
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -28,8 +28,8 @@ class GroupDetailViewController: BaseViewController {
         detectBlockListUser()
         getMembersExpense()
     }
-
-// MARK: - Method
+    
+    // MARK: - Method
     @objc func detectUserExpense() {
         if personalExpense == 0 && group?.creator != currentUserId {
             leaveGroupAlert()
@@ -122,8 +122,8 @@ class GroupDetailViewController: BaseViewController {
     
     func leaveGroup() {
         guard let groupId = group?.groupId else { return }
-        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
-            if LeaveGroup.shared.isLeaveGroupSuccess == true {
+        LeaveGroupManager.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
+            if LeaveGroupManager.shared.isLeaveGroupSuccess == true {
                 self?.showSuccess(text: "成功退出群組")
             } else {
                 self?.showSuccess(text: ErrorType.generalError.errorMessage)
@@ -139,7 +139,7 @@ class GroupDetailViewController: BaseViewController {
         let blockList = UserManager.shared.currentUser?.blackList
         guard let blockList = blockList else { return }
         let newUserData = UserManager.renameBlockedUser(blockList: blockList,
-                                      userData: userData)
+                                                        userData: userData)
         userData = newUserData
     }
     
@@ -147,12 +147,12 @@ class GroupDetailViewController: BaseViewController {
         if group?.creator == currentUserId {
             // MARK: - Add ProgressHUD when refactor, need to check situation
             GroupManager.shared.updateGroupStatus(groupId: group?.groupId ?? "") { [weak self] result in
-                   switch result {
-                   case .success:
-                       self?.showSuccess(text: "成功封存群組")
-                   case .failure:
-                       self?.showFailure(text: "封存群組失敗，請稍後再試")
-                   }
+                switch result {
+                case .success:
+                    self?.showSuccess(text: "成功封存群組")
+                case .failure:
+                    self?.showFailure(text: "封存群組失敗，請稍後再試")
+                }
             }
             self.navigationController?.popToRootViewController(animated: true)
         }

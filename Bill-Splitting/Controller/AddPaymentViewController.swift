@@ -8,8 +8,8 @@
 import UIKit
 
 class AddPaymentViewController: UIViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     let addItemView = AddItemView(frame: .zero)
     let linkLabel = UILabel()
     let linkTextView = UITextView()
@@ -18,8 +18,8 @@ class AddPaymentViewController: UIViewController {
     var paymentName: String?
     var account: String?
     var link: String?
-
-// MARK: - Lifecycle
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -34,8 +34,8 @@ class AddPaymentViewController: UIViewController {
         ElementsStyle.styleTextField(addItemView.itemNameTextField)
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
-
-// MARK: - Method
+    
+    // MARK: - Method
     @objc func pressSaveButton() {
         paymentName = addItemView.itemNameTextField.text
         account = addItemView.priceTextField.text
@@ -71,12 +71,14 @@ class AddPaymentViewController: UIViewController {
         addItemView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         addItemView.itemName.text = "收款方式"
-
-        addItemView.itemNameTextField.attributedPlaceholder = NSAttributedString(string: "如：銀行(台新、國泰）、LinePay",
-                                                                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+        
+        addItemView.itemNameTextField.attributedPlaceholder = NSAttributedString(
+            string: "如：銀行(台新、國泰）、LinePay",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
         addItemView.priceLabel.text = "帳戶"
-        addItemView.priceTextField.attributedPlaceholder = NSAttributedString(string: "(XXX)00000000XXX000",
-                                                                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+        addItemView.priceTextField.attributedPlaceholder = NSAttributedString(
+            string: "(XXX)00000000XXX000",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
     
     func setLink() {

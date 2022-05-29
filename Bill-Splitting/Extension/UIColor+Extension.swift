@@ -33,35 +33,16 @@ extension UIColor {
     }
     
     static let greenWhite = UIColor.hexStringToUIColor(hex: "FAFDF6")
-//    ECEBF3
-//    FAFDF6
-//    BCD4DE
-//    "EFFFFB" (old)
     
     static let darkBlueColor = UIColor.hexStringToUIColor(hex: "031927")
     
     static let styleGreen = UIColor.hexStringToUIColor(hex: "16BAC5")
-//    A5CCD1
-//    05DFD7(old)
-//    25A18E
-//    9FFFCB
-//    9FFFF5
-//    6ABEA7
-//    16BAC5
-    
+
     static let styleRed = UIColor.hexStringToUIColor(hex: "C83E4D")
-//FD5D5D(old)
-//    FF6363
-//    C83E4D
+
     static let selectedColor = UIColor.hexStringToUIColor(hex: "5EB1BF")
-    // 3E5C76
-    // 5EB1BF
-    // 508AA8
-    // 6BA8A9
     
     static let styleOrange = UIColor.hexStringToUIColor(hex: "F4B860")
-//    F4B860
-//    FFAD60(old)
     
     static let styleBlue = UIColor.hexStringToUIColor(hex: "041C32")
     
@@ -69,7 +50,7 @@ extension UIColor {
     
     static let styleLightBlue = UIColor.hexStringToUIColor(hex: "61A4BC")
     
-    static let maskBackground = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+    static let maskBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
     
-    static let viewDarkBackground = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+    static let viewDarkBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
 }

@@ -8,8 +8,8 @@
 import UIKit
 
 class PaymentViewController: UIViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     let addPaymentButton = UIButton()
     var noDataView = NoDataView(frame: .zero)
     let tableView = UITableView()
@@ -18,7 +18,7 @@ class PaymentViewController: UIViewController {
     var userPayment: [Payment] = []
     var specificPayment: Payment? = Payment(paymentName: "", paymentAccount: "", paymentLink: "")
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -43,12 +43,12 @@ class PaymentViewController: UIViewController {
         addPaymentButton.layer.cornerRadius = 0.5 * addPaymentButton.bounds.size.width
         addPaymentButton.clipsToBounds = true
     }
-
     
-// MARK: - Method
+    // MARK: - Method
     @objc func addPayment() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
-        let addPaymentViewController = storyBoard.instantiateViewController(withIdentifier: String(describing: AddPaymentViewController.self))
+        let addPaymentViewController = storyBoard.instantiateViewController(
+            withIdentifier: AddPaymentViewController.identifier)
         self.present(addPaymentViewController, animated: true, completion: nil)
     }
     
@@ -101,16 +101,16 @@ class PaymentViewController: UIViewController {
             paymentName: self.specificPayment?.paymentName,
             account: self.specificPayment?.paymentAccount,
             link: self.specificPayment?.paymentLink) { [weak self] result in
-            switch result {
-            case .success:
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showSuccess(text: "刪除成功")
-
-            case .failure:
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: "刪除失敗，請稍後再試")
+                switch result {
+                case .success:
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showSuccess(text: "刪除成功")
+                    
+                case .failure:
+                    ProgressHUD.shared.view = self?.view ?? UIView()
+                    ProgressHUD.showFailure(text: "刪除失敗，請稍後再試")
+                }
             }
-        }
     }
 }
 
@@ -130,7 +130,7 @@ extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
         paymentCell.createPaymentCell(payment: userPayment[indexPath.row].paymentName ?? "",
                                       accountName: userPayment[indexPath.row].paymentAccount ?? "",
                                       link: userPayment[indexPath.row].paymentLink ?? "")
-
+        
         return paymentCell
     }
     
@@ -140,12 +140,13 @@ extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
     -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
-            self?.specificPayment?.paymentName = self?.userPayment[indexPath.row].paymentName
-            self?.specificPayment?.paymentAccount = self?.userPayment[indexPath.row].paymentAccount
-            self?.specificPayment?.paymentLink = self?.userPayment[indexPath.row].paymentLink
-            self?.alertDeleteItem()
-        }
+        let deleteAction = UIContextualAction(
+            style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
+                self?.specificPayment?.paymentName = self?.userPayment[indexPath.row].paymentName
+                self?.specificPayment?.paymentAccount = self?.userPayment[indexPath.row].paymentAccount
+                self?.specificPayment?.paymentLink = self?.userPayment[indexPath.row].paymentLink
+                self?.alertDeleteItem()
+            }
         deleteAction.image = UIImage(systemName: "trash")
         deleteAction.backgroundColor = .systemRed
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
@@ -155,7 +156,8 @@ extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
     func setAddButton() {
         view.addSubview(addPaymentButton)
         addPaymentButton.translatesAutoresizingMaskIntoConstraints = false
-        addPaymentButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        addPaymentButton.bottomAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         addPaymentButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         addPaymentButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
         addPaymentButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
@@ -176,9 +178,10 @@ extension PaymentViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.backgroundColor = .clear
         
-        tableView.register(UINib(nibName: String(describing: PaymentTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
+        tableView.register(UINib(
+            nibName: String(describing: PaymentTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: PaymentTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
     }
-    
 }

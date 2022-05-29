@@ -37,26 +37,26 @@ class GroupManager {
             .whereField("member", arrayContains: userId)
             .whereField("status", isEqualTo: status)
             .order(by: "createdTime", descending: true).getDocuments { (querySnapshot, error) in
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                
-                var groups = [GroupData]()
-                
-                for document in querySnapshot!.documents {
+                if let error = error {
+                    completion(.failure(error))
+                } else {
                     
-                    do {
-                        if let group = try document.data(as: GroupData.self, decoder: Firestore.Decoder()) {
-                            groups.append(group)
-                        }
-                    } catch {
+                    var groups = [GroupData]()
+                    
+                    for document in querySnapshot!.documents {
                         
-                        completion(.failure(error))
+                        do {
+                            if let group = try document.data(as: GroupData.self, decoder: Firestore.Decoder()) {
+                                groups.append(group)
+                            }
+                        } catch {
+                            
+                            completion(.failure(error))
+                        }
                     }
+                    completion(.success(groups))
                 }
-                completion(.success(groups))
             }
-        }
     }
     
     func fetchGroupsRealTime(userId: String, status: Int, completion: @escaping (Result<[GroupData], Error>) -> Void) {
@@ -65,26 +65,26 @@ class GroupManager {
             .whereField("status", isEqualTo: status)
             .order(by: "createdTime", descending: true)
             .addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                
-                var groups = [GroupData]()
-                
-                for document in querySnapshot!.documents {
+                if let error = error {
+                    completion(.failure(error))
+                } else {
                     
-                    do {
-                        if let group = try document.data(as: GroupData.self, decoder: Firestore.Decoder()) {
-                            groups.append(group)
-                        }
-                    } catch {
+                    var groups = [GroupData]()
+                    
+                    for document in querySnapshot!.documents {
                         
-                        completion(.failure(error))
+                        do {
+                            if let group = try document.data(as: GroupData.self, decoder: Firestore.Decoder()) {
+                                groups.append(group)
+                            }
+                        } catch {
+                            
+                            completion(.failure(error))
+                        }
                     }
+                    completion(.success(groups))
                 }
-                completion(.success(groups))
             }
-        }
     }
     
     func fetchPaidItemsExpense(itemId: String, userId: String, completion: @escaping ExpenseInfoResponse) {
@@ -106,26 +106,26 @@ class GroupManager {
             .collection(collection)
             .whereField("userId", isEqualTo: userId)
             .getDocuments { (querySnapshot, error) in
-            
-            if let error = error {
-                completion(.failure(error))
-            } else {
                 
-                var involvedItems: [ExpenseInfo] = []
-                
-                for document in querySnapshot!.documents {
+                if let error = error {
+                    completion(.failure(error))
+                } else {
                     
-                    do {
-                        if let item = try document.data(as: ExpenseInfo.self, decoder: Firestore.Decoder()) {
-                            involvedItems.append(item)
+                    var involvedItems: [ExpenseInfo] = []
+                    
+                    for document in querySnapshot!.documents {
+                        
+                        do {
+                            if let item = try document.data(as: ExpenseInfo.self, decoder: Firestore.Decoder()) {
+                                involvedItems.append(item)
+                            }
+                        } catch {
+                            completion(.failure(error))
                         }
-                    } catch {
-                        completion(.failure(error))
                     }
+                    completion(.success(involvedItems))
                 }
-                completion(.success(involvedItems))
             }
-        }
     }
     
     func addMemberExpenseData(userId: String, allExpense: Double,
@@ -135,7 +135,7 @@ class GroupManager {
         do {
             try database.collection(FirebaseCollection.group.rawValue)
                 .document(groupId)
-                .collection("memberExpense")
+                .collection(FirebaseCollection.memberExpense.rawValue)
                 .document(userId)
                 .setData(from: expenseData)
             completion(.success(()))
@@ -147,78 +147,79 @@ class GroupManager {
     func updateMemberExpense(
         userId: String, newExpense: Double, groupId: String,
         completion: @escaping (Result<(), Error>) -> Void) {
-        let memberExpenseRef = database.collection("group")
-                .document(groupId).collection("memberExpense").document(userId)
-        
-        memberExpenseRef.updateData([
-            "allExpense": FieldValue.increment(newExpense)
-        ]) { err in
-            if let err = err {
-                completion(.failure(err))
-            } else {
-                completion(.success(()))
+            let memberExpenseRef = database.collection(FirebaseCollection.group.rawValue)
+                .document(groupId).collection(FirebaseCollection.memberExpense.rawValue)
+                .document(userId)
+            
+            memberExpenseRef.updateData([
+                "allExpense": FieldValue.increment(newExpense)
+            ]) { err in
+                if let err = err {
+                    completion(.failure(err))
+                } else {
+                    completion(.success(()))
+                }
             }
         }
-    }
     
     func fetchMemberExpense(groupId: String, members: [String],
                             completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
         database.collection(FirebaseCollection.group.rawValue)
             .document(groupId)
-            .collection("memberExpense")
+            .collection(FirebaseCollection.memberExpense.rawValue)
             .whereField("userId", in: members)
             .addSnapshotListener { (querySnapshot, error) in
-            
-            if let error = error {
-                completion(.failure(error))
-            } else {
                 
-                var memberExpense: [MemberExpense] = []
-                
-                for document in querySnapshot!.documents {
+                if let error = error {
+                    completion(.failure(error))
+                } else {
                     
-                    do {
-                        if let expense = try document.data(as: MemberExpense.self, decoder: Firestore.Decoder()) {
-                            memberExpense.append(expense)
-                        }
-                    } catch {
+                    var memberExpense: [MemberExpense] = []
+                    
+                    for document in querySnapshot!.documents {
                         
-                        completion(.failure(error))
+                        do {
+                            if let expense = try document.data(as: MemberExpense.self, decoder: Firestore.Decoder()) {
+                                memberExpense.append(expense)
+                            }
+                        } catch {
+                            
+                            completion(.failure(error))
+                        }
                     }
+                    
+                    completion(.success(memberExpense))
                 }
-                
-                completion(.success(memberExpense))
             }
-        }
     }
-   
+    
     func fetchMemberExpenseForBlock(groupId: String, members: [String],
                                     completion: @escaping (Result<[MemberExpense], Error>) -> Void) {
         database.collection(FirebaseCollection.group.rawValue)
-            .document(groupId).collection("memberExpense")
+            .document(groupId).collection(FirebaseCollection.memberExpense.rawValue)
             .whereField("userId", in: members).getDocuments { (querySnapshot, error) in
-            
-            if let error = error {
-                completion(.failure(error))
-            } else {
                 
-                var memberExpense: [MemberExpense] = []
-                
-                for document in querySnapshot!.documents {
+                if let error = error {
+                    completion(.failure(error))
+                } else {
                     
-                    do {
-                        if let expense = try document.data(as: MemberExpense.self, decoder: Firestore.Decoder()) {
-                            memberExpense.append(expense)
-                        }
-                    } catch {
+                    var memberExpense: [MemberExpense] = []
+                    
+                    for document in querySnapshot!.documents {
                         
-                        completion(.failure(error))
+                        do {
+                            if let expense = try document.data(as: MemberExpense.self, decoder: Firestore.Decoder()) {
+                                memberExpense.append(expense)
+                            }
+                        } catch {
+                            
+                            completion(.failure(error))
+                        }
                     }
+                    
+                    completion(.success(memberExpense))
                 }
-                
-                completion(.success(memberExpense))
             }
-        }
     }
     
     func updateGroupStatus(groupId: String, comletion: @escaping (Result<(), Error>) -> Void) {
@@ -246,16 +247,14 @@ class GroupManager {
             
         ]) { err in
             if let err = err {
-                print("Error updating document: \(err)")
                 completion(.failure(err))
             } else {
-                print("Document successfully updated")
                 completion(.success(()))
             }
         }
         
         guard let memberName = memberName else { return }
-
+        
         for index in 0..<memberName.count {
             groupRef.updateData([
                 "member": FieldValue.arrayUnion([memberName[index]])
@@ -263,32 +262,32 @@ class GroupManager {
         }
     }
     
-    func removeGroupMember(groupId: String, userId: String, completion: @escaping(Result<String, Error>) -> Void) {
+    func removeGroupMember(groupId: String, userId: String, completion: @escaping(Result<(), Error>) -> Void) {
         let groupRef = database.collection(FirebaseCollection.group.rawValue).document(groupId)
-
+        
         groupRef.updateData([
-                "member": FieldValue.arrayRemove([userId])
-            ]) { err in
-                if let err = err {
-                    completion(.failure(err))
-                } else {
-                    completion(.success("success"))
-                }
-            }
-
-        }
-    
-    func removeGroupExpense(groupId: String, userId: String, completion: @escaping(Result<String, Error>) -> Void) {
-        database.collection(FirebaseCollection.group.rawValue)
-            .document(groupId)
-            .collection("memberExpense")
-            .document(userId).delete { err in
+            "member": FieldValue.arrayRemove([userId])
+        ]) { err in
             if let err = err {
                 completion(.failure(err))
             } else {
-                completion(.success("success"))
+                completion(.success(()))
             }
         }
+        
+    }
+    
+    func removeGroupExpense(groupId: String, userId: String, completion: @escaping(Result<(), Error>) -> Void) {
+        database.collection(FirebaseCollection.group.rawValue)
+            .document(groupId)
+            .collection(FirebaseCollection.memberExpense.rawValue)
+            .document(userId).delete { err in
+                if let err = err {
+                    completion(.failure(err))
+                } else {
+                    completion(.success(()))
+                }
+            }
     }
     
     func addLeaveMember(groupId: String, userId: String, completion: @escaping (Result<(), Error>) -> Void) {
@@ -326,9 +325,9 @@ class GroupManager {
                 group.leave()
             }
         }
-       
+        
         guard let involvedExpense = item.involedInfo else { return }
-
+        
         for user in 0..<involvedExpense.count {
             group.enter()
             DispatchQueue.global().async {
@@ -349,5 +348,4 @@ class GroupManager {
             completion()
         }
     }
-    
 }

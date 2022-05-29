@@ -12,53 +12,56 @@ import FirebaseAuth
 class AccountManager {
     static var shared = AccountManager()
     var currentUser: CurrentUser {
-        let user = CurrentUser(currentUserId: Auth.auth().currentUser?.uid ?? "", currentUserEmail: Auth.auth().currentUser?.email ?? "")
+        let user = CurrentUser(
+            currentUserId: Auth.auth().currentUser?.uid ?? "",
+            currentUserEmail: Auth.auth().currentUser?.email ?? "")
         return user
     }
-//    var currentUser = CurrentUser(currentUserId: Auth.auth().currentUser?.uid ?? "", currentUserEmail: Auth.auth().currentUser?.email ?? "")
-//    var currentUser = CurrentUser(currentUserId: "", currentUserEmail: "")
     
-    func signUpWithFireBase(email: String, password: String, completion: @escaping (Result<(SignUpAuth), Error>) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            
-            if let error = error {
-                print("\(error.localizedDescription)")
-                completion(.failure(error))
-            }
-            
-            if let user = result?.user {
-                let userAuth = SignUpAuth(userId: user.uid, userEmail: user.email ?? "")
-                completion(.success(userAuth))
-            }
-        }
-    }
-    
-    func signInWithFirebase(email: String, password: String, completion: @escaping (Result<(String), Error>) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
-                completion(.failure(error))
-                print(error.localizedDescription)
-            }
-            
-            if let uid = result?.user.uid {
-                completion(.success("\(uid)"))
-            }
-        }
-    }
-    
-    func firebaseSignInWithApple(credential: AuthCredential, completion: @escaping (Result<(()), Error>) -> Void) {
-        Auth.auth().signIn(with: credential) { authResult, error in
-            if error != nil {
-                //                self?.errorHandleWithAppleSignIn()
+    func signUpWithFireBase(
+        email: String, password: String,
+        completion: @escaping (Result<(SignUpAuth), Error>) -> Void) {
+            Auth.auth().createUser(withEmail: email, password: password) { result, error in
+                
                 if let error = error {
+                    print("\(error.localizedDescription)")
                     completion(.failure(error))
                 }
-            } else {
-                //                self?.getFirebaseUserInfo()
-                completion(.success(()))
+                
+                if let user = result?.user {
+                    let userAuth = SignUpAuth(userId: user.uid, userEmail: user.email ?? "")
+                    completion(.success(userAuth))
+                }
             }
         }
-    }
+    
+    func signInWithFirebase(
+        email: String, password: String,
+        completion: @escaping (Result<(String), Error>) -> Void) {
+            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                if let error = error {
+                    completion(.failure(error))
+                    print(error.localizedDescription)
+                }
+                
+                if let uid = result?.user.uid {
+                    completion(.success("\(uid)"))
+                }
+            }
+        }
+    
+    func firebaseSignInWithApple(
+        credential: AuthCredential, completion: @escaping (Result<(()), Error>) -> Void) {
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if error != nil {
+                    if let error = error {
+                        completion(.failure(error))
+                    }
+                } else {
+                    completion(.success(()))
+                }
+            }
+        }
     
     func deleteAccount(completion: @escaping (Result<(), Error>) -> Void) {
         let user = Auth.auth().currentUser
@@ -67,20 +70,10 @@ class AccountManager {
             if let error = error {
                 print(error.localizedDescription)
                 completion(.failure(error))
-              } else {
-                  completion(.success(()))
-              }
+            } else {
+                completion(.success(()))
+            }
         })
-    }
-    
-    func getCurrentUserInfo() {
-        let currentUser = Auth.auth().currentUser
-        if let user = currentUser {
-            let uid = user.uid
-            let email = user.email
-//            self.currentUser.currentUserId = uid
-//            self.currentUser.currentUserEmail = email ?? ""
-        }
     }
     
     func logOutAccount(completion: @escaping (Result<(), Error>) -> Void) {
@@ -93,7 +86,6 @@ class AccountManager {
             }
         }
     }
-    
 }
 
 extension AuthErrorCode {

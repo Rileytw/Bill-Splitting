@@ -9,7 +9,7 @@ import UIKit
 
 class InviteFriendViewController: UIViewController {
     
-// MARK: - Property
+    // MARK: - Property
     let nameLabel = UILabel()
     let friendTextField = UITextField()
     let searchButton = UIButton()
@@ -21,7 +21,7 @@ class InviteFriendViewController: UIViewController {
     var friendList: [Friend]?
     var searchId: String?
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -37,9 +37,8 @@ class InviteFriendViewController: UIViewController {
         friendNameLabel.isHidden = true
         sendButton.isHidden = true
     }
-
-// MARK: - Method
-  
+    
+    // MARK: - Method
     @objc func pressScanQRCode() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
         guard let scanQRCodeViewController = storyBoard.instantiateViewController(
@@ -58,7 +57,7 @@ class InviteFriendViewController: UIViewController {
         } else {
             let alertController = UIAlertController(title: "請輸入好友 Email", message: "尚未輸入 Email", preferredStyle: .alert)
             let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
-
+            
             alertController.addAction(cancelAction)
             present(alertController, animated: true, completion: nil)
         }
@@ -88,7 +87,7 @@ class InviteFriendViewController: UIViewController {
     
     func detectFriendStatus() {
         let group = DispatchGroup()
-        var nameText: String?
+        var searchResult: String?
         var isFriend: Bool = false
         var isInvitationSend: Bool = false
         var isInvitationReceive: Bool = false
@@ -118,17 +117,17 @@ class InviteFriendViewController: UIViewController {
             
             FriendManager.shared.fetchReceiverInvitation(
                 userId: self.currentUserId, friendId: self.friendData?.userId ?? "") { result in
-                switch result {
-                case .success(let invitaion):
-                    if invitaion != nil {
-                        isInvitationReceive = true
+                    switch result {
+                    case .success(let invitaion):
+                        if invitaion != nil {
+                            isInvitationReceive = true
+                        }
+                        isFetchDataSuccess = true
+                    case .failure:
+                        isFetchDataSuccess = false
                     }
-                    isFetchDataSuccess = true
-                case .failure:
-                    isFetchDataSuccess = false
+                    group.leave()
                 }
-                group.leave()
-            }
             
         }
         // MARK: - Detect invitation
@@ -137,17 +136,17 @@ class InviteFriendViewController: UIViewController {
             
             FriendManager.shared.fetchSenderInvitation(
                 userId: self.currentUserId, friendId: self.friendData?.userId ?? "") { result in
-                switch result {
-                case .success(let invitaion):
-                    if invitaion != nil {
-                        isInvitationSend = true
+                    switch result {
+                    case .success(let invitaion):
+                        if invitaion != nil {
+                            isInvitationSend = true
+                        }
+                        isFetchDataSuccess = true
+                    case .failure:
+                        isFetchDataSuccess = false
                     }
-                    isFetchDataSuccess = true
-                case .failure:
-                    isFetchDataSuccess = false
+                    group.leave()
                 }
-                group.leave()
-            }
         }
         
         // MARK: - Detect blockUser
@@ -173,22 +172,26 @@ class InviteFriendViewController: UIViewController {
             switch isFetchDataSuccess {
             case true:
                 if isFriend == true {
-                    nameText = self?.showSearchResult(status: FriendStatus.isFriend.searchResult, buttonHidden: true)
+                    searchResult = self?.showSearchResult(
+                        status: FriendStatus.isFriend.searchResult, buttonHidden: true)
                 } else if isInvitationReceive == true {
-                    nameText = self?.showSearchResult(
+                    searchResult = self?.showSearchResult(
                         status: FriendStatus.receivedInvitaion.searchResult, buttonHidden: true)
                 } else if isInvitationSend == true {
-                    nameText = self?.showSearchResult(
+                    searchResult = self?.showSearchResult(
                         status: FriendStatus.sentInvitaion.searchResult, buttonHidden: true)
                 } else if isBlockUser == true {
-                    nameText = self?.showSearchResult(status: FriendStatus.block.searchResult, buttonHidden: true)
+                    searchResult = self?.showSearchResult(
+                        status: FriendStatus.block.searchResult, buttonHidden: true)
                 } else if self?.friendData == nil {
-                    nameText = self?.showSearchResult(status: FriendStatus.emptyData.searchResult, buttonHidden: true)
+                    searchResult = self?.showSearchResult(
+                        status: FriendStatus.emptyData.searchResult, buttonHidden: true)
                 } else {
-                    nameText = self?.showSearchResult(status: self?.friendData?.userName ?? "", buttonHidden: false)
+                    searchResult = self?.showSearchResult(
+                        status: self?.friendData?.userName ?? "", buttonHidden: false)
                 }
                 
-                self?.friendNameLabel.text = nameText
+                self?.friendNameLabel.text = searchResult
                 self?.friendNameLabel.isHidden = false
             case false:
                 ProgressHUD.shared.view = self?.view ?? UIView()
@@ -202,7 +205,7 @@ class InviteFriendViewController: UIViewController {
         let nameText = status
         return nameText
     }
-
+    
     @objc func pressSendButton() {
         FriendManager.shared.updateFriendInvitation(senderId: currentUserId,
                                                     receiverId: self.friendData?.userId ?? "") { [weak self] in
@@ -351,7 +354,7 @@ extension InviteFriendViewController {
         ElementsStyle.styleSpecificButton(scanQRCode)
         scanQRCode.addTarget(self, action: #selector(pressScanQRCode), for: .touchUpInside)
     }
- 
+    
     enum FriendStatus {
         case notFriend
         case isFriend

@@ -9,7 +9,7 @@ import UIKit
 
 class FriendInvitationViewController: UIViewController {
     
-// MARK: - Property
+    // MARK: - Property
     let tableView = UITableView()
     var noDataView = NoDataView(frame: .zero)
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
@@ -18,7 +18,7 @@ class FriendInvitationViewController: UIViewController {
     var invitationUsers = [UserData]()
     var invitationId: [String] = []
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -36,8 +36,8 @@ class FriendInvitationViewController: UIViewController {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
     }
-
-// MARK: - Method
+    
+    // MARK: - Method
     func getSenderData(completion: @escaping ([String]) -> Void) {
         FriendManager.shared.fetchFriendInvitation(userId: currentUserId) { [weak self] result in
             switch result {
@@ -87,7 +87,9 @@ class FriendInvitationViewController: UIViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.backgroundColor = .clear
         
-        tableView.register(UINib(nibName: String(describing: InvitationTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: InvitationTableViewCell.self))
+        tableView.register(UINib(
+            nibName: String(describing: InvitationTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: InvitationTableViewCell.self))
         tableView.dataSource = self
         tableView.delegate = self
     }
@@ -151,6 +153,6 @@ extension FriendInvitationViewController: TableViewCellDelegate {
         
         self.invitationUsers.remove(at: indexPath.row)
         self.tableView.deleteRows(at: [IndexPath(row: indexPath.row, section: indexPath.section)], with: .fade)
-
+        
     }
 }

@@ -9,19 +9,18 @@ import UIKit
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-
 class ReportManager {
     static var shared = ReportManager()
-    lazy var db = Firestore.firestore()
+    lazy var database = Firestore.firestore()
     
     func updateReport(report: Report, completion: @escaping (Result<(), Error>) -> Void) {
-        let reportRef = db.collection(FirebaseCollection.reports.rawValue).document()
+        let reportRef = database.collection(FirebaseCollection.reports.rawValue).document()
         let report = report
         do {
-            try db.collection(FirebaseCollection.reports.rawValue).document("\(reportRef.documentID)").setData(from: report)
+            try database.collection(FirebaseCollection.reports.rawValue)
+                .document("\(reportRef.documentID)").setData(from: report)
             completion(.success(()))
         } catch {
-            print(error)
             completion(.failure(error))
         }
     }

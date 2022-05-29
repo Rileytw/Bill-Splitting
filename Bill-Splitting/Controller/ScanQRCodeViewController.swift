@@ -10,14 +10,14 @@ import AVFoundation
 
 class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
+    // MARK: - Property
     var captureSession = AVCaptureSession()
     var previewLayer = AVCaptureVideoPreviewLayer()
     var qrCodeFrameView = UIView()
     typealias QRCodeData = (String) -> Void
     var qrCodeContent: QRCodeData?
-    let width = UIScreen.main.bounds.width
-    let height = UIScreen.main.bounds.height
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -35,27 +35,25 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
         captureSession.stopRunning()
     }
     
+    // MARK: - Method
     func scanQRCode() {
-        
         guard let captureDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
-            print("Failed to get the camera device")
             return
         }
-
+        
         do {
- 
+            
             let input = try AVCaptureDeviceInput(device: captureDevice)
             captureSession.addInput(input)
             let captureMetadataOutput = AVCaptureMetadataOutput()
             captureSession.addOutput(captureMetadataOutput)
-
+            
             captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
             captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
             
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
             previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
             previewLayer.frame = view.layer.bounds
-//            previewLayer.frame = CGRect(x: 20, y: width/2 - 40, width: width - 40, height: width - 40)
             view.layer.addSublayer(previewLayer)
             captureSession.startRunning()
             
@@ -67,15 +65,17 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
         }
     }
     
-    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+    func metadataOutput(_ output: AVCaptureMetadataOutput,
+                        didOutput metadataObjects: [AVMetadataObject],
+                        from connection: AVCaptureConnection) {
         if metadataObjects.count == 0 {
             qrCodeFrameView.frame = .zero
             return
         }
-
+        
         let metadataObj = metadataObjects[0] as? AVMetadataMachineReadableCodeObject
         guard let metadataObj = metadataObj else { return }
-
+        
         if metadataObj.type == AVMetadataObject.ObjectType.qr {
             if let barCodeObject = previewLayer.transformedMetadataObject(for: metadataObj) {
                 qrCodeFrameView.frame = barCodeObject.bounds
@@ -86,10 +86,9 @@ class ScanQRCodeViewController: UIViewController, AVCaptureMetadataOutputObjects
             }
             
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-
+            
             if metadataObj.stringValue != nil {
                 qrCodeContent?(metadataObj.stringValue ?? "")
-//                print("\(qrCodeContent)")
                 self.dismiss(animated: true, completion: nil)
             }
         }

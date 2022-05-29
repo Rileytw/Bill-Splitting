@@ -17,7 +17,7 @@ class ImageManager {
         let storageRef = Storage.storage().reference().child("ItemImages").child("\(fileName).png")
         
         if let uploadData = image?.pngData() {
-            storageRef.putData(uploadData, metadata: nil) { (data, error) in
+            storageRef.putData(uploadData, metadata: nil) { (_, error) in
                 if error != nil {
                     print("Error: \(error!.localizedDescription)")
                     return
@@ -38,17 +38,13 @@ class ImageManager {
         let storage = Storage.storage()
         let url = url
         let storageRef = storage.reference(forURL: url)
-
-        //Removes image from storage
+        
         storageRef.delete { error in
             if let error = error {
-                print(error.localizedDescription)
                 completion(.failure(error))
             } else {
-                // File deleted successfully
                 completion(.success(()))
             }
         }
     }
-    
 }

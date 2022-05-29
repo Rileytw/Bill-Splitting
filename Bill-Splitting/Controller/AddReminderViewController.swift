@@ -8,8 +8,8 @@
 import UIKit
 
 class AddReminderViewController: UIViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     let groupLabel = UILabel()
     let groupPicker = BasePickerViewInTextField(frame: .zero)
     let userPicker = BasePickerViewInTextField(frame: .zero)
@@ -33,7 +33,7 @@ class AddReminderViewController: UIViewController {
     typealias ReminderInfo = (String) -> Void
     var reminderInfo: ReminderInfo?
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -51,8 +51,8 @@ class AddReminderViewController: UIViewController {
         setCompleteButton()
         setDismissButton()
     }
-
-// MARK: - Method
+    
+    // MARK: - Method
     func getGroupData() {
         GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
             switch result {
@@ -207,7 +207,7 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
                 reminderData.groupId = groups[row].groupId
                 return groupPicker.textField.text = groupPickerData[row]
             } else {
-               pickGroupAlert(title: "目前沒有群組", message: "請先建立群組，才能建立提醒喔！")
+                pickGroupAlert(title: "目前沒有群組", message: "請先建立群組，才能建立提醒喔！")
             }
             
         } else {
@@ -215,7 +215,7 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
                 reminderData.memberId = member[row].userId
                 return userPicker.textField.text = member[row].userName
             } else {
-               pickGroupAlert(title: "請先選擇群組", message: "選擇群組後，才能選擇提醒對象喔！")
+                pickGroupAlert(title: "請先選擇群組", message: "選擇群組後，才能選擇提醒對象喔！")
             }
         }
     }
@@ -223,7 +223,7 @@ extension AddReminderViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     func pickGroupAlert(title: String, message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
         alertController.addAction(defaultAction)
         
         present(alertController, animated: true, completion: nil)
@@ -320,7 +320,7 @@ extension AddReminderViewController {
     func setDatePicker() {
         view.addSubview(remindTimeDatePicker)
         setDatePickerConstraint()
-//        remindTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
+        //        remindTimeDatePicker.datePickerMode = UIDatePicker.Mode.date
         remindTimeDatePicker.locale = Locale(identifier: "zh_Hant_TW")
         remindTimeDatePicker.contentHorizontalAlignment = .right
         remindTimeDatePicker.overrideUserInterfaceStyle = .dark

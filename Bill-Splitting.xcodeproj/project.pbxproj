@@ -74,7 +74,7 @@
 		3576B4282826B4BF00CECE3F /* NoDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B4272826B4BF00CECE3F /* NoDataView.swift */; };
 		3576B42A2827C1D600CECE3F /* NoDataChartsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3576B4292827C1D600CECE3F /* NoDataChartsView.swift */; };
 		357851BC283CA93D0033AD3D /* TableViewHightlightAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357851BB283CA93D0033AD3D /* TableViewHightlightAnimation.swift */; };
-		357851BE283CCC2B0033AD3D /* DeleteItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357851BD283CCC2B0033AD3D /* DeleteItem.swift */; };
+		357851BE283CCC2B0033AD3D /* DeleteItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357851BD283CCC2B0033AD3D /* DeleteItemManager.swift */; };
 		3593E1232811884900F3A31C /* ReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E1222811884900F3A31C /* ReminderManager.swift */; };
 		3593E125281188D100F3A31C /* ReminderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E124281188D100F3A31C /* ReminderObject.swift */; };
 		3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */; };
@@ -86,8 +86,8 @@
 		3593E1332812E34100F3A31C /* ItemMemberTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */; };
 		35CC139B2830198B00432CAB /* ItemImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC139A2830198B00432CAB /* ItemImageViewController.swift */; };
 		35CC139D28334C9E00432CAB /* UIScreen+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC139C28334C9E00432CAB /* UIScreen+Extension.swift */; };
-		35CC139F2834FC4D00432CAB /* LeaveGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC139E2834FC4C00432CAB /* LeaveGroup.swift */; };
-		35CC13A12835344E00432CAB /* AddItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A02835344E00432CAB /* AddItem.swift */; };
+		35CC139F2834FC4D00432CAB /* LeaveGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC139E2834FC4C00432CAB /* LeaveGroupManager.swift */; };
+		35CC13A12835344E00432CAB /* AddItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A02835344E00432CAB /* AddItemManager.swift */; };
 		35CC13A32835D88500432CAB /* UserMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A22835D88500432CAB /* UserMessageType.swift */; };
 		35CC13A528360E8100432CAB /* Double+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A428360E8100432CAB /* Double+Extension.swift */; };
 		35CC13A72836186C00432CAB /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CC13A62836186C00432CAB /* Date+Extension.swift */; };
@@ -98,6 +98,7 @@
 		35D0EADF281FF49F001C9324 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D0EADE281FF49F001C9324 /* BaseViewController.swift */; };
 		35D0EAE1282039AC001C9324 /* accountLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 35D0EAE0282039AC001C9324 /* accountLoading.json */; };
 		35E81A32283F4BDC0080993A /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35E81A31283F4BDC0080993A /* UIViewController+Extension.swift */; };
+		35E81A34284200CA0080993A /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35E81A33284200CA0080993A /* UIView+Extension.swift */; };
 		35FF63CD2805175E00508EAF /* InviteFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */; };
 		35FF63CF28055B1500508EAF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63CE28055B1500508EAF /* ProfileViewController.swift */; };
 		35FF63D228055BA000508EAF /* FriendListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63D028055BA000508EAF /* FriendListTableViewCell.swift */; };
@@ -212,7 +213,7 @@
 		3576B4272826B4BF00CECE3F /* NoDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDataView.swift; sourceTree = "<group>"; };
 		3576B4292827C1D600CECE3F /* NoDataChartsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDataChartsView.swift; sourceTree = "<group>"; };
 		357851BB283CA93D0033AD3D /* TableViewHightlightAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewHightlightAnimation.swift; sourceTree = "<group>"; };
-		357851BD283CCC2B0033AD3D /* DeleteItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteItem.swift; sourceTree = "<group>"; };
+		357851BD283CCC2B0033AD3D /* DeleteItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteItemManager.swift; sourceTree = "<group>"; };
 		3593E1222811884900F3A31C /* ReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderManager.swift; sourceTree = "<group>"; };
 		3593E124281188D100F3A31C /* ReminderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderObject.swift; sourceTree = "<group>"; };
 		3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderTableViewCell.swift; sourceTree = "<group>"; };
@@ -224,8 +225,8 @@
 		3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ItemMemberTableViewCell.xib; sourceTree = "<group>"; };
 		35CC139A2830198B00432CAB /* ItemImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemImageViewController.swift; sourceTree = "<group>"; };
 		35CC139C28334C9E00432CAB /* UIScreen+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extension.swift"; sourceTree = "<group>"; };
-		35CC139E2834FC4C00432CAB /* LeaveGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveGroup.swift; sourceTree = "<group>"; };
-		35CC13A02835344E00432CAB /* AddItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItem.swift; sourceTree = "<group>"; };
+		35CC139E2834FC4C00432CAB /* LeaveGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveGroupManager.swift; sourceTree = "<group>"; };
+		35CC13A02835344E00432CAB /* AddItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemManager.swift; sourceTree = "<group>"; };
 		35CC13A22835D88500432CAB /* UserMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMessageType.swift; sourceTree = "<group>"; };
 		35CC13A428360E8100432CAB /* Double+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extension.swift"; sourceTree = "<group>"; };
 		35CC13A62836186C00432CAB /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
@@ -237,6 +238,7 @@
 		35D0EADE281FF49F001C9324 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		35D0EAE0282039AC001C9324 /* accountLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = accountLoading.json; sourceTree = "<group>"; };
 		35E81A31283F4BDC0080993A /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
+		35E81A33284200CA0080993A /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendViewController.swift; sourceTree = "<group>"; };
 		35FF63CE28055B1500508EAF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		35FF63D028055BA000508EAF /* FriendListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListTableViewCell.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 				35E81A31283F4BDC0080993A /* UIViewController+Extension.swift */,
 				35568A2E2815A4E400646B57 /* UIColor+Extension.swift */,
 				35CC139C28334C9E00432CAB /* UIScreen+Extension.swift */,
+				35E81A33284200CA0080993A /* UIView+Extension.swift */,
 				35CC13A428360E8100432CAB /* Double+Extension.swift */,
 				35CC13A62836186C00432CAB /* Date+Extension.swift */,
 				35568A0F2813D0BA00646B57 /* Kingfisher.swift */,
@@ -477,9 +480,9 @@
 				3576B41F2823AB5800CECE3F /* ReportObject.swift */,
 				35395CF2282CFC23005BE8F2 /* NetworkStatus.swift */,
 				35CC13A22835D88500432CAB /* UserMessageType.swift */,
-				35CC139E2834FC4C00432CAB /* LeaveGroup.swift */,
-				35CC13A02835344E00432CAB /* AddItem.swift */,
-				357851BD283CCC2B0033AD3D /* DeleteItem.swift */,
+				35CC139E2834FC4C00432CAB /* LeaveGroupManager.swift */,
+				35CC13A02835344E00432CAB /* AddItemManager.swift */,
+				357851BD283CCC2B0033AD3D /* DeleteItemManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -754,6 +757,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				350A336F280445BF00201E40 /* AddGroupTableViewCell.swift in Sources */,
+				35E81A34284200CA0080993A /* UIView+Extension.swift in Sources */,
 				350A337B2805060B00201E40 /* FriendManager.swift in Sources */,
 				35568A2928157EBC00646B57 /* ButtonModel.swift in Sources */,
 				350A3379280469BB00201E40 /* UserObject.swift in Sources */,
@@ -766,7 +770,7 @@
 				35CC139D28334C9E00432CAB /* UIScreen+Extension.swift in Sources */,
 				35FF63D228055BA000508EAF /* FriendListTableViewCell.swift in Sources */,
 				35CC13A32835D88500432CAB /* UserMessageType.swift in Sources */,
-				35CC139F2834FC4D00432CAB /* LeaveGroup.swift in Sources */,
+				35CC139F2834FC4D00432CAB /* LeaveGroupManager.swift in Sources */,
 				35FF63F12807B22400508EAF /* AddItemViewController.swift in Sources */,
 				350A3375280464E500201E40 /* GroupObject.swift in Sources */,
 				35D0EADC281FC7BF001C9324 /* ProfileHeaderView.swift in Sources */,
@@ -788,7 +792,7 @@
 				35FF63EF2806B24D00508EAF /* GroupDetailView.swift in Sources */,
 				350A335C2803DD0100201E40 /* TabBarViewController.swift in Sources */,
 				35395CF3282CFC23005BE8F2 /* NetworkStatus.swift in Sources */,
-				35CC13A12835344E00432CAB /* AddItem.swift in Sources */,
+				35CC13A12835344E00432CAB /* AddItemManager.swift in Sources */,
 				3593E1322812E34100F3A31C /* ItemMemberTableViewCell.swift in Sources */,
 				3593E128281262AE00F3A31C /* ReminderTableViewCell.swift in Sources */,
 				35D0EADF281FF49F001C9324 /* BaseViewController.swift in Sources */,
@@ -807,7 +811,7 @@
 				355090E1280EB9360007C0CE /* PaymentViewController.swift in Sources */,
 				35CC13A528360E8100432CAB /* Double+Extension.swift in Sources */,
 				35FF63F628080A8A00508EAF /* AddItemTableViewCell.swift in Sources */,
-				357851BE283CCC2B0033AD3D /* DeleteItem.swift in Sources */,
+				357851BE283CCC2B0033AD3D /* DeleteItemManager.swift in Sources */,
 				350A33462800450000201E40 /* SceneDelegate.swift in Sources */,
 				35FF63D528055F6500508EAF /* FriendListViewController.swift in Sources */,
 				35FF6400280A619E00508EAF /* SettleUpTableViewCell.swift in Sources */,

@@ -8,8 +8,8 @@
 import UIKit
 
 class AddItemViewController: BaseViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     let addItemView = AddItemView(frame: .zero)
     let typePickerView = BasePickerViewInTextField(frame: .zero)
@@ -43,7 +43,7 @@ class AddItemViewController: BaseViewController {
     typealias EditItem = (String) -> Void
     var editingItem: EditItem?
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -65,8 +65,8 @@ class AddItemViewController: BaseViewController {
         ElementsStyle.styleTextField(addItemView.itemNameTextField)
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
-
-// MARK: - Method
+    
+    // MARK: - Method
     @objc func pressAddMore() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let addMoreInfoViewController = storyBoard.instantiateViewController(
@@ -178,7 +178,7 @@ class AddItemViewController: BaseViewController {
         }
     }
     
-    fileprivate func addNotifyInDatabase() {
+    private func addNotifyInDatabase() {
         ItemManager.shared.addNotify(grpupId: self.group?.groupId ?? "") { result in
             switch result {
             case .success:
@@ -191,7 +191,7 @@ class AddItemViewController: BaseViewController {
     
     func allItemInfoUpload() {
         var paidUserId: String?
-        if group?.type == GroupType.personal.typeInt {
+        if group?.type == GroupType.multipleUsers.typeInt {
             paidUserId = paidId
         } else {
             paidUserId = currentUserId
@@ -215,26 +215,26 @@ class AddItemViewController: BaseViewController {
               let paidPrice = paidPrice
         else { return }
         
-        AddItem.shared.addItem(groupId: groupId, itemId: itemId,
-                               paidUserId: paidUserId, paidPrice: paidPrice,
-                               involvedExpenseData: self.involvedExpenseData,
-                               involvedPrice: involvedPrice) { [weak self] in
-                self?.removeAnimation()
-                if AddItem.shared.isDataUploadSucces == true {
-                    self?.showSuccess(text: "新增成功")
-                    if self?.isItemExist == true {
-                        self?.editingItem?(self?.itemId ?? "")
-                    }
-                    self?.addNotifyInDatabase()
-                    
-                } else {
-                    self?.showFailure(text: ErrorType.generalError.errorMessage)
-                    
+        AddItemManager.shared.addItem(groupId: groupId, itemId: itemId,
+                                      paidUserId: paidUserId, paidPrice: paidPrice,
+                                      involvedExpenseData: self.involvedExpenseData,
+                                      involvedPrice: involvedPrice) { [weak self] in
+            self?.removeAnimation()
+            if AddItemManager.shared.isDataUploadSucces == true {
+                self?.showSuccess(text: "新增成功")
+                if self?.isItemExist == true {
+                    self?.editingItem?(self?.itemId ?? "")
                 }
-                self?.dismiss(animated: false, completion: nil)
+                self?.addNotifyInDatabase()
+                
+            } else {
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
+                
             }
+            self?.dismiss(animated: false, completion: nil)
+        }
     }
-
+    
     func deleteItem() {
         reCountPersonalExpense()
         ItemManager.shared.deleteItem(itemId: itemData?.itemId ?? "") { [weak self] result in
@@ -247,12 +247,12 @@ class AddItemViewController: BaseViewController {
             }
         }
     }
-
+    
     func reCountPersonalExpense() {
         guard let group = group,
               let item = itemData
         else { return }
-
+        
         GroupManager.shared.updatePersonalExpense(groupId: group.groupId, item: item) { [weak self] in
             if !GroupManager.shared.isExpenseUpdateSucces == true {
                 self?.showFailure(text: ErrorType.generalError.errorMessage)
@@ -261,7 +261,7 @@ class AddItemViewController: BaseViewController {
     }
     
     func networkConnectAlert() {
-        confirmAlert(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。")
+        confirmAlert(title: "網路未連線", message: "網路未連線，無法新增款項資料，請確認網路連線後再新增。")
     }
     
     func setTypeLabel() {
@@ -383,7 +383,11 @@ extension AddItemViewController: UITableViewDataSource, UITableViewDelegate {
             selectedIndexs.append(indexPath.row)
             involvedMemberName.append(group?.memberData?[indexPath.row].userName ?? "")
             
-            let involedExpense = ExpenseInfo(userId: group?.memberData?[indexPath.row].userId ?? "", price: 0)
+            //            let involedExpense = ExpenseInfo(userId: group?.memberData?[indexPath.row].userId ?? "", price: 0)
+            var involedExpense = ExpenseInfo()
+            involedExpense.userId = group?.memberData?[indexPath.row].userId ?? ""
+            involedExpense.price = 0
+            
             involvedExpenseData.append(involedExpense)
         }
         self.tableView.reloadData()

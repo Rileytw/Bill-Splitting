@@ -10,7 +10,7 @@ import SwiftUI
 
 class SpecificSettleIUpViewController: BaseViewController {
     
-// MARK: - Property
+    // MARK: - Property
     var nameLabel = UILabel()
     var price = UILabel()
     var account = UILabel()
@@ -25,7 +25,7 @@ class SpecificSettleIUpViewController: BaseViewController {
     var itemId: String?
     var userExpense: [MemberExpense] = []
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -45,7 +45,7 @@ class SpecificSettleIUpViewController: BaseViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
-// MARK: - Method
+    // MARK: - Method
     @objc func pressSettleUpButton() {
         if NetworkStatus.shared.isConnected == true {
             addItem()
@@ -83,11 +83,11 @@ class SpecificSettleIUpViewController: BaseViewController {
                     creditorId = memberId
                 }
                 
-                AddItem.shared.addSettleUpItem(groupId: groupId, itemId: itemId,
-                                               paidUserId: paidUserId ?? "", paidPrice: abs(expense),
-                                               involvedUserId: creditorId ?? "",
-                                               involvedPrice: abs(expense)) { [weak self] in
-                    if AddItem.shared.isDataUploadSucces {
+                AddItemManager.shared.addSettleUpItem(groupId: groupId, itemId: itemId,
+                                                      paidUserId: paidUserId ?? "", paidPrice: abs(expense),
+                                                      involvedUserId: creditorId ?? "",
+                                                      involvedPrice: abs(expense)) { [weak self] in
+                    if AddItemManager.shared.isDataUploadSucces {
                         self?.addItemNotification()
                     }
                 }
@@ -101,11 +101,11 @@ class SpecificSettleIUpViewController: BaseViewController {
                     creditorId = self.userData?.userId
                 }
                 
-                AddItem.shared.addSettleUpItem(groupId: groupId, itemId: itemId,
-                                               paidUserId: creditorId ?? "", paidPrice: abs(userExpense[0].allExpense),
-                                               involvedUserId: paidUserId ?? "",
-                                               involvedPrice: abs(userExpense[0].allExpense)) {[weak self] in
-                    if AddItem.shared.isDataUploadSucces {
+                AddItemManager.shared.addSettleUpItem(groupId: groupId, itemId: itemId,
+                                                      paidUserId: creditorId ?? "", paidPrice: abs(userExpense[0].allExpense),
+                                                      involvedUserId: paidUserId ?? "",
+                                                      involvedPrice: abs(userExpense[0].allExpense)) {[weak self] in
+                    if AddItemManager.shared.isDataUploadSucces {
                         self?.addItemNotification()
                     }
                 }
@@ -123,9 +123,9 @@ class SpecificSettleIUpViewController: BaseViewController {
             }
         }
     }
-        
+    
     func networkConnectAlert() {
-        confirmAlert(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再結清。")
+        confirmAlert(title: "網路未連線", message: "網路未連線，無法結清，請確認網路連線後再結清。")
     }
 }
 
@@ -146,7 +146,7 @@ extension SpecificSettleIUpViewController: UITableViewDataSource, UITableViewDel
         paymentCell.createPaymentCell(payment: userPayment?[indexPath.row].paymentName ?? "",
                                       accountName: userPayment?[indexPath.row].paymentAccount ?? "",
                                       link: userPayment?[indexPath.row].paymentLink ?? "")
-
+        
         return paymentCell
     }
 }
@@ -235,16 +235,20 @@ extension SpecificSettleIUpViewController {
         price.heightAnchor.constraint(equalToConstant: 40).isActive = true
         if memberExpense.allExpense >= 0 {
             if groupData?.creator == currentUserId {
-                price.text = SettleUpType.pay.settleUpPrice + Double.formatString(abs(memberExpense.allExpense)) + " 元"
+                price.text = SettleUpType.pay.settleUpPrice + Double.formatString(
+                    abs(memberExpense.allExpense)) + " 元"
             } else {
-                price.text = SettleUpType.credit.settleUpPrice + Double.formatString(abs(userExpense[0].allExpense)) + " 元"
+                price.text = SettleUpType.credit.settleUpPrice + Double.formatString(
+                    abs(userExpense[0].allExpense)) + " 元"
             }
-
+            
         } else {
             if groupData?.creator == currentUserId {
-                price.text = SettleUpType.credit.settleUpPrice + Double.formatString(abs(memberExpense.allExpense)) + " 元"
+                price.text = SettleUpType.credit.settleUpPrice + Double.formatString(
+                    abs(memberExpense.allExpense)) + " 元"
             } else {
-                price.text = SettleUpType.pay.settleUpPrice + Double.formatString(abs(userExpense[0].allExpense)) + " 元"
+                price.text = SettleUpType.pay.settleUpPrice + Double.formatString(
+                    abs(userExpense[0].allExpense)) + " 元"
             }
         }
         price.font = price.font.withSize(20)

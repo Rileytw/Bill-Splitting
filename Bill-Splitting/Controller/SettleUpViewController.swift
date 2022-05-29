@@ -8,8 +8,8 @@
 import UIKit
 
 class SettleUpViewController: UIViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     let tableView = UITableView()
     
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
@@ -18,10 +18,10 @@ class SettleUpViewController: UIViewController {
     var group: GroupData?
     var expense: Double?
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         navigationItem.title = "結算群組帳務"
         ElementsStyle.styleBackground(view)
         checkLeaveMember()
@@ -41,7 +41,7 @@ class SettleUpViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
-// MARK: - Method
+    // MARK: - Method
     func removeCreatorData() {
         if let memberExpense = group?.memberExpense {
             if group?.creator == currentUserId {
@@ -143,7 +143,7 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let specificSettleUpViewController = storyBoard.instantiateViewController(
-            withIdentifier: String(describing: SpecificSettleIUpViewController.self)
+            withIdentifier: SpecificSettleIUpViewController.identifier
         ) as? SpecificSettleIUpViewController else { return }
         
         let memberExpense = group?.memberExpense?[indexPath.row]
@@ -158,7 +158,7 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         specificSettleUpViewController.groupId = group?.groupId
         specificSettleUpViewController.groupData = group
         specificSettleUpViewController.userExpense = userExpense ?? []
-    
+        
         self.show(specificSettleUpViewController, sender: nil)
     }
     
@@ -177,31 +177,3 @@ extension SettleUpViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.backgroundColor = UIColor.clear
     }
 }
-
-//
-//if group?.creator == currentUserId {
-//    if let revealExpense = memberExpense?.allExpense {
-//        if (memberExpense?.allExpense ?? 0) > 0 {
-//            settleUpCell.price.text = " $ " + String(format: "%.2f", revealExpense)
-//            settleUpCell.payerName.text = currentUserName
-//            settleUpCell.creditorName.text = "\(memberData?[0].userName ?? "")"
-//
-//        } else {
-//            settleUpCell.price.text = " $ " + String(format: "%.2f", abs(revealExpense))
-//            settleUpCell.creditorName.text = currentUserName
-//            settleUpCell.payerName.text = "\(memberData?[0].userName ?? "")"
-//
-//        }
-//    }
-//} else {
-//    if expense < 0 {
-//        settleUpCell.payerName.text = currentUserName
-//        settleUpCell.creditorName.text = "\(creator?.userName ?? "")"
-//        settleUpCell.price.text = " $ " + String(format: "%.2f", abs(expense))
-//
-//    } else {
-//        settleUpCell.price.text = " $ " + String(format: "%.2f", expense)
-//        settleUpCell.creditorName.text = currentUserName
-//        settleUpCell.payerName.text = "\(creator?.userName ?? "")"
-//    }
-//}

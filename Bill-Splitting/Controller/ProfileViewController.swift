@@ -9,7 +9,7 @@ import UIKit
 
 class ProfileViewController: BaseViewController {
     
-// MARK: - Property
+    // MARK: - Property
     var profileView = UIView()
     var profileImage = UIImageView()
     let userName = UILabel()
@@ -17,6 +17,7 @@ class ProfileViewController: BaseViewController {
     let editButton = UIButton()
     var collectionView: UICollectionView!
     var editingView = EditingView()
+    var editingViewBottom: NSLayoutConstraint?
     var personalInfoList: [ProfileList] = [ProfileList.qrCode,
                                            ProfileList.payment,
                                            ProfileList.friendList,
@@ -27,7 +28,7 @@ class ProfileViewController: BaseViewController {
     let currentUserId = AccountManager.shared.currentUser.currentUserId
     var currentUser: UserData?
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -39,7 +40,7 @@ class ProfileViewController: BaseViewController {
         navigationItem.title = NavigationItemName.profile.name
     }
     
-// MARK: - Method
+    // MARK: - Method
     func getUserData() {
         UserManager.shared.fetchSignInUserData(userId: currentUserId) { [weak self] result in
             switch result {
@@ -67,8 +68,8 @@ class ProfileViewController: BaseViewController {
     
     func setAddGroupButton() {
         let editButton = UIBarButtonItem.init(title: "編輯",
-                                             style: UIBarButtonItem.Style.plain,
-                                             target: self, action: #selector(revealBlockView))
+                                              style: UIBarButtonItem.Style.plain,
+                                              target: self, action: #selector(revealBlockView))
         self.navigationItem.setRightBarButton(editButton, animated: true)
     }
     
@@ -103,7 +104,7 @@ class ProfileViewController: BaseViewController {
     func backToSignInPage() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.main, bundle: nil)
         let signInViewController = storyBoard.instantiateViewController(
-            withIdentifier: String(describing: SignInViewController.self))
+            withIdentifier: SignInViewController.identifier)
         view.window?.rootViewController = signInViewController
         view.window?.makeKeyAndVisible()
     }
@@ -127,15 +128,16 @@ class ProfileViewController: BaseViewController {
         // MARK: - Delete user's friendList
         DispatchQueue.global().async {
             UserManager.shared.deleteFriendCollection(
-                documentId: self.currentUserId, collection: "friend") { [weak self] result in
-                switch result {
-                case .success:
-                    isFriendsRemove = true
-                case .failure:
-                    self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
+                documentId: self.currentUserId,
+                collection: FirebaseCollection.friend.rawValue) { [weak self] result in
+                    switch result {
+                    case .success:
+                        isFriendsRemove = true
+                    case .failure:
+                        self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
+                    }
+                    group.leave()
                 }
-                group.leave()
-            }
         }
         // MARK: - Delete userData from friend's friendList
         group.enter()
@@ -145,18 +147,18 @@ class ProfileViewController: BaseViewController {
                 DispatchQueue.global().async {
                     UserManager.shared.deleteDropUserData(
                         friendId: friend.userId,
-                        collection: "friend",
+                        collection: FirebaseCollection.friend.rawValue,
                         userId: self.currentUserId) { [weak self] result in
-                        switch result {
-                        case .success:
-                            isUserRemove = true
-                            group.leave()
-                        case .failure:
-                            self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
-                            isUserRemove = false
-                            group.leave()
+                            switch result {
+                            case .success:
+                                isUserRemove = true
+                                group.leave()
+                            case .failure:
+                                self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
+                                isUserRemove = false
+                                group.leave()
+                            }
                         }
-                    }
                 }
             }
         }
@@ -167,19 +169,19 @@ class ProfileViewController: BaseViewController {
             }
         }
     }
-
+    
     func deleteUserData() {
         UserManager.shared.deleteUserData(
             userId: currentUserId, userName: currentUser?.userName ?? "") { [weak self] result in
-            switch result {
-            case .success:
-                self?.showSuccess(text: SuccessType.deleteSuccess.successMessage)
-                self?.deletAccount()
-            case .failure:
-                // MARK: - Add alert to tell user: Remove userdata failed
-                self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
+                switch result {
+                case .success:
+                    self?.showSuccess(text: SuccessType.deleteSuccess.successMessage)
+                    self?.deletAccount()
+                case .failure:
+                    // MARK: - Add alert to tell user: Remove userdata failed
+                    self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
+                }
             }
-        }
     }
     
     func deletAccount() {
@@ -309,8 +311,8 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-            return 24
-        }
+        return 24
+    }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
@@ -322,9 +324,9 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         referenceSizeForHeaderInSection section: Int) -> CGSize {
-            
-            return CGSize(width: UIScreen.width, height: 48.0)
-        }
+        
+        return CGSize(width: UIScreen.width, height: 48.0)
+    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: StoryboardCategory.profile, bundle: nil)
@@ -410,12 +412,14 @@ extension ProfileViewController {
         self.view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 0).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        collectionView.bottomAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         collectionView.backgroundColor = .clear
         
-        collectionView.register(UINib(nibName: String(describing: ProfileCollectionViewCell.self), bundle: nil), forCellWithReuseIdentifier: String(describing: ProfileCollectionViewCell.self))
+        collectionView.register(
+            UINib(nibName: String(describing: ProfileCollectionViewCell.self), bundle: nil), forCellWithReuseIdentifier: String(describing: ProfileCollectionViewCell.self))
         collectionView.register(ProfileHeaderView.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: ProfileHeaderView.identifier)
@@ -467,19 +471,34 @@ extension ProfileViewController {
 }
 
 extension ProfileViewController {
-    @objc func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
-        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.addSubview(mask)
-        
-        editingView = EditingView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
-        editingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+    private func setEditingView() {
+        editingView.removeFromSuperview()
+        view.addSubview(editingView)
+        editingView.translatesAutoresizingMaskIntoConstraints = false
+        editingView.backgroundColor = .viewDarkBackgroundColor
         editingView.buttonTitle = "完成"
         editingView.textField.text = currentUser?.userName ?? ""
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.editingView.frame = CGRect(x: 0, y: UIScreen.height - 400, width: UIScreen.width, height: 400)
+        editingView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        editingView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        editingView.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        editingViewBottom = editingView.topAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+        editingViewBottom?.isActive = true
+        view.layoutIfNeeded()
+    }
+    
+    @objc func revealBlockView() {
+        view.stickSubView(mask)
+        mask.backgroundColor = .maskBackgroundColor
+        
+        setEditingView()
+        
+        editingViewBottom?.constant = -300
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
-        view.addSubview(editingView)
+        
         editingView.completeButton.addTarget(self, action: #selector(checkUserNameEmpty), for: .touchUpInside)
         editingView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
         
@@ -501,10 +520,10 @@ extension ProfileViewController {
     }
     
     @objc func pressDismissButton() {
-        let subviewCount = self.view.subviews.count
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(
-                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
+        editingViewBottom?.constant = 0
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
         mask.removeFromSuperview()
         self.tabBarController?.tabBar.isHidden = false
@@ -557,4 +576,3 @@ extension ProfileViewController {
         }
     }
 }
-

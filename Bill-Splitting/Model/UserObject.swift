@@ -50,7 +50,6 @@ struct Invitation: Codable {
 struct CurrentUser {
     var currentUserId: String
     var currentUserEmail: String
-//    var currentUserName: String
 }
 
 struct FriendSearchModel {

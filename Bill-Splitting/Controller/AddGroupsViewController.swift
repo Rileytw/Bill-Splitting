@@ -8,36 +8,33 @@
 import UIKit
 
 class AddGroupsViewController: BaseViewController {
-// MARK: - Property
-    var currentUserId: String?
+    
+    // MARK: - Property
     var nameTextField = UITextField()
-    let descriptionTextView = UITextView()
+    var descriptionTextView = UITextView()
     var searchView = UIView()
     
-    let typeLabel = UILabel()
+    var typeLabel = UILabel()
     var typePickerView = BasePickerViewInTextField(frame: .zero)
     var pickerViewData = [GroupType.multipleUsers.typeName, GroupType.personal.typeName]
     var selectMemberLabel = UILabel()
+    var tableView = UITableView(frame: .zero, style: .plain)
+    var inviteFriendButton = UIButton()
+    var addGroupButton = UIButton()
     
+    var currentUserId: String?
+    var member: [String] = []
     var friendList: [Friend] = [] {
         didSet {
             tableView.reloadData()
         }
     }
-    
-    let tableView = UITableView(frame: .zero, style: .plain)
-    
-    let inviteFriendButton = UIButton()
-    let addGroupButton = UIButton()
-    
-    var member: [String] = []
-    
     var isGroupExist: Bool = false
     var group: GroupData?
     var filteredMembers: [FriendSearchModel] = []
     var friends: [FriendSearchModel] = []
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -68,7 +65,7 @@ class AddGroupsViewController: BaseViewController {
         ElementsStyle.styleTextField(nameTextField)
     }
     
-// MARK: - Method
+    // MARK: - Method
     func getCurrentUser() {
         currentUserId = UserManager.shared.currentUser?.userId ?? ""
     }
@@ -150,24 +147,22 @@ class AddGroupsViewController: BaseViewController {
             case .failure:
                 self?.showFailure(text: ErrorType.generalError.errorMessage)
             }
-            
         }
-//        updateMemberExpense(groupId)
     }
     
     private func updateMemberExpense(_ groupId: (String)) {
         member.forEach { member in
             GroupManager.shared.addMemberExpenseData(
                 userId: member, allExpense: 0, groupId: groupId) { [weak self] result in
-                switch result {
-                case .success:
-                    if member == self?.member.last {
-                        self?.showSuccess(text: "已新增群組")
+                    switch result {
+                    case .success:
+                        if member == self?.member.last {
+                            self?.showSuccess(text: "已新增群組")
+                        }
+                    case .failure:
+                        self?.showFailure(text: ErrorType.generalError.errorMessage)
                     }
-                case .failure:
-                    self?.showFailure(text: ErrorType.generalError.errorMessage)
                 }
-            }
         }
     }
     
@@ -194,7 +189,7 @@ class AddGroupsViewController: BaseViewController {
         } else {
             type = GroupType.multipleUsers.typeInt
         }
-
+        
         let group = createGroup(type)
         GroupManager.shared.addGroupData(group: group) { [weak self] result in
             switch result {

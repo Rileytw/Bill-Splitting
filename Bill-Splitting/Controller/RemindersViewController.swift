@@ -9,8 +9,8 @@ import UIKit
 import Lottie
 
 class RemindersViewController: BaseViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     var tableView = UITableView()
     var emptyLabel = UILabel()
     var addNotificationButton = UIButton()
@@ -24,17 +24,18 @@ class RemindersViewController: BaseViewController {
     var reminderTitle: String?
     var reminderSubtitle: String?
     var remindBody: String?
-    let currentUserId = AccountManager.shared.currentUser.currentUserId
+    var currentUserId: String?
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
         setEmptyLabel()
         setTableView()
         setAddButton()
-        navigationItem.title = "設定提醒"
+        navigationItem.title = NavigationItemName.reminder.name
         setAnimation()
+        getCurrentUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,8 +48,12 @@ class RemindersViewController: BaseViewController {
         addNotificationButton.layer.cornerRadius = 0.5 * addNotificationButton.bounds.size.width
         addNotificationButton.clipsToBounds = true
     }
-
-// MARK: - Method
+    
+    // MARK: - Method
+    func getCurrentUser() {
+        currentUserId = UserManager.shared.currentUser?.userId ?? ""
+    }
+    
     @objc func pressAddButton() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.reminders, bundle: nil)
         guard let addReminderViewController = storyBoard.instantiateViewController(
@@ -89,6 +94,7 @@ class RemindersViewController: BaseViewController {
     }
     
     func getReminders() {
+        guard let currentUserId = currentUserId else { return }
         ReminderManager.shared.fetchReminders(currentUser: currentUserId) { [weak self] result in
             switch result {
             case .success(let reminders):
@@ -116,11 +122,12 @@ class RemindersViewController: BaseViewController {
     }
     
     func fetchReminderInfo() {
+        guard let currentUserId = currentUserId else { return }
         var isGetReminderSuccess: Bool = false
         let group = DispatchGroup()
         group.enter()
         DispatchQueue.global().async {
-            GroupManager.shared.fetchGroups(userId: self.currentUserId, status: 0) { [weak self] result in
+            GroupManager.shared.fetchGroups(userId: currentUserId, status: 0) { [weak self] result in
                 switch result {
                 case .success(let groups):
                     self?.reminderGroups = groups
@@ -136,7 +143,7 @@ class RemindersViewController: BaseViewController {
                 group.leave()
             }
         }
-
+        
         group.enter()
         DispatchQueue.global().async {
             UserManager.shared.fetchUsersData { [weak self] result in
@@ -184,11 +191,11 @@ class RemindersViewController: BaseViewController {
     
     private func setLocalReminder(
         _ activeReminder: Reminder, _ memberName: String, _ notifyGroup: GroupData) {
-        reminderTitle = notifyGroup.groupName
-        getReminderContent(activeReminder, memberName)
-        notificationTime = activeReminder.remindTime - Date().timeIntervalSince1970
-        sendNotification()
-    }
+            reminderTitle = notifyGroup.groupName
+            getReminderContent(activeReminder, memberName)
+            notificationTime = activeReminder.remindTime - Date().timeIntervalSince1970
+            sendNotification()
+        }
     
     private func getNotifyGroup(activeReminder: Reminder) -> GroupData {
         var notifyGroup: GroupData?
@@ -233,6 +240,7 @@ class RemindersViewController: BaseViewController {
     }
     
     func fetchCurrentUserData() {
+        guard let currentUserId = currentUserId else { return }
         UserManager.shared.fetchUserData(friendId: currentUserId) { [weak self] result in
             if case .failure = result {
                 self?.showFailure(text: ErrorType.generalError.errorMessage)

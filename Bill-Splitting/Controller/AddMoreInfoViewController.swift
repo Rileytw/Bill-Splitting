@@ -7,10 +7,11 @@
 
 import UIKit
 import Lottie
+import SwiftUI
 
 class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
-// MARK: - Property
+    // MARK: - Property
     var photoImageView = UIImageView()
     var addPhotoButton = UIButton()
     var addPhotoLabel = UILabel()
@@ -34,8 +35,8 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     typealias ImageData = (UIImage) -> Void
     var itemImage: ImageData?
-
-// MARK: - Lifecycle
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -49,7 +50,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         
     }
     
-// MARK: - Method
+    // MARK: - Method
     @objc func pressUploadPhoto() {
         let imagePickerAlertController = UIAlertController(title: "上傳照片",
                                                            message: "拍攝或上傳照片",
@@ -119,15 +120,19 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
     
     func setAnimation() {
         let mask = UIView()
-        mask.frame = CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height)
-        mask.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        view.stickSubView(mask)
+        mask.backgroundColor = .maskBackgroundColor
         
         animationView = .init(name: "upload")
-        animationView.frame = CGRect(x: UIScreen.width/2 - 75, y: UIScreen.height/2 - 75, width: 150, height: 150)
+        view.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        animationView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        animationView.heightAnchor.constraint(equalToConstant: 150).isActive = true
         animationView.contentMode = .scaleAspectFit
         animationView.loopMode = .loop
-        view.addSubview(mask)
-        view.addSubview(animationView)
+        
         animationView.play()
     }
     
@@ -185,7 +190,7 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         addPhotoLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         addPhotoLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
         addPhotoLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
-    
+        
         addPhotoLabel.textColor = UIColor.greenWhite
         addPhotoLabel.text = "新增照片"
     }
@@ -212,7 +217,8 @@ class AddMoreInfoViewController: UIViewController, UIImagePickerControllerDelega
         photoImageView.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 10).isActive = true
         photoImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         photoImageView.widthAnchor.constraint(equalToConstant: UIScreen.width - 40).isActive = true
-        photoImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        photoImageView.bottomAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         
         photoImageView.contentMode = .scaleAspectFit
         photoImageView.layer.borderColor = UIColor.selectedColor.cgColor

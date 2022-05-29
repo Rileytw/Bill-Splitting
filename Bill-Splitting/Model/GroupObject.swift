@@ -67,7 +67,7 @@ enum GroupType {
     }
 }
 
-enum GroupStatus: Int, Codable { //
+enum GroupStatus: Int, Codable {
     case active = 0
     case inActive = 1
     

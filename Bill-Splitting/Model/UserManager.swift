@@ -4,15 +4,14 @@ import FirebaseFirestore
 
 class UserManager {
     static var shared = UserManager()
-    lazy var db = Firestore.firestore()
+    lazy var database = Firestore.firestore()
     
-//    var currentUser: UserData // get only (private set)
     private(set) var currentUser: UserData?
     
-    func addUserData(userData: UserData, completion: @escaping (Result<String, Error>) -> Void) {
+    func addUserData(userData: UserData, completion: @escaping (Result<(), Error>) -> Void) {
         do {
-            try db.collection(FirebaseCollection.user.rawValue).document(userData.userId).setData(from: userData)
-            completion(.success("update"))
+            try database.collection(FirebaseCollection.user.rawValue).document(userData.userId).setData(from: userData)
+            completion(.success(()))
         } catch {
             print(error)
             completion(.failure(error))
@@ -20,79 +19,86 @@ class UserManager {
     }
     
     func fetchFriendData(userId: String, completion: @escaping (Result<[Friend], Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).document(userId).collection("friend").getDocuments() { (querySnapshot, error) in
-            
-            if let error = error {
+        database.collection(FirebaseCollection.user.rawValue)
+            .document(userId)
+            .collection(FirebaseCollection.friend.rawValue)
+            .getDocuments { (querySnapshot, error) in
                 
-                completion(.failure(error))
-            } else {
-                
-                var friends = [Friend]()
-                
-                for document in querySnapshot!.documents {
+                if let error = error {
                     
-                    do {
-                        if let friend = try document.data(as: Friend.self, decoder: Firestore.Decoder()) {
-                            friends.append(friend)
+                    completion(.failure(error))
+                } else {
+                    
+                    var friends = [Friend]()
+                    
+                    for document in querySnapshot!.documents {
+                        
+                        do {
+                            if let friend = try document.data(as: Friend.self, decoder: Firestore.Decoder()) {
+                                friends.append(friend)
+                            }
+                            
+                        } catch {
+                            
+                            completion(.failure(error))
                         }
-                        
-                    } catch {
-                        
-                        completion(.failure(error))
+                    }
+                    completion(.success(friends))
+                }
+            }
+    }
+    
+    func listenFriendData(userId: String, completion: @escaping () -> Void) {
+        database.collection(FirebaseCollection.user.rawValue)
+            .document(userId)
+            .collection(FirebaseCollection.friend.rawValue)
+            .addSnapshotListener { querySnapshot, error in
+                guard let snapshot = querySnapshot else {
+                    print("Error retreiving snapshots \(error!)")
+                    return
+                }
+                snapshot.documentChanges.forEach { diff in
+                    if (diff.type == .added) {
+                        completion()
                     }
                 }
-                completion(.success(friends))
             }
-        }
-    }
-   
-    func listenFriendData(userId: String, completion: @escaping () -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).document(userId).collection("friend").addSnapshotListener() { querySnapshot, error in
-            guard let snapshot = querySnapshot else {
-                print("Error retreiving snapshots \(error!)")
-                return
-            }
-            snapshot.documentChanges.forEach { diff in
-                if (diff.type == .added) {
-                    print("New: \(diff.document.data())")
-                    completion()
-                }
-            }
-        }
     }
     
     //    Use friendId to get user's name in user collection (Using in friendInvitation)
     func fetchUserData(friendId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: friendId).addSnapshotListener { (querySnapshot, error) in
-            
-            if let error = error {
+        database.collection(FirebaseCollection.user.rawValue)
+            .whereField("userId", isEqualTo: friendId)
+            .addSnapshotListener { (querySnapshot, error) in
                 
-                completion(.failure(error))
-            } else {
-                
-                var userData: UserData?
-                
-                if querySnapshot!.documents.isEmpty == true {
-                    completion(.success(nil))
-                }
-                
-                for document in querySnapshot!.documents {
+                if let error = error {
                     
-                    do {
-                        if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
-                            userData = user
-                        } else {
-                            completion(.success(nil))
-                        }
-                    } catch {
-                        
-                        completion(.failure(error))
+                    completion(.failure(error))
+                } else {
+                    
+                    var userData: UserData?
+                    
+                    if querySnapshot!.documents.isEmpty == true {
+                        completion(.success(nil))
                     }
+                    
+                    for document in querySnapshot!.documents {
+                        
+                        do {
+                            if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                                userData = user
+                            } else {
+                                completion(.success(nil))
+                            }
+                        } catch {
+                            
+                            completion(.failure(error))
+                        }
+                    }
+                    
+                    completion(.success(userData))
                 }
-               
-                completion(.success(userData))
             }
-        }
     }
     
     func fetchMembersData(membersId: [String], completion: @escaping (Result<[UserData], Error>) -> Void) {
@@ -101,65 +107,68 @@ class UserManager {
         
         for member in membersId {
             
-            db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: member).getDocuments { (querySnapshot, error) in
+            database.collection(FirebaseCollection.user.rawValue)
+                .whereField("userId", isEqualTo: member)
+                .getDocuments { (querySnapshot, error) in
+                    
+                    if let error = error {
+                        
+                        completion(.failure(error))
+                    } else {
+                        
+                        for document in querySnapshot!.documents {
+                            
+                            do {
+                                if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
+                                    userData = user
+                                    if let userData = userData {
+                                        users.append(userData)
+                                    }
+                                }
+                            } catch {
+                                
+                                completion(.failure(error))
+                                return
+                            }
+                        }
+                    }
+                    
+                    if users.count == membersId.count {
+                        completion(.success(users))
+                    }
+                }
+        }
+    }
+    
+    func fetchUsersData(completion: @escaping (Result<[UserData], Error>) -> Void) {
+        database.collection(FirebaseCollection.user.rawValue)
+            .getDocuments { (querySnapshot, error) in
                 
                 if let error = error {
                     
                     completion(.failure(error))
                 } else {
                     
+                    var userData: [UserData] = []
+                    
                     for document in querySnapshot!.documents {
                         
                         do {
                             if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
-                                userData = user
-                                if let userData = userData {
-                                    users.append(userData)
-//                                    completion(.success(users))
-                                }
+                                userData.append(user)
                             }
                         } catch {
-                            
                             completion(.failure(error))
-                            return
                         }
                     }
-                }
-                
-                if users.count == membersId.count {
-                    completion(.success(users))
+                    completion(.success(userData))
                 }
             }
-        }
-    }
-    
-    func fetchUsersData(completion: @escaping (Result<[UserData], Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).getDocuments() { (querySnapshot, error) in
-            
-            if let error = error {
-                
-                completion(.failure(error))
-            } else {
-                
-                var userData: [UserData] = []
-                
-                for document in querySnapshot!.documents {
-                    
-                    do {
-                        if let user = try document.data(as: UserData.self, decoder: Firestore.Decoder()) {
-                            userData.append(user)
-                        }
-                    } catch {
-                        completion(.failure(error))
-                    }
-                }
-                completion(.success(userData))
-            }
-        }
     }
     
     func addPaymentData(paymentName: String?, account: String?, link: String?) {
-        let ref = db.collection(FirebaseCollection.user.rawValue).document(AccountManager.shared.currentUser.currentUserId)
+        let ref = database.collection(FirebaseCollection.user.rawValue)
+            .document(AccountManager.shared.currentUser.currentUserId)
         let replyDictionary = ["paymentName": paymentName, "paymentAccount": account, "paymentLink": link ]
         
         ref.updateData(["payment": FieldValue.arrayUnion([replyDictionary])]) { (error) in
@@ -170,105 +179,111 @@ class UserManager {
         }
     }
     
-    func deleteUserPayment(userId: String, paymentName: String?, account: String?, link: String?, completion: @escaping (Result<(), Error>) -> Void) {
-        
-        let replyDictionary = ["paymentName": paymentName, "paymentAccount": account, "paymentLink": link ]
-        
-        db.collection(FirebaseCollection.user.rawValue).document(userId).updateData([
-            "payment": FieldValue.arrayRemove([replyDictionary])
-        ]) { error in
-            if let error = error {
-                print("Error updating document: \(error)")
-                completion(.failure(error))
-            } else {
-                print("Document successfully updated")
-                completion(.success(()))
-            }
-        }
-    }
-    
-// MARK: - Change getDocuments to addSnapshotListener
-    func fetchSignInUserData(userId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).whereField("userId", isEqualTo: userId).addSnapshotListener { (querySnapshot, error) in
+    func deleteUserPayment(
+        userId: String, paymentName: String?,
+        account: String?, link: String?,
+        completion: @escaping (Result<(), Error>) -> Void) {
             
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                do {
-                    if let user = try querySnapshot!.documents.first?.data(as: UserData.self, decoder: Firestore.Decoder()) {
-                        completion(.success(user))
-                        self.currentUser = user
-                    } else {
-                        completion(.success(nil))
-                    }
-                } catch {
+            let replyDictionary = ["paymentName": paymentName, "paymentAccount": account, "paymentLink": link ]
+            
+            database.collection(FirebaseCollection.user.rawValue).document(userId).updateData([
+                "payment": FieldValue.arrayRemove([replyDictionary])
+            ]) { error in
+                if let error = error {
                     completion(.failure(error))
+                } else {
+                    completion(.success(()))
                 }
             }
         }
+    
+    // MARK: - Change getDocuments to addSnapshotListener
+    func fetchSignInUserData(userId: String, completion: @escaping (Result<UserData?, Error>) -> Void) {
+        database.collection(FirebaseCollection.user.rawValue)
+            .whereField("userId", isEqualTo: userId)
+            .addSnapshotListener { (querySnapshot, error) in
+                
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    do {
+                        if let user = try querySnapshot!.documents.first?.data(
+                            as: UserData.self, decoder: Firestore.Decoder()) {
+                            completion(.success(user))
+                            self.currentUser = user
+                        } else {
+                            completion(.success(nil))
+                        }
+                    } catch {
+                        completion(.failure(error))
+                    }
+                }
+            }
     }
     
     func deleteUserData(userId: String, userName: String, completion: @escaping (Result<(), Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).document(userId).updateData([
+        database.collection(FirebaseCollection.user.rawValue).document(userId).updateData([
             "userEmail": "",
             "payment": FieldValue.delete()
         ]) { error in
             if let error = error {
-                print("Error updating document: \(error)")
                 completion(.failure(error))
             } else {
-                print("Document successfully updated")
                 completion(.success(()))
             }
         }
     }
     
-    func deleteFriendCollection(documentId: String, collection: String, completion: @escaping (Result<(), Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).document(documentId).collection(collection).getDocuments { (querySnapshot, err) in
-            if let err = err {
-                print("Error getting documents: \(err)")
-                completion(.failure(err))
-                return
-            }
-            
-            for document in querySnapshot!.documents {
-                print("Deleting \(document.documentID) => \(document.data())")
-                document.reference.delete()
-                completion(.success(()))
-            }
-
-            if querySnapshot!.documents.isEmpty == true {
-                completion(.success(()))
-            }
+    func deleteFriendCollection(
+        documentId: String, collection: String,
+        completion: @escaping (Result<(), Error>) -> Void) {
+            database.collection(FirebaseCollection.user.rawValue)
+                .document(documentId)
+                .collection(collection)
+                .getDocuments { (querySnapshot, err) in
+                    if let err = err {
+                        completion(.failure(err))
+                        return
+                    }
+                    
+                    for document in querySnapshot!.documents {
+                        document.reference.delete()
+                        completion(.success(()))
+                    }
+                    
+                    if querySnapshot!.documents.isEmpty == true {
+                        completion(.success(()))
+                    }
+                }
         }
-    }
     
-    func deleteDropUserData(friendId: String, collection: String, userId: String, completion: @escaping (Result<(), Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).document(friendId).collection("friend").document(userId).delete() { err in
-            if let err = err {
-                print("Error removing document: \(err)")
-                completion(.failure(err))
-            } else {
-                print("Document successfully removed!")
-                completion(.success(()))
-            }
+    func deleteDropUserData(
+        friendId: String, collection: String, userId: String,
+        completion: @escaping (Result<(), Error>) -> Void) {
+            database.collection(FirebaseCollection.user.rawValue)
+                .document(friendId)
+                .collection(FirebaseCollection.friend.rawValue)
+                .document(userId).delete { err in
+                    if let err = err {
+                        completion(.failure(err))
+                    } else {
+                        completion(.success(()))
+                    }
+                }
         }
-    }
     
     func updateUserName(userId: String, userName: String, completion: @escaping (Result<(), Error>) -> Void) {
-        db.collection(FirebaseCollection.user.rawValue).document(userId).updateData([
+        database.collection(FirebaseCollection.user.rawValue).document(userId).updateData([
             "userName": userName
         ]) { error in
             if let error = error {
-                print("Error updating document: \(error)")
                 completion(.failure(error))
             } else {
-                print("Document successfully updated")
                 completion(.success(()))
             }
         }
     }
-        
+    
     static func renameBlockedUser(blockList: [String], userData: [UserData]) -> [UserData] {
         var blockedUserData = userData
         for user in blockList {
@@ -278,6 +293,6 @@ class UserManager {
                 }
             }
         }
-       return blockedUserData
+        return blockedUserData
     }
 }

@@ -8,11 +8,10 @@
 import UIKit
 import Firebase
 import FirebaseAuth
-import Lottie
 
-class SignUpViewController: UIViewController {
-
-    private var animationView = AnimationView()
+class SignUpViewController: BaseViewController {
+    
+    // MARK: - Property
     var userNameTextField = UITextField()
     var emailTextField = UITextField()
     var passwordTextField = UITextField()
@@ -20,6 +19,7 @@ class SignUpViewController: UIViewController {
     var signUpButton = UIButton()
     var userData = UserData()
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -29,7 +29,7 @@ class SignUpViewController: UIViewController {
         setValidPasswordTextField()
         setSignUpButton()
         setDismissButton()
-        }
+    }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -39,36 +39,96 @@ class SignUpViewController: UIViewController {
         ElementsStyle.styleTextField(validPasswordTextField)
     }
     
+    // MARK: - Method
+    
+    @objc func pressSignUp() {
+        checkUserInput()
+    }
+    
+    func signUpWithFirebase() {
+        AccountManager.shared.signUpWithFireBase(
+            email: emailTextField.text ?? "", password: passwordTextField.text ?? "") { [weak self] result in
+                switch result {
+                case .success(let firebaseId):
+                    self?.userData.userName = self?.userNameTextField.text ?? ""
+                    self?.userData.userEmail = firebaseId.userEmail
+                    self?.userData.userId = firebaseId.userId
+                    self?.uploadUserData()
+                    self?.showSuccess(text: "註冊成功")
+                case .failure(let error):
+                    if let errorCode = AuthErrorCode(rawValue: error._code) {
+                        self?.showFailure(text: errorCode.errorMessage)
+                        self?.removeAnimation()
+                    }
+                    
+                }
+            }
+    }
+    
+    func uploadUserData() {
+        UserManager.shared.addUserData(userData: userData) {  [weak self] result in
+            switch result {
+            case .success:
+                self?.dismiss(animated: true, completion: nil)
+            case .failure:
+                self?.showFailure(text: ErrorType.generalError.errorMessage)
+            }
+            self?.removeAnimation()
+        }
+    }
+    
+    func checkUserInput() {
+        if userNameTextField.text == "" {
+            confirmAlert(title: "尚未填寫姓名",
+                         message: "請寫姓名再進行註冊")
+        } else if emailTextField.text == "" {
+            confirmAlert(title: "尚未填寫 email",
+                         message: "請寫 email 再進行註冊")
+        } else if passwordTextField.text == "" {
+            confirmAlert(title: "尚未填寫密碼",
+                         message: "請寫密碼再進行註冊")
+        } else if validPasswordTextField.text == "" {
+            confirmAlert(title: "尚未確認密碼",
+                         message: "請確認密碼再進行註冊")
+        } else if validPasswordTextField.text != passwordTextField.text {
+            confirmAlert(title: "密碼驗證錯誤",
+                         message: "請重新確認密碼再進行註冊")
+        } else {
+            setAnimation()
+            signUpWithFirebase()
+        }
+    }
+    
     func setNameTextField() {
         view.addSubview(userNameTextField)
         userNameTextField.translatesAutoresizingMaskIntoConstraints = false
         setNameTextFieldConstraint()
-        userNameTextField.attributedPlaceholder = NSAttributedString(string: "輸入姓名",
-                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+        userNameTextField.attributedPlaceholder = NSAttributedString(
+            string: "輸入姓名", attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
-
+    
     func setEmailTextField() {
         view.addSubview(emailTextField)
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         setEmailTextFieldConstraint()
-        emailTextField.attributedPlaceholder = NSAttributedString(string: "輸入信箱",
-                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+        emailTextField.attributedPlaceholder = NSAttributedString(
+            string: "輸入信箱", attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
-
+    
     func setPasswordTextField() {
         view.addSubview(passwordTextField)
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         setPasswordTextFieldConstraint()
-        passwordTextField.attributedPlaceholder = NSAttributedString(string: "輸入密碼",
-                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+        passwordTextField.attributedPlaceholder = NSAttributedString(
+            string: "輸入密碼", attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
     
     func setValidPasswordTextField() {
         view.addSubview(validPasswordTextField)
         validPasswordTextField.translatesAutoresizingMaskIntoConstraints = false
         setValidTextFieldConstraint()
-        validPasswordTextField.attributedPlaceholder = NSAttributedString(string: "再次輸入密碼",
-                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
+        validPasswordTextField.attributedPlaceholder = NSAttributedString(
+            string: "再次輸入密碼", attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
     }
     
     func setSignUpButton() {
@@ -80,77 +140,6 @@ class SignUpViewController: UIViewController {
         ElementsStyle.styleSpecificButton(signUpButton)
         signUpButton.layer.cornerRadius = 8.0
         signUpButton.addTarget(self, action: #selector(pressSignUp), for: .touchUpInside)
-    }
-    
-    @objc func pressSignUp() {
-        checkUserInput()
-    }
-    
-    func signUpWithFirebase() {
-        AccountManager.shared.signUpWithFireBase(email: emailTextField.text ?? "",
-                                                password: passwordTextField.text ?? "") { [weak self] result in
-            switch result {
-            case .success(let firebaseId):
-                self?.userData.userName = self?.userNameTextField.text ?? ""
-                self?.userData.userEmail = firebaseId.userEmail
-                self?.userData.userId = firebaseId.userId
-                self?.uploadUserData()
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showSuccess(text: "註冊成功")
-            case .failure(let error):
-                if let errorCode = AuthErrorCode(rawValue: error._code) {
-                    ProgressHUD.shared.view = self?.view ?? UIView()
-                    ProgressHUD.showFailure(text: errorCode.errorMessage)
-                    self?.removeAnimation()
-                }
-                
-            }
-        }
-    }
-    
-    func uploadUserData() {
-        UserManager.shared.addUserData(userData: userData) {  [weak self] result in
-            switch result {
-            case .success:
-                self?.dismiss(animated: true, completion: nil)
-            case .failure(let error):
-                print("Error decoding userData: \(error)")
-                ProgressHUD.shared.view = self?.view ?? UIView()
-                ProgressHUD.showFailure(text: ErrorType.generalError.errorMessage)
-            }
-            self?.removeAnimation()
-        }
-    }
-    
-    func checkUserInput() {
-        if userNameTextField.text == "" {
-            inputAlert(title: "尚未填寫姓名",
-                       message: "請寫姓名再進行註冊")
-        } else if emailTextField.text == "" {
-            inputAlert(title: "尚未填寫 email",
-                       message: "請寫 email 再進行註冊")
-        } else if passwordTextField.text == "" {
-            inputAlert(title: "尚未填寫密碼",
-                       message: "請寫密碼再進行註冊")
-        } else if validPasswordTextField.text == "" {
-            inputAlert(title: "尚未確認密碼",
-                       message: "請確認密碼再進行註冊")
-        } else if validPasswordTextField.text != passwordTextField.text {
-            inputAlert(title: "密碼驗證錯誤",
-                       message: "請重新確認密碼再進行註冊")
-        } else {
-            setAnimation()
-            signUpWithFirebase()
-        }
-    }
-    
-    func inputAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        let defaultAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
-        alertController.addAction(defaultAction)
-        
-        present(alertController, animated: true, completion: nil)
     }
     
     func setEmailTextFieldConstraint() {
@@ -181,9 +170,10 @@ class SignUpViewController: UIViewController {
         userNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         userNameTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
-
+    
     func setValidTextFieldConstraint() {
-        validPasswordTextField.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 20).isActive = true
+        validPasswordTextField.topAnchor.constraint(
+            equalTo: passwordTextField.bottomAnchor, constant: 20).isActive = true
         validPasswordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
         validPasswordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
         validPasswordTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -206,25 +196,5 @@ class SignUpViewController: UIViewController {
     
     @objc func pressDismiss() {
         self.dismiss(animated: true, completion: nil)
-    }
-    
-    func setAnimation() {
-        animationView = .init(name: "accountLoading")
-        view.addSubview(animationView)
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        animationView.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        animationView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 0.75
-        animationView.play()
-    }
-    
-    func removeAnimation() {
-        animationView.stop()
-        animationView.removeFromSuperview()
     }
 }

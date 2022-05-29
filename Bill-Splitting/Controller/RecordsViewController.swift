@@ -9,7 +9,7 @@ import UIKit
 
 class RecordsViewController: BaseViewController {
     
-// MARK: - Property
+    // MARK: - Property
     var tableView = UITableView()
     var emptyLabel = UILabel()
     var currentUserId: String?
@@ -20,8 +20,8 @@ class RecordsViewController: BaseViewController {
     var personalPaid: [ExpenseInfo] = []
     var personalInvolved: [ExpenseInfo] = []
     var allPersonalItem: [ExpenseInfo] = []
-
-// MARK: - Lifecycle
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -41,8 +41,8 @@ class RecordsViewController: BaseViewController {
         super.viewWillDisappear(animated)
         cleanData()
     }
-
-// MARK: - Method
+    
+    // MARK: - Method
     func getCurrentUser() {
         currentUserId = UserManager.shared.currentUser?.userId ?? ""
     }
@@ -65,8 +65,8 @@ class RecordsViewController: BaseViewController {
             }
         }
     }
-
-// MARK: - Get items from all groups
+    
+    // MARK: - Get items from all groups
     func getGroupsItemExpense() {
         let semaphore = DispatchSemaphore(value: 0)
         let queue = DispatchQueue(label: "serialQueue", qos: .default, attributes: .concurrent)
@@ -196,14 +196,14 @@ extension RecordsViewController: UITableViewDataSource, UITableViewDelegate {
                                   involvedPrice: abs(item.price),
                                   involvedType: .involved)
         }
-      
+        
         return itemsCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let customGroupViewController = storyBoard.instantiateViewController(
-                    withIdentifier: CustomGroupViewController.identifier) as? CustomGroupViewController else { return }
+            withIdentifier: CustomGroupViewController.identifier) as? CustomGroupViewController else { return }
         
         var personalItem: ItemData?
         var groupData: GroupData?
