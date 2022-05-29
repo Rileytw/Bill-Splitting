@@ -7,8 +7,8 @@
 
 import UIKit
 
-class DeleteItem {
-    static let shared = DeleteItem()
+class DeleteItemManager {
+    static let shared = DeleteItemManager()
     
     private(set) var isItemDeleteSucces: Bool = false
     

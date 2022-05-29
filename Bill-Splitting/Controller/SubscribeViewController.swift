@@ -8,8 +8,8 @@
 import UIKit
 
 class SubscribeViewController: BaseViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     var startTimeLabel = UILabel()
     var endTimeLabel = UILabel()
     var cycleLabel = UILabel()
@@ -36,8 +36,8 @@ class SubscribeViewController: BaseViewController {
             tableView.reloadData()
         }
     }
-
-// MARK: - Lifecycle
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -59,7 +59,7 @@ class SubscribeViewController: BaseViewController {
         ElementsStyle.styleTextField(addItemView.priceTextField)
     }
     
-// MARK: - Method
+    // MARK: - Method
     @objc func pressCompleteButton() {
         if NetworkStatus.shared.isConnected == true {
             let involvedTotalPrice = checkInvolvedData()
@@ -81,7 +81,7 @@ class SubscribeViewController: BaseViewController {
             networkConnectAlert()
         }
     }
-
+    
     func checkInvolvedData() -> Double {
         var involvedTotalPrice: Double = 0
         for involvePrice in involvedExpenseData {
@@ -104,6 +104,21 @@ class SubscribeViewController: BaseViewController {
         }
     }
     
+    private func getSubscriptionData(
+        _ startTimeStamp: TimeInterval,
+        _ endTimeStamp: TimeInterval,
+        _ cycleNumber: Cycle) -> Subscription {
+            var subscription = Subscription()
+            subscription.groupId = groupData?.groupId ?? ""
+            subscription.itemName = addItemView.itemNameTextField.text ?? ""
+            subscription.paidUser = currentUserId
+            subscription.paidPrice = paidPrice ?? 0
+            subscription.startTime = startTimeStamp
+            subscription.endTime = endTimeStamp
+            subscription.cycle = cycleNumber
+            return subscription
+        }
+    
     func updateSubscriptionData() {
         paidPrice = Double(self.addItemView.priceTextField.text ?? "0")
         let startTimeStamp = startDate?.timeIntervalSince1970
@@ -116,13 +131,13 @@ class SubscribeViewController: BaseViewController {
         } else if cyclePicker.textField.text == Cycle.year.typeName {
             cycleNumber = .year
         }
-        SubscriptionManager.shared.addSubscriptionData(groupId: groupData?.groupId ?? "",
-                                                       itemName: addItemView.itemNameTextField.text ?? "",
-                                                       paidUser: currentUserId,
-                                                       paidPrice: paidPrice ?? 0,
-                                                       startedTime: startTimeStamp ?? nowTimeStamp,
-                                                       endedTime: endTimeStamp ?? nowTimeStamp,
-                                                       cycle: cycleNumber) { [weak self] documentId in
+        
+        var subscription = getSubscriptionData(
+            startTimeStamp ?? nowTimeStamp,
+            endTimeStamp ?? nowTimeStamp,
+            cycleNumber)
+        
+        SubscriptionManager.shared.addSubscriptionData(subscription: subscription) { [weak self] documentId in
             let involvedPerson = self?.involvedExpenseData.count ?? 0
             for user in 0..<involvedPerson {
                 SubscriptionManager.shared.addSubscriptionInvolvedExpense(
@@ -146,7 +161,7 @@ class SubscribeViewController: BaseViewController {
     }
     
     func networkConnectAlert() {
-        confirmAlert(title: "網路未連線", message: "網路未連線，無法新增群組資料，請確認網路連線後再新增群組。")
+        confirmAlert(title: "網路未連線", message: "網路未連線，無法新增訂閱，請確認網路連線後再新增。")
     }
 }
 
@@ -209,8 +224,9 @@ extension SubscribeViewController: UITableViewDataSource, UITableViewDelegate {
         } else {
             selectedIndexs.append(indexPath.row)
             involvedMemberName.append(memberData?[indexPath.row].userName ?? "")
-            
-            let involedExpense = ExpenseInfo(userId: memberData?[indexPath.row].userId ?? "", price: 0)
+            var involedExpense = ExpenseInfo()
+            involedExpense.userId = memberData?[indexPath.row].userId ?? ""
+            involedExpense.price = 0
             involvedExpenseData.append(involedExpense)
         }
         self.tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -225,7 +241,7 @@ extension SubscribeViewController: AddItemTableViewCellDelegate {
         let name = cell.memberName.text
         let selectedUser = memberData?.filter { $0.userName == name }
         guard let id = selectedUser?[0].userId else { return }
-                
+        
         for index in 0..<involvedExpenseData.count {
             
             if involvedExpenseData[index].userId == id {
@@ -304,7 +320,7 @@ extension SubscribeViewController {
         startTimeDatePicker.overrideUserInterfaceStyle = .dark
         let now = Date()
         startTimeDatePicker.minimumDate = now
-
+        
         view.addSubview(endTimeDatePicker)
         endTimeDatePicker.translatesAutoresizingMaskIntoConstraints = false
         endTimeDatePicker.topAnchor.constraint(equalTo: startTimeLabel.bottomAnchor, constant: 20).isActive = true

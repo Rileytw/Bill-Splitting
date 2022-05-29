@@ -7,9 +7,9 @@
 
 import UIKit
 
-class LeaveGroup {
+class LeaveGroupManager {
     
-    static let shared = LeaveGroup()
+    static let shared = LeaveGroupManager()
     private(set) var isLeaveGroupSuccess: Bool = false
     
     func leaveGroup(groupId: String, currentUserId: String, completion: @escaping () -> Void) {
