@@ -8,11 +8,12 @@
 import UIKit
 
 class FriendListViewController: UIViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     let tableView = UITableView()
     var noDataView = NoDataView(frame: .zero)
     var blockUserView = BlockUserView()
+    var blockUserViewBottom: NSLayoutConstraint?
     var mask = UIView()
     let currentUserId = UserManager.shared.currentUser?.userId ?? ""
     var blockedUserId: String?
@@ -23,7 +24,7 @@ class FriendListViewController: UIViewController {
         }
     }
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -43,7 +44,7 @@ class FriendListViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
-// MARK: - Method
+    // MARK: - Method
     @objc func pressInviteFriendButton() {
         let storyBoard = UIStoryboard(name: StoryboardCategory.addGroups, bundle: nil)
         let inviteFriendViewController = storyBoard.instantiateViewController(
@@ -56,7 +57,7 @@ class FriendListViewController: UIViewController {
         }
         self.present(inviteFriendViewController, animated: true, completion: nil)
     }
-
+    
     func fetchFriends() {
         UserManager.shared.fetchFriendData(userId: currentUserId) { [weak self] result in
             switch result {
@@ -104,32 +105,45 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
-        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.addSubview(mask)
+        mask.backgroundColor = .maskBackgroundColor
+        view.stickSubView(mask)
         
-        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
-        blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        setBlockView()
+        blockUserViewBottom?.constant = -300
+        UIView.animate(
+            withDuration: 0.25, delay: 0,
+            options: UIView.AnimationOptions.curveEaseIn, animations: { [weak self] in
+                self?.view.layoutIfNeeded()
+            }, completion: nil)
+        
+        blockUserView.blockUserButton.addTarget(self, action: #selector(blockUserAlert), for: .touchUpInside)
+        blockUserView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+    }
+    
+    private func setBlockView() {
+        blockUserView.removeFromSuperview()
+        view.addSubview(blockUserView)
+        blockUserView.translatesAutoresizingMaskIntoConstraints = false
+        blockUserView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        blockUserView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        blockUserView.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        blockUserViewBottom = blockUserView.topAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+        blockUserViewBottom?.isActive = true
+        blockUserView.backgroundColor = .viewDarkBackgroundColor
         blockUserView.buttonTitle = " 封鎖使用者"
         blockUserView.content = "封鎖使用者後，並不會隱藏你們共享的群組，若有需要可在結清帳務後退出群組。"
         blockUserView.blockUserButton.setImage(UIImage(
             systemName: "person.crop.circle.badge.exclam.fill"), for: .normal)
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.height - 300, width: UIScreen.width, height: 300)
-        }, completion: nil)
-        view.addSubview(blockUserView)
-        
-        blockUserView.blockUserButton.addTarget(self, action: #selector(blockUserAlert), for: .touchUpInside)
-        
-        blockUserView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+        view.layoutIfNeeded()
     }
     
     @objc func pressDismissButton() {
-        let subviewCount = self.view.subviews.count
-        
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(
-                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
+        blockUserViewBottom?.constant = 0
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn,
+                       animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
         mask.removeFromSuperview()
     }
@@ -144,7 +158,7 @@ extension FriendListViewController: UITableViewDataSource, UITableViewDelegate {
             self?.navigationController?.popToRootViewController(animated: true)
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-
+        
         alertController.addAction(cancelAction)
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)

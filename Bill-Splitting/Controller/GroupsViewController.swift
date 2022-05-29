@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 
 class GroupsViewController: BaseViewController {
-// MARK: - Property
+    // MARK: - Property
     let selectedSource = [
         ButtonModel(title: GroupButton.allGroups.buttonName),
         ButtonModel(title: GroupButton.multipleUsers.buttonName),
@@ -19,11 +19,12 @@ class GroupsViewController: BaseViewController {
     let selectedView = SelectionView(frame: .zero)
     let tableView = UITableView()
     var blockUserView = BlockUserView()
+    var blockUserViewBottom: NSLayoutConstraint?
     var searchView = UIView()
     var emptyLabel = UILabel()
-
+    
     let currentUserId = AccountManager.shared.currentUser.currentUserId
-    var groups: [GroupData] = []    
+    var groups: [GroupData] = []
     var multipleGroups: [GroupData] = []
     var personalGroups: [GroupData] = []
     var closedGroups: [GroupData] = []
@@ -46,7 +47,7 @@ class GroupsViewController: BaseViewController {
         networkDetect()
     }
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         getGroupData()
@@ -54,7 +55,7 @@ class GroupsViewController: BaseViewController {
         fetchCurrentUserData()
     }
     
-// MARK: - Method
+    // MARK: - Method
     func fetchCurrentUserData() {
         UserManager.shared.fetchSignInUserData(userId: currentUserId) { [weak self] result in
             if case .failure = result {
@@ -78,28 +79,28 @@ class GroupsViewController: BaseViewController {
     func getGroupData() {
         GroupManager.shared.fetchGroupsRealTime(
             userId: currentUserId, status: GroupStatus.active.typeInt) { [weak self] result in
-            switch result {
-            case .success(let groups):
-                self?.groups = groups
-                self?.setFilterGroupData()
-                self?.hideEmptyLabel(groups)
-            case .failure:
-                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
+                switch result {
+                case .success(let groups):
+                    self?.groups = groups
+                    self?.setFilterGroupData()
+                    self?.hideEmptyLabel(groups)
+                case .failure:
+                    self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
+                }
             }
-        }
     }
     
     func getClosedGroupData() {
         GroupManager.shared.fetchGroupsRealTime(
             userId: currentUserId, status: GroupStatus.inActive.typeInt) { [weak self] result in
-            switch result {
-            case .success(let groups):
-                self?.closedGroups = groups
-                self?.setFilterGroupData()
-            case .failure:
-                self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
+                switch result {
+                case .success(let groups):
+                    self?.closedGroups = groups
+                    self?.setFilterGroupData()
+                case .failure:
+                    self?.showFailure(text: ErrorType.dataFetchError.errorMessage)
+                }
             }
-        }
     }
     
     func setSearchBar() {
@@ -156,7 +157,7 @@ class GroupsViewController: BaseViewController {
         tableView.reloadData()
         removeAnimation()
     }
-   
+    
     func setSelectedView() {
         view.addSubview(selectedView)
         setSelectedViewConstraint()
@@ -256,20 +257,20 @@ extension GroupsViewController: UISearchBarDelegate {
 
 extension GroupsViewController {
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.width, height: UIScreen.height))
-        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.addSubview(mask)
+        mask.backgroundColor = .maskBackgroundColor
+        view.stickSubView(mask)
         
-        blockUserView = BlockUserView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
-        blockUserView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+        setBlockUserView()
+        blockUserViewBottom?.constant = -300
         blockUserView.buttonTitle = " 退出群組"
         blockUserView.content = "退出群組後，將無法查看群組內容。"
         blockUserView.blockUserButton.setImage(
             UIImage(systemName: "rectangle.portrait.and.arrow.right.fill"), for: .normal)
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.blockUserView.frame = CGRect(x: 0, y: UIScreen.height - 300, width: UIScreen.width, height: 300)
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn,
+                       animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
-        view.addSubview(blockUserView)
         
         blockUserView.blockUserButton.addTarget(self, action: #selector(detectUserExpense), for: .touchUpInside)
         blockUserView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
@@ -277,12 +278,26 @@ extension GroupsViewController {
         self.tabBarController?.tabBar.isHidden = true
     }
     
-    @objc func pressDismissButton() {
-        let subviewCount = self.view.subviews.count
+    private func setBlockUserView() {
+        blockUserView.removeFromSuperview()
+        view.addSubview(blockUserView)
+        blockUserView.translatesAutoresizingMaskIntoConstraints = false
+        blockUserView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        blockUserView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        blockUserView.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        blockUserViewBottom = blockUserView.topAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+        blockUserViewBottom?.isActive = true
+        blockUserView.backgroundColor = .viewDarkBackgroundColor
         
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame = CGRect(
-                x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
+        view.layoutIfNeeded()
+    }
+    
+    @objc func pressDismissButton() {
+        blockUserViewBottom?.constant = 0
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
         mask.removeFromSuperview()
         self.tabBarController?.tabBar.isHidden = false
@@ -331,11 +346,11 @@ extension GroupsViewController {
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
     }
-  
+    
     func leaveGroup() {
         guard let groupId = group?.groupId else { return }
-        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
-            if LeaveGroup.shared.isLeaveGroupSuccess == true {
+        LeaveGroupManager.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
+            if LeaveGroupManager.shared.isLeaveGroupSuccess == true {
                 self?.showSuccess(text: "成功退出群組")
                 self?.getGroupData()
             } else {

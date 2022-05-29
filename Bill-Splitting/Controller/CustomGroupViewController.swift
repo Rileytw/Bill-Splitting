@@ -9,7 +9,7 @@ import UIKit
 
 class CustomGroupViewController: BaseViewController {
     
-// MARK: - Property
+    // MARK: - Property
     let groupDetailView = GroupDetailView(frame: .zero)
     let itemTableView = UITableView()
     let subscribeButton = UIButton()
@@ -27,7 +27,7 @@ class CustomGroupViewController: BaseViewController {
     var subscriptionCreatedTime: Double?
     var blockList: [String] = [] //
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -56,7 +56,7 @@ class CustomGroupViewController: BaseViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
-// MARK: - Method
+    // MARK: - Method
     func getUserData() {
         guard let group = group else { return }
         members.removeAll()
@@ -113,7 +113,7 @@ class CustomGroupViewController: BaseViewController {
                 }
             }
         }
-
+        
         for (index, item) in self.items.enumerated() {
             group.enter()
             DispatchQueue.global().async {
@@ -129,7 +129,7 @@ class CustomGroupViewController: BaseViewController {
                 }
             }
         }
-
+        
         group.notify(queue: DispatchQueue.main) { [weak self] in
             if isFetchDataSuccess == true {
                 self?.itemTableView.reloadData()
@@ -146,7 +146,7 @@ class CustomGroupViewController: BaseViewController {
         GroupManager.shared.fetchMemberExpense(
             groupId: group.groupId ,
             members: group.member
-        ) { [weak self] result in //
+        ) { [weak self] result in
             switch result {
             case .success(let expense):
                 self?.group?.memberExpense = expense
@@ -208,7 +208,7 @@ class CustomGroupViewController: BaseViewController {
             self?.pressClosedGroup()
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-
+        
         alertController.addAction(cancelAction)
         alertController.addAction(confirmAction)
         present(alertController, animated: true, completion: nil)
@@ -268,7 +268,7 @@ class CustomGroupViewController: BaseViewController {
     fileprivate func deleteSubscription(_ index: Int) {
         SubscriptionManager.shared.deleteSubscriptionDocument(documentId: subsriptions[index].doucmentId)
     }
-        
+    
     private func updateSubscription(_ startDate: Date, _ endDate: Date, _ index: Int, _ component: Calendar.Component) {
         let nextDateDistance = Date.countComponent(
             component: component, startDate: startDate, endDate: endDate)
@@ -304,7 +304,7 @@ class CustomGroupViewController: BaseViewController {
             let subscriptInvolved: [ExpenseInfo]  = self?.getSubscriptionInvolved(index: index) ?? []
             let subscriptInvolvedPrice: [Double] = self?.getSubscriptionPrice(index: index) ?? []
             
-            AddItem.shared.addItem(
+            AddItemManager.shared.addItem(
                 groupId: group.groupId,
                 itemId: itemId,
                 paidUserId: paidUserId ?? "",
@@ -320,10 +320,10 @@ class CustomGroupViewController: BaseViewController {
         let subscriptInvolvedItem = subsriptions[index].subscriptionMember
         var subscriptInvolved: [ExpenseInfo] = []
         for user in 0..<(subscriptInvolvedItem?.count ?? 0) {
-            let involvedExpense = ExpenseInfo(
-                userId: subscriptInvolvedItem?[user].involvedUser ?? "",
-                price: subscriptInvolvedItem?[user].involvedPrice ?? 0,
-                createdTime: nil, itemId: nil)
+            var involvedExpense = ExpenseInfo()
+            involvedExpense.userId = subscriptInvolvedItem?[user].involvedUser ?? ""
+            involvedExpense.price = subscriptInvolvedItem?[user].involvedPrice ?? 0
+            
             subscriptInvolved.append(involvedExpense)
         }
         return subscriptInvolved
@@ -334,7 +334,7 @@ class CustomGroupViewController: BaseViewController {
         let subscriptInvolvedPrice: [Double] = subscriptInvolvedItem.map { $0.involvedPrice }
         return subscriptInvolvedPrice
     }
-        
+    
     func addMenu() {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "info.circle"), for: .normal)
@@ -382,7 +382,7 @@ class CustomGroupViewController: BaseViewController {
         
         settleUpViewController.group = group
         settleUpViewController.expense = personalExpense
-
+        
         self.show(settleUpViewController, sender: nil)
     }
     
@@ -487,30 +487,30 @@ extension CustomGroupViewController: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(
         _ interaction: UIContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-           
-            let infoAction = UIAction(title: "查看群組資訊", image: UIImage(systemName: "eye")) { [weak self] _ in
-                let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
-                guard let detailViewController = storyBoard.instantiateViewController(
-                    withIdentifier: String(describing: GroupDetailViewController.self)
-                ) as? GroupDetailViewController else { return }
-                detailViewController.group = self?.group
-                detailViewController.userData = self?.members ?? []
-                detailViewController.personalExpense = self?.personalExpense
-
-                self?.show(detailViewController, sender: nil)
-            }
-            
-            let closeAction = UIAction(title: "封存群組", image: UIImage(systemName: "eye.slash")) { [weak self] _ in
-                if self?.group?.status == GroupStatus.inActive.typeInt {
-                    self?.disableCloseGroupButton()
-                } else {
-                    self?.confirmCloseGroupAlert()
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+                
+                let infoAction = UIAction(title: "查看群組資訊", image: UIImage(systemName: "eye")) { [weak self] _ in
+                    let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
+                    guard let detailViewController = storyBoard.instantiateViewController(
+                        withIdentifier: String(describing: GroupDetailViewController.self)
+                    ) as? GroupDetailViewController else { return }
+                    detailViewController.group = self?.group
+                    detailViewController.userData = self?.members ?? []
+                    detailViewController.personalExpense = self?.personalExpense
+                    
+                    self?.show(detailViewController, sender: nil)
                 }
+                
+                let closeAction = UIAction(title: "封存群組", image: UIImage(systemName: "eye.slash")) { [weak self] _ in
+                    if self?.group?.status == GroupStatus.inActive.typeInt {
+                        self?.disableCloseGroupButton()
+                    } else {
+                        self?.confirmCloseGroupAlert()
+                    }
+                }
+                return UIMenu(title: "", children: [infoAction, closeAction])
             }
-            return UIMenu(title: "", children: [infoAction, closeAction])
         }
-    }
 }
 
 extension CustomGroupViewController {
@@ -527,11 +527,8 @@ extension CustomGroupViewController {
         setNoDataViewConstraint()
     }
     
-    func showBlockView() {
-        view.addSubview(mask)
-        setMaskConstraints()
-        mask.backgroundColor = .maskBackground
-        
+    private func setReviewView() {
+        reportView.removeFromSuperview()
         view.addSubview(reportView)
         reportView.translatesAutoresizingMaskIntoConstraints = false
         reportView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -539,9 +536,17 @@ extension CustomGroupViewController {
         reportView.heightAnchor.constraint(equalToConstant: 300).isActive = true
         reportViewBottom = reportView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         reportViewBottom?.isActive = true
-        reportView.backgroundColor = .viewDarkBackground
+        reportView.backgroundColor = .viewDarkBackgroundColor
         
         view.layoutIfNeeded()
+    }
+    
+    func showBlockView() {
+        view.addSubview(mask)
+        setMaskConstraints()
+        mask.backgroundColor = .maskBackgroundColor
+        
+        setReviewView()
         
         reportViewBottom?.constant = -300
         UIView.animate(withDuration: 0.25, delay: 0,
@@ -600,8 +605,8 @@ extension CustomGroupViewController {
     
     func leaveGroup() {
         guard let groupId = group?.groupId else { return }
-        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
-            if LeaveGroup.shared.isLeaveGroupSuccess == true {
+        LeaveGroupManager.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
+            if LeaveGroupManager.shared.isLeaveGroupSuccess == true {
                 self?.showSuccess(text: "成功退出群組")
                 self?.navigationController?.popToRootViewController(animated: true)
             } else {
@@ -680,7 +685,7 @@ extension CustomGroupViewController {
         ElementsStyle.styleSpecificButton(subscribeButton)
         hideSubscribeButton()
     }
-
+    
     fileprivate func hideNoDataLabel(_ items: ([ItemData])) {
         if items.isEmpty == true {
             removeAnimation()

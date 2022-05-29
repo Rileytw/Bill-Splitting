@@ -8,9 +8,10 @@
 import UIKit
 
 class ItemDetailViewController: BaseViewController {
-
-// MARK: - Property
+    
+    // MARK: - Property
     var reportView = ReportView()
+    var reportViewBottom: NSLayoutConstraint?
     let photoView = UIView()
     var tableView = UITableView()
     
@@ -23,7 +24,7 @@ class ItemDetailViewController: BaseViewController {
     var reportContent: String?
     var image: String?
     
-// MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         ElementsStyle.styleBackground(view)
@@ -45,7 +46,7 @@ class ItemDetailViewController: BaseViewController {
         removeAnimation()
     }
     
-// MARK: - Method
+    // MARK: - Method
     func getItemData(itemId: String) {
         ItemManager.shared.fetchItem(itemId: itemId) { [weak self] result in
             switch result {
@@ -140,23 +141,23 @@ class ItemDetailViewController: BaseViewController {
         guard let group = group,
               let item = item
         else { return }
-
-        DeleteItem.shared.deleteItem(groupId: group.groupId,
-                                     itemId: itemId ?? "",
-                                     item: item) { [weak self] in
+        
+        DeleteItemManager.shared.deleteItem(groupId: group.groupId,
+                                            itemId: itemId ?? "",
+                                            item: item) { [weak self] in
             
-            if DeleteItem.shared.isItemDeleteSucces == true {
+            if DeleteItemManager.shared.isItemDeleteSucces == true {
                 ItemManager.shared.addNotify(grpupId: group.groupId) { [weak self] result in
                     switch result {
                     case .success:
-                        self?.showSuccess(text: "移除成功")
+                        self?.showSuccess(text: SuccessType.deleteSuccess.successMessage)
                     case .failure:
-                        self?.showFailure(text: "移除失敗，請稍後再試")
+                        self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
                     }
                 }
                 self?.navigationController?.popViewController(animated: true)
             } else {
-                self?.showFailure(text: "移除失敗，請稍後再試")
+                self?.showFailure(text: ErrorType.dataDeleteError.errorMessage)
             }
         }
     }
@@ -165,7 +166,7 @@ class ItemDetailViewController: BaseViewController {
         let blockList = UserManager.shared.currentUser?.blackList
         guard let blockList = blockList else { return }
         let newUserData = UserManager.renameBlockedUser(blockList: blockList,
-                                      userData: userData)
+                                                        userData: userData)
         userData = newUserData
     }
     
@@ -185,21 +186,33 @@ class ItemDetailViewController: BaseViewController {
     }
     
     func revealBlockView() {
-        mask = UIView(frame: CGRect(x: 0, y: -0, width: UIScreen.width, height: UIScreen.height))
-        mask.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.addSubview(mask)
+        mask.backgroundColor = .maskBackgroundColor
+        view.stickSubView(mask)
         
-        reportView = ReportView(frame: CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: 300))
-        reportView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
-        
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.reportView.frame = CGRect(x: 0, y: UIScreen.height - 300, width: UIScreen.width, height: 300)
+        setReviewView()
+        reportView.backgroundColor = .viewDarkBackgroundColor
+        reportViewBottom?.constant = -300
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
-        view.addSubview(reportView)
         
         reportView.reportButton.addTarget(self, action: #selector(reportAlert), for: .touchUpInside)
-        
         reportView.dismissButton.addTarget(self, action: #selector(pressDismissButton), for: .touchUpInside)
+    }
+    
+    private func setReviewView() {
+        reportView.removeFromSuperview()
+        view.addSubview(reportView)
+        reportView.translatesAutoresizingMaskIntoConstraints = false
+        reportView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        reportView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        reportView.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        reportViewBottom = reportView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+        reportViewBottom?.isActive = true
+        reportView.backgroundColor = .viewDarkBackgroundColor
+        
+        view.layoutIfNeeded()
     }
     
     @objc func reportAlert() {
@@ -248,8 +261,8 @@ class ItemDetailViewController: BaseViewController {
     
     func leaveGroup() {
         guard let groupId = group?.groupId else { return }
-        LeaveGroup.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
-            if LeaveGroup.shared.isLeaveGroupSuccess == true {
+        LeaveGroupManager.shared.leaveGroup(groupId: groupId, currentUserId: currentUserId) { [weak self] in
+            if LeaveGroupManager.shared.isLeaveGroupSuccess == true {
                 self?.showSuccess(text: "成功退出群組")
             } else {
                 self?.showSuccess(text: ErrorType.generalError.errorMessage)
@@ -275,19 +288,18 @@ class ItemDetailViewController: BaseViewController {
     }
     
     @objc func pressDismissButton() {
-        let subviewCount = self.view.subviews.count
-        
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.view.subviews[subviewCount - 1].frame =
-            CGRect(x: 0, y: UIScreen.height, width: UIScreen.width, height: UIScreen.height)
+        reportViewBottom?.constant = 0
+        UIView.animate(withDuration: 0.25, delay: 0,
+                       options: UIView.AnimationOptions.curveEaseIn, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         }, completion: nil)
         mask.removeFromSuperview()
     }
     
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
-       
+        
         guard let tappedImage = tapGestureRecognizer.view as? UIImageView else { return }
-
+        
         let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
         guard let itemImageViewController = storyBoard.instantiateViewController(
             withIdentifier: String(describing: ItemImageViewController.self)
@@ -324,7 +336,7 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
             
         }
         
-         if indexPath.section == 0 {
+        if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: String(describing: ItemDetailTableViewCell.self),
                 for: indexPath
@@ -334,19 +346,19 @@ extension ItemDetailViewController: UITableViewDataSource, UITableViewDelegate {
                 
             }
             let paidUser = getPayUser()
-             if !paidUser.isEmpty {
-                 detailCell.createDetailCell(group: group?.groupName ?? "",
-                                             item: item,
-                                             paidMember: paidUser[0].userName)
-             }
-             
-             if item.itemImage != nil {
-                 self.image = item.itemImage
-                 let tapGestureRecognizer = UITapGestureRecognizer(
+            if !paidUser.isEmpty {
+                detailCell.createDetailCell(group: group?.groupName ?? "",
+                                            item: item,
+                                            paidMember: paidUser[0].userName)
+            }
+            
+            if item.itemImage != nil {
+                self.image = item.itemImage
+                let tapGestureRecognizer = UITapGestureRecognizer(
                     target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
-                 detailCell.itemImage.isUserInteractionEnabled = true
-                 detailCell.itemImage.addGestureRecognizer(tapGestureRecognizer)
-             }
+                detailCell.itemImage.isUserInteractionEnabled = true
+                detailCell.itemImage.addGestureRecognizer(tapGestureRecognizer)
+            }
             
             return detailCell
         } else {
@@ -369,37 +381,37 @@ extension ItemDetailViewController: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(
         _ interaction: UIContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(
-            identifier: nil, previewProvider: nil
-        ) { _ in
-           
-            let editAction = UIAction(title: "編輯",
-                                      image: UIImage(systemName: "pencil")) { _ in
-                let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
-                guard let addItemViewController = storyBoard.instantiateViewController(
-                    withIdentifier: String(describing: AddItemViewController.self)
-                ) as? AddItemViewController else { return }
-                addItemViewController.group = self.group
-                addItemViewController.itemData = self.item
-                addItemViewController.isItemExist = true
-                addItemViewController.editingItem = { [weak self] newItemId in
-                    self?.getItemData(itemId: newItemId)
+            return UIContextMenuConfiguration(
+                identifier: nil, previewProvider: nil
+            ) { _ in
+                
+                let editAction = UIAction(title: "編輯",
+                                          image: UIImage(systemName: "pencil")) { _ in
+                    let storyBoard = UIStoryboard(name: StoryboardCategory.groups, bundle: nil)
+                    guard let addItemViewController = storyBoard.instantiateViewController(
+                        withIdentifier: String(describing: AddItemViewController.self)
+                    ) as? AddItemViewController else { return }
+                    addItemViewController.group = self.group
+                    addItemViewController.itemData = self.item
+                    addItemViewController.isItemExist = true
+                    addItemViewController.editingItem = { [weak self] newItemId in
+                        self?.getItemData(itemId: newItemId)
+                    }
+                    self.present(addItemViewController, animated: true, completion: nil)
                 }
-                self.present(addItemViewController, animated: true, completion: nil)
+                
+                let removeAction = UIAction(title: "刪除",
+                                            image: UIImage(systemName: "trash")) { _ in
+                    self.alertDeleteItem()
+                }
+                
+                let reportAction = UIAction(title: "檢舉",
+                                            image: UIImage(systemName: "megaphone")) { _ in
+                    self.revealBlockView()
+                }
+                return UIMenu(title: "", children: [editAction, removeAction, reportAction])
             }
-           
-            let removeAction = UIAction(title: "刪除",
-                                        image: UIImage(systemName: "trash")) { _ in
-                self.alertDeleteItem()
-            }
-            
-            let reportAction = UIAction(title: "檢舉",
-                                        image: UIImage(systemName: "megaphone")) { _ in
-                self.revealBlockView()
-            }
-            return UIMenu(title: "", children: [editAction, removeAction, reportAction])
         }
-    }
 }
 
 extension ItemDetailViewController {
