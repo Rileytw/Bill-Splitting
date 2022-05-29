@@ -13,7 +13,6 @@ class FriendListTableViewCell: UITableViewCell {
     @IBOutlet var email: UILabel!
     @IBOutlet weak var infoButton: UIButton!
     
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         self.backgroundColor = .clear

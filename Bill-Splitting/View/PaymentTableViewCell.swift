@@ -41,7 +41,9 @@ class PaymentTableViewCell: UITableViewCell, UITextViewDelegate {
         account.addAttribute(NSAttributedString.Key.font,
                            value: UIFont(name: "System Font Regular", size: 20)!,
                           range: NSMakeRange(0, accountName.count))
-        account.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.greenWhite, range: NSMakeRange(0, accountName.count))
+        account.addAttribute(NSAttributedString.Key.foregroundColor,
+                             value: UIColor.greenWhite,
+                             range: NSMakeRange(0, accountName.count))
         if link != "" {
             account.addAttribute(NSAttributedString.Key.link,
                                  value: linkString,

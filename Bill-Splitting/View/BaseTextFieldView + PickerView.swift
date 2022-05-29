@@ -10,7 +10,6 @@ import UIKit
 class BasePickerViewInTextField: UIView {
     var textField = UITextField()
     let pickerView = UIPickerView()
-    let width = UIScreen.main.bounds.width
     var icon = UIButton()
     var pickerViewData: [String] = [""]
     
@@ -28,7 +27,7 @@ class BasePickerViewInTextField: UIView {
         setIcon()
     }
     
-    func setUpPickerView(data:[String]) {
+    func setUpPickerView(data: [String]) {
         pickerViewData = data
     }
     

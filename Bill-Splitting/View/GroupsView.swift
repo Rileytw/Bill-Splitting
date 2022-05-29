@@ -29,21 +29,18 @@ class GroupsView: UIView {
     }
     
     func setButton() {
-//        let allGroupsButton = UIButton()
         allGroupsButton.frame = CGRect(x: 20, y: 20, width: 100, height: 40)
         allGroupsButton.setTitle("所有群組", for: .normal)
         allGroupsButton.backgroundColor = .systemBlue
         
         addSubview(allGroupsButton)
         
-//        let multipleGroupsButton = UIButton()
         multipleGroupsButton.frame = CGRect(x: 140, y: 20, width: 100, height: 40)
         multipleGroupsButton.setTitle("多人支付", for: .normal)
         multipleGroupsButton.backgroundColor = .systemGreen
         
         addSubview(multipleGroupsButton)
         
-//        let personalGroupsButton = UIButton()
         personalGroupsButton.frame = CGRect(x: 260, y: 20, width: 100, height: 40)
         personalGroupsButton.setTitle("個人預付", for: .normal)
         personalGroupsButton.backgroundColor = .systemYellow

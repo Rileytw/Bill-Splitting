@@ -55,7 +55,7 @@ class AddItemTableViewCell: UITableViewCell {
             percentLabel.isHidden = false
             
             let percent: Double = (100.00 / Double(selectedNumber ?? 0))
-            equalLabel.text = String(format: "%.2f", percent)
+            equalLabel.text = Double.formatString(percent)
         case .unselected:
             selectedButton.isSelected = false
             equalLabel.isHidden = true
@@ -92,8 +92,6 @@ class AddItemTableViewCell: UITableViewCell {
             percentLabel.isHidden = true
         }
     }
-    
-    
 }
 
 extension AddItemTableViewCell: UITextFieldDelegate {

@@ -32,7 +32,6 @@ class ItemMemberTableViewCell: UITableViewCell {
     
     func createItemMamberCell(involedMember: String, involvedPrice: Double) {
         member.text = involedMember
-//        price.text = "金額 " + String(involvedPrice) + " 元"
-        price.text = "金額 " + String(format: "%.2f", involvedPrice) + " 元"
+        price.text = "金額 " + Double.formatString(involvedPrice) + " 元"
     }
 }

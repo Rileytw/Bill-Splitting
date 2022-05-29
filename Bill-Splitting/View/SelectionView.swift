@@ -54,14 +54,15 @@ class SelectionView: UIView {
         
         for button in 0 ..< (numberOfButton ?? 0) {
             let selectedButton = UIButton()
-            selectedButton.frame = CGRect(x: (width/CGFloat(numberOfButton ?? 0) + 1) * CGFloat(button), y: 0, width: width/CGFloat(numberOfButton ?? 0) - 0.5, height: buttonHeight)
+            selectedButton.frame = CGRect(x: (width/CGFloat(numberOfButton ?? 0) + 1) * CGFloat(button),
+                                          y: 0,
+                                          width: width/CGFloat(numberOfButton ?? 0) - 0.5,
+                                          height: buttonHeight)
             selectedButton.setTitle(textOfButtons[button].title, for: .normal)
             selectedButton.titleLabel?.font = fontOfText
-//            ElementsStyle.styleButton(selectedButton)
             selectedButton.addTarget(self, action: #selector(changeIndicatorView), for: .touchUpInside)
             buttons.append(selectedButton)
             if button == 0 {
-//                ElementsStyle.styleSelectedButton(selectedButton)
             }
             addSubview(selectedButton)
         }
@@ -70,7 +71,9 @@ class SelectionView: UIView {
     func setIndicatorView() {
         colorOfBar = self.selectionViewDataSource?.colorOfIndicator() ?? .blue
         self.addSubview(indicatorView)
-        indicatorView.frame = CGRect(x: 0, y: buttonHeight + 1, width: width/CGFloat(numberOfButton ?? 0) - 0.5, height: 2)
+        indicatorView.frame = CGRect(x: 0, y: buttonHeight + 1,
+                                     width: width/CGFloat(numberOfButton ?? 0) - 0.5,
+                                     height: 2)
         indicatorView.backgroundColor = colorOfBar
     }
     
@@ -81,12 +84,5 @@ class SelectionView: UIView {
             self?.indicatorView.frame.origin.x = sender.frame.minX
         })
         self.selectionViewDelegate?.didSelectedButton?(self, at: buttonIndex ?? 0)
-        
-//        for button in buttons {
-//            if button != sender {
-//                ElementsStyle.styleNotSelectedButton(button)
-//            }
-//        }
-//        ElementsStyle.styleSelectedButton(sender)
     }
 }

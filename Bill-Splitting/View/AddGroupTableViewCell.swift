@@ -14,13 +14,6 @@ class AddGroupTableViewCell: UITableViewCell {
     @IBOutlet var chooseButton: UIButton!
     @IBOutlet weak var friendImage: UIImageView!
     
-//    {
-//        didSet {
-//            selectedButton.setImage(UIImage(systemName: "squareshape"), for: .normal)
-//            selectedButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
-//        }
-//    }
-
     override func awakeFromNib() {
         super.awakeFromNib()
         selectedButton.setImage(UIImage(systemName: "circle"), for: .normal)
