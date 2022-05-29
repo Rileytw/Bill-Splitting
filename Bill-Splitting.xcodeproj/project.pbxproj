@@ -109,7 +109,6 @@
 		35FF63DB2805629B00508EAF /* InvitationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */; };
 		35FF63DD2806560F00508EAF /* ItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63DC2806560F00508EAF /* ItemManager.swift */; };
 		35FF63DF2806563500508EAF /* ItemObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63DE2806563500508EAF /* ItemObject.swift */; };
-		35FF63E128066F8800508EAF /* GroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E028066F8800508EAF /* GroupsView.swift */; };
 		35FF63E52806749D00508EAF /* GroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E42806749D00508EAF /* GroupsViewController.swift */; };
 		35FF63EA2806A23000508EAF /* GroupsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */; };
 		35FF63EB2806A23000508EAF /* GroupsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */; };
@@ -249,7 +248,6 @@
 		35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InvitationTableViewCell.xib; sourceTree = "<group>"; };
 		35FF63DC2806560F00508EAF /* ItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemManager.swift; sourceTree = "<group>"; };
 		35FF63DE2806563500508EAF /* ItemObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemObject.swift; sourceTree = "<group>"; };
-		35FF63E028066F8800508EAF /* GroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsView.swift; sourceTree = "<group>"; };
 		35FF63E42806749D00508EAF /* GroupsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsViewController.swift; sourceTree = "<group>"; };
 		35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsTableViewCell.swift; sourceTree = "<group>"; };
 		35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupsTableViewCell.xib; sourceTree = "<group>"; };
@@ -360,35 +358,13 @@
 		350A33652803F42C00201E40 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				350A335B2803DD0100201E40 /* TabBarViewController.swift */,
-				35D0EADE281FF49F001C9324 /* BaseViewController.swift */,
-				350A33472800450000201E40 /* AddGroupsViewController.swift */,
-				35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */,
-				3555072D28197E6900FD2465 /* ScanQRCodeViewController.swift */,
-				35FF63CE28055B1500508EAF /* ProfileViewController.swift */,
-				3555072B2819633100FD2465 /* QRCodeViewController.swift */,
-				355090E0280EB9360007C0CE /* PaymentViewController.swift */,
-				355090E2280EBC190007C0CE /* AddPaymentViewController.swift */,
-				35FF63D428055F6500508EAF /* FriendListViewController.swift */,
-				35FF63D62805626800508EAF /* FriendInvitationViewController.swift */,
-				35FF63E42806749D00508EAF /* GroupsViewController.swift */,
-				35FF63EC2806AAD000508EAF /* CustomGroupViewController.swift */,
-				35568A1128145DA000646B57 /* GroupDetailViewController.swift */,
-				3593E12A2812C44200F3A31C /* ItemDetailViewController.swift */,
-				35CC139A2830198B00432CAB /* ItemImageViewController.swift */,
-				35FF63F02807B22400508EAF /* AddItemViewController.swift */,
-				355090E8280FAA690007C0CE /* AddMoreInfoViewController.swift */,
-				35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */,
-				35FF6404280C2B8500508EAF /* SpecificSettleIUpViewController.swift */,
-				35FF6406280C62C900508EAF /* SubscribeViewController.swift */,
-				355090EE28100FA80007C0CE /* RemindersViewController.swift */,
-				35568A19281532C800646B57 /* ChartViewController.swift */,
-				35568A1D281561E200646B57 /* RecordsViewController.swift */,
-				355090F0281039110007C0CE /* AddReminderViewController.swift */,
-				35568A312816D20E00646B57 /* SignInViewController.swift */,
-				35568A332817800100646B57 /* SignUpViewController.swift */,
-				3576B4192822EA7A00CECE3F /* BlockListViewController.swift */,
-				354691E028292FDF00C2174B /* WebViewController.swift */,
+				35E81A39284373C40080993A /* Base */,
+				35E81A3A284373D30080993A /* Groups */,
+				35E81A3C2843744F0080993A /* Reminders */,
+				35E81A3D2843746C0080993A /* AddGroups */,
+				35E81A3E284374D30080993A /* Records */,
+				35E81A3F284374E10080993A /* Profile */,
+				35E81A40284375160080993A /* Auth */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -412,48 +388,12 @@
 		350A336B2804193300201E40 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				350A33692804192C00201E40 /* BaseTextFieldView + PickerView.swift */,
-				3555072F281CE1D100FD2465 /* ElementsStyle.swift */,
-				350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */,
-				350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */,
-				35FF63D028055BA000508EAF /* FriendListTableViewCell.swift */,
-				35FF63D128055BA000508EAF /* FriendListTableViewCell.xib */,
-				35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */,
-				35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */,
-				35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */,
-				35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */,
-				35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */,
-				35FF63E028066F8800508EAF /* GroupsView.swift */,
-				35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */,
-				35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */,
-				35FF63EE2806B24D00508EAF /* GroupDetailView.swift */,
-				35FF63F82809672100508EAF /* ItemTableViewCell.swift */,
-				35FF63F92809672100508EAF /* ItemTableViewCell.xib */,
-				35FF63F22807B2DB00508EAF /* AddItemView.swift */,
-				35FF63F428080A8A00508EAF /* AddItemTableViewCell.swift */,
-				35FF63F528080A8A00508EAF /* AddItemTableViewCell.xib */,
-				35FF63FE280A619E00508EAF /* SettleUpTableViewCell.swift */,
-				35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */,
-				355090E4280EDE020007C0CE /* PaymentTableViewCell.swift */,
-				355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */,
-				3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */,
-				3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */,
-				3593E12C2812C69800F3A31C /* ItemDetailTableViewCell.swift */,
-				3593E12D2812C69800F3A31C /* ItemDetailTableViewCell.xib */,
-				3593E1302812E34100F3A31C /* ItemMemberTableViewCell.swift */,
-				3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */,
-				35568A132814638300646B57 /* GroupDetailTableViewCell.swift */,
-				35568A142814638300646B57 /* GroupDetailTableViewCell.xib */,
-				35568A172815282400646B57 /* PieChart.swift */,
-				35568A2628157BEB00646B57 /* SelectionView.swift */,
-				35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */,
-				35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */,
-				3576B41728222AFC00CECE3F /* BlockUserView.swift */,
-				3576B41B28239C4700CECE3F /* ReportView.swift */,
-				3576B42328261C6400CECE3F /* EditingView.swift */,
-				3576B4272826B4BF00CECE3F /* NoDataView.swift */,
-				3576B4292827C1D600CECE3F /* NoDataChartsView.swift */,
-				357851BB283CA93D0033AD3D /* TableViewHightlightAnimation.swift */,
+				35E81A41284375840080993A /* Base */,
+				35E81A42284376240080993A /* Groups */,
+				35E81A46284377000080993A /* Items */,
+				35E81A432843767D0080993A /* Reminders */,
+				35E81A44284376960080993A /* AddGroups */,
+				35E81A45284376B10080993A /* Profile */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -461,28 +401,14 @@
 		350A33712804636400201E40 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				350A33722804638A00201E40 /* GroupManager.swift */,
-				350A3374280464E500201E40 /* GroupObject.swift */,
-				35FF63DC2806560F00508EAF /* ItemManager.swift */,
-				35FF63DE2806563500508EAF /* ItemObject.swift */,
-				350A3376280468D000201E40 /* UserManager.swift */,
-				350A3378280469BB00201E40 /* UserObject.swift */,
-				350A337A2805060B00201E40 /* FriendManager.swift */,
-				355090DA280DA0E10007C0CE /* SubscriptionObject.swift */,
-				355090DC280DA19F0007C0CE /* SubscriptionManager.swift */,
-				355090EA280FBBB10007C0CE /* ImageManager.swift */,
-				3593E1222811884900F3A31C /* ReminderManager.swift */,
-				3593E124281188D100F3A31C /* ReminderObject.swift */,
+				35E81A35284372F80080993A /* Groups */,
+				35E81A362843731D0080993A /* Items */,
+				35E81A37284373370080993A /* Users */,
+				35E81A38284373570080993A /* Reminders */,
 				355090DE280DA5900007C0CE /* FirebaseCollection.swift */,
 				35568A2828157EBC00646B57 /* ButtonModel.swift */,
-				355507292817900500FD2465 /* AccountManager.swift */,
-				3576B41D2823AA3C00CECE3F /* RoportManager.swift */,
-				3576B41F2823AB5800CECE3F /* ReportObject.swift */,
 				35395CF2282CFC23005BE8F2 /* NetworkStatus.swift */,
 				35CC13A22835D88500432CAB /* UserMessageType.swift */,
-				35CC139E2834FC4C00432CAB /* LeaveGroupManager.swift */,
-				35CC13A02835344E00432CAB /* AddItemManager.swift */,
-				357851BD283CCC2B0033AD3D /* DeleteItemManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -505,6 +431,213 @@
 				35CC13BB2837317600432CAB /* WeCountTests.swift */,
 			);
 			path = WeCountTests;
+			sourceTree = "<group>";
+		};
+		35E81A35284372F80080993A /* Groups */ = {
+			isa = PBXGroup;
+			children = (
+				350A33722804638A00201E40 /* GroupManager.swift */,
+				350A3374280464E500201E40 /* GroupObject.swift */,
+				35CC139E2834FC4C00432CAB /* LeaveGroupManager.swift */,
+			);
+			path = Groups;
+			sourceTree = "<group>";
+		};
+		35E81A362843731D0080993A /* Items */ = {
+			isa = PBXGroup;
+			children = (
+				35FF63DC2806560F00508EAF /* ItemManager.swift */,
+				35FF63DE2806563500508EAF /* ItemObject.swift */,
+				355090DC280DA19F0007C0CE /* SubscriptionManager.swift */,
+				355090DA280DA0E10007C0CE /* SubscriptionObject.swift */,
+				355090EA280FBBB10007C0CE /* ImageManager.swift */,
+				35CC13A02835344E00432CAB /* AddItemManager.swift */,
+				357851BD283CCC2B0033AD3D /* DeleteItemManager.swift */,
+				3576B41D2823AA3C00CECE3F /* RoportManager.swift */,
+				3576B41F2823AB5800CECE3F /* ReportObject.swift */,
+			);
+			path = Items;
+			sourceTree = "<group>";
+		};
+		35E81A37284373370080993A /* Users */ = {
+			isa = PBXGroup;
+			children = (
+				350A3376280468D000201E40 /* UserManager.swift */,
+				350A3378280469BB00201E40 /* UserObject.swift */,
+				350A337A2805060B00201E40 /* FriendManager.swift */,
+				355507292817900500FD2465 /* AccountManager.swift */,
+			);
+			path = Users;
+			sourceTree = "<group>";
+		};
+		35E81A38284373570080993A /* Reminders */ = {
+			isa = PBXGroup;
+			children = (
+				3593E1222811884900F3A31C /* ReminderManager.swift */,
+				3593E124281188D100F3A31C /* ReminderObject.swift */,
+			);
+			path = Reminders;
+			sourceTree = "<group>";
+		};
+		35E81A39284373C40080993A /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				350A335B2803DD0100201E40 /* TabBarViewController.swift */,
+				35D0EADE281FF49F001C9324 /* BaseViewController.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		35E81A3A284373D30080993A /* Groups */ = {
+			isa = PBXGroup;
+			children = (
+				35FF63E42806749D00508EAF /* GroupsViewController.swift */,
+				35FF63EC2806AAD000508EAF /* CustomGroupViewController.swift */,
+				35568A1128145DA000646B57 /* GroupDetailViewController.swift */,
+				3593E12A2812C44200F3A31C /* ItemDetailViewController.swift */,
+				35FF63F02807B22400508EAF /* AddItemViewController.swift */,
+				35568A19281532C800646B57 /* ChartViewController.swift */,
+				35FF63FC280A5B3200508EAF /* SettleUpViewController.swift */,
+				35FF6404280C2B8500508EAF /* SpecificSettleIUpViewController.swift */,
+				35FF6406280C62C900508EAF /* SubscribeViewController.swift */,
+				35CC139A2830198B00432CAB /* ItemImageViewController.swift */,
+				355090E8280FAA690007C0CE /* AddMoreInfoViewController.swift */,
+			);
+			path = Groups;
+			sourceTree = "<group>";
+		};
+		35E81A3C2843744F0080993A /* Reminders */ = {
+			isa = PBXGroup;
+			children = (
+				355090EE28100FA80007C0CE /* RemindersViewController.swift */,
+				355090F0281039110007C0CE /* AddReminderViewController.swift */,
+			);
+			path = Reminders;
+			sourceTree = "<group>";
+		};
+		35E81A3D2843746C0080993A /* AddGroups */ = {
+			isa = PBXGroup;
+			children = (
+				350A33472800450000201E40 /* AddGroupsViewController.swift */,
+				35FF63CC2805175E00508EAF /* InviteFriendViewController.swift */,
+				3555072D28197E6900FD2465 /* ScanQRCodeViewController.swift */,
+			);
+			path = AddGroups;
+			sourceTree = "<group>";
+		};
+		35E81A3E284374D30080993A /* Records */ = {
+			isa = PBXGroup;
+			children = (
+				35568A1D281561E200646B57 /* RecordsViewController.swift */,
+			);
+			path = Records;
+			sourceTree = "<group>";
+		};
+		35E81A3F284374E10080993A /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				35FF63CE28055B1500508EAF /* ProfileViewController.swift */,
+				355090E0280EB9360007C0CE /* PaymentViewController.swift */,
+				355090E2280EBC190007C0CE /* AddPaymentViewController.swift */,
+				35FF63D428055F6500508EAF /* FriendListViewController.swift */,
+				35FF63D62805626800508EAF /* FriendInvitationViewController.swift */,
+				3555072B2819633100FD2465 /* QRCodeViewController.swift */,
+				3576B4192822EA7A00CECE3F /* BlockListViewController.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		35E81A40284375160080993A /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				35568A312816D20E00646B57 /* SignInViewController.swift */,
+				35568A332817800100646B57 /* SignUpViewController.swift */,
+				354691E028292FDF00C2174B /* WebViewController.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		35E81A41284375840080993A /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				3555072F281CE1D100FD2465 /* ElementsStyle.swift */,
+				350A33692804192C00201E40 /* BaseTextFieldView + PickerView.swift */,
+				357851BB283CA93D0033AD3D /* TableViewHightlightAnimation.swift */,
+				3576B4272826B4BF00CECE3F /* NoDataView.swift */,
+				3576B4292827C1D600CECE3F /* NoDataChartsView.swift */,
+				3576B41728222AFC00CECE3F /* BlockUserView.swift */,
+				3576B41B28239C4700CECE3F /* ReportView.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		35E81A42284376240080993A /* Groups */ = {
+			isa = PBXGroup;
+			children = (
+				35FF63E82806A23000508EAF /* GroupsTableViewCell.swift */,
+				35FF63E92806A23000508EAF /* GroupsTableViewCell.xib */,
+				35FF63EE2806B24D00508EAF /* GroupDetailView.swift */,
+				35FF63FE280A619E00508EAF /* SettleUpTableViewCell.swift */,
+				35FF63FF280A619E00508EAF /* SettleUpTableViewCell.xib */,
+				35568A132814638300646B57 /* GroupDetailTableViewCell.swift */,
+				35568A142814638300646B57 /* GroupDetailTableViewCell.xib */,
+				35568A172815282400646B57 /* PieChart.swift */,
+				35568A2628157BEB00646B57 /* SelectionView.swift */,
+				35568A2A28157F1800646B57 /* SelectionViewDataSource.swift */,
+				35568A2C28157F3800646B57 /* SelectionViewDelegate.swift */,
+			);
+			path = Groups;
+			sourceTree = "<group>";
+		};
+		35E81A432843767D0080993A /* Reminders */ = {
+			isa = PBXGroup;
+			children = (
+				3593E126281262AE00F3A31C /* ReminderTableViewCell.swift */,
+				3593E127281262AE00F3A31C /* ReminderTableViewCell.xib */,
+			);
+			path = Reminders;
+			sourceTree = "<group>";
+		};
+		35E81A44284376960080993A /* AddGroups */ = {
+			isa = PBXGroup;
+			children = (
+				350A336D280445BF00201E40 /* AddGroupTableViewCell.swift */,
+				350A336E280445BF00201E40 /* AddGroupTableViewCell.xib */,
+			);
+			path = AddGroups;
+			sourceTree = "<group>";
+		};
+		35E81A45284376B10080993A /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				3576B42328261C6400CECE3F /* EditingView.swift */,
+				35D0EAD6281FB806001C9324 /* ProfileCollectionViewCell.swift */,
+				35D0EAD7281FB806001C9324 /* ProfileCollectionViewCell.xib */,
+				35D0EADA281FC7BF001C9324 /* ProfileHeaderView.swift */,
+				35FF63D028055BA000508EAF /* FriendListTableViewCell.swift */,
+				35FF63D128055BA000508EAF /* FriendListTableViewCell.xib */,
+				35FF63D82805629B00508EAF /* InvitationTableViewCell.swift */,
+				35FF63D92805629B00508EAF /* InvitationTableViewCell.xib */,
+				355090E4280EDE020007C0CE /* PaymentTableViewCell.swift */,
+				355090E5280EDE020007C0CE /* PaymentTableViewCell.xib */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		35E81A46284377000080993A /* Items */ = {
+			isa = PBXGroup;
+			children = (
+				35FF63F82809672100508EAF /* ItemTableViewCell.swift */,
+				35FF63F92809672100508EAF /* ItemTableViewCell.xib */,
+				35FF63F22807B2DB00508EAF /* AddItemView.swift */,
+				35FF63F428080A8A00508EAF /* AddItemTableViewCell.swift */,
+				35FF63F528080A8A00508EAF /* AddItemTableViewCell.xib */,
+				3593E12C2812C69800F3A31C /* ItemDetailTableViewCell.swift */,
+				3593E12D2812C69800F3A31C /* ItemDetailTableViewCell.xib */,
+				3593E1302812E34100F3A31C /* ItemMemberTableViewCell.swift */,
+				3593E1312812E34100F3A31C /* ItemMemberTableViewCell.xib */,
+			);
+			path = Items;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -842,7 +975,6 @@
 				350A336A2804192C00201E40 /* BaseTextFieldView + PickerView.swift in Sources */,
 				35D0EAD8281FB806001C9324 /* ProfileCollectionViewCell.swift in Sources */,
 				35568A182815282400646B57 /* PieChart.swift in Sources */,
-				35FF63E128066F8800508EAF /* GroupsView.swift in Sources */,
 				3555072A2817900500FD2465 /* AccountManager.swift in Sources */,
 				355090DF280DA5900007C0CE /* FirebaseCollection.swift in Sources */,
 				35FF63FA2809672100508EAF /* ItemTableViewCell.swift in Sources */,
