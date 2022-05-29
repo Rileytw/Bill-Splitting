@@ -10,7 +10,6 @@ import UIKit
 class BlockUserView: UIView {
     
     let blockUserButton = UIButton()
-    let width = UIScreen.main.bounds.size.width
     let blockLabel = UILabel()
     let dismissButton = UIButton()
     var buttonTitle: String?
@@ -34,29 +33,38 @@ class BlockUserView: UIView {
     }
     
     func setBlockButton() {
-
-        blockUserButton.frame = CGRect(x: (width - 180)/2, y: 40, width: 180, height: 40)
+        addSubview(blockUserButton)
+        blockUserButton.translatesAutoresizingMaskIntoConstraints = false
+        blockUserButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 40).isActive = true
+        blockUserButton.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 0).isActive = true
+        blockUserButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        blockUserButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         blockUserButton.setTitle(buttonTitle, for: .normal)
         blockUserButton.tintColor = .greenWhite
         ElementsStyle.styleSpecificButton(blockUserButton)
-        
-        addSubview(blockUserButton)
     }
     
     func setBlockLabel() {
-        blockLabel.frame = CGRect(x: (width - 280)/2, y: 100, width: 280, height: 80)
+        addSubview(blockLabel)
+        blockLabel.translatesAutoresizingMaskIntoConstraints = false
+        blockLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 100).isActive = true
+        blockLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 0).isActive = true
+        blockLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        blockLabel.heightAnchor.constraint(equalToConstant: 80).isActive = true
         blockLabel.text = content
         blockLabel.textColor = .greenWhite
         
         blockLabel.numberOfLines = 0
-        
-        addSubview(blockLabel)
     }
 
     func setDismissButton() {
-        dismissButton.frame = CGRect(x: width - 40, y: 5, width: 40, height: 40)
+        addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = .greenWhite
-        addSubview(dismissButton)
     }
 }

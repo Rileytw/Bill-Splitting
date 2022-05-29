@@ -10,20 +10,19 @@ import UIKit
 class ReportView: UIView {
     
     let reportButton = UIButton()
-    let width = UIScreen.main.bounds.size.width
     let reportLabel = UILabel()
     let dismissButton = UIButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-    
+        
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
     }
- 
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         setBlockButton()
@@ -32,31 +31,38 @@ class ReportView: UIView {
     }
     
     func setBlockButton() {
-
-        reportButton.frame = CGRect(x: (width - 100)/2, y: 40, width: 100, height: 40)
+        addSubview(reportButton)
+        reportButton.translatesAutoresizingMaskIntoConstraints = false
+        reportButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 40).isActive = true
+        reportButton.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        reportButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        reportButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         reportButton.setTitle(" 檢舉", for: .normal)
         reportButton.setImage(UIImage(systemName: "megaphone.fill"), for: .normal)
         reportButton.tintColor = .greenWhite
         ElementsStyle.styleSpecificButton(reportButton)
-        
-        addSubview(reportButton)
     }
     
     func setBlockLabel() {
-        reportLabel.frame = CGRect(x: (width - 250)/2, y: 100, width: 250, height: 80)
+        addSubview(reportLabel)
+        reportLabel.translatesAutoresizingMaskIntoConstraints = false
+        reportLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 100).isActive = true
+        reportLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 0).isActive = true
+        reportLabel.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        reportLabel.heightAnchor.constraint(equalToConstant: 80).isActive = true
         reportLabel.text = "檢舉後該款項及群組資料會回報至開發者。"
         reportLabel.textColor = .greenWhite
-        
         reportLabel.numberOfLines = 0
-        
-        addSubview(reportLabel)
     }
     
     func setDismissButton() {
-        dismissButton.frame = CGRect(x: width - 40, y: 5, width: 40, height: 40)
+        addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = .greenWhite
-        addSubview(dismissButton)
     }
 }
-

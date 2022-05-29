@@ -10,7 +10,6 @@ import UIKit
 class EditingView: UIView {
     
     let completeButton = UIButton()
-    let width = UIScreen.main.bounds.size.width
     let blockLabel = UILabel()
     let dismissButton = UIButton()
     var buttonTitle: String?
@@ -20,14 +19,14 @@ class EditingView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-    
+        
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
     }
- 
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         setBlockButton()
@@ -37,37 +36,50 @@ class EditingView: UIView {
     }
     
     func setBlockButton() {
-
-        completeButton.frame = CGRect(x: (width - 180)/2, y: 200, width: 180, height: 40)
+        addSubview(completeButton)
+        completeButton.translatesAutoresizingMaskIntoConstraints = false
+        completeButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 200).isActive = true
+        completeButton.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        completeButton.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        completeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         completeButton.setTitle(buttonTitle, for: .normal)
         completeButton.tintColor = .greenWhite
         ElementsStyle.styleSpecificButton(completeButton)
-        
-        addSubview(completeButton)
     }
     
     func setBlockLabel() {
-        blockLabel.frame = CGRect(x: 40, y: 100, width: 80, height: 40)
+        addSubview(blockLabel)
+        blockLabel.translatesAutoresizingMaskIntoConstraints = false
+        blockLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 100).isActive = true
+        blockLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 40).isActive = true
+        blockLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        blockLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
         content = "新名稱"
         blockLabel.text = content
         blockLabel.textColor = .greenWhite
         
         blockLabel.numberOfLines = 0
-        
-        addSubview(blockLabel)
     }
-
+    
     func setDismissButton() {
-        dismissButton.frame = CGRect(x: width - 40, y: 5, width: 40, height: 40)
+        addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = .greenWhite
-        addSubview(dismissButton)
     }
     
     func setTextField() {
-        textField.frame = CGRect(x: 140, y: 100, width: 200, height: 40)
+        addSubview(textField)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 100).isActive = true
+        textField.leadingAnchor.constraint(equalTo: blockLabel.trailingAnchor, constant: 0).isActive = true
+        textField.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        textField.heightAnchor.constraint(equalToConstant: 40).isActive = true
         textField.placeholder = "輸入新名稱"
         ElementsStyle.styleTextField(textField)
-        addSubview(textField)
     }
 }
