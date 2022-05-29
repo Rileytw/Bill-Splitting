@@ -20,4 +20,9 @@ pod 'Firebase/Auth'
 pod 'JGProgressHUD'
 pod 'Firebase/Crashlytics'
 
+target 'WeCountTests' do
+        inherit! :search_paths
+        pod 'Firebase'
+    end
+
 end
