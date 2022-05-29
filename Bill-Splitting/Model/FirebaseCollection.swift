@@ -16,4 +16,9 @@ enum FirebaseCollection: String {
     case subscription
     case reminder
     case reports
+    case friend
+    case friendInvitation
+    case memberExpense
+    case involvedInfo
+    case notification
 }
