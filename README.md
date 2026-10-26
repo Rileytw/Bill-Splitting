@@ -9,11 +9,15 @@
     <img src="https://img.shields.io/badge/license-MIT-blue">
 </p>
 
+> **Note**
+> This is the original version of WeCount, built in 5 weeks during AppWorks School in 2022. It was published on the App Store (now removed).
+> A refactored version with SwiftUI, MVVM, Swift Concurrency, and unit tests is available here: [WeCount2.0](https://github.com/Rileytw/WeCount2.0/tree/main)
+
 WeCount is dedicated to solving the problem of bill splitting.
 
 You can record shared costs for friends, follow the debt relationship in groups, and update subscribed expenses automatically.
 
-WeCount make it more convenient for multiple people to spilt bills.
+WeCount makes it more convenient for multiple people to split bills.
 
 [![Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917](https://user-images.githubusercontent.com/74561850/170669608-6b45c68f-c830-4e3d-8dde-61ca6e37fd71.svg)](https://apps.apple.com/tw/app/wecount/id1619743121)
 
