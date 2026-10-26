@@ -108,7 +108,3 @@ QRCode scanner with device camera.
 ## License
 
 See [LICENSE](https://github.com/Rileytw/Bill-Splitting/blob/develop/LICENSE.md).
-
-## Contact
-Riley Lei
-> wecounttw@gmail.com
